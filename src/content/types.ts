@@ -35,7 +35,8 @@ export type OefeningType =
   | 'hakken-en-plakken'
   | 'woord-bouwen'
   | 'zin-invullen'
-  | 'zelf-typen';
+  | 'zelf-typen'
+  | 'woordwolk';
 
 export type OefeningDefinitie =
   | { type: 'plaatje-woord-keuze'; doel: Woord; afleiders: Woord[] }
@@ -47,7 +48,11 @@ export type OefeningDefinitie =
   // engine/oefeningGenerator.ts (MIN_BLOOTSTELLING_VOOR_TYPEN).
   | { type: 'zelf-typen'; woord: Woord }
   // Zin met een gat, plaatjecontext erbij; soms meerkeuze, soms zelf typen.
-  | { type: 'zin-invullen'; zin: string; doel: Woord; afleiders: Woord[]; modus: 'meerkeuze' | 'typen' };
+  | { type: 'zin-invullen'; zin: string; doel: Woord; afleiders: Woord[]; modus: 'meerkeuze' | 'typen' }
+  // Plaatje in het midden, een wolk van woorden eromheen — het doelwoord komt
+  // `herhaling` keer voor tussen de afleiders; tik alle juiste exemplaren aan.
+  // Geïnspireerd op het klassieke "kleur de juiste woorden bij het plaatje"-werkblad.
+  | { type: 'woordwolk'; doel: Woord; afleiders: Woord[]; herhaling: number };
 
 export interface Kern {
   id: string; // bv. 'kern-01'
@@ -56,11 +61,10 @@ export interface Kern {
   structuurwoorden: StructuurWoord[]; // de nieuwe woorden die in deze kern ontleed worden
   nieuweLetters: string[];
   // Woordenbank waaruit oefen- en toetssessies random samengesteld worden (zie
-  // engine/oefeningGenerator.ts): ~10 klankzuivere woorden, incl. de structuurwoorden,
+  // engine/oefeningGenerator.ts): klankzuivere woorden, incl. de structuurwoorden,
   // opgebouwd uit letters die in of vóór deze kern zijn geleerd. Een oefensessie pakt
   // een handvol woorden hieruit (5) en wijst elk woord willekeurig één oefentype toe;
-  // de toets doorloopt de hele bank en toetst elk woord twee keer (2x10 = 20 vragen),
-  // met een ander oefentype per keer waar mogelijk.
+  // de toets doorloopt de hele bank één keer (dus net zoveel vragen als woorden).
   woordenbank: Woord[];
   // Optionele invulzinnen voor (een deel van) de woordenbank, voor de zin-invullen-oefening.
   zinnen: ZinsVoorbeeld[];

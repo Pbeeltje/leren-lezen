@@ -2,12 +2,20 @@ import type { Screen, ScreenManager } from '../../engine/screenManager.ts';
 import type { RekenKern, RekenOefeningDefinitie } from '../../content/tellen/types.ts';
 import { maakTerugKnop } from '../components/TerugKnop.ts';
 import { maakTopRechtsBalk } from '../components/TopRechtsBalk.ts';
-import { markeerKernGestart, markeerKernVoltooid, voegMuntenToe } from '../../engine/progressStore.ts';
-import { MUNTEN_OEFENING_GOED, MUNTEN_TOETS_GOED, MUNTEN_TOETS_PERFECT_BONUS } from '../../engine/rewards.ts';
+import { haalKernVoortgang, markeerKernGestart, markeerKernVoltooid, voegMuntenToe } from '../../engine/progressStore.ts';
+import {
+  MUNTEN_OEFENING_GOED,
+  MUNTEN_OEFENING_HERHAALD,
+  MUNTEN_TOETS_GOED,
+  MUNTEN_TOETS_HERHAALD,
+  MUNTEN_TOETS_PERFECT_BONUS,
+} from '../../engine/rewards.ts';
 import { type RekenModus, genereerRekenSessie } from '../../engine/rekenenGenerator.ts';
 import { renderHoeveelheidNaarCijfer } from '../../games/hoeveelheidNaarCijfer.ts';
 import { renderCijferNaarHoeveelheid } from '../../games/cijferNaarHoeveelheid.ts';
 import { renderDobbelsteenNaarCijfer } from '../../games/dobbelsteenNaarCijfer.ts';
+import { renderReeksAanvullen } from '../../games/reeksAanvullen.ts';
+import { renderOptellen } from '../../games/optellen.ts';
 import { speelSchermOvergang } from '../../three/transitions.ts';
 import { TestResultScreen } from './TestResultScreen.ts';
 import { RekenKernOverviewScreen } from './RekenKernOverviewScreen.ts';
@@ -18,6 +26,8 @@ const INSTRUCTIES: Record<RekenOefeningDefinitie['type'], string> = {
   'hoeveelheid-naar-cijfer': 'Hoeveel zie je? Kies het juiste cijfer',
   'cijfer-naar-hoeveelheid': 'Welk groepje heeft er zoveel?',
   'dobbelsteen-naar-cijfer': 'Welk cijfer hoort bij de dobbelsteen?',
+  'reeks-aanvullen': 'Welk getal ontbreekt?',
+  optellen: 'Hoeveel is dat samen?',
 };
 
 function renderOefening(
@@ -33,6 +43,10 @@ function renderOefening(
       return renderCijferNaarHoeveelheid(container, oefening, opties, afgerond);
     case 'dobbelsteen-naar-cijfer':
       return renderDobbelsteenNaarCijfer(container, oefening, opties, afgerond);
+    case 'reeks-aanvullen':
+      return renderReeksAanvullen(container, oefening, opties, afgerond);
+    case 'optellen':
+      return renderOptellen(container, oefening, opties, afgerond);
   }
 }
 
@@ -43,6 +57,9 @@ export function RekenOefeningScreen(
   onAfgerond: () => void,
 ): Screen {
   const oefeningen = genereerRekenSessie(kern, modus);
+  const voortgangBijStart = haalKernVoortgang(kern.id);
+  const wasAlGeoefend = voortgangBijStart.gestart;
+  const wasAlGehaald = voortgangBijStart.voltooid;
 
   const el = document.createElement('div');
   el.className = 'scherm';
@@ -83,9 +100,14 @@ export function RekenOefeningScreen(
     klaarMetDeze = true;
     if (juist) {
       aantalGoed++;
-      const munten = modus === 'oefenen' ? MUNTEN_OEFENING_GOED : MUNTEN_TOETS_GOED;
-      voegMuntenToe(munten);
-      muntenDitKeer += munten;
+      if (modus === 'oefenen') {
+        const munten = wasAlGeoefend ? MUNTEN_OEFENING_HERHAALD : MUNTEN_OEFENING_GOED;
+        voegMuntenToe(munten);
+        muntenDitKeer += munten;
+      } else if (!wasAlGehaald) {
+        voegMuntenToe(MUNTEN_TOETS_GOED);
+        muntenDitKeer += MUNTEN_TOETS_GOED;
+      }
     }
     setTimeout(volgende, 900);
   }
@@ -110,7 +132,10 @@ export function RekenOefeningScreen(
     if (modus === 'toets') {
       const fractie = aantalGoed / oefeningen.length;
       const sterren: 0 | 1 | 2 | 3 = fractie === 1 ? 3 : fractie >= 0.7 ? 2 : fractie >= 0.4 ? 1 : 0;
-      if (fractie === 1) {
+      if (wasAlGehaald) {
+        voegMuntenToe(MUNTEN_TOETS_HERHAALD);
+        muntenDitKeer += MUNTEN_TOETS_HERHAALD;
+      } else if (fractie === 1) {
         voegMuntenToe(MUNTEN_TOETS_PERFECT_BONUS);
         muntenDitKeer += MUNTEN_TOETS_PERFECT_BONUS;
       }

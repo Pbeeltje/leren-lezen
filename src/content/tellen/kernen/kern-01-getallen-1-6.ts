@@ -22,4 +22,7 @@ export const rekenKern01Getallen1Tot6: RekenKern = {
     { naam: 'eend', icoonPad: pad('telobject-eend') },
     { naam: 'bal', icoonPad: pad('telobject-bal') },
   ],
+  // Reeksen en optellen zijn eigen, aparte kernen (03/04) — hier alleen de
+  // hoeveelheid/getalbeeld-oefeningen.
+  oefeningTypen: ['hoeveelheid-naar-cijfer', 'cijfer-naar-hoeveelheid', 'dobbelsteen-naar-cijfer'],
 };

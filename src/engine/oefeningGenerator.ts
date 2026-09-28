@@ -33,7 +33,13 @@ function kiesAfleidLetters(doelWoord: string, alleLetters: string[], aantal: num
 }
 
 function beschikbareTypen(kern: Kern, doel: Woord, uitgesloten: OefeningType[]): OefeningType[] {
-  const basis: OefeningType[] = ['plaatje-woord-keuze', 'woord-plaatje-keuze', 'hakken-en-plakken', 'woord-bouwen'];
+  const basis: OefeningType[] = [
+    'plaatje-woord-keuze',
+    'woord-plaatje-keuze',
+    'hakken-en-plakken',
+    'woord-bouwen',
+    'woordwolk',
+  ];
   if (kern.zinnen.some((z) => z.doel.woord === doel.woord)) basis.push('zin-invullen');
   if (haalBlootstelling(doel.woord) >= MIN_BLOOTSTELLING_VOOR_TYPEN) basis.push('zelf-typen');
 
@@ -66,6 +72,18 @@ function maakOefening(kern: Kern, doel: Woord, type: OefeningType, aantalAfleide
         doel: zin.doel,
         afleiders: kiesAfleiders(kern.woordenbank, doel, aantalAfleiders),
         modus: Math.random() < 0.5 ? 'meerkeuze' : 'typen',
+      };
+    }
+    case 'woordwolk': {
+      // Zoals het klassieke werkblad: het doelwoord komt 2 of 3 keer voor tussen een
+      // wolk van in totaal ~7 woorden.
+      const herhaling = Math.random() < 0.5 ? 2 : 3;
+      const wolkGrootte = 7;
+      return {
+        type,
+        doel,
+        herhaling,
+        afleiders: kiesAfleiders(kern.woordenbank, doel, wolkGrootte - herhaling),
       };
     }
   }

@@ -3,12 +3,19 @@ import type { Kern, OefeningDefinitie } from '../../content/types.ts';
 import { maakTerugKnop } from '../components/TerugKnop.ts';
 import { maakTopRechtsBalk } from '../components/TopRechtsBalk.ts';
 import {
+  haalKernVoortgang,
   markeerKernGestart,
   markeerKernVoltooid,
   verhoogBlootstelling,
   voegMuntenToe,
 } from '../../engine/progressStore.ts';
-import { MUNTEN_OEFENING_GOED, MUNTEN_TOETS_GOED, MUNTEN_TOETS_PERFECT_BONUS } from '../../engine/rewards.ts';
+import {
+  MUNTEN_OEFENING_GOED,
+  MUNTEN_OEFENING_HERHAALD,
+  MUNTEN_TOETS_GOED,
+  MUNTEN_TOETS_HERHAALD,
+  MUNTEN_TOETS_PERFECT_BONUS,
+} from '../../engine/rewards.ts';
 import { type OefenModus, genereerSessie, woordVanOefening } from '../../engine/oefeningGenerator.ts';
 import { renderPlaatjeWoordKeuze } from '../../games/plaatjeWoordKeuze.ts';
 import { renderWoordPlaatjeKeuze } from '../../games/woordPlaatjeKeuze.ts';
@@ -16,6 +23,7 @@ import { renderHakkenEnPlakken } from '../../games/hakkenEnPlakken.ts';
 import { renderWoordBouwen } from '../../games/woordBouwen.ts';
 import { renderZelfTypen } from '../../games/zelfTypen.ts';
 import { renderZinInvullen } from '../../games/zinInvullen.ts';
+import { renderWoordwolk } from '../../games/woordwolk.ts';
 import { speelSchermOvergang } from '../../three/transitions.ts';
 import { TestResultScreen } from './TestResultScreen.ts';
 import { KernOverviewScreen } from './KernOverviewScreen.ts';
@@ -29,6 +37,7 @@ const INSTRUCTIES: Record<OefeningDefinitie['type'], string> = {
   'woord-bouwen': 'Bouw het woord met de blokjes',
   'zelf-typen': 'Typ het woord dat je op het plaatje ziet',
   'zin-invullen': 'Welk woord past in de zin?',
+  woordwolk: 'Tik alle woorden aan die bij het plaatje horen',
 };
 
 function renderOefening(
@@ -50,6 +59,8 @@ function renderOefening(
       return renderZelfTypen(container, oefening, opties, afgerond);
     case 'zin-invullen':
       return renderZinInvullen(container, oefening, opties, afgerond);
+    case 'woordwolk':
+      return renderWoordwolk(container, oefening, opties, afgerond);
   }
 }
 
@@ -60,6 +71,11 @@ export function OefeningScreen(
   onAfgerond: () => void,
 ): Screen {
   const oefeningen = genereerSessie(kern, modus);
+  // Vastgelegd bij het starten van déze poging (niet later herberekend): bepaalt of
+  // deze poging als "eerste keer" of "herhaling" beloond wordt.
+  const voortgangBijStart = haalKernVoortgang(kern.id);
+  const wasAlGeoefend = voortgangBijStart.gestart;
+  const wasAlGehaald = voortgangBijStart.voltooid;
 
   const el = document.createElement('div');
   el.className = 'scherm';
@@ -100,9 +116,16 @@ export function OefeningScreen(
     klaarMetDeze = true;
     if (juist) {
       aantalGoed++;
-      const munten = modus === 'oefenen' ? MUNTEN_OEFENING_GOED : MUNTEN_TOETS_GOED;
-      voegMuntenToe(munten);
-      muntenDitKeer += munten;
+      if (modus === 'oefenen') {
+        const munten = wasAlGeoefend ? MUNTEN_OEFENING_HERHAALD : MUNTEN_OEFENING_GOED;
+        voegMuntenToe(munten);
+        muntenDitKeer += munten;
+      } else if (!wasAlGehaald) {
+        // Bij een hertoets van een al gehaalde kern komt er aan het eind één vast
+        // bedrag (MUNTEN_TOETS_HERHAALD) i.p.v. per-vraag munten — zie afronden().
+        voegMuntenToe(MUNTEN_TOETS_GOED);
+        muntenDitKeer += MUNTEN_TOETS_GOED;
+      }
     }
     // "zelf-typen" telt niet mee voor zijn eigen vrijspeelvoorwaarde; elke andere
     // vorm telt als geoefend, ongeacht of het antwoord goed was.
@@ -134,7 +157,10 @@ export function OefeningScreen(
     if (modus === 'toets') {
       const fractie = aantalGoed / oefeningen.length;
       const sterren: 0 | 1 | 2 | 3 = fractie === 1 ? 3 : fractie >= 0.7 ? 2 : fractie >= 0.4 ? 1 : 0;
-      if (fractie === 1) {
+      if (wasAlGehaald) {
+        voegMuntenToe(MUNTEN_TOETS_HERHAALD);
+        muntenDitKeer += MUNTEN_TOETS_HERHAALD;
+      } else if (fractie === 1) {
         voegMuntenToe(MUNTEN_TOETS_PERFECT_BONUS);
         muntenDitKeer += MUNTEN_TOETS_PERFECT_BONUS;
       }
