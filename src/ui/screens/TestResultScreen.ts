@@ -1,6 +1,7 @@
 import type { Screen, ScreenManager } from '../../engine/screenManager.ts';
 import { maakSterBalk } from '../components/ProgressStars.ts';
 import { maakTopRechtsBalk } from '../components/TopRechtsBalk.ts';
+import { maakTerugKnop } from '../components/TerugKnop.ts';
 import { speelSchermOvergang } from '../../three/transitions.ts';
 
 export interface ToetsResultaat {
@@ -55,16 +56,26 @@ export function TestResultScreen(
 
   el.appendChild(kaart);
 
+  // Ook de toets-resultaatpagina krijgt de terugknop die elk ander scherm al heeft
+  // (was hier eerder vergeten) — anders lijkt "terug" op het gebruikelijke plekje
+  // (linksboven) simpelweg niet te werken.
+  const terug = maakTerugKnop(() => {
+    speelSchermOvergang();
+    onVerder(manager);
+  });
+
   let topRechts: ReturnType<typeof maakTopRechtsBalk> | null = null;
 
   return {
     mount(root) {
       root.appendChild(el);
+      root.appendChild(terug);
       topRechts = maakTopRechtsBalk(manager);
       root.appendChild(topRechts.element);
     },
     unmount() {
       el.remove();
+      terug.remove();
       topRechts?.element.remove();
       topRechts?.vernietig();
       topRechts = null;
