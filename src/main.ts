@@ -5,7 +5,7 @@ import './styles/screens.css';
 import { ScreenManager } from './engine/screenManager.ts';
 import { sceneManager } from './three/sceneManager.ts';
 import { mascotte } from './three/mascotte.ts';
-import { AgeSelectScreen } from './ui/screens/AgeSelectScreen.ts';
+import { ProfileSelectScreen } from './ui/screens/ProfileSelectScreen.ts';
 
 const app = document.querySelector<HTMLDivElement>('#app')!;
 
@@ -23,4 +23,4 @@ schermHouder.style.height = '100%';
 app.appendChild(schermHouder);
 
 const manager = new ScreenManager(schermHouder);
-manager.push((m) => AgeSelectScreen(m));
+manager.push((m) => ProfileSelectScreen(m));

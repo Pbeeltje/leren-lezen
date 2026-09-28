@@ -1,25 +1,31 @@
 import type { Screen, ScreenManager } from '../../engine/screenManager.ts';
 import type { Kern, OefeningDefinitie } from '../../content/types.ts';
 import { maakTerugKnop } from '../components/TerugKnop.ts';
-import { maakMuntenTeller } from '../components/MuntenTeller.ts';
+import { maakTopRechtsBalk } from '../components/TopRechtsBalk.ts';
 import {
   markeerKernGestart,
   markeerKernVoltooid,
+  verhoogBlootstelling,
   voegMuntenToe,
 } from '../../engine/progressStore.ts';
 import { MUNTEN_OEFENING_GOED, MUNTEN_TOETS_GOED, MUNTEN_TOETS_PERFECT_BONUS } from '../../engine/rewards.ts';
+import { type OefenModus, genereerSessie, woordVanOefening } from '../../engine/oefeningGenerator.ts';
 import { renderPlaatjeWoordKeuze } from '../../games/plaatjeWoordKeuze.ts';
 import { renderWoordPlaatjeKeuze } from '../../games/woordPlaatjeKeuze.ts';
 import { renderHakkenEnPlakken } from '../../games/hakkenEnPlakken.ts';
 import { renderWoordBouwen } from '../../games/woordBouwen.ts';
+import { renderZelfTypen } from '../../games/zelfTypen.ts';
+import { renderZinInvullen } from '../../games/zinInvullen.ts';
 
-export type OefenModus = 'oefenen' | 'toets';
+export type { OefenModus };
 
 const INSTRUCTIES: Record<OefeningDefinitie['type'], string> = {
   'plaatje-woord-keuze': 'Welk woord hoort bij het plaatje?',
   'woord-plaatje-keuze': 'Welk plaatje hoort bij het woord?',
   'hakken-en-plakken': 'Tik de letters in de juiste volgorde',
   'woord-bouwen': 'Bouw het woord met de blokjes',
+  'zelf-typen': 'Typ het woord dat je op het plaatje ziet',
+  'zin-invullen': 'Welk woord past in de zin?',
 };
 
 function renderOefening(
@@ -37,6 +43,10 @@ function renderOefening(
       return renderHakkenEnPlakken(container, oefening, opties, afgerond);
     case 'woord-bouwen':
       return renderWoordBouwen(container, oefening, opties, afgerond);
+    case 'zelf-typen':
+      return renderZelfTypen(container, oefening, opties, afgerond);
+    case 'zin-invullen':
+      return renderZinInvullen(container, oefening, opties, afgerond);
   }
 }
 
@@ -46,7 +56,7 @@ export function OefeningScreen(
   modus: OefenModus,
   onAfgerond: () => void,
 ): Screen {
-  const oefeningen = modus === 'oefenen' ? kern.oefeningen : kern.toets;
+  const oefeningen = genereerSessie(kern, modus);
 
   const el = document.createElement('div');
   el.className = 'scherm';
@@ -75,14 +85,19 @@ export function OefeningScreen(
       oefenContainer,
       oefening,
       { herkansingToegestaan: modus === 'oefenen' },
-      (juist) => afhandelenResultaat(juist),
+      (juist) => afhandelenResultaat(oefening, juist),
     ).vernietig;
   }
 
-  function afhandelenResultaat(juist: boolean): void {
+  function afhandelenResultaat(oefening: OefeningDefinitie, juist: boolean): void {
     if (juist) {
       aantalGoed++;
       voegMuntenToe(modus === 'oefenen' ? MUNTEN_OEFENING_GOED : MUNTEN_TOETS_GOED);
+    }
+    // "zelf-typen" telt niet mee voor zijn eigen vrijspeelvoorwaarde; elke andere
+    // vorm telt als geoefend, ongeacht of het antwoord goed was.
+    if (oefening.type !== 'zelf-typen') {
+      verhoogBlootstelling(woordVanOefening(oefening));
     }
     setTimeout(volgende, 900);
   }
@@ -117,22 +132,22 @@ export function OefeningScreen(
     opruimen?.();
     manager.pop();
   });
-  let munten: ReturnType<typeof maakMuntenTeller> | null = null;
+  let topRechts: ReturnType<typeof maakTopRechtsBalk> | null = null;
 
   return {
     mount(root) {
       root.appendChild(el);
       root.appendChild(terug);
-      munten = maakMuntenTeller();
-      root.appendChild(munten.element);
+      topRechts = maakTopRechtsBalk(manager);
+      root.appendChild(topRechts.element);
     },
     unmount() {
       opruimen?.();
       el.remove();
       terug.remove();
-      munten?.element.remove();
-      munten?.vernietig();
-      munten = null;
+      topRechts?.element.remove();
+      topRechts?.vernietig();
+      topRechts = null;
     },
   };
 }

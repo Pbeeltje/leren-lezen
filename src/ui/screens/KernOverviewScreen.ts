@@ -1,6 +1,6 @@
 import type { Screen, ScreenManager } from '../../engine/screenManager.ts';
 import { maakTerugKnop } from '../components/TerugKnop.ts';
-import { maakMuntenTeller } from '../components/MuntenTeller.ts';
+import { maakTopRechtsBalk } from '../components/TopRechtsBalk.ts';
 import { maakSterBalk } from '../components/ProgressStars.ts';
 import { KERNEN } from '../../content/lezen/kernen/kernen.index.ts';
 import { haalKernVoortgang } from '../../engine/progressStore.ts';
@@ -38,10 +38,10 @@ export function KernOverviewScreen(manager: ScreenManager): Screen {
       const info = document.createElement('div');
       info.className = 'kern-rij__info';
 
-      const woord = document.createElement('div');
-      woord.className = 'kern-rij__woord';
-      woord.textContent = kern.structuurwoord.woord;
-      info.appendChild(woord);
+      const titelEl = document.createElement('div');
+      titelEl.className = 'kern-rij__woord';
+      titelEl.textContent = kern.titel;
+      info.appendChild(titelEl);
 
       info.appendChild(maakSterBalk(voortgang.sterren));
       rij.appendChild(info);
@@ -79,22 +79,22 @@ export function KernOverviewScreen(manager: ScreenManager): Screen {
   }
 
   const terug = maakTerugKnop(() => manager.pop());
-  let munten: ReturnType<typeof maakMuntenTeller> | null = null;
+  let topRechts: ReturnType<typeof maakTopRechtsBalk> | null = null;
 
   return {
     mount(root) {
       root.appendChild(el);
       root.appendChild(terug);
-      munten = maakMuntenTeller();
-      root.appendChild(munten.element);
+      topRechts = maakTopRechtsBalk(manager);
+      root.appendChild(topRechts.element);
       tekenLijst();
     },
     unmount() {
       el.remove();
       terug.remove();
-      munten?.element.remove();
-      munten?.vernietig();
-      munten = null;
+      topRechts?.element.remove();
+      topRechts?.vernietig();
+      topRechts = null;
     },
   };
 }

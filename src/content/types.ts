@@ -21,17 +21,47 @@ export interface Woord {
   afbeeldingPad: string;
 }
 
+// Een kant-en-klare invulzin voor één woord uit de woordenbank, met plaatjecontext.
+// "___" in de zin markeert de plek van het doelwoord.
+export interface ZinsVoorbeeld {
+  zin: string; // bv. "'s Avonds schijnt de ___ aan de hemel."
+  doel: Woord;
+  afleiders: Woord[]; // voor de meerkeuze-variant van deze zin
+}
+
+export type OefeningType =
+  | 'plaatje-woord-keuze'
+  | 'woord-plaatje-keuze'
+  | 'hakken-en-plakken'
+  | 'woord-bouwen'
+  | 'zin-invullen'
+  | 'zelf-typen';
+
 export type OefeningDefinitie =
-  | { type: 'plaatje-woord-keuze'; doel: Woord; afleiders: [Woord, Woord] }
-  | { type: 'woord-plaatje-keuze'; doel: Woord; afleiders: [Woord, Woord] }
+  | { type: 'plaatje-woord-keuze'; doel: Woord; afleiders: Woord[] }
+  | { type: 'woord-plaatje-keuze'; doel: Woord; afleiders: Woord[] }
   | { type: 'hakken-en-plakken'; woord: Woord }
-  | { type: 'woord-bouwen'; woord: Woord; afleidLetters: string[] };
+  | { type: 'woord-bouwen'; woord: Woord; afleidLetters: string[] }
+  // Het kind typt het woord helemaal zelf (geen keuzes) — verschijnt pas nadat
+  // een woord al een paar keer op een andere manier geoefend is, zie
+  // engine/oefeningGenerator.ts (MIN_BLOOTSTELLING_VOOR_TYPEN).
+  | { type: 'zelf-typen'; woord: Woord }
+  // Zin met een gat, plaatjecontext erbij; soms meerkeuze, soms zelf typen.
+  | { type: 'zin-invullen'; zin: string; doel: Woord; afleiders: Woord[]; modus: 'meerkeuze' | 'typen' };
 
 export interface Kern {
   id: string; // bv. 'kern-01'
   volgnummer: number;
-  structuurwoord: StructuurWoord;
+  titel: string; // bv. 'maan, roos & vis'
+  structuurwoorden: StructuurWoord[]; // de nieuwe woorden die in deze kern ontleed worden
   nieuweLetters: string[];
-  oefeningen: OefeningDefinitie[]; // oefenen: makkelijker, kleinere muntenbeloning, herkansing toegestaan
-  toets: OefeningDefinitie[]; // toets: moeilijker (meer afleiders, geen herkansing), grotere muntenbeloning, bepaalt sterren
+  // Woordenbank waaruit oefen- en toetssessies random samengesteld worden (zie
+  // engine/oefeningGenerator.ts): ~10 klankzuivere woorden, incl. de structuurwoorden,
+  // opgebouwd uit letters die in of vóór deze kern zijn geleerd. Een oefensessie pakt
+  // een handvol woorden hieruit (5) en wijst elk woord willekeurig één oefentype toe;
+  // de toets doorloopt de hele bank en toetst elk woord twee keer (2x10 = 20 vragen),
+  // met een ander oefentype per keer waar mogelijk.
+  woordenbank: Woord[];
+  // Optionele invulzinnen voor (een deel van) de woordenbank, voor de zin-invullen-oefening.
+  zinnen: ZinsVoorbeeld[];
 }

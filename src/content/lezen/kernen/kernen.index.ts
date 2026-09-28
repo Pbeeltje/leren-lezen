@@ -1,10 +1,8 @@
 import type { Kern } from '../../types.ts';
-import { kern01Maan } from './kern-01-maan.ts';
-import { kern02Roos } from './kern-02-roos.ts';
-import { kern03Vis } from './kern-03-vis.ts';
+import { kern01MaanRoosVis } from './kern-01-maan-roos-vis.ts';
 
-// Enkel invoerpunt, op volgorde. Kernen 4-7 (sok/aan/pen/en) volgen dezelfde vorm.
-export const KERNEN: Kern[] = [kern01Maan, kern02Roos, kern03Vis];
+// Enkel invoerpunt, op volgorde. Volgende groep (sok/aan/pen/en) volgt dezelfde vorm.
+export const KERNEN: Kern[] = [kern01MaanRoosVis];
 
 export function vindKern(kernId: string): Kern | undefined {
   return KERNEN.find((kern) => kern.id === kernId);

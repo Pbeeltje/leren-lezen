@@ -1,7 +1,7 @@
 import type { Screen, ScreenManager } from '../../engine/screenManager.ts';
 import type { LeeftijdId } from '../../content/types.ts';
 import { maakIconTile } from '../components/IconTile.ts';
-import { maakMuntenTeller } from '../components/MuntenTeller.ts';
+import { maakTopRechtsBalk } from '../components/TopRechtsBalk.ts';
 import { maakTerugKnop } from '../components/TerugKnop.ts';
 import { topicsVoorLeeftijd } from '../../content/topics.ts';
 import { speelSchermOvergang } from '../../three/transitions.ts';
@@ -41,21 +41,21 @@ export function TopicSelectScreen(manager: ScreenManager, leeftijd: LeeftijdId):
   }
 
   const terug = maakTerugKnop(() => manager.pop());
-  let munten: ReturnType<typeof maakMuntenTeller> | null = null;
+  let topRechts: ReturnType<typeof maakTopRechtsBalk> | null = null;
 
   return {
     mount(root) {
       root.appendChild(el);
       root.appendChild(terug);
-      munten = maakMuntenTeller();
-      root.appendChild(munten.element);
+      topRechts = maakTopRechtsBalk(manager);
+      root.appendChild(topRechts.element);
     },
     unmount() {
       el.remove();
       terug.remove();
-      munten?.element.remove();
-      munten?.vernietig();
-      munten = null;
+      topRechts?.element.remove();
+      topRechts?.vernietig();
+      topRechts = null;
     },
   };
 }

@@ -227,6 +227,55 @@
   touch-action: none;
 }
 
+.zin-tekst {
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: var(--kleur-tekst);
+  text-align: center;
+  max-width: 420px;
+  margin: 0;
+  line-height: 1.4;
+}
+
+.typen-invoer {
+  min-height: var(--touch-target-min);
+  width: min(100%, 320px);
+  padding: 12px 20px;
+  border-radius: var(--radius-klein);
+  border: 3px solid var(--kleur-secundair);
+  font-size: 1.6rem;
+  font-weight: 800;
+  text-align: center;
+  color: var(--kleur-tekst);
+  text-transform: lowercase;
+  background: #fff;
+}
+
+.typen-invoer:focus {
+  outline: 4px solid var(--kleur-secundair);
+  outline-offset: 2px;
+}
+
+.typen-invoer.goed-gekozen {
+  border-color: var(--kleur-succes);
+  background: rgba(62, 207, 110, 0.12);
+}
+
+.typen-invoer.fout-gekozen {
+  border-color: var(--kleur-fout);
+  background: rgba(255, 93, 108, 0.12);
+}
+
+.typen-knop {
+  min-height: var(--touch-target-min);
+  padding: 12px 32px;
+  border-radius: 999px;
+  background: var(--kleur-primair);
+  color: #fff;
+  font-size: 1.2rem;
+  font-weight: 800;
+}
+
 .instructie-tekst {
   font-size: 1.15rem;
   font-weight: 700;
@@ -234,6 +283,23 @@
   text-shadow: 0 2px 6px rgba(0, 0, 0, 0.35);
   text-align: center;
   margin: 0;
+}
+
+.instructie-tekst--donker {
+  color: var(--kleur-tekst);
+  text-shadow: none;
+}
+
+.profiel-vorm {
+  background: var(--kleur-oppervlak);
+  border-radius: var(--radius-groot);
+  padding: 32px;
+  width: min(92vw, 480px);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 18px;
+  box-shadow: 0 10px 0 rgba(0, 0, 0, 0.15);
 }
 
 .komt-eraan-kaart {
