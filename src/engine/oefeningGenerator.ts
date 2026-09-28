@@ -87,14 +87,10 @@ export function genereerSessie(kern: Kern, modus: OefenModus): OefeningDefinitie
     });
   }
 
-  // Toets: de hele woordenbank, elk woord twee keer (10 woorden -> 20 vragen), met
-  // een ander oefentype per keer waar dat kan.
-  const sessie: OefeningDefinitie[] = [];
-  for (const doel of kern.woordenbank) {
-    const eersteType = kiesN(beschikbareTypen(kern, doel, []), 1)[0];
-    const tweedeType = kiesN(beschikbareTypen(kern, doel, [eersteType]), 1)[0];
-    sessie.push(maakOefening(kern, doel, eersteType, aantalAfleiders));
-    sessie.push(maakOefening(kern, doel, tweedeType, aantalAfleiders));
-  }
+  // Toets: de hele woordenbank van deze kern, één vraag per woord (10 woorden -> 10 vragen).
+  const sessie = kern.woordenbank.map((doel) => {
+    const type = kiesN(beschikbareTypen(kern, doel, []), 1)[0];
+    return maakOefening(kern, doel, type, aantalAfleiders);
+  });
   return schud(sessie);
 }

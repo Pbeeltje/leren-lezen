@@ -274,3 +274,49 @@
 .avatar-keuze:active {
   transform: scale(0.95);
 }
+
+.avatar-grid--klein {
+  max-width: 240px;
+  gap: 8px;
+}
+
+.avatar-grid--klein .avatar-keuze {
+  width: 48px;
+  height: 48px;
+  padding: 5px;
+}
+
+.profiel-menu__paneel {
+  max-width: 260px;
+}
+
+.kleur-rij {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 10px;
+}
+
+.kleur-keuze {
+  width: 44px;
+  height: 44px;
+  padding: 4px;
+  border-radius: 50%;
+  background: #f1f2f6;
+  border: 3px solid transparent;
+  overflow: hidden;
+}
+
+.kleur-keuze img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.kleur-keuze.geselecteerd {
+  border-color: var(--kleur-secundair);
+}
+
+.kleur-keuze:active {
+  transform: scale(0.9);
+}

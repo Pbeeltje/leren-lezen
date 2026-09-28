@@ -1,6 +1,6 @@
 import type { Screen, ScreenManager } from '../../engine/screenManager.ts';
 import { maakIconTile } from '../components/IconTile.ts';
-import { haalProfielen, zetActiefProfiel, avatarPad, type Profiel } from '../../engine/profielStore.ts';
+import { haalProfielen, zetActiefProfiel, avatarPad, avatarFilter, type Profiel } from '../../engine/profielStore.ts';
 import { haalVoortgang } from '../../engine/progressStore.ts';
 import { ontgrendelAudio } from '../../engine/audioManager.ts';
 import { speelSchermOvergang } from '../../three/transitions.ts';
@@ -39,13 +39,14 @@ export function ProfileSelectScreen(manager: ScreenManager): Screen {
     grid.innerHTML = '';
 
     for (const profiel of profielen) {
-      grid.appendChild(
-        maakIconTile({
-          icoonPad: avatarPad(profiel.icoonId),
-          label: profiel.naam,
-          onClick: () => kiesProfiel(manager, profiel),
-        }),
-      );
+      const tegel = maakIconTile({
+        icoonPad: avatarPad(profiel.icoonId),
+        label: profiel.naam,
+        onClick: () => kiesProfiel(manager, profiel),
+      });
+      const img = tegel.querySelector('img');
+      if (img) img.style.filter = avatarFilter(profiel.kleur);
+      grid.appendChild(tegel);
     }
 
     grid.appendChild(

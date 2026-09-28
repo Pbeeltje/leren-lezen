@@ -6,6 +6,7 @@ import { maakTerugKnop } from '../components/TerugKnop.ts';
 import { topicsVoorLeeftijd } from '../../content/topics.ts';
 import { speelSchermOvergang } from '../../three/transitions.ts';
 import { KernOverviewScreen } from './KernOverviewScreen.ts';
+import { RekenKernOverviewScreen } from './RekenKernOverviewScreen.ts';
 import { ComingSoonScreen } from './ComingSoonScreen.ts';
 
 export function TopicSelectScreen(manager: ScreenManager, leeftijd: LeeftijdId): Screen {
@@ -32,6 +33,8 @@ export function TopicSelectScreen(manager: ScreenManager, leeftijd: LeeftijdId):
         speelSchermOvergang();
         if (topic.id === 'lezen') {
           manager.push((m) => KernOverviewScreen(m));
+        } else if (topic.id === 'tellen') {
+          manager.push((m) => RekenKernOverviewScreen(m));
         } else {
           manager.push((m) => ComingSoonScreen(m, topic.titel));
         }

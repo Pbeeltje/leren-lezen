@@ -13,10 +13,12 @@ export const TOPICS: Topic[] = [
   },
   {
     id: 'tellen',
-    leeftijd: [4, 5, 6],
+    // Alleen leeftijd 6: reken-kern-01 (getallen 1 t/m 6) is groep-3-niveau.
+    // Als er ooit peuter/kleuter-geschikte tel-inhoud bijkomt, dan ook 4/5 toevoegen.
+    leeftijd: [6],
     titel: 'Tellen',
     icoonPad: '/assets/icons/tellen.svg',
-    beschikbaar: false,
+    beschikbaar: true,
   },
   {
     id: 'vormen-kleuren',

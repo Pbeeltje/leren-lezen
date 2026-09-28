@@ -64,12 +64,26 @@ export class LetterBlokkenScene {
     const font = await laadFont();
     this.ruimOp();
 
-    const breedteTotaal = (letters.length - 1) * 1.6;
+    // Vaste 1.6-eenheden-afstand kon bij een smal venster/kaart buiten het camerabeeld
+    // vallen (de buitenste blokjes leken dan "verdwenen"). Bereken daarom de zichtbare
+    // breedte op z=0 uit de huidige camera en pas spacing (en lettergrootte) daarop aan,
+    // zodat alle blokjes altijd binnen beeld blijven, ongeacht schermbreedte.
+    const afstandTotCamera = this.camera.position.z;
+    const vFovRad = (this.camera.fov * Math.PI) / 180;
+    const zichtbareHoogte = 2 * Math.tan(vFovRad / 2) * afstandTotCamera;
+    const zichtbareBreedte = zichtbareHoogte * this.camera.aspect;
+    const marge = 0.85; // laat wat lucht over aan de randen
+    const maxSpacing = 1.6;
+    const spacing =
+      letters.length > 1 ? Math.min(maxSpacing, (zichtbareBreedte * marge) / (letters.length - 1)) : maxSpacing;
+    const letterGrootte = Math.min(0.7, spacing * 0.55);
+
+    const breedteTotaal = (letters.length - 1) * spacing;
     letters.forEach((letter, index) => {
       const geometrie = new TextGeometry(letter, {
         font,
-        size: 0.7,
-        depth: 0.35,
+        size: letterGrootte,
+        depth: letterGrootte * 0.5,
         curveSegments: 6,
         bevelEnabled: true,
         bevelThickness: 0.03,
@@ -81,7 +95,7 @@ export class LetterBlokkenScene {
       const kleur = new THREE.Color().setHSL((index * 0.15) % 1, 0.55, 0.6);
       const materiaal = new THREE.MeshStandardMaterial({ color: kleur, roughness: 0.4 });
       const mesh = new THREE.Mesh(geometrie, materiaal);
-      mesh.position.set(index * 1.6 - breedteTotaal / 2, 0, 0);
+      mesh.position.set(index * spacing - breedteTotaal / 2, 0, 0);
       mesh.userData.blokIndex = index;
       this.scene.add(mesh);
 

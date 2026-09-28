@@ -1,65 +1,48 @@
 import type { Screen, ScreenManager } from '../../engine/screenManager.ts';
-import type { Kern, OefeningDefinitie } from '../../content/types.ts';
+import type { RekenKern, RekenOefeningDefinitie } from '../../content/tellen/types.ts';
 import { maakTerugKnop } from '../components/TerugKnop.ts';
 import { maakTopRechtsBalk } from '../components/TopRechtsBalk.ts';
-import {
-  markeerKernGestart,
-  markeerKernVoltooid,
-  verhoogBlootstelling,
-  voegMuntenToe,
-} from '../../engine/progressStore.ts';
+import { markeerKernGestart, markeerKernVoltooid, voegMuntenToe } from '../../engine/progressStore.ts';
 import { MUNTEN_OEFENING_GOED, MUNTEN_TOETS_GOED, MUNTEN_TOETS_PERFECT_BONUS } from '../../engine/rewards.ts';
-import { type OefenModus, genereerSessie, woordVanOefening } from '../../engine/oefeningGenerator.ts';
-import { renderPlaatjeWoordKeuze } from '../../games/plaatjeWoordKeuze.ts';
-import { renderWoordPlaatjeKeuze } from '../../games/woordPlaatjeKeuze.ts';
-import { renderHakkenEnPlakken } from '../../games/hakkenEnPlakken.ts';
-import { renderWoordBouwen } from '../../games/woordBouwen.ts';
-import { renderZelfTypen } from '../../games/zelfTypen.ts';
-import { renderZinInvullen } from '../../games/zinInvullen.ts';
+import { type RekenModus, genereerRekenSessie } from '../../engine/rekenenGenerator.ts';
+import { renderHoeveelheidNaarCijfer } from '../../games/hoeveelheidNaarCijfer.ts';
+import { renderCijferNaarHoeveelheid } from '../../games/cijferNaarHoeveelheid.ts';
+import { renderDobbelsteenNaarCijfer } from '../../games/dobbelsteenNaarCijfer.ts';
 import { speelSchermOvergang } from '../../three/transitions.ts';
 import { TestResultScreen } from './TestResultScreen.ts';
-import { KernOverviewScreen } from './KernOverviewScreen.ts';
+import { RekenKernOverviewScreen } from './RekenKernOverviewScreen.ts';
 
-export type { OefenModus };
+export type { RekenModus };
 
-const INSTRUCTIES: Record<OefeningDefinitie['type'], string> = {
-  'plaatje-woord-keuze': 'Welk woord hoort bij het plaatje?',
-  'woord-plaatje-keuze': 'Welk plaatje hoort bij het woord?',
-  'hakken-en-plakken': 'Tik de letters in de juiste volgorde',
-  'woord-bouwen': 'Bouw het woord met de blokjes',
-  'zelf-typen': 'Typ het woord dat je op het plaatje ziet',
-  'zin-invullen': 'Welk woord past in de zin?',
+const INSTRUCTIES: Record<RekenOefeningDefinitie['type'], string> = {
+  'hoeveelheid-naar-cijfer': 'Hoeveel zie je? Kies het juiste cijfer',
+  'cijfer-naar-hoeveelheid': 'Welk groepje heeft er zoveel?',
+  'dobbelsteen-naar-cijfer': 'Welk cijfer hoort bij de dobbelsteen?',
 };
 
 function renderOefening(
   container: HTMLElement,
-  oefening: OefeningDefinitie,
+  oefening: RekenOefeningDefinitie,
   opties: { herkansingToegestaan: boolean },
   afgerond: (juist: boolean) => void,
 ): { vernietig: () => void } {
   switch (oefening.type) {
-    case 'plaatje-woord-keuze':
-      return renderPlaatjeWoordKeuze(container, oefening, opties, afgerond);
-    case 'woord-plaatje-keuze':
-      return renderWoordPlaatjeKeuze(container, oefening, opties, afgerond);
-    case 'hakken-en-plakken':
-      return renderHakkenEnPlakken(container, oefening, opties, afgerond);
-    case 'woord-bouwen':
-      return renderWoordBouwen(container, oefening, opties, afgerond);
-    case 'zelf-typen':
-      return renderZelfTypen(container, oefening, opties, afgerond);
-    case 'zin-invullen':
-      return renderZinInvullen(container, oefening, opties, afgerond);
+    case 'hoeveelheid-naar-cijfer':
+      return renderHoeveelheidNaarCijfer(container, oefening, opties, afgerond);
+    case 'cijfer-naar-hoeveelheid':
+      return renderCijferNaarHoeveelheid(container, oefening, opties, afgerond);
+    case 'dobbelsteen-naar-cijfer':
+      return renderDobbelsteenNaarCijfer(container, oefening, opties, afgerond);
   }
 }
 
-export function OefeningScreen(
+export function RekenOefeningScreen(
   manager: ScreenManager,
-  kern: Kern,
-  modus: OefenModus,
+  kern: RekenKern,
+  modus: RekenModus,
   onAfgerond: () => void,
 ): Screen {
-  const oefeningen = genereerSessie(kern, modus);
+  const oefeningen = genereerRekenSessie(kern, modus);
 
   const el = document.createElement('div');
   el.className = 'scherm';
@@ -79,7 +62,7 @@ export function OefeningScreen(
   let aantalGoed = 0;
   let muntenDitKeer = 0;
   let opruimen: (() => void) | null = null;
-  let klaarMetDeze = false; // voorkomt dubbele afhandeling als overslaan en afgerond() elkaar kruisen
+  let klaarMetDeze = false;
 
   function toonHuidige(): void {
     klaarMetDeze = false;
@@ -91,11 +74,11 @@ export function OefeningScreen(
       oefenContainer,
       oefening,
       { herkansingToegestaan: modus === 'oefenen' },
-      (juist) => afhandelenResultaat(oefening, juist),
+      (juist) => afhandelenResultaat(juist),
     ).vernietig;
   }
 
-  function afhandelenResultaat(oefening: OefeningDefinitie, juist: boolean): void {
+  function afhandelenResultaat(juist: boolean): void {
     if (klaarMetDeze) return;
     klaarMetDeze = true;
     if (juist) {
@@ -104,19 +87,12 @@ export function OefeningScreen(
       voegMuntenToe(munten);
       muntenDitKeer += munten;
     }
-    // "zelf-typen" telt niet mee voor zijn eigen vrijspeelvoorwaarde; elke andere
-    // vorm telt als geoefend, ongeacht of het antwoord goed was.
-    if (oefening.type !== 'zelf-typen') {
-      verhoogBlootstelling(woordVanOefening(oefening));
-    }
     setTimeout(volgende, 900);
   }
 
   function overslaan(): void {
     if (klaarMetDeze) return;
     klaarMetDeze = true;
-    // Overslaan telt als niet-goed (geen munten voor deze vraag) maar blokkeert het
-    // kind niet als het vastzit — zie ook: geen bestraffende dead-end elders in de app.
     volgende();
   }
 
@@ -144,7 +120,7 @@ export function OefeningScreen(
         TestResultScreen(
           m,
           { aantalGoed, totaal: oefeningen.length, muntenVerdiend: muntenDitKeer, sterren },
-          (mgr) => mgr.replace((m2) => KernOverviewScreen(m2)),
+          (mgr) => mgr.replace((m2) => RekenKernOverviewScreen(m2)),
         ),
       );
       return;

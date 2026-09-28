@@ -8,10 +8,34 @@ export interface Profiel {
   id: string;
   naam: string;
   icoonId: string;
+  kleur: number; // hue-rotate in graden (0 = originele kleuren)
   aangemaakt: number;
 }
 
-export const AVATAR_ICONEN = ['vos', 'kat', 'hond', 'leeuw', 'panda', 'eenhoorn', 'robot', 'spook'] as const;
+// Kleurtinten (hue-rotate) waarmee dezelfde 13 avatars extra variatie krijgen —
+// vooral handig als twee kinderen dezelfde favoriet (bv. de eenhoorn) willen.
+export const AVATAR_KLEUREN = [0, 45, 90, 150, 200, 260, 320] as const;
+
+export function avatarFilter(kleur: number | undefined): string {
+  const waarde = kleur ?? 0;
+  return waarde === 0 ? '' : `hue-rotate(${waarde}deg) saturate(1.15)`;
+}
+
+export const AVATAR_ICONEN = [
+  'vos',
+  'kat',
+  'hond',
+  'leeuw',
+  'panda',
+  'eenhoorn',
+  'robot',
+  'spook',
+  'tijger',
+  'koala',
+  'pinguin',
+  'vlinder',
+  'draak',
+] as const;
 export type AvatarIcoon = (typeof AVATAR_ICONEN)[number];
 
 export function avatarPad(icoonId: string): string {
@@ -44,17 +68,34 @@ export function haalProfielen(): Profiel[] {
   return leesProfielen();
 }
 
-export function maakProfiel(naam: string, icoonId: string): Profiel {
+export function maakProfiel(naam: string, icoonId: string, kleur = 0): Profiel {
   const profiel: Profiel = {
     id: `p${Date.now().toString(36)}${Math.random().toString(36).slice(2, 8)}`,
     naam: naam.trim(),
     icoonId,
+    kleur,
     aangemaakt: Date.now(),
   };
   const profielen = leesProfielen();
   profielen.push(profiel);
   schrijfProfielen(profielen);
   return profiel;
+}
+
+export function wijzigProfielIcoon(id: string, icoonId: string): void {
+  const profielen = leesProfielen();
+  const profiel = profielen.find((p) => p.id === id);
+  if (!profiel) return;
+  profiel.icoonId = icoonId;
+  schrijfProfielen(profielen);
+}
+
+export function wijzigProfielKleur(id: string, kleur: number): void {
+  const profielen = leesProfielen();
+  const profiel = profielen.find((p) => p.id === id);
+  if (!profiel) return;
+  profiel.kleur = kleur;
+  schrijfProfielen(profielen);
 }
 
 export function zetActiefProfiel(id: string): void {

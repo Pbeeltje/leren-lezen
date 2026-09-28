@@ -2,18 +2,18 @@ import type { Screen, ScreenManager } from '../../engine/screenManager.ts';
 import { maakTerugKnop } from '../components/TerugKnop.ts';
 import { maakTopRechtsBalk } from '../components/TopRechtsBalk.ts';
 import { maakSterBalk } from '../components/ProgressStars.ts';
-import { KERNEN } from '../../content/lezen/kernen/kernen.index.ts';
+import { REKEN_KERNEN } from '../../content/tellen/kernen/kernen.index.ts';
 import { haalKernVoortgang } from '../../engine/progressStore.ts';
 import { speelSchermOvergang } from '../../three/transitions.ts';
-import { OefeningScreen } from './OefeningScreen.ts';
+import { RekenOefeningScreen } from './RekenOefeningScreen.ts';
 
-export function KernOverviewScreen(manager: ScreenManager): Screen {
+export function RekenKernOverviewScreen(manager: ScreenManager): Screen {
   const el = document.createElement('div');
   el.className = 'scherm';
 
   const titel = document.createElement('h1');
   titel.className = 'scherm-titel';
-  titel.textContent = 'Leren lezen';
+  titel.textContent = 'Rekenen';
   el.appendChild(titel);
 
   const lijst = document.createElement('div');
@@ -23,8 +23,8 @@ export function KernOverviewScreen(manager: ScreenManager): Screen {
   function tekenLijst(): void {
     lijst.innerHTML = '';
 
-    KERNEN.forEach((kern, index) => {
-      const vorigeVoltooid = index === 0 || haalKernVoortgang(KERNEN[index - 1].id).voltooid;
+    REKEN_KERNEN.forEach((kern, index) => {
+      const vorigeVoltooid = index === 0 || haalKernVoortgang(REKEN_KERNEN[index - 1].id).voltooid;
       const voortgang = haalKernVoortgang(kern.id);
 
       const rij = document.createElement('div');
@@ -40,7 +40,7 @@ export function KernOverviewScreen(manager: ScreenManager): Screen {
 
       const titelEl = document.createElement('div');
       titelEl.className = 'kern-rij__woord';
-      titelEl.textContent = `Lezen ${kern.volgnummer}: ${kern.titel}`;
+      titelEl.textContent = `Rekenen ${kern.volgnummer}: ${kern.titel}`;
       info.appendChild(titelEl);
 
       info.appendChild(maakSterBalk(voortgang.sterren));
@@ -55,7 +55,7 @@ export function KernOverviewScreen(manager: ScreenManager): Screen {
       oefenKnop.disabled = !vorigeVoltooid;
       oefenKnop.addEventListener('click', () => {
         speelSchermOvergang();
-        manager.push((m) => OefeningScreen(m, kern, 'oefenen', tekenLijst));
+        manager.push((m) => RekenOefeningScreen(m, kern, 'oefenen', tekenLijst));
       });
       acties.appendChild(oefenKnop);
 
@@ -69,7 +69,7 @@ export function KernOverviewScreen(manager: ScreenManager): Screen {
       toetsKnop.disabled = !vorigeVoltooid || !voortgang.gestart;
       toetsKnop.addEventListener('click', () => {
         speelSchermOvergang();
-        manager.push((m) => OefeningScreen(m, kern, 'toets', tekenLijst));
+        manager.push((m) => RekenOefeningScreen(m, kern, 'toets', tekenLijst));
       });
       acties.appendChild(toetsKnop);
 
