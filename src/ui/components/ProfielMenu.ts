@@ -75,7 +75,6 @@ export function maakProfielMenu(manager: ScreenManager): { element: HTMLElement;
 
   paneel.appendChild(hoofdWeergave);
 
-  const avatarIconAfbeeldingen: HTMLImageElement[] = [];
   const avatarWeergave = document.createElement('div');
   avatarWeergave.className = 'avatar-grid avatar-grid--klein';
   avatarWeergave.hidden = true;
@@ -84,21 +83,24 @@ export function maakProfielMenu(manager: ScreenManager): { element: HTMLElement;
     optie.className = 'avatar-keuze';
     const optieIcoon = document.createElement('img');
     optieIcoon.src = avatarPad(icoonId);
-    optieIcoon.style.filter = avatarFilter(huidigeKleur);
+    // Bewust géén avatarFilter hier: dit rooster laat kiezen tússen dieren, dus moet
+    // hun ware kleuren tonen. Kleurtinten horen alleen bij het aparte kleur-rooster
+    // hieronder (zie "de kleuren-avatar-koppeling is stuk" in de sessienotities).
     optieIcoon.alt = '';
     optie.appendChild(optieIcoon);
-    avatarIconAfbeeldingen.push(optieIcoon);
     optie.addEventListener('click', () => {
       if (!profiel) return;
       wijzigProfielIcoon(profiel.id, icoonId);
       profiel.icoonId = icoonId;
       icoon.src = avatarPad(icoonId);
+      for (const img of kleurVoorbeelden) img.src = avatarPad(icoonId);
       sluitPaneel();
     });
     avatarWeergave.appendChild(optie);
   }
   paneel.appendChild(avatarWeergave);
 
+  const kleurVoorbeelden: HTMLImageElement[] = [];
   const kleurWeergave = document.createElement('div');
   kleurWeergave.className = 'kleur-rij';
   kleurWeergave.hidden = true;
@@ -111,12 +113,12 @@ export function maakProfielMenu(manager: ScreenManager): { element: HTMLElement;
     voorbeeld.style.filter = avatarFilter(kleur);
     voorbeeld.alt = '';
     optie.appendChild(voorbeeld);
+    kleurVoorbeelden.push(voorbeeld);
     optie.addEventListener('click', () => {
       if (!profiel) return;
       wijzigProfielKleur(profiel.id, kleur);
       huidigeKleur = kleur;
       icoon.style.filter = avatarFilter(kleur);
-      for (const img of avatarIconAfbeeldingen) img.style.filter = avatarFilter(kleur);
       sluitPaneel();
     });
     kleurWeergave.appendChild(optie);

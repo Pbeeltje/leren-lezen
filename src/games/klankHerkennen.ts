@@ -1,17 +1,13 @@
 import type { OefeningDefinitie } from '../content/types.ts';
 import { toonGoedFeedback, toonFoutFeedback } from '../ui/components/FeedbackOverlay.ts';
 
-type Oefening = Extract<OefeningDefinitie, { type: 'woordwolk' }>;
+type Oefening = Extract<OefeningDefinitie, { type: 'klank-herkennen' }>;
 
 function schudArray<T>(items: T[]): T[] {
   return [...items].sort(() => Math.random() - 0.5);
 }
 
-// Plaatje in het midden, één doelwoord verstopt tussen een wolk van afleiders; tik het
-// juiste woord aan. Losjes geïnspireerd op het klassieke "kleur de juiste woorden bij
-// het plaatje"-werkblad (dat liet het doelwoord vaker terugkomen — hier bewust maar
-// één keer, voor een eenduidig "één goed antwoord").
-export function renderWoordwolk(
+export function renderKlankHerkennen(
   container: HTMLElement,
   oefening: Oefening,
   opties: { herkansingToegestaan: boolean },
@@ -22,22 +18,21 @@ export function renderWoordwolk(
   const kaart = document.createElement('div');
   kaart.className = 'oefen-kaart';
 
-  const plaatje = document.createElement('img');
-  plaatje.className = 'oefen-kaart__plaatje';
-  plaatje.src = oefening.doel.afbeeldingPad;
-  plaatje.alt = '';
-  kaart.appendChild(plaatje);
+  const grootTeken = document.createElement('div');
+  grootTeken.className = 'oefen-kaart__groot-teken oefen-kaart__groot-teken--klank';
+  grootTeken.textContent = oefening.klank;
+  kaart.appendChild(grootTeken);
 
-  const wolk = document.createElement('div');
-  wolk.className = 'woordwolk-rij';
-  kaart.appendChild(wolk);
+  const keuzeRij = document.createElement('div');
+  keuzeRij.className = 'keuze-rij';
+  kaart.appendChild(keuzeRij);
 
-  const tegels = schudArray([oefening.doel, ...oefening.afleiders]);
+  const opties_ = schudArray([oefening.doel, ...oefening.afleiders]);
   let afgehandeld = false;
 
-  for (const optie of tegels) {
+  for (const optie of opties_) {
     const knop = document.createElement('button');
-    knop.className = 'woordwolk-tegel';
+    knop.className = 'keuze-knop';
     knop.textContent = optie.woord;
     knop.addEventListener('click', () => {
       if (afgehandeld) return;
@@ -45,7 +40,7 @@ export function renderWoordwolk(
 
       if (juist) {
         afgehandeld = true;
-        knop.classList.add('gevonden');
+        knop.classList.add('goed-gekozen');
         toonGoedFeedback();
         afgerond(true);
         return;
@@ -55,13 +50,13 @@ export function renderWoordwolk(
       toonFoutFeedback();
 
       if (opties.herkansingToegestaan) {
-        setTimeout(() => knop.classList.remove('fout-gekozen'), 350);
+        setTimeout(() => knop.classList.remove('fout-gekozen'), 500);
       } else {
         afgehandeld = true;
         afgerond(false);
       }
     });
-    wolk.appendChild(knop);
+    keuzeRij.appendChild(knop);
   }
 
   container.appendChild(kaart);

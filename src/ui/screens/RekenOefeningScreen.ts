@@ -2,7 +2,13 @@ import type { Screen, ScreenManager } from '../../engine/screenManager.ts';
 import type { RekenKern, RekenOefeningDefinitie } from '../../content/tellen/types.ts';
 import { maakTerugKnop } from '../components/TerugKnop.ts';
 import { maakTopRechtsBalk } from '../components/TopRechtsBalk.ts';
-import { haalKernVoortgang, markeerKernGestart, markeerKernVoltooid, voegMuntenToe } from '../../engine/progressStore.ts';
+import {
+  haalKernVoortgang,
+  markeerKernGestart,
+  markeerKernVoltooid,
+  verhoogOefenSessies,
+  voegMuntenToe,
+} from '../../engine/progressStore.ts';
 import {
   MUNTEN_OEFENING_GOED,
   MUNTEN_OEFENING_HERHAALD,
@@ -12,20 +18,26 @@ import {
 } from '../../engine/rewards.ts';
 import { type RekenModus, genereerRekenSessie } from '../../engine/rekenenGenerator.ts';
 import { renderHoeveelheidNaarCijfer } from '../../games/hoeveelheidNaarCijfer.ts';
+import { renderHoeveelheidTypen } from '../../games/hoeveelheidTypen.ts';
 import { renderCijferNaarHoeveelheid } from '../../games/cijferNaarHoeveelheid.ts';
 import { renderDobbelsteenNaarCijfer } from '../../games/dobbelsteenNaarCijfer.ts';
+import { renderDubbeleDobbelsteenNaarCijfer } from '../../games/dubbeleDobbelsteenNaarCijfer.ts';
 import { renderReeksAanvullen } from '../../games/reeksAanvullen.ts';
 import { renderOptellen } from '../../games/optellen.ts';
 import { speelSchermOvergang } from '../../three/transitions.ts';
 import { TestResultScreen } from './TestResultScreen.ts';
-import { RekenKernOverviewScreen } from './RekenKernOverviewScreen.ts';
+import { RekenChapterScreen } from './RekenChapterScreen.ts';
+import { REKEN_KERNEN } from '../../content/tellen/kernen/kernen.index.ts';
+import { maakVoortgangsbalk } from '../components/Voortgangsbalk.ts';
 
 export type { RekenModus };
 
 const INSTRUCTIES: Record<RekenOefeningDefinitie['type'], string> = {
   'hoeveelheid-naar-cijfer': 'Hoeveel zie je? Kies het juiste cijfer',
+  'hoeveelheid-typen': 'Hoeveel zie je? Typ het cijfer',
   'cijfer-naar-hoeveelheid': 'Welk groepje heeft er zoveel?',
   'dobbelsteen-naar-cijfer': 'Welk cijfer hoort bij de dobbelsteen?',
+  'dubbele-dobbelsteen-naar-cijfer': 'Welk cijfer hoort bij de dobbelstenen?',
   'reeks-aanvullen': 'Welk getal ontbreekt?',
   optellen: 'Hoeveel is dat samen?',
 };
@@ -39,10 +51,14 @@ function renderOefening(
   switch (oefening.type) {
     case 'hoeveelheid-naar-cijfer':
       return renderHoeveelheidNaarCijfer(container, oefening, opties, afgerond);
+    case 'hoeveelheid-typen':
+      return renderHoeveelheidTypen(container, oefening, opties, afgerond);
     case 'cijfer-naar-hoeveelheid':
       return renderCijferNaarHoeveelheid(container, oefening, opties, afgerond);
     case 'dobbelsteen-naar-cijfer':
       return renderDobbelsteenNaarCijfer(container, oefening, opties, afgerond);
+    case 'dubbele-dobbelsteen-naar-cijfer':
+      return renderDubbeleDobbelsteenNaarCijfer(container, oefening, opties, afgerond);
     case 'reeks-aanvullen':
       return renderReeksAanvullen(container, oefening, opties, afgerond);
     case 'optellen':
@@ -68,9 +84,8 @@ export function RekenOefeningScreen(
   instructie.className = 'instructie-tekst';
   el.appendChild(instructie);
 
-  const voortgang = document.createElement('p');
-  voortgang.className = 'instructie-tekst';
-  el.appendChild(voortgang);
+  const voortgangsbalk = maakVoortgangsbalk(oefeningen.length);
+  el.appendChild(voortgangsbalk.element);
 
   const oefenContainer = document.createElement('div');
   el.appendChild(oefenContainer);
@@ -85,7 +100,7 @@ export function RekenOefeningScreen(
     klaarMetDeze = false;
     const oefening = oefeningen[huidigeIndex];
     instructie.textContent = INSTRUCTIES[oefening.type];
-    voortgang.textContent = `${huidigeIndex + 1} / ${oefeningen.length}`;
+    voortgangsbalk.zetVoortgang(huidigeIndex);
 
     opruimen = renderOefening(
       oefenContainer,
@@ -141,15 +156,17 @@ export function RekenOefeningScreen(
       }
       markeerKernVoltooid(kern.id, sterren);
       speelSchermOvergang();
+      const kernIndex = REKEN_KERNEN.findIndex((k) => k.id === kern.id);
       manager.replace((m) =>
         TestResultScreen(
           m,
           { aantalGoed, totaal: oefeningen.length, muntenVerdiend: muntenDitKeer, sterren },
-          (mgr) => mgr.replace((m2) => RekenKernOverviewScreen(m2)),
+          (mgr) => mgr.replace((m2) => RekenChapterScreen(m2, kernIndex)),
         ),
       );
       return;
     }
+    verhoogOefenSessies(kern.id);
     onAfgerond();
     manager.pop();
   }

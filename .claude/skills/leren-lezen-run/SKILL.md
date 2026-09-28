@@ -67,7 +67,13 @@ To reach a specific state quickly in a test script:
    state you need, then reload and click the profile tile again (it routes to
    `TopicSelectScreen` directly once `laatstGekozenLeeftijd` is set, skipping
    `AgeSelectScreen`).
-4. A toets button is disabled until that kern's `gestart: true`.
+4. **Nothing is ever locked** — every kern's Oefening/Toets tiles on its
+   `ChapterScreen`/`RekenChapterScreen` are always clickable regardless of
+   progress (an earlier version gated Toets behind 3 oefenen sessions; that
+   was an explicit correction, don't reintroduce it). A kern row in the
+   overview list is reached via `.kern-rij--klikbaar`, and its chapter page's
+   tiles via `.hoofdstuk-tegel:has-text("Oefening 1")` /
+   `.hoofdstuk-tegel--toets`.
 
 ## Interacting with the three.js `woord-bouwen` exercise
 

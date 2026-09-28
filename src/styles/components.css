@@ -251,6 +251,10 @@
   gap: 12px;
 }
 
+.avatar-grid[hidden] {
+  display: none;
+}
+
 .avatar-keuze {
   width: 76px;
   height: 76px;
@@ -295,6 +299,10 @@
   flex-wrap: wrap;
   justify-content: center;
   gap: 10px;
+}
+
+.kleur-rij[hidden] {
+  display: none;
 }
 
 .kleur-keuze {

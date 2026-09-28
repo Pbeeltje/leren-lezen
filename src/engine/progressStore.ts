@@ -2,10 +2,15 @@ import type { LeeftijdId } from '../content/types.ts';
 import { events } from './events.ts';
 import { haalActiefProfielId } from './profielStore.ts';
 
+// Aantal voltooide oefensessies vóórdat de toets van een kern ontgrendelt.
+export const OEFENSESSIES_VOOR_TOETS = 3;
+
 export interface KernVoortgang {
   gestart: boolean;
   voltooid: boolean;
   sterren: 0 | 1 | 2 | 3;
+  // Aantal keer dat een oefensessie (niet toets) voor deze kern is afgerond.
+  oefenSessies: number;
 }
 
 export interface VoortgangData {
@@ -42,6 +47,14 @@ function leesRuw(): VoortgangData {
     if (data.versie !== 1) return leegVoortgang(); // toekomstige migraties hier
     if (typeof data.munten !== 'number') data.munten = 0;
     if (!data.woordBlootstelling) data.woordBlootstelling = {};
+    if (!data.kernen) data.kernen = {};
+    for (const kernId in data.kernen) {
+      if (typeof data.kernen[kernId].oefenSessies !== 'number') {
+        // Oudere opslag zonder dit veld: als de kern al gestart/voltooid was, tellen we
+        // dat als 1 sessie zodat niemand plots opnieuw vanaf 0 hoeft te oefenen.
+        data.kernen[kernId].oefenSessies = data.kernen[kernId].gestart ? 1 : 0;
+      }
+    }
     return data;
   } catch {
     return geheugenFallback.get(sleutel) ?? leegVoortgang();
@@ -75,23 +88,37 @@ export function voegMuntenToe(aantal: number): number {
   return data.munten;
 }
 
+function legeKernVoortgang(): KernVoortgang {
+  return { gestart: false, voltooid: false, sterren: 0, oefenSessies: 0 };
+}
+
 export function markeerKernGestart(kernId: string): void {
   const data = leesRuw();
-  const huidig = data.kernen[kernId] ?? { gestart: false, voltooid: false, sterren: 0 };
+  const huidig = data.kernen[kernId] ?? legeKernVoortgang();
   data.kernen[kernId] = { ...huidig, gestart: true };
   schrijfRuw(data);
 }
 
+/** Aangeroepen wanneer een oefensessie (niet toets) daadwerkelijk is afgerond. */
+export function verhoogOefenSessies(kernId: string): number {
+  const data = leesRuw();
+  const huidig = data.kernen[kernId] ?? legeKernVoortgang();
+  const oefenSessies = huidig.oefenSessies + 1;
+  data.kernen[kernId] = { ...huidig, gestart: true, oefenSessies };
+  schrijfRuw(data);
+  return oefenSessies;
+}
+
 export function markeerKernVoltooid(kernId: string, sterren: 0 | 1 | 2 | 3): void {
   const data = leesRuw();
-  const huidig = data.kernen[kernId] ?? { gestart: true, voltooid: false, sterren: 0 };
-  data.kernen[kernId] = { gestart: true, voltooid: true, sterren: Math.max(huidig.sterren, sterren) as 0 | 1 | 2 | 3 };
+  const huidig = data.kernen[kernId] ?? { ...legeKernVoortgang(), gestart: true };
+  data.kernen[kernId] = { ...huidig, gestart: true, voltooid: true, sterren: Math.max(huidig.sterren, sterren) as 0 | 1 | 2 | 3 };
   schrijfRuw(data);
   events.emit('kern-voltooid', { kernId, sterren });
 }
 
 export function haalKernVoortgang(kernId: string): KernVoortgang {
-  return leesRuw().kernen[kernId] ?? { gestart: false, voltooid: false, sterren: 0 };
+  return leesRuw().kernen[kernId] ?? legeKernVoortgang();
 }
 
 export function haalBlootstelling(woord: string): number {

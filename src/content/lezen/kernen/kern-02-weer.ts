@@ -4,7 +4,7 @@ import type { Kern } from '../../types.ts';
 // woordenbereik uit te breiden. Introduceert z, e, g, w, d, t, l, k (klankzuiver,
 // geen tweetekenklanken zoals eeuw/ei/oe — "zelfde moeilijkheidsgraad" als kern-01).
 const pad = (woord: string) => `/assets/images/woorden/${woord}.svg`;
-const woord = (w: string) => ({ woord: w, afbeeldingPad: pad(w) });
+const woord = (w: string, vereistTekst = false) => ({ woord: w, afbeeldingPad: pad(w), vereistTekst });
 
 export const kern02Weer: Kern = {
   id: 'kern-02',
@@ -25,6 +25,12 @@ export const kern02Weer: Kern = {
     woord('wolk'),
     woord('tas'),
     woord('was'),
+    woord('nat', true),
   ],
-  zinnen: [],
+  // 'nat' is een bijvoeglijk naamwoord: net als eerder bij 'rood'/'warm'/'koud' heeft
+  // zo'n woord geen eenduidig plaatje op zichzelf (een druppel-icoon kan net zo goed
+  // "regen" of "water" betekenen). vereistTekst: true sluit daarom de oefentypen uit
+  // waar alleen het kale plaatje staat (zie oefeningGenerator.ts); de zin hieronder
+  // geeft de context die dat oplost voor de resterende typen.
+  zinnen: [{ zin: 'Door de regen is mijn jas helemaal ___.', doel: woord('nat', true), afleiders: [woord('was'), woord('wind')] }],
 };

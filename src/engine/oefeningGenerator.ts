@@ -8,6 +8,9 @@ const OEFENEN_AANTAL_WOORDEN = 5;
 // "zelf-typen" (helemaal zelf typen, geen keuzes) ervoor mag verschijnen.
 const MIN_BLOOTSTELLING_VOOR_TYPEN = 2;
 
+// Tweeklanken/klankcombinaties waarop klank-herkennen let (zie kern-07-klanken.ts).
+const KLANKEN = ['oo', 'aa', 'au', 'ou', 'ui', 'eu', 'ee'];
+
 function schud<T>(items: T[]): T[] {
   return [...items].sort(() => Math.random() - 0.5);
 }
@@ -32,16 +35,44 @@ function kiesAfleidLetters(doelWoord: string, alleLetters: string[], aantal: num
   return kiesN(kandidaten, Math.min(aantal, kandidaten.length));
 }
 
+/** De klank uit KLANKEN die in dit woord voorkomt, of null als geen enkele erin zit. */
+function vindKlank(woord: string): string | null {
+  return KLANKEN.find((klank) => woord.includes(klank)) ?? null;
+}
+
+// Voor letter-herkennen: kies, van de letters die dit woord bevat, degene waarvoor de
+// rest van de bank de meeste bruikbare afleiders (woorden zonder die letter) oplevert.
+function kiesBesteLetter(doel: Woord, pool: Woord[]): { letter: string; kandidaten: Woord[] } | null {
+  const letters = [...new Set(doel.woord.split(''))];
+  let beste: { letter: string; kandidaten: Woord[] } | null = null;
+  for (const letter of letters) {
+    const kandidaten = pool.filter((w) => w.woord !== doel.woord && !w.woord.includes(letter));
+    if (!beste || kandidaten.length > beste.kandidaten.length) beste = { letter, kandidaten };
+  }
+  return beste && beste.kandidaten.length > 0 ? beste : null;
+}
+
+// Oefentypen waarbij het doelwoord zelf nergens als tekst op het scherm staat -- het
+// plaatje moet dus op zichzelf ondubbelzinnig zijn. Niet geschikt voor woorden met
+// vereistTekst (zie Woord in content/types.ts).
+const ALLEEN_PLAATJE_TYPEN: OefeningType[] = ['hakken-en-plakken', 'woord-bouwen', 'zelf-typen'];
+
 function beschikbareTypen(kern: Kern, doel: Woord, uitgesloten: OefeningType[]): OefeningType[] {
-  const basis: OefeningType[] = [
+  let basis: OefeningType[] = [
     'plaatje-woord-keuze',
     'woord-plaatje-keuze',
     'hakken-en-plakken',
     'woord-bouwen',
     'woordwolk',
   ];
+  if (doel.vereistTekst) basis = basis.filter((type) => !ALLEEN_PLAATJE_TYPEN.includes(type));
   if (kern.zinnen.some((z) => z.doel.woord === doel.woord)) basis.push('zin-invullen');
-  if (haalBlootstelling(doel.woord) >= MIN_BLOOTSTELLING_VOOR_TYPEN) basis.push('zelf-typen');
+  if (!doel.vereistTekst && haalBlootstelling(doel.woord) >= MIN_BLOOTSTELLING_VOOR_TYPEN) basis.push('zelf-typen');
+  if (kiesBesteLetter(doel, kern.woordenbank)) basis.push('letter-herkennen');
+  const klank = vindKlank(doel.woord);
+  if (klank && kern.woordenbank.some((w) => w.woord !== doel.woord && !w.woord.includes(klank))) {
+    basis.push('klank-herkennen');
+  }
 
   const overgebleven = basis.filter((type) => !uitgesloten.includes(type));
   return overgebleven.length > 0 ? overgebleven : basis;
@@ -75,16 +106,18 @@ function maakOefening(kern: Kern, doel: Woord, type: OefeningType, aantalAfleide
       };
     }
     case 'woordwolk': {
-      // Zoals het klassieke werkblad: het doelwoord komt 2 of 3 keer voor tussen een
-      // wolk van in totaal ~7 woorden.
-      const herhaling = Math.random() < 0.5 ? 2 : 3;
+      // Eén doelwoord tussen een wolk van ~6 afleiders.
       const wolkGrootte = 7;
-      return {
-        type,
-        doel,
-        herhaling,
-        afleiders: kiesAfleiders(kern.woordenbank, doel, wolkGrootte - herhaling),
-      };
+      return { type, doel, afleiders: kiesAfleiders(kern.woordenbank, doel, wolkGrootte - 1) };
+    }
+    case 'letter-herkennen': {
+      const gekozen = kiesBesteLetter(doel, kern.woordenbank)!;
+      return { type, letter: gekozen.letter, doel, afleiders: kiesN(gekozen.kandidaten, aantalAfleiders) };
+    }
+    case 'klank-herkennen': {
+      const klank = vindKlank(doel.woord)!;
+      const kandidaten = kern.woordenbank.filter((w) => w.woord !== doel.woord && !w.woord.includes(klank));
+      return { type, klank, doel, afleiders: kiesN(kandidaten, aantalAfleiders) };
     }
   }
 }

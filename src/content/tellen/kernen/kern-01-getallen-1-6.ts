@@ -24,5 +24,5 @@ export const rekenKern01Getallen1Tot6: RekenKern = {
   ],
   // Reeksen en optellen zijn eigen, aparte kernen (03/04) — hier alleen de
   // hoeveelheid/getalbeeld-oefeningen.
-  oefeningTypen: ['hoeveelheid-naar-cijfer', 'cijfer-naar-hoeveelheid', 'dobbelsteen-naar-cijfer'],
+  oefeningTypen: ['hoeveelheid-naar-cijfer', 'hoeveelheid-typen', 'cijfer-naar-hoeveelheid', 'dobbelsteen-naar-cijfer'],
 };

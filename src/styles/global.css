@@ -79,10 +79,22 @@ img {
   display: flex;
   flex-direction: column;
   align-items: center;
+  /* 'safe center' voorkomt dat verticaal gecentreerde inhoud die hoger is dan de
+     viewport (bv. de woord-bouwen-kaart op een smal/kort scherm) onbereikbaar boven
+     scrollTop 0 komt te hangen -- dan valt het terug op start-uitlijning. De losse
+     'center'-regel ervoor is de fallback voor browsers die 'safe center' nog niet kennen. */
   justify-content: center;
+  justify-content: safe center;
   padding: 24px;
+  /* De vaste terug-/topRechts-knoppen (top: 16px, ~88px hoog) liggen los boven dit
+     scherm. Bij KORTE inhoud (die dus niet onder 'safe center' valt) kan gewoon
+     centreren de bovenkant nog steeds precies in die knoppenzone duwen, waardoor tekst
+     er zichtbaar achter/onder verdwijnt. Deze minimale top-padding houdt inhoud daar
+     altijd onder vandaan, ook al is er verder niets dat overflowt. */
+  padding-top: max(24px, 112px);
   gap: 24px;
   animation: scherm-in 0.35s ease-out;
+  overflow-y: auto;
 }
 
 @keyframes scherm-in {

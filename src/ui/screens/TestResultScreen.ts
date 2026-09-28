@@ -3,6 +3,7 @@ import { maakSterBalk } from '../components/ProgressStars.ts';
 import { maakTopRechtsBalk } from '../components/TopRechtsBalk.ts';
 import { maakTerugKnop } from '../components/TerugKnop.ts';
 import { speelSchermOvergang } from '../../three/transitions.ts';
+import { confetti } from '../../three/particles.ts';
 
 export interface ToetsResultaat {
   aantalGoed: number;
@@ -72,6 +73,14 @@ export function TestResultScreen(
       root.appendChild(terug);
       topRechts = maakTopRechtsBalk(manager);
       root.appendChild(topRechts.element);
+
+      // Kort vuurwerkje bij een sterke toets: groter bij een perfecte score.
+      const fractie = resultaat.totaal > 0 ? resultaat.aantalGoed / resultaat.totaal : 0;
+      if (fractie === 1) {
+        confetti.vuurwerk('groot');
+      } else if (fractie >= 0.8) {
+        confetti.vuurwerk('klein');
+      }
     },
     unmount() {
       el.remove();

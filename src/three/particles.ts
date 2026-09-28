@@ -20,7 +20,7 @@ class Confetti {
     sceneManager.opAnimatie((delta) => this.tik(delta));
   }
 
-  burst(kleurIndex = 0): void {
+  burst(kleurIndex = 0, oorsprong: [number, number, number] = [0, -1, 2]): void {
     this.zorgVoorAnimatieLus();
 
     const aantal = 60;
@@ -28,9 +28,9 @@ class Confetti {
     const snelheden = new Float32Array(aantal * 3);
 
     for (let i = 0; i < aantal; i++) {
-      posities[i * 3] = 0;
-      posities[i * 3 + 1] = -1;
-      posities[i * 3 + 2] = 2;
+      posities[i * 3] = oorsprong[0];
+      posities[i * 3 + 1] = oorsprong[1];
+      posities[i * 3 + 2] = oorsprong[2];
 
       const hoek = Math.random() * Math.PI * 2;
       const kracht = 1.5 + Math.random() * 2.5;
@@ -83,6 +83,24 @@ class Confetti {
         burst.materiaal.dispose();
         this.actief.splice(i, 1);
       }
+    }
+  }
+
+  /**
+   * Kort vuurwerkje na een goede toets: een paar bursts kort na elkaar, verspreid
+   * over het scherm. 'groot' (perfecte score) heeft meer bursts dan 'klein'.
+   * Blijft bewust kort — geen animatie die in de weg zit van het resultaatscherm.
+   */
+  vuurwerk(niveau: 'klein' | 'groot'): void {
+    const posities: Array<[number, number, number]> = [
+      [-2.5, 1, 1],
+      [2.5, 1.5, 1],
+      [0, 2.5, 0.5],
+      [-1.5, 0.5, 2],
+    ];
+    const aantalBursts = niveau === 'groot' ? 4 : 2;
+    for (let i = 0; i < aantalBursts; i++) {
+      setTimeout(() => this.burst(i, posities[i % posities.length]), i * 180);
     }
   }
 }

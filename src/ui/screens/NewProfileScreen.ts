@@ -34,9 +34,11 @@ export function NewProfileScreen(manager: ScreenManager): Screen {
   iconenRij.className = 'avatar-grid';
   kaart.appendChild(iconenRij);
 
+  // Los van elkaar: het icoon-rooster toont altijd de ware kleuren (anders zijn de
+  // vormen niet goed te onderscheiden), de kleur-rooster toont alleen het gekozen
+  // icoon in elke tint — geen van beide beïnvloedt de ander qua weergave.
   let gekozenIcoon: string | null = null;
   let gekozenKleur = 0;
-  const iconAfbeeldingen: HTMLImageElement[] = [];
   const iconKnoppen: HTMLButtonElement[] = [];
 
   for (const icoonId of AVATAR_ICONEN) {
@@ -50,10 +52,10 @@ export function NewProfileScreen(manager: ScreenManager): Screen {
       gekozenIcoon = icoonId;
       for (const k of iconKnoppen) k.classList.remove('geselecteerd');
       knop.classList.add('geselecteerd');
+      werkKleurVoorbeeldenBij();
       werkKnopStatusBij();
     });
     iconKnoppen.push(knop);
-    iconAfbeeldingen.push(img);
     iconenRij.appendChild(knop);
   }
 
@@ -67,11 +69,12 @@ export function NewProfileScreen(manager: ScreenManager): Screen {
   kaart.appendChild(kleurenRij);
 
   const kleurKnoppen: HTMLButtonElement[] = [];
+  const kleurVoorbeelden: HTMLImageElement[] = [];
   for (const kleur of AVATAR_KLEUREN) {
     const knop = document.createElement('button');
     knop.className = 'kleur-keuze';
     const voorbeeld = document.createElement('img');
-    voorbeeld.src = avatarPad('vos'); // warmgekleurd icoon zodat de tint goed zichtbaar is
+    voorbeeld.src = avatarPad('vos'); // totdat een icoon gekozen is: een warmgekleurd voorbeeld
     voorbeeld.alt = '';
     voorbeeld.style.filter = avatarFilter(kleur);
     knop.appendChild(voorbeeld);
@@ -80,10 +83,15 @@ export function NewProfileScreen(manager: ScreenManager): Screen {
       gekozenKleur = kleur;
       for (const k of kleurKnoppen) k.classList.remove('geselecteerd');
       knop.classList.add('geselecteerd');
-      for (const img of iconAfbeeldingen) img.style.filter = avatarFilter(kleur);
     });
     kleurKnoppen.push(knop);
+    kleurVoorbeelden.push(voorbeeld);
     kleurenRij.appendChild(knop);
+  }
+
+  function werkKleurVoorbeeldenBij(): void {
+    if (!gekozenIcoon) return;
+    for (const img of kleurVoorbeelden) img.src = avatarPad(gekozenIcoon);
   }
 
   const submitKnop = document.createElement('button');

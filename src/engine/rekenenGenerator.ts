@@ -6,6 +6,7 @@ const OEFENEN_AANTAL = 5;
 const TOETS_AANTAL = 10;
 const ALLE_TYPEN: RekenOefeningType[] = [
   'hoeveelheid-naar-cijfer',
+  'hoeveelheid-typen',
   'cijfer-naar-hoeveelheid',
   'dobbelsteen-naar-cijfer',
   'reeks-aanvullen',
@@ -28,6 +29,21 @@ function kiesAfleidCijfers(bereik: [number, number], doel: number, aantal: numbe
   return schud(kandidaten).slice(0, Math.min(aantal, kandidaten.length));
 }
 
+// Kiest een getal uit bereik dat nog niet in `gebruikt` zit (voorkomt dat dezelfde vraag
+// twee keer in één sessie voorkomt); valt terug op het volledige bereik zodra alles al
+// gebruikt is (onvermijdelijk bij een klein bereik met veel vragen, bv. dobbelsteen 1-6).
+function kiesUniekGetal(bereik: [number, number], gebruikt: Set<number>): number {
+  const [min, max] = bereik;
+  const kandidaten: number[] = [];
+  for (let getal = min; getal <= max; getal++) {
+    if (!gebruikt.has(getal)) kandidaten.push(getal);
+  }
+  const pool = kandidaten.length > 0 ? kandidaten : Array.from({ length: max - min + 1 }, (_, i) => min + i);
+  const gekozen = pool[Math.floor(Math.random() * pool.length)];
+  gebruikt.add(gekozen);
+  return gekozen;
+}
+
 /**
  * Welke oefentypen deze kern daadwerkelijk kan gebruiken: `kern.oefeningTypen` als die
  * gezet is, anders alle typen die zinnig zijn gegeven het bereik (dobbelsteen kan alleen
@@ -39,43 +55,76 @@ function toepasbareTypen(kern: RekenKern): RekenOefeningType[] {
   const [min, max] = kern.bereik;
   return ALLE_TYPEN.filter((type) => {
     if (type === 'dobbelsteen-naar-cijfer') return min <= 6;
+    if (type === 'dubbele-dobbelsteen-naar-cijfer') return min <= 16 && max >= 11;
     if (type === 'reeks-aanvullen') return max - min >= 2;
-    if (type === 'optellen') return true;
     return true;
   });
 }
 
-function maakOefening(kern: RekenKern, type: RekenOefeningType): RekenOefeningDefinitie {
+interface SessieTracker {
+  // Eén "gebruikte getallen"-set per type, zodat bv. dobbelsteen en hoeveelheid-naar-cijfer
+  // elk hun eigen onafhankelijke herhaling vermijden i.p.v. elkaars getallen te blokkeren.
+  getallenPerType: Map<RekenOefeningType, Set<number>>;
+  optelCombinaties: Set<string>;
+}
+
+function maakOefening(kern: RekenKern, type: RekenOefeningType, tracker: SessieTracker): RekenOefeningDefinitie {
   const [min, max] = kern.bereik;
+  const gebruikt = tracker.getallenPerType.get(type) ?? new Set<number>();
+  tracker.getallenPerType.set(type, gebruikt);
 
   switch (type) {
     case 'dobbelsteen-naar-cijfer': {
       // Een dobbelsteen heeft maar 6 kanten, ongeacht het getalbereik van deze kern.
       const dobbelBereik: [number, number] = [min, Math.min(max, 6)];
-      const cijfer = dobbelBereik[0] + Math.floor(Math.random() * (dobbelBereik[1] - dobbelBereik[0] + 1));
+      const cijfer = kiesUniekGetal(dobbelBereik, gebruikt);
       return { type, cijfer, afleiders: kiesAfleidCijfers(dobbelBereik, cijfer, 2) };
+    }
+    case 'dubbele-dobbelsteen-naar-cijfer': {
+      // Dekt 11 t/m 16 (linker dobbelsteen is altijd de vaste "volle tien").
+      const eenheidBereik: [number, number] = [Math.max(1, min - 10), Math.min(6, max - 10)];
+      const eenheid = kiesUniekGetal(eenheidBereik, gebruikt);
+      const cijfer = 10 + eenheid;
+      const afleiders = kiesAfleidCijfers([11, 16], cijfer, 2);
+      return { type, eenheid, cijfer, afleiders };
     }
     case 'reeks-aanvullen': {
       // Middelste getal van 3 opeenvolgende getallen ontbreekt, bv. 11-[ ]-13.
-      const antwoord = min + 1 + Math.floor(Math.random() * (max - min - 1));
+      const antwoord = kiesUniekGetal([min + 1, max - 1], gebruikt);
       return { type, voor: antwoord - 1, antwoord, na: antwoord + 1 };
     }
     case 'optellen': {
-      // Som altijd onder de 10, beide termen minstens 1.
-      const som = 2 + Math.floor(Math.random() * 8); // 2..9
-      const a = 1 + Math.floor(Math.random() * (som - 1));
-      const b = som - a;
+      // Som altijd onder de 10, beide termen minstens 1. Probeer een paar keer een
+      // a+b-combinatie te vinden die deze sessie nog niet is voorgekomen.
+      let a = 1;
+      let b = 1;
+      for (let poging = 0; poging < 15; poging++) {
+        const som = 2 + Math.floor(Math.random() * 8); // 2..9
+        const proefA = 1 + Math.floor(Math.random() * (som - 1));
+        const sleutel = `${proefA}+${som - proefA}`;
+        if (!tracker.optelCombinaties.has(sleutel) || poging === 14) {
+          a = proefA;
+          b = som - proefA;
+          tracker.optelCombinaties.add(sleutel);
+          break;
+        }
+      }
+      const som = a + b;
       const afleiders = schud(
         [som - 1, som + 1, som - 2, som + 2].filter((n) => n >= 1 && n <= 9 && n !== som),
       ).slice(0, 2);
       return { type, a, b, antwoord: som, afleiders };
     }
     case 'hoeveelheid-naar-cijfer': {
-      const cijfer = min + Math.floor(Math.random() * (max - min + 1));
+      const cijfer = kiesUniekGetal(kern.bereik, gebruikt);
       return { type, aantal: cijfer, object: kiesObject(kern.objecten), afleiders: kiesAfleidCijfers(kern.bereik, cijfer, 2) };
     }
+    case 'hoeveelheid-typen': {
+      const aantal = kiesUniekGetal(kern.bereik, gebruikt);
+      return { type, aantal, object: kiesObject(kern.objecten) };
+    }
     case 'cijfer-naar-hoeveelheid': {
-      const cijfer = min + Math.floor(Math.random() * (max - min + 1));
+      const cijfer = kiesUniekGetal(kern.bereik, gebruikt);
       return { type, cijfer, object: kiesObject(kern.objecten), afleiders: kiesAfleidCijfers(kern.bereik, cijfer, 2) };
     }
   }
@@ -88,5 +137,6 @@ export function genereerRekenSessie(kern: RekenKern, modus: RekenModus): RekenOe
   while (typeVolgorde.length < aantal) {
     typeVolgorde.push(...schud([...typen]));
   }
-  return typeVolgorde.slice(0, aantal).map((type) => maakOefening(kern, type));
+  const tracker: SessieTracker = { getallenPerType: new Map(), optelCombinaties: new Set() };
+  return typeVolgorde.slice(0, aantal).map((type) => maakOefening(kern, type, tracker));
 }

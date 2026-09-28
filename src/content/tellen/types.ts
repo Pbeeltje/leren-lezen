@@ -9,18 +9,26 @@ export interface TelObject {
 
 export type RekenOefeningType =
   | 'hoeveelheid-naar-cijfer'
+  | 'hoeveelheid-typen'
   | 'cijfer-naar-hoeveelheid'
   | 'dobbelsteen-naar-cijfer'
+  | 'dubbele-dobbelsteen-naar-cijfer'
   | 'reeks-aanvullen'
   | 'optellen';
 
 export type RekenOefeningDefinitie =
   // Getalbeeld/tellen: N plaatjes zien, het juiste cijfer kiezen.
   | { type: 'hoeveelheid-naar-cijfer'; aantal: number; object: TelObject; afleiders: number[] }
+  // Zelfde plaatjes, maar nu zelf het cijfer typen (geen keuzes).
+  | { type: 'hoeveelheid-typen'; aantal: number; object: TelObject }
   // Omgekeerd: een cijfer zien, de groep met het juiste aantal plaatjes kiezen.
   | { type: 'cijfer-naar-hoeveelheid'; cijfer: number; object: TelObject; afleiders: number[] }
   // Subitiseren met het klassieke dobbelsteenbeeld: direct herkennen zonder te tellen.
   | { type: 'dobbelsteen-naar-cijfer'; cijfer: number; afleiders: number[] }
+  // Tienstructuur met twee dobbelstenen: linker toont altijd 1 stip ("een volle tien"),
+  // rechter toont de eenheid (1-6) — samen 11 t/m 16. Zo blijft het dobbelsteenbeeld
+  // bruikbaar voor de 11-20-kern, ook al heeft een dobbelsteen maar 6 kanten.
+  | { type: 'dubbele-dobbelsteen-naar-cijfer'; eenheid: number; cijfer: number; afleiders: number[] }
   // Getallenrij met een gat in het midden (bv. 11 - [ ] - 13): geen keuzes, zelf typen.
   | { type: 'reeks-aanvullen'; voor: number; antwoord: number; na: number }
   // Eenvoudig optellen ("erbij"), som altijd onder de 10.

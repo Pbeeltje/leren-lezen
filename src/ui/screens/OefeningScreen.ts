@@ -7,6 +7,7 @@ import {
   markeerKernGestart,
   markeerKernVoltooid,
   verhoogBlootstelling,
+  verhoogOefenSessies,
   voegMuntenToe,
 } from '../../engine/progressStore.ts';
 import {
@@ -24,9 +25,13 @@ import { renderWoordBouwen } from '../../games/woordBouwen.ts';
 import { renderZelfTypen } from '../../games/zelfTypen.ts';
 import { renderZinInvullen } from '../../games/zinInvullen.ts';
 import { renderWoordwolk } from '../../games/woordwolk.ts';
+import { renderLetterHerkennen } from '../../games/letterHerkennen.ts';
+import { renderKlankHerkennen } from '../../games/klankHerkennen.ts';
 import { speelSchermOvergang } from '../../three/transitions.ts';
 import { TestResultScreen } from './TestResultScreen.ts';
-import { KernOverviewScreen } from './KernOverviewScreen.ts';
+import { ChapterScreen } from './ChapterScreen.ts';
+import { KERNEN } from '../../content/lezen/kernen/kernen.index.ts';
+import { maakVoortgangsbalk } from '../components/Voortgangsbalk.ts';
 
 export type { OefenModus };
 
@@ -38,6 +43,8 @@ const INSTRUCTIES: Record<OefeningDefinitie['type'], string> = {
   'zelf-typen': 'Typ het woord dat je op het plaatje ziet',
   'zin-invullen': 'Welk woord past in de zin?',
   woordwolk: 'Tik alle woorden aan die bij het plaatje horen',
+  'letter-herkennen': 'Welk woord heeft deze letter?',
+  'klank-herkennen': 'Welk woord heeft deze klank?',
 };
 
 function renderOefening(
@@ -61,6 +68,10 @@ function renderOefening(
       return renderZinInvullen(container, oefening, opties, afgerond);
     case 'woordwolk':
       return renderWoordwolk(container, oefening, opties, afgerond);
+    case 'letter-herkennen':
+      return renderLetterHerkennen(container, oefening, opties, afgerond);
+    case 'klank-herkennen':
+      return renderKlankHerkennen(container, oefening, opties, afgerond);
   }
 }
 
@@ -84,9 +95,8 @@ export function OefeningScreen(
   instructie.className = 'instructie-tekst';
   el.appendChild(instructie);
 
-  const voortgang = document.createElement('p');
-  voortgang.className = 'instructie-tekst';
-  el.appendChild(voortgang);
+  const voortgangsbalk = maakVoortgangsbalk(oefeningen.length);
+  el.appendChild(voortgangsbalk.element);
 
   const oefenContainer = document.createElement('div');
   el.appendChild(oefenContainer);
@@ -101,7 +111,7 @@ export function OefeningScreen(
     klaarMetDeze = false;
     const oefening = oefeningen[huidigeIndex];
     instructie.textContent = INSTRUCTIES[oefening.type];
-    voortgang.textContent = `${huidigeIndex + 1} / ${oefeningen.length}`;
+    voortgangsbalk.zetVoortgang(huidigeIndex);
 
     opruimen = renderOefening(
       oefenContainer,
@@ -166,15 +176,17 @@ export function OefeningScreen(
       }
       markeerKernVoltooid(kern.id, sterren);
       speelSchermOvergang();
+      const kernIndex = KERNEN.findIndex((k) => k.id === kern.id);
       manager.replace((m) =>
         TestResultScreen(
           m,
           { aantalGoed, totaal: oefeningen.length, muntenVerdiend: muntenDitKeer, sterren },
-          (mgr) => mgr.replace((m2) => KernOverviewScreen(m2)),
+          (mgr) => mgr.replace((m2) => ChapterScreen(m2, kernIndex)),
         ),
       );
       return;
     }
+    verhoogOefenSessies(kern.id);
     onAfgerond();
     manager.pop();
   }

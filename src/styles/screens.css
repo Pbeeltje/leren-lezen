@@ -63,16 +63,121 @@
   gap: 4px;
 }
 
-.kern-rij__woord {
+.kern-rij__titel {
   font-size: 1.3rem;
   font-weight: 800;
   color: var(--kleur-tekst);
-  text-transform: lowercase;
+}
+
+.kern-rij--klikbaar {
+  width: 100%;
+  text-align: left;
+  background: var(--kleur-oppervlak);
+}
+
+.kern-rij--klikbaar:active {
+  transform: translateY(3px);
+}
+
+.kern-rij__detail {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.kern-rij__oefentekst {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: #8a8a96;
 }
 
 .kern-rij__acties {
   display: flex;
   gap: 8px;
+}
+
+.hoofdstuk-titel-rij {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  width: 100%;
+  max-width: 600px;
+}
+
+.hoofdstuk-titel {
+  flex: 1;
+}
+
+.hoofdstuk-pijl {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 56px;
+  height: 56px;
+  flex-shrink: 0;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.9);
+  color: var(--kleur-tekst);
+  font-size: 1.8rem;
+  font-weight: 800;
+  box-shadow: 0 4px 0 rgba(0, 0, 0, 0.15);
+}
+
+.hoofdstuk-pijl:disabled {
+  opacity: 0.3;
+  box-shadow: none;
+}
+
+.hoofdstuk-pijl:active:not(:disabled) {
+  transform: translateY(3px);
+}
+
+.hoofdstuk-tegels {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+  width: min(90vw, 460px);
+}
+
+.hoofdstuk-tegel {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 120px;
+  padding: 16px;
+  background: var(--kleur-oppervlak);
+  border-radius: var(--radius-klein);
+  box-shadow: 0 6px 0 rgba(0, 0, 0, 0.12);
+  font-weight: 800;
+  font-size: 1.05rem;
+  color: var(--kleur-tekst);
+}
+
+.hoofdstuk-tegel img {
+  width: 40px;
+  height: 40px;
+}
+
+.hoofdstuk-tegel.gedaan {
+  background: rgba(62, 207, 110, 0.15);
+  border: 3px solid var(--kleur-succes);
+}
+
+.hoofdstuk-tegel--toets {
+  background: var(--kleur-primair);
+  color: #fff;
+}
+
+.hoofdstuk-tegel--toets .ster-balk img {
+  width: 20px;
+  height: 20px;
+}
+
+.hoofdstuk-tegel:active {
+  transform: translateY(3px);
 }
 
 .kern-rij__knop {
@@ -318,6 +423,48 @@
   font-weight: 800;
 }
 
+.voortgangsbalk {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: min(90vw, 420px);
+}
+
+.voortgangsbalk__spoor {
+  position: relative;
+  flex: 1;
+  height: 16px;
+  background: rgba(255, 255, 255, 0.25);
+  border-radius: 999px;
+  overflow: visible;
+}
+
+.voortgangsbalk__vulling {
+  height: 100%;
+  width: 0%;
+  background: var(--kleur-primair);
+  border-radius: 999px;
+  transition: width 0.4s ease;
+}
+
+.voortgangsbalk__loper {
+  position: absolute;
+  top: 50%;
+  left: 0%;
+  width: 40px;
+  height: 40px;
+  transform: translateY(-50%);
+  transition: left 0.4s ease;
+  filter: drop-shadow(0 2px 3px rgba(0, 0, 0, 0.35));
+}
+
+.voortgangsbalk__kom {
+  width: 40px;
+  height: 40px;
+  flex-shrink: 0;
+  filter: drop-shadow(0 2px 3px rgba(0, 0, 0, 0.35));
+}
+
 .instructie-tekst {
   font-size: 1.15rem;
   font-weight: 700;
@@ -345,6 +492,19 @@
   width: 56px;
   height: 56px;
   object-fit: contain;
+}
+
+.oefen-kaart__groot-teken {
+  font-size: 6rem;
+  font-weight: 800;
+  color: var(--kleur-primair);
+  line-height: 1;
+  text-transform: lowercase;
+}
+
+.oefen-kaart__groot-teken--klank {
+  font-size: 4rem;
+  color: var(--kleur-secundair);
 }
 
 .oefen-kaart__cijfer {
@@ -394,6 +554,18 @@
   display: flex;
   align-items: center;
   justify-content: center;
+}
+
+.dubbele-dobbelsteen-rij {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.dubbele-dobbelsteen-plus {
+  font-size: 2.5rem;
+  font-weight: 800;
+  color: var(--kleur-tekst);
 }
 
 .dobbelsteen__punt {
