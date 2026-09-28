@@ -45,7 +45,8 @@ export type OefeningType =
   | 'zelf-typen'
   | 'woordwolk'
   | 'letter-herkennen'
-  | 'klank-herkennen';
+  | 'klank-herkennen'
+  | 'drie-koppelen';
 
 export type OefeningDefinitie =
   | { type: 'plaatje-woord-keuze'; doel: Woord; afleiders: Woord[] }
@@ -67,7 +68,11 @@ export type OefeningDefinitie =
   // Basisvaardigheid: een grote letter, kies het woord waar die letter in zit.
   | { type: 'letter-herkennen'; letter: string; doel: Woord; afleiders: Woord[] }
   // Zelfde idee maar voor een tweeklank/klankcombinatie (oo, aa, au, ou, ui, eu).
-  | { type: 'klank-herkennen'; klank: string; doel: Woord; afleiders: Woord[] };
+  | { type: 'klank-herkennen'; klank: string; doel: Woord; afleiders: Woord[] }
+  // Drie plaatjes en drie woorden door elkaar; tik steeds een plaatje en het bijbehorende
+  // woord aan om ze te koppelen. Moeilijker dan de andere meerkeuze-vormen omdat je drie
+  // paren tegelijk uit elkaar moet houden i.p.v. één doelwoord tussen afleiders.
+  | { type: 'drie-koppelen'; paren: [Woord, Woord, Woord] };
 
 export interface Kern {
   id: string; // bv. 'kern-01'

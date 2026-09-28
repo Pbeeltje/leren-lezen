@@ -176,7 +176,38 @@ icon). Just `cp` it into `images/woorden/<woord>.svg`, no need for a fresh
 fetch, as long as the picture genuinely fits (combined with sentence context
 for a `vereistTekst` word, it doesn't need to be perfectly unique).
 
-**If Fluent Emoji has no good match, search other open icon sets via
+**Prefer the user's own source material over any icon set, generic or
+not.** `bronbestanden/` (project root) holds worksheets/photos the user
+provided — `plaatjes3.jpg` (a Larsen "woordpuzzel", 40 word+picture pairs),
+`memory.jpg` ("Circuitspelletjes kern 4" memory cards, 10 pairs), plus
+`aapnootmies.jpg`/`tegels/` (the classic 1910 leesplank, 17 tiles, not yet
+wired into any kern — a leesplank bonus-mode screen was scoped in the
+original plan but never built) and `woordwolk.jpg` (the worksheet the
+`woordwolk` exercise mechanic itself was modeled on). A whole session went by
+using only generic Fluent Emoji icons despite ~30 of the woordenbank words
+already having a real photo sitting in `plaatjes3.jpg`/`memory.jpg` — a real
+user complaint ("you didn't use a single one of the images I provided...
+dissect them yourself"). Before reaching for Fluent Emoji or Iconify for a
+new word, check `bronbestanden/` first (open each source image with Read and
+look). To extract a picture: `bronbestanden/crop.ps1` is a working,
+calibrated PowerShell/System.Drawing cropper for `plaatjes3.jpg` and
+`memory.jpg` (no npm install needed — `System.Drawing.Bitmap` ships with
+Windows) — it has the exact column/row pixel grids for both sources already
+solved (getting that grid right took several calibration passes: naive
+extrapolation from just the first two rows compounds a few px of error per
+row into a ~75px drift by row 5, enough to crop pure black past the image's
+bottom edge — anchor the grid from *both* the first and last row/column
+independently instead of extrapolating one pitch across the whole sheet).
+Add new `<word>: (row, col)` entries to its `$grid`/`$memGrid` hashtables and
+rerun; `bronbestanden/contact.ps1` renders every image in `_staged/` as one
+labeled contact sheet so you can verify a whole batch in a single Read
+instead of one file at a time. These are real photos, not vectors — the
+`pad()`/`woord()` helper in each kern file takes an `ext` param
+(`woord('maan', 'jpg')` or similar per-file signature) specifically so a
+word can point at a `.jpg` instead of the default `.svg` without changing
+every other call site.
+
+**If Fluent Emoji has no good match either, search other open icon sets via
 Iconify** (`https://api.iconify.design/search?query=<term>`) rather than
 forcing a bad Fluent Emoji fit — it aggregates hundreds of open-source sets
 (Material Symbols, Game Icons, Tabler, etc.) and returns each match's
@@ -202,9 +233,37 @@ include a couple of digraphs (wiel, voet) as an intentional exception — trust
 an authentic sourced worksheet's difficulty judgment over your own stricter
 default, but don't extend that exception to freely-invented words elsewhere.
 
-**Exercise types** (9 total): `plaatje-woord-keuze`, `woord-plaatje-keuze`,
+**Exercise types** (10 total): `plaatje-woord-keuze`, `woord-plaatje-keuze`,
 `hakken-en-plakken`, `woord-bouwen` (3D), `zin-invullen`, `zelf-typen`,
-`woordwolk`, `letter-herkennen`, `klank-herkennen`.
+`woordwolk`, `letter-herkennen`, `klank-herkennen`, `drie-koppelen`.
+
+**Difficulty ramps up from kern 2 onward.** `oefeningGenerator.ts` ranks
+every type 1 (easiest) to 5 (hardest) in `MOEILIJKHEID` and picks a word's
+type with `kiesGewogenType()`, weighted by `moeilijkheidsfactor(kern)` — 0 at
+kern 1 (types roughly equally likely) rising to 1 at the last kern (hard
+types much more likely). No type is ever fully excluded at any factor (every
+weight has a `+1` floor) — a direct requirement ("preserving each type of
+exercise until the end"), so don't change the weighting formula to let a
+weight hit zero. The factor is computed from `kern.volgnummer` against
+`KERNEN.length`, so adding an 8th kern automatically stretches the ramp
+rather than needing a manual update. Current ranking: tier 1
+`plaatje-woord-keuze`/`woord-plaatje-keuze`; tier 2 `woordwolk`/
+`letter-herkennen`; tier 3 `klank-herkennen`/`hakken-en-plakken`; tier 4
+`woord-bouwen`/`zin-invullen`; tier 5 `drie-koppelen`/`zelf-typen`.
+
+`drie-koppelen` — three pictures and three words, shuffled independently in
+two columns; tap a picture then a word (either order) to attempt a pair,
+correct pairs lock green, a wrong pair flashes red and both deselect (or
+fails the exercise outright in toets mode, same `herkansingToegestaan`
+convention as everything else). Harder than the other multiple-choice types
+because three answers have to be tracked in parallel instead of one target
+among decoys — a direct response to "maybe you can do something where you
+have to match three images to the right word at once?". Its three words are
+`doel` plus two others sampled fresh from the kern's `woordenbank` in
+`maakOefening()`'s `'drie-koppelen'` case (needs `woordenbank.length >= 3`,
+true for every kern) — unlike every other type, it isn't really "about" one
+`doel` word, so `woordVanOefening()` (used for blootstelling tracking) just
+reports `paren[0]` as a reasonable approximation.
 
 `woordwolk` — a picture with **exactly one** correct word among ~7 cloud
 tiles (the rest are other woordenbank words as decoys), tap the one correct

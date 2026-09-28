@@ -27,6 +27,7 @@ import { renderZinInvullen } from '../../games/zinInvullen.ts';
 import { renderWoordwolk } from '../../games/woordwolk.ts';
 import { renderLetterHerkennen } from '../../games/letterHerkennen.ts';
 import { renderKlankHerkennen } from '../../games/klankHerkennen.ts';
+import { renderDrieKoppelen } from '../../games/drieKoppelen.ts';
 import { speelSchermOvergang } from '../../three/transitions.ts';
 import { TestResultScreen } from './TestResultScreen.ts';
 import { ChapterScreen } from './ChapterScreen.ts';
@@ -45,6 +46,7 @@ const INSTRUCTIES: Record<OefeningDefinitie['type'], string> = {
   woordwolk: 'Tik alle woorden aan die bij het plaatje horen',
   'letter-herkennen': 'Welk woord heeft deze letter?',
   'klank-herkennen': 'Welk woord heeft deze klank?',
+  'drie-koppelen': 'Welk plaatje hoort bij welk woord?',
 };
 
 function renderOefening(
@@ -72,6 +74,8 @@ function renderOefening(
       return renderLetterHerkennen(container, oefening, opties, afgerond);
     case 'klank-herkennen':
       return renderKlankHerkennen(container, oefening, opties, afgerond);
+    case 'drie-koppelen':
+      return renderDrieKoppelen(container, oefening, opties, afgerond);
   }
 }
 

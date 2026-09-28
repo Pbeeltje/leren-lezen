@@ -1,8 +1,8 @@
 import type { Kern } from '../../types.ts';
 
 // Thema "boerderijdieren". Bouwt voort op kern-01/02; introduceert h, p.
-const pad = (woord: string) => `/assets/images/woorden/${woord}.svg`;
-const woord = (w: string) => ({ woord: w, afbeeldingPad: pad(w) });
+const pad = (woord: string, ext = 'svg') => `/assets/images/woorden/${woord}.${ext}`;
+const woord = (w: string, ext = 'svg') => ({ woord: w, afbeeldingPad: pad(w, ext) });
 
 export const kern03Boerderijdieren: Kern = {
   id: 'kern-03',
@@ -19,7 +19,7 @@ export const kern03Boerderijdieren: Kern = {
     woord('hond'),
     woord('kip'),
     woord('varken'),
-    woord('eend'),
+    woord('eend', 'jpg'),
     woord('haan'),
     woord('ezel'),
     woord('lam'),

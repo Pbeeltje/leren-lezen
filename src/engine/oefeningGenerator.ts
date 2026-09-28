@@ -1,5 +1,6 @@
 import type { Kern, OefeningDefinitie, OefeningType, Woord } from '../content/types.ts';
 import { haalBlootstelling } from './progressStore.ts';
+import { KERNEN } from '../content/lezen/kernen/kernen.index.ts';
 
 export type OefenModus = 'oefenen' | 'toets';
 
@@ -11,8 +12,46 @@ const MIN_BLOOTSTELLING_VOOR_TYPEN = 2;
 // Tweeklanken/klankcombinaties waarop klank-herkennen let (zie kern-07-klanken.ts).
 const KLANKEN = ['oo', 'aa', 'au', 'ou', 'ui', 'eu', 'ee'];
 
+// Moeilijkheidsrangorde van de oefentypen (1 = makkelijkst), gebruikt om de mix per kern
+// geleidelijk moeilijker te maken vanaf kern 2 -- zie kiesGewogenType(). Geen enkel type
+// wordt ooit helemaal uitgesloten, ook niet in de laatste kern: alleen de kans verschuift.
+const MOEILIJKHEID: Record<OefeningType, number> = {
+  'plaatje-woord-keuze': 1,
+  'woord-plaatje-keuze': 1,
+  woordwolk: 2,
+  'letter-herkennen': 2,
+  'klank-herkennen': 3,
+  'hakken-en-plakken': 3,
+  'woord-bouwen': 4,
+  'zin-invullen': 4,
+  'drie-koppelen': 5,
+  'zelf-typen': 5,
+};
+
 function schud<T>(items: T[]): T[] {
   return [...items].sort(() => Math.random() - 0.5);
+}
+
+/**
+ * Kiest één type uit `typen`, gewogen naar moeilijkheid. `factor` loopt van 0 (kern 1:
+ * vrijwel gelijke kansen) naar 1 (laatste kern: moeilijkere types veel waarschijnlijker).
+ * Elk type houdt altijd een basisgewicht van 1, dus niets wordt ooit echt uitgesloten.
+ */
+function kiesGewogenType(typen: OefeningType[], factor: number): OefeningType {
+  const gewichten = typen.map((t) => 1 + factor * (MOEILIJKHEID[t] - 1) * 1.5);
+  const totaal = gewichten.reduce((a, b) => a + b, 0);
+  let r = Math.random() * totaal;
+  for (let i = 0; i < typen.length; i++) {
+    r -= gewichten[i];
+    if (r <= 0) return typen[i];
+  }
+  return typen[typen.length - 1];
+}
+
+/** 0 voor de eerste kern, oplopend naar 1 voor de laatste -- zie kiesGewogenType(). */
+function moeilijkheidsfactor(kern: Kern): number {
+  if (KERNEN.length <= 1) return 0;
+  return Math.max(0, Math.min(1, (kern.volgnummer - 1) / (KERNEN.length - 1)));
 }
 
 function kiesN<T>(items: T[], n: number): T[] {
@@ -73,6 +112,8 @@ function beschikbareTypen(kern: Kern, doel: Woord, uitgesloten: OefeningType[]):
   if (klank && kern.woordenbank.some((w) => w.woord !== doel.woord && !w.woord.includes(klank))) {
     basis.push('klank-herkennen');
   }
+  // Drie plaatjes tegelijk uit elkaar houden kan alleen met genoeg andere woorden in de bank.
+  if (kern.woordenbank.length >= 3) basis.push('drie-koppelen');
 
   const overgebleven = basis.filter((type) => !uitgesloten.includes(type));
   return overgebleven.length > 0 ? overgebleven : basis;
@@ -119,28 +160,38 @@ function maakOefening(kern: Kern, doel: Woord, type: OefeningType, aantalAfleide
       const kandidaten = kern.woordenbank.filter((w) => w.woord !== doel.woord && !w.woord.includes(klank));
       return { type, klank, doel, afleiders: kiesN(kandidaten, aantalAfleiders) };
     }
+    case 'drie-koppelen': {
+      const overigen = kiesN(
+        kern.woordenbank.filter((w) => w.woord !== doel.woord),
+        2,
+      );
+      const paren = schud([doel, ...overigen]) as [Woord, Woord, Woord];
+      return { type, paren };
+    }
   }
 }
 
 /** Het woord waar een oefening om draait, ongeacht het vorm-specifieke veld. */
 export function woordVanOefening(oefening: OefeningDefinitie): string {
+  if ('paren' in oefening) return oefening.paren[0].woord;
   return 'doel' in oefening ? oefening.doel.woord : oefening.woord.woord;
 }
 
 export function genereerSessie(kern: Kern, modus: OefenModus): OefeningDefinitie[] {
   const aantalAfleiders = modus === 'oefenen' ? 2 : 3;
+  const factor = moeilijkheidsfactor(kern);
 
   if (modus === 'oefenen') {
     const woorden = kiesN(kern.woordenbank, Math.min(OEFENEN_AANTAL_WOORDEN, kern.woordenbank.length));
     return woorden.map((doel) => {
-      const type = kiesN(beschikbareTypen(kern, doel, []), 1)[0];
+      const type = kiesGewogenType(beschikbareTypen(kern, doel, []), factor);
       return maakOefening(kern, doel, type, aantalAfleiders);
     });
   }
 
   // Toets: de hele woordenbank van deze kern, één vraag per woord (10 woorden -> 10 vragen).
   const sessie = kern.woordenbank.map((doel) => {
-    const type = kiesN(beschikbareTypen(kern, doel, []), 1)[0];
+    const type = kiesGewogenType(beschikbareTypen(kern, doel, []), factor);
     return maakOefening(kern, doel, type, aantalAfleiders);
   });
   return schud(sessie);

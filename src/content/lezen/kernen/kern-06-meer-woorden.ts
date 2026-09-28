@@ -5,8 +5,10 @@ import type { Kern } from '../../types.ts';
 // puur woordenschat-uitbreiding, geen nieuwe letters, net als gevraagd ("zelfde
 // moeilijkheidsgraad, gewoon meer woorden"). Woorden met tweeklanken (duim, fruit, huis,
 // koe, muis, poes, uil, hoed, geit, trein) en kleurwoorden (rood — geen eenduidig plaatje)
-// zijn bewust overgeslagen voor een latere, aparte kern.
-const pad = (woord: string) => `/assets/images/woorden/${woord}.svg`;
+// zijn bewust overgeslagen voor een latere, aparte kern. Alle 11 woorden hier gebruiken de
+// echte foto's uit die woordpuzzel zelf (bronbestanden/plaatjes3.jpg, uitgesneden met
+// bronbestanden/crop.ps1), niet generieke iconen.
+const pad = (woord: string) => `/assets/images/woorden/${woord}.jpg`;
 const woord = (w: string) => ({ woord: w, afbeeldingPad: pad(w) });
 
 export const kern06MeerWoorden: Kern = {

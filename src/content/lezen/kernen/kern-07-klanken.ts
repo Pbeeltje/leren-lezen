@@ -9,30 +9,33 @@ import type { Kern } from '../../types.ts';
 // hier alsnog terug (met een zin erbij i.p.v. een kaal plaatje) omdat ze thematisch goed
 // passen bij kern-02 (weer) — ze konden daar destijds nog niet mee, want ze introduceren
 // juist de klanken (ou/oo/ee) die deze kern bewaart.
-const pad = (woord: string) => `/assets/images/woorden/${woord}.svg`;
-const woord = (w: string, vereistTekst = false) => ({ woord: w, afbeeldingPad: pad(w), vereistTekst });
+const pad = (woord: string, ext = 'svg') => `/assets/images/woorden/${woord}.${ext}`;
+const woord = (w: string, vereistTekst = false, ext = 'svg') => ({ woord: w, afbeeldingPad: pad(w, ext), vereistTekst });
 
 export const kern07Klanken: Kern = {
   id: 'kern-07',
   volgnummer: 7,
   titel: 'klanken',
   structuurwoorden: [
-    { woord: 'huis', afbeeldingPad: pad('huis'), nieuweLetters: [] },
+    { woord: 'huis', afbeeldingPad: pad('huis', 'jpg'), nieuweLetters: [] },
     { woord: 'auto', afbeeldingPad: pad('auto'), nieuweLetters: [] },
     { woord: 'deur', afbeeldingPad: pad('deur'), nieuweLetters: [] },
   ],
   nieuweLetters: [],
+  // roos/noot/maan/huis/muis/zout/neus gebruiken de echte foto's uit bronbestanden/
+  // (zie kern-01/05/06 voor de toelichting) — de rest (raam/hout/deur/auto) had nog geen
+  // bronfoto en behoudt het generieke icoon.
   woordenbank: [
-    woord('roos'),
-    woord('noot'),
-    woord('maan'),
+    woord('roos', false, 'jpg'),
+    woord('noot', false, 'jpg'),
+    woord('maan', false, 'jpg'),
     woord('raam'),
-    woord('huis'),
-    woord('muis'),
-    woord('zout'),
+    woord('huis', false, 'jpg'),
+    woord('muis', false, 'jpg'),
+    woord('zout', false, 'jpg'),
     woord('hout'),
     woord('deur'),
-    woord('neus'),
+    woord('neus', false, 'jpg'),
     woord('auto'),
     woord('droog', true),
     woord('koud', true),

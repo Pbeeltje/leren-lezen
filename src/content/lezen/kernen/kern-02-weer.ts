@@ -3,27 +3,28 @@ import type { Kern } from '../../types.ts';
 // Zelfde structuurmethode-aanpak als kern-01, nu met het thema "weer" om het
 // woordenbereik uit te breiden. Introduceert z, e, g, w, d, t, l, k (klankzuiver,
 // geen tweetekenklanken zoals eeuw/ei/oe — "zelfde moeilijkheidsgraad" als kern-01).
-const pad = (woord: string) => `/assets/images/woorden/${woord}.svg`;
-const woord = (w: string, vereistTekst = false) => ({ woord: w, afbeeldingPad: pad(w), vereistTekst });
+const pad = (woord: string, ext = 'svg') => `/assets/images/woorden/${woord}.${ext}`;
+const woord = (w: string, vereistTekst = false, ext = 'svg') => ({ woord: w, afbeeldingPad: pad(w, ext), vereistTekst });
 
 export const kern02Weer: Kern = {
   id: 'kern-02',
   volgnummer: 2,
   titel: 'weer',
   structuurwoorden: [
-    { woord: 'zon', afbeeldingPad: pad('zon'), nieuweLetters: ['z'] },
+    { woord: 'zon', afbeeldingPad: pad('zon', 'jpg'), nieuweLetters: ['z'] },
     { woord: 'regen', afbeeldingPad: pad('regen'), nieuweLetters: ['e', 'g'] },
     { woord: 'wind', afbeeldingPad: pad('wind'), nieuweLetters: ['w', 'd'] },
   ],
   nieuweLetters: ['z', 'e', 'g', 'w', 'd', 't', 'l', 'k'],
+  // zon/tas gebruiken de echte foto's uit bronbestanden/ (zie kern-01 voor de toelichting).
   woordenbank: [
-    woord('zon'),
+    woord('zon', false, 'jpg'),
     woord('regen'),
     woord('wind'),
     woord('storm'),
     woord('mist'),
     woord('wolk'),
-    woord('tas'),
+    woord('tas', false, 'jpg'),
     woord('was'),
     woord('nat', true),
   ],

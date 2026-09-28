@@ -6,18 +6,21 @@ import type { Kern } from '../../types.ts';
 // 10 woorden — zie engine/oefeningGenerator.ts voor hoe daaruit een gemengde
 // oefen-/toetssessie wordt samengesteld (oefenen: 5 willekeurige woorden, elk
 // met een ander oefentype; toets: alle 10 woorden, elk 1x = 10 vragen).
-const pad = (woord: string) => `/assets/images/woorden/${woord}.svg`;
-const woord = (w: string) => ({ woord: w, afbeeldingPad: pad(w) });
+const pad = (woord: string, ext = 'svg') => `/assets/images/woorden/${woord}.${ext}`;
+const woord = (w: string, ext = 'svg') => ({ woord: w, afbeeldingPad: pad(w, ext) });
 
-const maan = woord('maan');
-const roos = woord('roos');
-const vis = woord('vis');
+// maan/roos/vis/arm/oor gebruiken de echte foto's uit de Larsen woordpuzzel resp.
+// Circuitspelletjes-memory (bronbestanden/), uitgesneden met bronbestanden/crop.ps1 —
+// geen generieke iconen, zie de sessienotities over "gebruik mijn eigen plaatjes".
+const maan = woord('maan', 'jpg');
+const roos = woord('roos', 'jpg');
+const vis = woord('vis', 'jpg');
 const raam = woord('raam');
-const arm = woord('arm');
+const arm = woord('arm', 'jpg');
 const oma = woord('oma');
 const mais = woord('mais');
 const vaas = woord('vaas');
-const oor = woord('oor');
+const oor = woord('oor', 'jpg');
 // 'mars' (met een chocoladereep-icoon) las eerder te makkelijk als "chocolade" i.p.v.
 // het beoogde woord — geen goede plaatje-woordmatch zonder een merkspecifieke wikkel na
 // te bootsen. Vervangen door 'ram' (het dier), een ondubbelzinnig plaatje.
@@ -28,9 +31,9 @@ export const kern01MaanRoosVis: Kern = {
   volgnummer: 1,
   titel: 'maan, roos & vis',
   structuurwoorden: [
-    { woord: 'maan', afbeeldingPad: pad('maan'), nieuweLetters: ['m', 'a', 'n'] },
-    { woord: 'roos', afbeeldingPad: pad('roos'), nieuweLetters: ['r', 'o', 's'] },
-    { woord: 'vis', afbeeldingPad: pad('vis'), nieuweLetters: ['v', 'i'] },
+    { woord: 'maan', afbeeldingPad: pad('maan', 'jpg'), nieuweLetters: ['m', 'a', 'n'] },
+    { woord: 'roos', afbeeldingPad: pad('roos', 'jpg'), nieuweLetters: ['r', 'o', 's'] },
+    { woord: 'vis', afbeeldingPad: pad('vis', 'jpg'), nieuweLetters: ['v', 'i'] },
   ],
   nieuweLetters: ['m', 'a', 'n', 'r', 'o', 's', 'v', 'i'],
   woordenbank: [maan, roos, vis, raam, arm, oma, mais, vaas, oor, ram],
