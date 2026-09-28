@@ -1,0 +1,259 @@
+.tegel-grid {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 20px;
+  max-width: 700px;
+}
+
+.tegel-grid .icoon-tegel {
+  width: 160px;
+  height: 160px;
+}
+
+.kern-lijst {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  width: min(90vw, 480px);
+}
+
+.kern-rij {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  background: var(--kleur-oppervlak);
+  border-radius: var(--radius-klein);
+  padding: 14px 20px;
+  box-shadow: 0 6px 0 rgba(0, 0, 0, 0.12);
+}
+
+.kern-rij__nummer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: var(--kleur-secundair);
+  color: #fff;
+  font-weight: 800;
+  font-size: 1.2rem;
+  flex-shrink: 0;
+}
+
+.kern-rij__info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.kern-rij__woord {
+  font-size: 1.3rem;
+  font-weight: 800;
+  color: var(--kleur-tekst);
+  text-transform: lowercase;
+}
+
+.kern-rij__acties {
+  display: flex;
+  gap: 8px;
+}
+
+.kern-rij__knop {
+  padding: 10px 18px;
+  border-radius: 999px;
+  font-weight: 800;
+  font-size: 0.95rem;
+  min-height: 48px;
+}
+
+.kern-rij__knop.oefenen {
+  background: var(--kleur-secundair);
+  color: #fff;
+}
+
+.kern-rij__knop.toets {
+  background: var(--kleur-primair);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.kern-rij__knop.toets img {
+  width: 22px;
+  height: 22px;
+}
+
+.kern-rij__knop:disabled {
+  background: #c7c7d1;
+  color: #7a7a86;
+}
+
+.oefen-kaart {
+  background: var(--kleur-oppervlak);
+  border-radius: var(--radius-groot);
+  padding: 32px;
+  width: min(92vw, 560px);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 24px;
+  box-shadow: 0 10px 0 rgba(0, 0, 0, 0.15);
+}
+
+.oefen-kaart__plaatje {
+  width: 160px;
+  height: 160px;
+  object-fit: contain;
+}
+
+.oefen-kaart__woord {
+  font-size: 2.4rem;
+  font-weight: 800;
+  color: var(--kleur-tekst);
+  letter-spacing: 0.04em;
+}
+
+.keuze-rij {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 16px;
+  width: 100%;
+}
+
+.keuze-knop {
+  min-width: var(--touch-target-min);
+  min-height: var(--touch-target-min);
+  padding: 12px 20px;
+  background: var(--kleur-secundair);
+  color: #fff;
+  border-radius: var(--radius-klein);
+  font-size: 1.4rem;
+  font-weight: 800;
+  text-transform: lowercase;
+}
+
+.keuze-knop--plaatje {
+  padding: 8px;
+  background: #fff;
+  border: 4px solid var(--kleur-secundair);
+}
+
+.keuze-knop--plaatje img {
+  width: 96px;
+  height: 96px;
+  object-fit: contain;
+}
+
+.keuze-knop.goed-gekozen {
+  background: var(--kleur-succes);
+  border-color: var(--kleur-succes);
+}
+
+.keuze-knop.fout-gekozen {
+  background: var(--kleur-fout);
+  border-color: var(--kleur-fout);
+}
+
+.letter-rij {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.letter-tegel {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 64px;
+  height: 64px;
+  background: var(--kleur-primair);
+  color: #fff;
+  font-size: 1.8rem;
+  font-weight: 800;
+  border-radius: var(--radius-klein);
+  text-transform: lowercase;
+}
+
+.letter-tegel.gebruikt {
+  background: #d8d8e2;
+  color: #9c9ca8;
+}
+
+.letter-tegel.geraden {
+  background: var(--kleur-succes);
+}
+
+.doel-sleuf-rij {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+}
+
+.doel-sleuf {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 64px;
+  height: 64px;
+  border-radius: var(--radius-klein);
+  border: 3px dashed rgba(27, 27, 47, 0.3);
+  font-size: 1.8rem;
+  font-weight: 800;
+  color: var(--kleur-tekst);
+  text-transform: lowercase;
+}
+
+.doel-sleuf.gevuld {
+  border-style: solid;
+  border-color: var(--kleur-secundair);
+  background: rgba(61, 189, 255, 0.12);
+}
+
+.blokken-canvas {
+  width: 100%;
+  height: 200px;
+}
+
+.blokken-canvas canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+  touch-action: none;
+}
+
+.instructie-tekst {
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: var(--kleur-tekst-licht);
+  text-shadow: 0 2px 6px rgba(0, 0, 0, 0.35);
+  text-align: center;
+  margin: 0;
+}
+
+.komt-eraan-kaart {
+  background: var(--kleur-oppervlak);
+  border-radius: var(--radius-groot);
+  padding: 48px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  box-shadow: 0 10px 0 rgba(0, 0, 0, 0.15);
+}
+
+.komt-eraan-kaart img {
+  width: 96px;
+  height: 96px;
+}
+
+.komt-eraan-kaart__tekst {
+  font-size: 1.4rem;
+  font-weight: 800;
+  color: var(--kleur-tekst);
+}

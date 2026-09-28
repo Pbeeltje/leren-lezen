@@ -1,0 +1,171 @@
+.icoon-tegel {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-width: var(--touch-target-min);
+  min-height: var(--touch-target-min);
+  padding: 18px;
+  background: var(--kleur-oppervlak);
+  border-radius: var(--radius-groot);
+  box-shadow: 0 8px 0 rgba(0, 0, 0, 0.15);
+  transition: transform 0.12s ease, box-shadow 0.12s ease;
+}
+
+.icoon-tegel:active {
+  transform: translateY(6px);
+  box-shadow: 0 2px 0 rgba(0, 0, 0, 0.15);
+}
+
+.icoon-tegel:disabled {
+  opacity: 0.5;
+  filter: grayscale(0.6);
+  box-shadow: 0 4px 0 rgba(0, 0, 0, 0.1);
+}
+
+.icoon-tegel:disabled:active {
+  transform: none;
+}
+
+.icoon-tegel__plaatje {
+  width: 72px;
+  height: 72px;
+  object-fit: contain;
+}
+
+.icoon-tegel__label {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--kleur-tekst);
+  text-align: center;
+}
+
+.icoon-tegel__badge {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #fff;
+  background: var(--kleur-secundair);
+  padding: 4px 10px;
+  border-radius: 999px;
+}
+
+.munten-teller {
+  position: fixed;
+  top: 16px;
+  right: 16px;
+  z-index: 5;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(255, 255, 255, 0.95);
+  padding: 8px 16px 8px 8px;
+  border-radius: 999px;
+  box-shadow: 0 4px 0 rgba(0, 0, 0, 0.15);
+  font-weight: 800;
+  font-size: 1.2rem;
+  color: var(--kleur-tekst);
+}
+
+.munten-teller__icoon {
+  width: 36px;
+  height: 36px;
+}
+
+.munten-teller.pulseer {
+  animation: munt-pulseer 0.4s ease;
+}
+
+@keyframes munt-pulseer {
+  0% {
+    transform: scale(1);
+  }
+  40% {
+    transform: scale(1.18);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+.terug-knop {
+  position: fixed;
+  top: 16px;
+  left: 16px;
+  z-index: 5;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--touch-target-min);
+  height: var(--touch-target-min);
+  background: rgba(255, 255, 255, 0.95);
+  border-radius: 999px;
+  box-shadow: 0 4px 0 rgba(0, 0, 0, 0.15);
+}
+
+.terug-knop img {
+  width: 40px;
+  height: 40px;
+}
+
+.terug-knop:active {
+  transform: translateY(3px);
+}
+
+.ster-balk {
+  display: flex;
+  gap: 4px;
+}
+
+.ster-balk img {
+  width: 28px;
+  height: 28px;
+  opacity: 0.25;
+}
+
+.ster-balk img.actief {
+  opacity: 1;
+}
+
+.feedback-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+}
+
+.feedback-overlay__bericht {
+  font-size: clamp(2rem, 8vw, 4rem);
+  font-weight: 800;
+  padding: 24px 48px;
+  border-radius: var(--radius-groot);
+  color: #fff;
+  text-shadow: 0 2px 6px rgba(0, 0, 0, 0.25);
+  animation: feedback-pop 0.5s ease forwards;
+}
+
+.feedback-overlay__bericht.goed {
+  background: var(--kleur-succes);
+}
+
+.feedback-overlay__bericht.fout {
+  background: var(--kleur-fout);
+}
+
+@keyframes feedback-pop {
+  0% {
+    transform: scale(0.4);
+    opacity: 0;
+  }
+  60% {
+    transform: scale(1.08);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
