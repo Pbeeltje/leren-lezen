@@ -4,6 +4,12 @@
   justify-content: center;
   gap: 20px;
   max-width: 700px;
+  /* Onbeperkt aantal profielen mogelijk — zelfde reden als .kern-lijst hieronder. */
+  max-height: calc(100dvh - 220px);
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  padding: 4px;
+  margin: -4px;
 }
 
 .tegel-grid .icoon-tegel {
@@ -16,6 +22,14 @@
   flex-direction: column;
   gap: 14px;
   width: min(90vw, 480px);
+  /* Met genoeg kernen wordt deze lijst langer dan het scherm — #app/body hebben
+     overflow:hidden, dus zonder dit zouden latere kernen onbereikbaar worden
+     (geen scroll, geen manier om de knoppen te raken). */
+  max-height: calc(100dvh - 260px);
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  padding: 4px 4px 12px;
+  margin: -4px -4px -12px;
 }
 
 .kern-rij {
