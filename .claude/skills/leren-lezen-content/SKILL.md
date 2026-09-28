@@ -64,15 +64,24 @@ prefix convention), and the shared UI bits (`TopRechtsBalk`, `TerugKnop`,
 
 `oefenen` mode: samples a handful of items (5) from the kern's pool, assigns
 each a random exercise type, allows retry on wrong answer
-(`herkansingToegestaan: true`), awards `MUNTEN_OEFENING_GOED` per correct.
+(`herkansingToegestaan: true`).
 
-`toets` mode: uses the **entire** pool once each (currently 10 items → 10
-questions, since both content kernen are sized to exactly 10), no retry,
-awards `MUNTEN_TOETS_GOED` per correct + `MUNTEN_TOETS_PERFECT_BONUS` if
-perfect, computes 0–3 `sterren` from the fraction correct, ends in
-`TestResultScreen`. **If you resize a kern's pool away from 10, the toets
-question count changes with it** (`genereerSessie`/`genereerRekenSessie` use
-`kern.woordenbank.length` / a fixed `TOETS_AANTAL` — check both).
+`toets` mode: reading uses the kern's **entire** `woordenbank` once each (so
+question count = word count, currently 8-10 per kern); math uses a fixed
+`TOETS_AANTAL = 10` regardless of the kern's own pool size. No retry.
+Computes 0–3 `sterren` from the fraction correct, ends in `TestResultScreen`.
+
+**Repeat-scoring tiers** (`engine/rewards.ts`), applied identically in both
+`OefeningScreen` and `RekenOefeningScreen`: at screen-entry time, capture
+`haalKernVoortgang(kern.id)` *before* `markeerKernGestart` runs, and hold
+`wasAlGeoefend`/`wasAlGehaald` for the whole attempt (don't re-check mid-
+session). First-ever oefenen on a kern pays `MUNTEN_OEFENING_GOED` (2) per
+correct; any oefenen after that pays `MUNTEN_OEFENING_HERHAALD` (1). First-
+ever toets pass pays `MUNTEN_TOETS_GOED` (5) per correct plus
+`MUNTEN_TOETS_PERFECT_BONUS` (10) if perfect; a hertoets of an
+already-`voltooid` kern skips per-question rewards entirely and pays one flat
+`MUNTEN_TOETS_HERHAALD` (10) at the end regardless of score. This exists
+specifically to stop coin-farming on content a child has already mastered.
 
 A **skip button** (`.overslaan-knop`, bottom-center) is present on every
 exercise screen: counts as wrong (no reward) but always advances, so a stuck
@@ -100,22 +109,63 @@ least 2 *other* exercise types. This is tracked per-word, per-profile, in
 **Adding a word**: source/crop an image into `public/assets/images/woorden/`,
 add `{ woord, afbeeldingPad }` to the kern's `woordenbank` array, optionally
 add a `zinnen` entry. Verify the word is **klankzuiver** using only letters
-already in `kern.nieuweLetters` (cumulative from earlier kernen too).
-**Verify the picture is unambiguous** — a generic Fluent Emoji chosen for
-its filename doesn't always read as the intended word to a child (real bug:
-"mars" + a plain chocolate-bar icon read as "chocolade"; fixed by swapping
-the *word* to something with an unambiguous icon, not by fighting the icon).
+already in `kern.nieuweLetters` (cumulative from earlier kernen too — track
+the running letter set across all kernen when planning a new one; as of
+kern-05 it's up to 22 letters). **Verify the picture is unambiguous** — a
+generic Fluent Emoji chosen for its filename doesn't always read as the
+intended word to a child (real bug: "mars" + a plain chocolate-bar icon read
+as "chocolade"; fixed by swapping the *word* to something with an
+unambiguous icon, not by fighting the icon).
+
+**Reusing an existing icon for a different word is fine** — e.g. an avatar
+SVG doubles as a word image (`kat.svg`/`hond.svg` copied from
+`avatar-kat.svg`/`avatar-hond.svg`) when the same picture genuinely
+represents both. Just `cp` it into `images/woorden/<woord>.svg`, no need for
+a fresh fetch.
+
+Five reading kernen exist now, each themed (kern-01 maan/roos/vis, kern-02
+weer, kern-03 boerderijdieren, kern-04 dierentuindieren, kern-05 "spullen &
+lijf"). Kernen 2-4 deliberately avoided Dutch vowel digraphs (ie/oe/ou/ei) to
+keep "difficulty" flat while expanding vocabulary; kern-05's words came
+directly from a real "Circuitspelletjes kern 4" worksheet the user provided
+and *do* include a few digraphs (wiel, voet, zout) — trust an authentic
+sourced worksheet's difficulty judgment over your own stricter default.
+
+**Exercise types** (7 total): `plaatje-woord-keuze`, `woord-plaatje-keuze`,
+`hakken-en-plakken`, `woord-bouwen` (3D), `zin-invullen`, `zelf-typen`, and
+`woordwolk` — a picture with the correct word scattered 2-3× among ~7 cloud
+tiles (mix of the target word repeated + other woordenbank words as decoys),
+tap every correct instance to finish. Modeled directly on a classic "kleur
+de juiste woorden bij het plaatje" worksheet the user shared. Decoys are
+just other real words from the same kern (not letter-scrambled near-misses
+like the original worksheet) — simpler and always produces real words.
 
 ## Math-specific
 
 `RekenKern.bereik: [min, max]` is the number range; `objecten` is the pool of
-countable icons. Three exercise types: `hoeveelheid-naar-cijfer` (see N
+countable icons. Five exercise types: `hoeveelheid-naar-cijfer` (see N
 pictures, pick the numeral), `cijfer-naar-hoeveelheid` (see a numeral, pick
 the group with that many pictures), `dobbelsteen-naar-cijfer` (classic 1-6
 dice-pip pattern via `ui/components/Dobbelsteen.ts` — pure CSS grid, no
-image asset — pick the numeral). The dice type is hard-clamped to `[min,
-min(max,6)]` in `rekenenGenerator.ts` regardless of the kern's own range,
-since a die only has 6 faces.
+image asset — pick the numeral), `reeks-aanvullen` (typed-only, no choices:
+fill the gap in a 3-number sequence like `11-[ ]-13`), `optellen` (simple
+addition, sum always kept under 10, multiple choice — uses the everyday
+"erbij" framing groep-3 curricula favor over formal "plus").
+
+`RekenKern.oefeningTypen?: RekenOefeningType[]` restricts which types a kern
+uses — **set this explicitly whenever a kern's range makes some types
+meaningless**: counting-by-picture stops being useful once you're past ~10
+items to visually count, and a die literally can't show 11-20. Current
+kernen: 01 (1-6) and 02 (1-10) restrict to the three picture/dice types;
+03 (11-20) restricts to `['reeks-aanvullen']` only; 04 (optellen tot 10)
+restricts to `['optellen']` only. Without `oefeningTypen`,
+`rekenenGenerator.ts`'s `toepasbareTypen()` falls back to "all types that
+are structurally possible for this bereik" — that default previously let
+kern-01 silently pick up reeks-aanvullen/optellen when those types were
+added; explicit restriction is what keeps "addition is its own chapter" (a
+direct user request) actually true. The dice type is additionally
+hard-clamped to `[min, min(max,6)]` inside `maakOefening` regardless of the
+kern's own range.
 
 ## Profiles ("wie speelt er?")
 
