@@ -1,8 +1,8 @@
 import type { Kern, OefeningDefinitie, OefeningType, Woord } from '../content/types.ts';
 import { haalBlootstelling } from './progressStore.ts';
-import { KERNEN } from '../content/lezen/kernen/kernen.index.ts';
 
 export type OefenModus = 'oefenen' | 'toets';
+export type OefeningNummer = 1 | 2 | 3;
 
 const OEFENEN_AANTAL_WOORDEN = 5;
 // Een woord moet minstens dit vaak op een andere manier geoefend zijn voordat
@@ -12,46 +12,8 @@ const MIN_BLOOTSTELLING_VOOR_TYPEN = 2;
 // Tweeklanken/klankcombinaties waarop klank-herkennen let (zie kern-07-klanken.ts).
 const KLANKEN = ['oo', 'aa', 'au', 'ou', 'ui', 'eu', 'ee'];
 
-// Moeilijkheidsrangorde van de oefentypen (1 = makkelijkst), gebruikt om de mix per kern
-// geleidelijk moeilijker te maken vanaf kern 2 -- zie kiesGewogenType(). Geen enkel type
-// wordt ooit helemaal uitgesloten, ook niet in de laatste kern: alleen de kans verschuift.
-const MOEILIJKHEID: Record<OefeningType, number> = {
-  'plaatje-woord-keuze': 1,
-  'woord-plaatje-keuze': 1,
-  woordwolk: 2,
-  'letter-herkennen': 2,
-  'klank-herkennen': 3,
-  'hakken-en-plakken': 3,
-  'woord-bouwen': 4,
-  'zin-invullen': 4,
-  'drie-koppelen': 5,
-  'zelf-typen': 5,
-};
-
 function schud<T>(items: T[]): T[] {
   return [...items].sort(() => Math.random() - 0.5);
-}
-
-/**
- * Kiest één type uit `typen`, gewogen naar moeilijkheid. `factor` loopt van 0 (kern 1:
- * vrijwel gelijke kansen) naar 1 (laatste kern: moeilijkere types veel waarschijnlijker).
- * Elk type houdt altijd een basisgewicht van 1, dus niets wordt ooit echt uitgesloten.
- */
-function kiesGewogenType(typen: OefeningType[], factor: number): OefeningType {
-  const gewichten = typen.map((t) => 1 + factor * (MOEILIJKHEID[t] - 1) * 1.5);
-  const totaal = gewichten.reduce((a, b) => a + b, 0);
-  let r = Math.random() * totaal;
-  for (let i = 0; i < typen.length; i++) {
-    r -= gewichten[i];
-    if (r <= 0) return typen[i];
-  }
-  return typen[typen.length - 1];
-}
-
-/** 0 voor de eerste kern, oplopend naar 1 voor de laatste -- zie kiesGewogenType(). */
-function moeilijkheidsfactor(kern: Kern): number {
-  if (KERNEN.length <= 1) return 0;
-  return Math.max(0, Math.min(1, (kern.volgnummer - 1) / (KERNEN.length - 1)));
 }
 
 function kiesN<T>(items: T[], n: number): T[] {
@@ -177,21 +139,34 @@ export function woordVanOefening(oefening: OefeningDefinitie): string {
   return 'doel' in oefening ? oefening.doel.woord : oefening.woord.woord;
 }
 
-export function genereerSessie(kern: Kern, modus: OefenModus): OefeningDefinitie[] {
+/**
+ * Verdeelt de woordenbank in 3 vaste, ongeveer even grote stukken (round-robin op
+ * index) zodat Oefening 1/2/3 van eenzelfde kern elk hun eigen deel van de woorden
+ * behandelen in plaats van elke keer een willekeurige (en dus deels overlappende)
+ * steekproef uit de hele bank -- de toets blijft de hele bank in één keer, en is zo
+ * de enige plek die alles herhaalt/samenvat.
+ */
+function woordenVoorOefening(kern: Kern, nummer: OefeningNummer): Woord[] {
+  const deel = kern.woordenbank.filter((_, i) => i % 3 === nummer - 1);
+  return deel.length > 0 ? deel : kern.woordenbank;
+}
+
+export function genereerSessie(kern: Kern, modus: OefenModus, oefeningNummer: OefeningNummer = 1): OefeningDefinitie[] {
   const aantalAfleiders = modus === 'oefenen' ? 2 : 3;
-  const factor = moeilijkheidsfactor(kern);
 
   if (modus === 'oefenen') {
-    const woorden = kiesN(kern.woordenbank, Math.min(OEFENEN_AANTAL_WOORDEN, kern.woordenbank.length));
+    const pool = woordenVoorOefening(kern, oefeningNummer);
+    const woorden = kiesN(pool, Math.min(OEFENEN_AANTAL_WOORDEN, pool.length));
     return woorden.map((doel) => {
-      const type = kiesGewogenType(beschikbareTypen(kern, doel, []), factor);
+      const type = kiesN(beschikbareTypen(kern, doel, []), 1)[0];
       return maakOefening(kern, doel, type, aantalAfleiders);
     });
   }
 
-  // Toets: de hele woordenbank van deze kern, één vraag per woord (10 woorden -> 10 vragen).
+  // Toets: de hele woordenbank van deze kern, één vraag per woord -- de samenvattende
+  // herhaling van alles wat de 3 oefeningen afzonderlijk behandelden.
   const sessie = kern.woordenbank.map((doel) => {
-    const type = kiesGewogenType(beschikbareTypen(kern, doel, []), factor);
+    const type = kiesN(beschikbareTypen(kern, doel, []), 1)[0];
     return maakOefening(kern, doel, type, aantalAfleiders);
   });
   return schud(sessie);

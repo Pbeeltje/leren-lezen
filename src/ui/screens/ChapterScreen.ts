@@ -68,9 +68,10 @@ export function ChapterScreen(manager: ScreenManager, index: number): Screen {
       const label = document.createElement('span');
       label.textContent = `Oefening ${i}`;
       tegel.appendChild(label);
+      const ditNummer = i as 1 | 2 | 3;
       tegel.addEventListener('click', () => {
         speelSchermOvergang();
-        manager.push((m) => OefeningScreen(m, kern, 'oefenen', tekenTegels));
+        manager.push((m) => OefeningScreen(m, kern, 'oefenen', tekenTegels, ditNummer));
       });
       tegelGrid.appendChild(tegel);
     }

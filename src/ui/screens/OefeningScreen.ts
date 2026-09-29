@@ -17,7 +17,7 @@ import {
   MUNTEN_TOETS_HERHAALD,
   MUNTEN_TOETS_PERFECT_BONUS,
 } from '../../engine/rewards.ts';
-import { type OefenModus, genereerSessie, woordVanOefening } from '../../engine/oefeningGenerator.ts';
+import { type OefenModus, type OefeningNummer, genereerSessie, woordVanOefening } from '../../engine/oefeningGenerator.ts';
 import { renderPlaatjeWoordKeuze } from '../../games/plaatjeWoordKeuze.ts';
 import { renderWoordPlaatjeKeuze } from '../../games/woordPlaatjeKeuze.ts';
 import { renderHakkenEnPlakken } from '../../games/hakkenEnPlakken.ts';
@@ -84,8 +84,13 @@ export function OefeningScreen(
   kern: Kern,
   modus: OefenModus,
   onAfgerond: () => void,
+  oefeningNummer: OefeningNummer = 1,
 ): Screen {
-  const oefeningen = genereerSessie(kern, modus);
+  // In 'oefenen'-modus behandelt elke Oefening 1/2/3 zijn eigen, vaste derde van de
+  // woordenbank (zie woordenVoorOefening() in oefeningGenerator.ts) -- zo is elke
+  // oefening grotendeels nieuwe woorden i.p.v. drie keer een willekeurige greep uit
+  // dezelfde hele bank; de toets doorloopt daarna alles nog eens als samenvatting.
+  const oefeningen = genereerSessie(kern, modus, oefeningNummer);
   // Vastgelegd bij het starten van déze poging (niet later herberekend): bepaalt of
   // deze poging als "eerste keer" of "herhaling" beloond wordt.
   const voortgangBijStart = haalKernVoortgang(kern.id);

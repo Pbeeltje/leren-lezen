@@ -273,19 +273,35 @@ instead of silently dropping the request or silently violating the ordering.
 `hakken-en-plakken`, `woord-bouwen` (3D), `zin-invullen`, `zelf-typen`,
 `woordwolk`, `letter-herkennen`, `klank-herkennen`, `drie-koppelen`.
 
-**Difficulty ramps up from kern 2 onward.** `oefeningGenerator.ts` ranks
-every type 1 (easiest) to 5 (hardest) in `MOEILIJKHEID` and picks a word's
-type with `kiesGewogenType()`, weighted by `moeilijkheidsfactor(kern)` — 0 at
-kern 1 (types roughly equally likely) rising to 1 at the last kern (hard
-types much more likely). No type is ever fully excluded at any factor (every
-weight has a `+1` floor) — a direct requirement ("preserving each type of
-exercise until the end"), so don't change the weighting formula to let a
-weight hit zero. The factor is computed from `kern.volgnummer` against
-`KERNEN.length`, so adding an 8th kern automatically stretches the ramp
-rather than needing a manual update. Current ranking: tier 1
-`plaatje-woord-keuze`/`woord-plaatje-keuze`; tier 2 `woordwolk`/
-`letter-herkennen`; tier 3 `klank-herkennen`/`hakken-en-plakken`; tier 4
-`woord-bouwen`/`zin-invullen`; tier 5 `drie-koppelen`/`zelf-typen`.
+**Exercise type per word is picked uniformly at random** (`kiesN(types, 1)`
+in `genereerSessie`/`maakOefening`) — every applicable type for that word has
+an equal chance, in every kern. An earlier version weighted the pick toward
+harder types in later kernen (a difficulty "ramp"); that was explicitly
+walked back after the user tried it and found it wasn't landing ("the
+difficulty level doesn't really matter now, it's all too easy so far, so
+just use all difficulties together we've used so far") — don't reintroduce
+kern-position-based weighting without a fresh, explicit ask.
+
+**Each Oefening 1/2/3 covers a distinct, fixed third of the kern's
+woordenbank; the toets is the one place that reviews all of it.**
+`woordenVoorOefening(kern, nummer)` in `oefeningGenerator.ts` partitions
+`kern.woordenbank` round-robin by index (`i % 3`), and `genereerSessie(kern,
+'oefenen', oefeningNummer)` draws only from that slice — so replaying
+"Oefening 1" always reuses the same ~third of the words (reshuffled, not
+identical every time) rather than a fresh random sample of the *whole* bank
+that could overlap heavily with what Oefening 2/3 already covered. This was
+a direct request ("expand each topic so each exercise is mostly new words
+and the test is the review"). `ChapterScreen`'s tegel loop passes its loop
+index `i` (1/2/3) through as `oefeningNummer` when pushing `OefeningScreen`;
+`RekenOefeningScreen`/`rekenenGenerator.ts` were **not** changed the same
+way — math's "pool" is a number range, not discrete named words, so the same
+partitioning scheme doesn't map cleanly; flag it if the user asks for the
+same behavior on the math side, it'll need its own design. Note: multi-choice
+decoys (`kiesAfleiders`) still draw from the *whole* woordenbank regardless
+of partition, so a word from another oefening's slice can still appear as a
+wrong-answer option — that's intentional (keeps decoy pools varied) and
+doesn't defeat the "mostly new target words" goal, since only the `doel`
+word actually being taught is partition-restricted.
 
 `drie-koppelen` — three pictures and three words, shuffled independently in
 two columns; tap a picture then a word (either order) to attempt a pair,
