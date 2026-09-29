@@ -8,6 +8,7 @@ import { speelSchermOvergang } from '../../three/transitions.ts';
 import { KernOverviewScreen } from './KernOverviewScreen.ts';
 import { RekenKernOverviewScreen } from './RekenKernOverviewScreen.ts';
 import { ComingSoonScreen } from './ComingSoonScreen.ts';
+import { ProfileSelectScreen } from './ProfileSelectScreen.ts';
 
 export function TopicSelectScreen(manager: ScreenManager, leeftijd: LeeftijdId): Screen {
   const el = document.createElement('div');
@@ -43,7 +44,11 @@ export function TopicSelectScreen(manager: ScreenManager, leeftijd: LeeftijdId):
     grid.appendChild(tegel);
   }
 
-  const terug = maakTerugKnop(() => manager.pop());
+  // TopicSelectScreen wordt zowel gepusht (vanaf AgeSelectScreen) als via 'replace'
+  // bereikt (vanuit ProfileSelectScreen wanneer de leeftijd al bekend is, de gangbare
+  // route voor een terugkerend profiel) -- dus de stack kan hier maar 1 diep zijn.
+  // terugOfAnders pop't als er iets onder zit, en valt anders terug op het profielscherm.
+  const terug = maakTerugKnop(() => manager.terugOfAnders((m) => ProfileSelectScreen(m)));
   let topRechts: ReturnType<typeof maakTopRechtsBalk> | null = null;
 
   return {

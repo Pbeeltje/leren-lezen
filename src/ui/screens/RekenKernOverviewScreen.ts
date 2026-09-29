@@ -3,9 +3,11 @@ import { maakTerugKnop } from '../components/TerugKnop.ts';
 import { maakTopRechtsBalk } from '../components/TopRechtsBalk.ts';
 import { maakSterBalk } from '../components/ProgressStars.ts';
 import { REKEN_KERNEN } from '../../content/tellen/kernen/kernen.index.ts';
-import { haalKernVoortgang, OEFENSESSIES_VOOR_TOETS } from '../../engine/progressStore.ts';
+import { haalKernVoortgang, haalVoortgang, OEFENSESSIES_VOOR_TOETS } from '../../engine/progressStore.ts';
 import { speelSchermOvergang } from '../../three/transitions.ts';
 import { RekenChapterScreen } from './RekenChapterScreen.ts';
+import { TopicSelectScreen } from './TopicSelectScreen.ts';
+import { AgeSelectScreen } from './AgeSelectScreen.ts';
 
 export function RekenKernOverviewScreen(manager: ScreenManager): Screen {
   const el = document.createElement('div');
@@ -60,7 +62,13 @@ export function RekenKernOverviewScreen(manager: ScreenManager): Screen {
     });
   }
 
-  const terug = maakTerugKnop(() => manager.pop());
+  // Zie KernOverviewScreen.ts voor waarom dit terugOfAnders is i.p.v. pop().
+  const terug = maakTerugKnop(() =>
+    manager.terugOfAnders((m) => {
+      const leeftijd = haalVoortgang().laatstGekozenLeeftijd;
+      return leeftijd ? TopicSelectScreen(m, leeftijd) : AgeSelectScreen(m);
+    }),
+  );
   let topRechts: ReturnType<typeof maakTopRechtsBalk> | null = null;
 
   return {

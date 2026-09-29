@@ -21,6 +21,9 @@
 
 * {
   box-sizing: border-box;
+  /* Zie de toelichting bij body's cursor-regel hieronder: <button> e.d. krijgen in
+     sommige browsers anders hun eigen standaardcursor i.p.v. de aangepaste variant. */
+  cursor: inherit;
 }
 
 html,
@@ -37,6 +40,12 @@ body {
   color: var(--kleur-tekst);
   -webkit-tap-highlight-color: transparent;
   user-select: none;
+  /* Extra grote, dik omlijnde cursor zodat kleine kinderen (met een muis/trackpad,
+     dit is vooral relevant op een laptop i.p.v. een touchscreen) 'm makkelijker kunnen
+     volgen. ~2x een gangbare systeemcursor, met een dikke zwarte rand voor contrast op
+     zowel de donkere achtergrond als de witte kaarten. `*` erft 'm expliciet mee, want
+     <button> krijgt in sommige browsers anders zijn eigen standaardcursor. */
+  cursor: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='48' height='48' viewBox='0 0 48 48'><path d='M6 3 L6 42 L16.5 31.5 L24 45 L30 42 L22.5 28.5 L36 28.5 Z' fill='white' stroke='black' stroke-width='4' stroke-linejoin='round'/></svg>") 6 3, auto;
 }
 
 #app {
@@ -56,7 +65,9 @@ body {
 
 button {
   font-family: inherit;
-  cursor: pointer;
+  /* Niet 'pointer' -- dat zou de systeem-handcursor terugzetten en de aangepaste,
+     grotere cursor (zie body hierboven) op elke knop in de app overschrijven. */
+  cursor: inherit;
   border: none;
   touch-action: manipulation;
 }

@@ -3,9 +3,11 @@ import { maakTerugKnop } from '../components/TerugKnop.ts';
 import { maakTopRechtsBalk } from '../components/TopRechtsBalk.ts';
 import { maakSterBalk } from '../components/ProgressStars.ts';
 import { KERNEN } from '../../content/lezen/kernen/kernen.index.ts';
-import { haalKernVoortgang, OEFENSESSIES_VOOR_TOETS } from '../../engine/progressStore.ts';
+import { haalKernVoortgang, haalVoortgang, OEFENSESSIES_VOOR_TOETS } from '../../engine/progressStore.ts';
 import { speelSchermOvergang } from '../../three/transitions.ts';
 import { ChapterScreen } from './ChapterScreen.ts';
+import { TopicSelectScreen } from './TopicSelectScreen.ts';
+import { AgeSelectScreen } from './AgeSelectScreen.ts';
 
 // Hoofdstukkenoverzicht: alleen een lijst met voortgang. Niets is op slot — elk
 // hoofdstuk (met zijn 3 oefeningen + toets) is altijd bereikbaar door op de rij te
@@ -63,7 +65,15 @@ export function KernOverviewScreen(manager: ScreenManager): Screen {
     });
   }
 
-  const terug = maakTerugKnop(() => manager.pop());
+  // Normaal gepusht vanaf TopicSelectScreen, maar ChapterScreen's terug-knop komt hier
+  // via 'replace' terug (stack dan maar 1 diep) -- terugOfAnders pop't als dat kan en
+  // valt anders terug op TopicSelectScreen (of AgeSelectScreen als de leeftijd ooit weg is).
+  const terug = maakTerugKnop(() =>
+    manager.terugOfAnders((m) => {
+      const leeftijd = haalVoortgang().laatstGekozenLeeftijd;
+      return leeftijd ? TopicSelectScreen(m, leeftijd) : AgeSelectScreen(m);
+    }),
+  );
   let topRechts: ReturnType<typeof maakTopRechtsBalk> | null = null;
 
   return {

@@ -27,6 +27,27 @@ screen is a factory function `(manager: ScreenManager) => Screen`.
 empty at that point), so its terug button explicitly `replace`s to
 `ProfileSelectScreen` rather than calling `pop()`.
 
+**A terug button must never call bare `pop()` on a screen that can also be
+reached via `replace()`** — `pop()` silently no-ops once the stack is only 1
+deep, so the button visually does nothing (a real, reported bug: "back
+button doesn't work" on `KernOverviewScreen`, root-caused to `ChapterScreen`'s
+terug button doing `manager.replace((m) => KernOverviewScreen(m))`, which
+collapses the stack to length 1 right under it). Since it's easy to lose
+track of every place a given screen can be entered from (`TopicSelectScreen`
+alone is reached via `push`, from `AgeSelectScreen`, *and* via `replace`,
+from `ProfileSelectScreen` when a leeftijd is already saved — the common
+path for a returning profile), use `manager.terugOfAnders(fallbackFactory)`
+instead of raw `pop()` on any screen whose entry points aren't 100% single
+and push-only: it pops when the stack actually has something below, and
+falls back to `fallbackFactory` (a `replace`) when it doesn't. Screens fixed
+this way so far: `TopicSelectScreen` (falls back to `ProfileSelectScreen`),
+`KernOverviewScreen`/`RekenKernOverviewScreen` (fall back to
+`TopicSelectScreen` with the saved `laatstGekozenLeeftijd`, or
+`AgeSelectScreen` if that's somehow missing). Before adding a new
+`replace()` call anywhere, check whether it lands on a screen whose terug
+button assumes it was pushed — if so, that screen now needs
+`terugOfAnders` too.
+
 **Gotcha already hit twice**: any component with its own event subscription
 (`MuntenTeller`, `ProfielMenu`) must be *created fresh inside `mount()`* and
 torn down in `unmount()` — never created once in the screen factory body and

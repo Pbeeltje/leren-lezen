@@ -7,7 +7,7 @@ class SceneManager {
   readonly scene = new THREE.Scene();
   readonly camera = new THREE.PerspectiveCamera(50, 1, 0.1, 100);
   private renderer?: THREE.WebGLRenderer;
-  private klok = new THREE.Clock();
+  private klok = new THREE.Timer();
   private animatieFuncties = new Set<(delta: number, verlopen: number) => void>();
   private sterren?: THREE.Points;
 
@@ -30,7 +30,7 @@ class SceneManager {
     this.pasGrootteAan();
     window.addEventListener('resize', () => this.pasGrootteAan());
 
-    this.renderer.setAnimationLoop(() => this.tik());
+    this.renderer.setAnimationLoop((tijd) => this.tik(tijd));
   }
 
   private maakAchtergrondSterren(): void {
@@ -63,9 +63,10 @@ class SceneManager {
     return () => this.animatieFuncties.delete(fn);
   }
 
-  private tik(): void {
+  private tik(tijd: number): void {
+    this.klok.update(tijd);
     const delta = this.klok.getDelta();
-    const verlopen = this.klok.getElapsedTime();
+    const verlopen = this.klok.getElapsed();
 
     if (this.sterren) {
       this.sterren.rotation.y = verlopen * 0.01;

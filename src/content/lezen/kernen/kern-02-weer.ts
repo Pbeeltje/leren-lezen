@@ -17,15 +17,15 @@ export const kern02Weer: Kern = {
   ],
   nieuweLetters: ['z', 'e', 'g', 'w', 'd', 't', 'l', 'k'],
   // zon/tas gebruiken de echte foto's uit bronbestanden/ (zie kern-01 voor de toelichting).
+  // 'was' (verwarrend icoon) en 'storm' (het plaatje leest als een tornado, niet als
+  // "hard waaien") zijn geschrapt op verzoek.
   woordenbank: [
     woord('zon', false, 'jpg'),
     woord('regen'),
     woord('wind'),
-    woord('storm'),
     woord('mist'),
     woord('wolk'),
     woord('tas', false, 'jpg'),
-    woord('was'),
     woord('nat', true),
   ],
   // 'nat' is een bijvoeglijk naamwoord: net als eerder bij 'rood'/'warm'/'koud' heeft
@@ -33,5 +33,5 @@ export const kern02Weer: Kern = {
   // "regen" of "water" betekenen). vereistTekst: true sluit daarom de oefentypen uit
   // waar alleen het kale plaatje staat (zie oefeningGenerator.ts); de zin hieronder
   // geeft de context die dat oplost voor de resterende typen.
-  zinnen: [{ zin: 'Door de regen is mijn jas helemaal ___.', doel: woord('nat', true), afleiders: [woord('was'), woord('wind')] }],
+  zinnen: [{ zin: 'Door de regen is mijn jas helemaal ___.', doel: woord('nat', true), afleiders: [woord('mist'), woord('wind')] }],
 };
