@@ -1,0 +1,638 @@
+[
+  {
+    "n": 1,
+    "slug": "plaatje-woord-keuze",
+    "text": "Welk woord hoort bij het plaatje?",
+    "path": "public/assets/audio/instructies/plaatje-woord-keuze.mp3"
+  },
+  {
+    "n": 2,
+    "slug": "woord-plaatje-keuze",
+    "text": "Welk plaatje hoort bij het woord?",
+    "path": "public/assets/audio/instructies/woord-plaatje-keuze.mp3"
+  },
+  {
+    "n": 3,
+    "slug": "hakken-en-plakken",
+    "text": "Tik de letters in de juiste volgorde",
+    "path": "public/assets/audio/instructies/hakken-en-plakken.mp3"
+  },
+  {
+    "n": 4,
+    "slug": "woord-bouwen",
+    "text": "Bouw het woord met de blokjes",
+    "path": "public/assets/audio/instructies/woord-bouwen.mp3"
+  },
+  {
+    "n": 5,
+    "slug": "zelf-typen",
+    "text": "Typ het woord dat je op het plaatje ziet",
+    "path": "public/assets/audio/instructies/zelf-typen.mp3"
+  },
+  {
+    "n": 6,
+    "slug": "zin-invullen",
+    "text": "Welk woord past in de zin?",
+    "path": "public/assets/audio/instructies/zin-invullen.mp3"
+  },
+  {
+    "n": 7,
+    "slug": "woordwolk",
+    "text": "Tik alle woorden aan die bij het plaatje horen",
+    "path": "public/assets/audio/instructies/woordwolk.mp3"
+  },
+  {
+    "n": 8,
+    "slug": "letter-herkennen",
+    "text": "Welk woord heeft deze letter?",
+    "path": "public/assets/audio/instructies/letter-herkennen.mp3"
+  },
+  {
+    "n": 9,
+    "slug": "klank-herkennen",
+    "text": "Welk woord heeft deze klank?",
+    "path": "public/assets/audio/instructies/klank-herkennen.mp3"
+  },
+  {
+    "n": 10,
+    "slug": "drie-koppelen",
+    "text": "Welk plaatje hoort bij welk woord?",
+    "path": "public/assets/audio/instructies/drie-koppelen.mp3"
+  },
+  {
+    "n": 11,
+    "slug": "hoeveelheid-naar-cijfer",
+    "text": "Hoeveel zie je? Kies het juiste cijfer",
+    "path": "public/assets/audio/instructies/hoeveelheid-naar-cijfer.mp3"
+  },
+  {
+    "n": 12,
+    "slug": "hoeveelheid-typen",
+    "text": "Hoeveel zie je? Typ het cijfer",
+    "path": "public/assets/audio/instructies/hoeveelheid-typen.mp3"
+  },
+  {
+    "n": 13,
+    "slug": "cijfer-naar-hoeveelheid",
+    "text": "Welk groepje heeft er zoveel?",
+    "path": "public/assets/audio/instructies/cijfer-naar-hoeveelheid.mp3"
+  },
+  {
+    "n": 14,
+    "slug": "dobbelsteen-naar-cijfer",
+    "text": "Welk cijfer hoort bij de dobbelsteen?",
+    "path": "public/assets/audio/instructies/dobbelsteen-naar-cijfer.mp3"
+  },
+  {
+    "n": 15,
+    "slug": "dubbele-dobbelsteen-naar-cijfer",
+    "text": "Welk cijfer hoort bij de dobbelstenen?",
+    "path": "public/assets/audio/instructies/dubbele-dobbelsteen-naar-cijfer.mp3"
+  },
+  {
+    "n": 16,
+    "slug": "reeks-aanvullen",
+    "text": "Welk getal ontbreekt?",
+    "path": "public/assets/audio/instructies/reeks-aanvullen.mp3"
+  },
+  {
+    "n": 17,
+    "slug": "optellen",
+    "text": "Hoeveel is dat samen?",
+    "path": "public/assets/audio/instructies/optellen.mp3"
+  },
+  {
+    "n": 18,
+    "slug": "feedback-goed-1",
+    "text": "Goed zo!",
+    "path": "public/assets/audio/instructies/feedback-goed-1.mp3"
+  },
+  {
+    "n": 19,
+    "slug": "feedback-goed-2",
+    "text": "Knap gedaan!",
+    "path": "public/assets/audio/instructies/feedback-goed-2.mp3"
+  },
+  {
+    "n": 20,
+    "slug": "feedback-goed-3",
+    "text": "Top!",
+    "path": "public/assets/audio/instructies/feedback-goed-3.mp3"
+  },
+  {
+    "n": 21,
+    "slug": "feedback-goed-4",
+    "text": "Yes!",
+    "path": "public/assets/audio/instructies/feedback-goed-4.mp3"
+  },
+  {
+    "n": 22,
+    "slug": "feedback-fout-1",
+    "text": "Bijna!",
+    "path": "public/assets/audio/instructies/feedback-fout-1.mp3"
+  },
+  {
+    "n": 23,
+    "slug": "feedback-fout-2",
+    "text": "Probeer nog eens!",
+    "path": "public/assets/audio/instructies/feedback-fout-2.mp3"
+  },
+  {
+    "n": 24,
+    "slug": "aap",
+    "text": "aap",
+    "path": "public/assets/audio/woorden/aap.mp3"
+  },
+  {
+    "n": 25,
+    "slug": "arm",
+    "text": "arm",
+    "path": "public/assets/audio/woorden/arm.mp3"
+  },
+  {
+    "n": 26,
+    "slug": "auto",
+    "text": "auto",
+    "path": "public/assets/audio/woorden/auto.mp3"
+  },
+  {
+    "n": 27,
+    "slug": "bal",
+    "text": "bal",
+    "path": "public/assets/audio/woorden/bal.mp3"
+  },
+  {
+    "n": 28,
+    "slug": "beer",
+    "text": "beer",
+    "path": "public/assets/audio/woorden/beer.mp3"
+  },
+  {
+    "n": 29,
+    "slug": "bel",
+    "text": "bel",
+    "path": "public/assets/audio/woorden/bel.mp3"
+  },
+  {
+    "n": 30,
+    "slug": "bij",
+    "text": "bij",
+    "path": "public/assets/audio/woorden/bij.mp3"
+  },
+  {
+    "n": 31,
+    "slug": "bliksem",
+    "text": "bliksem",
+    "path": "public/assets/audio/woorden/bliksem.mp3"
+  },
+  {
+    "n": 32,
+    "slug": "boom",
+    "text": "boom",
+    "path": "public/assets/audio/woorden/boom.mp3"
+  },
+  {
+    "n": 33,
+    "slug": "das",
+    "text": "das",
+    "path": "public/assets/audio/woorden/das.mp3"
+  },
+  {
+    "n": 34,
+    "slug": "deur",
+    "text": "deur",
+    "path": "public/assets/audio/woorden/deur.mp3"
+  },
+  {
+    "n": 35,
+    "slug": "droog",
+    "text": "droog",
+    "path": "public/assets/audio/woorden/droog.mp3"
+  },
+  {
+    "n": 36,
+    "slug": "eend",
+    "text": "eend",
+    "path": "public/assets/audio/woorden/eend.mp3"
+  },
+  {
+    "n": 37,
+    "slug": "eet",
+    "text": "eet",
+    "path": "public/assets/audio/woorden/eet.mp3"
+  },
+  {
+    "n": 38,
+    "slug": "egel",
+    "text": "egel",
+    "path": "public/assets/audio/woorden/egel.mp3"
+  },
+  {
+    "n": 39,
+    "slug": "ezel",
+    "text": "ezel",
+    "path": "public/assets/audio/woorden/ezel.mp3"
+  },
+  {
+    "n": 40,
+    "slug": "flat",
+    "text": "flat",
+    "path": "public/assets/audio/woorden/flat.mp3"
+  },
+  {
+    "n": 41,
+    "slug": "fruit",
+    "text": "fruit",
+    "path": "public/assets/audio/woorden/fruit.mp3"
+  },
+  {
+    "n": 42,
+    "slug": "gans",
+    "text": "gans",
+    "path": "public/assets/audio/woorden/gans.mp3"
+  },
+  {
+    "n": 43,
+    "slug": "giraf",
+    "text": "giraf",
+    "path": "public/assets/audio/woorden/giraf.mp3"
+  },
+  {
+    "n": 44,
+    "slug": "haan",
+    "text": "haan",
+    "path": "public/assets/audio/woorden/haan.mp3"
+  },
+  {
+    "n": 45,
+    "slug": "hagel",
+    "text": "hagel",
+    "path": "public/assets/audio/woorden/hagel.mp3"
+  },
+  {
+    "n": 46,
+    "slug": "heet",
+    "text": "heet",
+    "path": "public/assets/audio/woorden/heet.mp3"
+  },
+  {
+    "n": 47,
+    "slug": "hond",
+    "text": "hond",
+    "path": "public/assets/audio/woorden/hond.mp3"
+  },
+  {
+    "n": 48,
+    "slug": "hout",
+    "text": "hout",
+    "path": "public/assets/audio/woorden/hout.mp3"
+  },
+  {
+    "n": 49,
+    "slug": "huis",
+    "text": "huis",
+    "path": "public/assets/audio/woorden/huis.mp3"
+  },
+  {
+    "n": 50,
+    "slug": "hulst",
+    "text": "hulst",
+    "path": "public/assets/audio/woorden/hulst.mp3"
+  },
+  {
+    "n": 51,
+    "slug": "kaas",
+    "text": "kaas",
+    "path": "public/assets/audio/woorden/kaas.mp3"
+  },
+  {
+    "n": 52,
+    "slug": "kameel",
+    "text": "kameel",
+    "path": "public/assets/audio/woorden/kameel.mp3"
+  },
+  {
+    "n": 53,
+    "slug": "kat",
+    "text": "kat",
+    "path": "public/assets/audio/woorden/kat.mp3"
+  },
+  {
+    "n": 54,
+    "slug": "kip",
+    "text": "kip",
+    "path": "public/assets/audio/woorden/kip.mp3"
+  },
+  {
+    "n": 55,
+    "slug": "koek",
+    "text": "koek",
+    "path": "public/assets/audio/woorden/koek.mp3"
+  },
+  {
+    "n": 56,
+    "slug": "koud",
+    "text": "koud",
+    "path": "public/assets/audio/woorden/koud.mp3"
+  },
+  {
+    "n": 57,
+    "slug": "kous",
+    "text": "kous",
+    "path": "public/assets/audio/woorden/kous.mp3"
+  },
+  {
+    "n": 58,
+    "slug": "krokodil",
+    "text": "krokodil",
+    "path": "public/assets/audio/woorden/krokodil.mp3"
+  },
+  {
+    "n": 59,
+    "slug": "lam",
+    "text": "lam",
+    "path": "public/assets/audio/woorden/lam.mp3"
+  },
+  {
+    "n": 60,
+    "slug": "maan",
+    "text": "maan",
+    "path": "public/assets/audio/woorden/maan.mp3"
+  },
+  {
+    "n": 61,
+    "slug": "mais",
+    "text": "mais",
+    "path": "public/assets/audio/woorden/mais.mp3"
+  },
+  {
+    "n": 62,
+    "slug": "mist",
+    "text": "mist",
+    "path": "public/assets/audio/woorden/mist.mp3"
+  },
+  {
+    "n": 63,
+    "slug": "mol",
+    "text": "mol",
+    "path": "public/assets/audio/woorden/mol.mp3"
+  },
+  {
+    "n": 64,
+    "slug": "muis",
+    "text": "muis",
+    "path": "public/assets/audio/woorden/muis.mp3"
+  },
+  {
+    "n": 65,
+    "slug": "muts",
+    "text": "muts",
+    "path": "public/assets/audio/woorden/muts.mp3"
+  },
+  {
+    "n": 66,
+    "slug": "nat",
+    "text": "nat",
+    "path": "public/assets/audio/woorden/nat.mp3"
+  },
+  {
+    "n": 67,
+    "slug": "neus",
+    "text": "neus",
+    "path": "public/assets/audio/woorden/neus.mp3"
+  },
+  {
+    "n": 68,
+    "slug": "noot",
+    "text": "noot",
+    "path": "public/assets/audio/woorden/noot.mp3"
+  },
+  {
+    "n": 69,
+    "slug": "olifant",
+    "text": "olifant",
+    "path": "public/assets/audio/woorden/olifant.mp3"
+  },
+  {
+    "n": 70,
+    "slug": "oma",
+    "text": "oma",
+    "path": "public/assets/audio/woorden/oma.mp3"
+  },
+  {
+    "n": 71,
+    "slug": "onweer",
+    "text": "onweer",
+    "path": "public/assets/audio/woorden/onweer.mp3"
+  },
+  {
+    "n": 72,
+    "slug": "oog",
+    "text": "oog",
+    "path": "public/assets/audio/woorden/oog.mp3"
+  },
+  {
+    "n": 73,
+    "slug": "oor",
+    "text": "oor",
+    "path": "public/assets/audio/woorden/oor.mp3"
+  },
+  {
+    "n": 74,
+    "slug": "paard",
+    "text": "paard",
+    "path": "public/assets/audio/woorden/paard.mp3"
+  },
+  {
+    "n": 75,
+    "slug": "panda",
+    "text": "panda",
+    "path": "public/assets/audio/woorden/panda.mp3"
+  },
+  {
+    "n": 76,
+    "slug": "pet",
+    "text": "pet",
+    "path": "public/assets/audio/woorden/pet.mp3"
+  },
+  {
+    "n": 77,
+    "slug": "pot",
+    "text": "pot",
+    "path": "public/assets/audio/woorden/pot.mp3"
+  },
+  {
+    "n": 78,
+    "slug": "raam",
+    "text": "raam",
+    "path": "public/assets/audio/woorden/raam.mp3"
+  },
+  {
+    "n": 79,
+    "slug": "ram",
+    "text": "ram",
+    "path": "public/assets/audio/woorden/ram.mp3"
+  },
+  {
+    "n": 80,
+    "slug": "regen",
+    "text": "regen",
+    "path": "public/assets/audio/woorden/regen.mp3"
+  },
+  {
+    "n": 81,
+    "slug": "roos",
+    "text": "roos",
+    "path": "public/assets/audio/woorden/roos.mp3"
+  },
+  {
+    "n": 82,
+    "slug": "slee",
+    "text": "slee",
+    "path": "public/assets/audio/woorden/slee.mp3"
+  },
+  {
+    "n": 83,
+    "slug": "sneeuw",
+    "text": "sneeuw",
+    "path": "public/assets/audio/woorden/sneeuw.mp3"
+  },
+  {
+    "n": 84,
+    "slug": "sok",
+    "text": "sok",
+    "path": "public/assets/audio/woorden/sok.mp3"
+  },
+  {
+    "n": 85,
+    "slug": "spook",
+    "text": "spook",
+    "path": "public/assets/audio/woorden/spook.mp3"
+  },
+  {
+    "n": 86,
+    "slug": "ster",
+    "text": "ster",
+    "path": "public/assets/audio/woorden/ster.mp3"
+  },
+  {
+    "n": 87,
+    "slug": "tak",
+    "text": "tak",
+    "path": "public/assets/audio/woorden/tak.mp3"
+  },
+  {
+    "n": 88,
+    "slug": "tas",
+    "text": "tas",
+    "path": "public/assets/audio/woorden/tas.mp3"
+  },
+  {
+    "n": 89,
+    "slug": "trui",
+    "text": "trui",
+    "path": "public/assets/audio/woorden/trui.mp3"
+  },
+  {
+    "n": 90,
+    "slug": "tuin",
+    "text": "tuin",
+    "path": "public/assets/audio/woorden/tuin.mp3"
+  },
+  {
+    "n": 91,
+    "slug": "vaas",
+    "text": "vaas",
+    "path": "public/assets/audio/woorden/vaas.mp3"
+  },
+  {
+    "n": 92,
+    "slug": "varken",
+    "text": "varken",
+    "path": "public/assets/audio/woorden/varken.mp3"
+  },
+  {
+    "n": 93,
+    "slug": "vis",
+    "text": "vis",
+    "path": "public/assets/audio/woorden/vis.mp3"
+  },
+  {
+    "n": 94,
+    "slug": "voet",
+    "text": "voet",
+    "path": "public/assets/audio/woorden/voet.mp3"
+  },
+  {
+    "n": 95,
+    "slug": "vos",
+    "text": "vos",
+    "path": "public/assets/audio/woorden/vos.mp3"
+  },
+  {
+    "n": 96,
+    "slug": "vuur",
+    "text": "vuur",
+    "path": "public/assets/audio/woorden/vuur.mp3"
+  },
+  {
+    "n": 97,
+    "slug": "wiel",
+    "text": "wiel",
+    "path": "public/assets/audio/woorden/wiel.mp3"
+  },
+  {
+    "n": 98,
+    "slug": "wind",
+    "text": "wind",
+    "path": "public/assets/audio/woorden/wind.mp3"
+  },
+  {
+    "n": 99,
+    "slug": "wol",
+    "text": "wol",
+    "path": "public/assets/audio/woorden/wol.mp3"
+  },
+  {
+    "n": 100,
+    "slug": "wolf",
+    "text": "wolf",
+    "path": "public/assets/audio/woorden/wolf.mp3"
+  },
+  {
+    "n": 101,
+    "slug": "wolk",
+    "text": "wolk",
+    "path": "public/assets/audio/woorden/wolk.mp3"
+  },
+  {
+    "n": 102,
+    "slug": "zaai",
+    "text": "zaai",
+    "path": "public/assets/audio/woorden/zaai.mp3"
+  },
+  {
+    "n": 103,
+    "slug": "zebra",
+    "text": "zebra",
+    "path": "public/assets/audio/woorden/zebra.mp3"
+  },
+  {
+    "n": 104,
+    "slug": "zeep",
+    "text": "zeep",
+    "path": "public/assets/audio/woorden/zeep.mp3"
+  },
+  {
+    "n": 105,
+    "slug": "zon",
+    "text": "zon",
+    "path": "public/assets/audio/woorden/zon.mp3"
+  },
+  {
+    "n": 106,
+    "slug": "zout",
+    "text": "zout",
+    "path": "public/assets/audio/woorden/zout.mp3"
+  }
+]

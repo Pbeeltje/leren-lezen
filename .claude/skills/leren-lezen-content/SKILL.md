@@ -518,3 +518,35 @@ the ~104px-tall fixed-button zone, which "safe center" alone doesn't help
 with since that content was never actually overflowing). If you touch
 `.scherm`'s layout, re-test at a narrow *and* short viewport, not just
 desktop width — this class of bug doesn't show up at 1100×850.
+
+## Audio (planned, not wired in yet)
+
+`engine/audioManager.ts`'s `speelAf(pad)` plays a clip if it exists at that
+path and no-ops silently otherwise (the whole point: content/game code can
+call it unconditionally and it's a pure asset drop-in later) — but as of this
+writing **no call site actually calls it**. `ontgrendelAudio()` (the
+iOS/Safari autoplay-unlock hack) is wired at the two profile/age entry
+points; the actual playback function isn't invoked anywhere yet.
+
+The recording plan: the user is voicing every clip themselves rather than
+using AI TTS, in one continuous take rather than 100+ separate files.
+`bronbestanden/audio-script.txt` is the numbered script to read aloud
+(instructions for every reading + math exercise type, the 6 feedback
+phrases, then all 73 unique reading vocabulary words, each on its own line,
+grouped into labelled sections); `bronbestanden/audio-manifest.json` is the
+matching `{n, slug, text, path}` list. Once the user hands back one
+recording, split it by silence detection (a portable `ffmpeg` is available
+via `npm install ffmpeg-static` in scratch — no system install needed,
+verified working) and match segments to the manifest in order; save each
+clip to the `path` given there (`public/assets/audio/instructies/*.mp3` or
+`.../woorden/*.mp3`) and only then start wiring `speelAf()` calls into the
+game renderers. `zin-invullen` sentence audio was deliberately left out of
+this first script — playing the target word out loud before the child
+answers would spoil a fill-in-the-blank question; that needs its own design
+(e.g. read the sentence with a pause where the blank is) before recording it.
+
+**UI requirement for whenever this gets wired in**: every place audio plays
+needs a large, obvious replay button next to it (direct user request) — a
+young child needs to be able to re-trigger the instruction/word audio
+on demand, not just hear it once automatically. Don't wire in `speelAf()`
+calls without also adding that button in the same change.

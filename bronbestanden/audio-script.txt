@@ -1,0 +1,126 @@
+Voorleesscript - leren-lezen
+=============================
+
+Lees elke regel hardop voor, in volgorde, met een korte pauze (ong. 1,5-2
+seconden stilte) tussen elke regel. Bij een verspreking: gewoon een moment
+stilte laten vallen en de regel opnieuw lezen (het is prima als een zin dus
+twee keer voorkomt in de opname).
+
+
+--- Instructies - Lezen ---
+
+1. Welk woord hoort bij het plaatje?
+2. Welk plaatje hoort bij het woord?
+3. Tik de letters in de juiste volgorde
+4. Bouw het woord met de blokjes
+5. Typ het woord dat je op het plaatje ziet
+6. Welk woord past in de zin?
+7. Tik alle woorden aan die bij het plaatje horen
+8. Welk woord heeft deze letter?
+9. Welk woord heeft deze klank?
+10. Welk plaatje hoort bij welk woord?
+
+--- Instructies - Rekenen ---
+
+11. Hoeveel zie je? Kies het juiste cijfer
+12. Hoeveel zie je? Typ het cijfer
+13. Welk groepje heeft er zoveel?
+14. Welk cijfer hoort bij de dobbelsteen?
+15. Welk cijfer hoort bij de dobbelstenen?
+16. Welk getal ontbreekt?
+17. Hoeveel is dat samen?
+
+--- Feedback ---
+
+18. Goed zo!
+19. Knap gedaan!
+20. Top!
+21. Yes!
+22. Bijna!
+23. Probeer nog eens!
+
+--- Woorden ---
+
+24. aap
+25. arm
+26. auto
+27. bal
+28. beer
+29. bel
+30. bij
+31. bliksem
+32. boom
+33. das
+34. deur
+35. droog
+36. eend
+37. eet
+38. egel
+39. ezel
+40. flat
+41. fruit
+42. gans
+43. giraf
+44. haan
+45. hagel
+46. heet
+47. hond
+48. hout
+49. huis
+50. hulst
+51. kaas
+52. kameel
+53. kat
+54. kip
+55. koek
+56. koud
+57. kous
+58. krokodil
+59. lam
+60. maan
+61. mais
+62. mist
+63. mol
+64. muis
+65. muts
+66. nat
+67. neus
+68. noot
+69. olifant
+70. oma
+71. onweer
+72. oog
+73. oor
+74. paard
+75. panda
+76. pet
+77. pot
+78. raam
+79. ram
+80. regen
+81. roos
+82. slee
+83. sneeuw
+84. sok
+85. spook
+86. ster
+87. tak
+88. tas
+89. trui
+90. tuin
+91. vaas
+92. varken
+93. vis
+94. voet
+95. vos
+96. vuur
+97. wiel
+98. wind
+99. wol
+100. wolf
+101. wolk
+102. zaai
+103. zebra
+104. zeep
+105. zon
+106. zout
