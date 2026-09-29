@@ -1,5 +1,5 @@
 import type { OefeningDefinitie } from '../content/types.ts';
-import { toonGoedFeedback } from '../ui/components/FeedbackOverlay.ts';
+import { toonGoedFeedback, toonFoutFeedback } from '../ui/components/FeedbackOverlay.ts';
 
 type Oefening = Extract<OefeningDefinitie, { type: 'hakken-en-plakken' }>;
 
@@ -12,7 +12,7 @@ function schudArray<T>(items: T[]): T[] {
 export function renderHakkenEnPlakken(
   container: HTMLElement,
   oefening: Oefening,
-  _opties: { herkansingToegestaan: boolean },
+  opties: { herkansingToegestaan: boolean },
   afgerond: (juist: boolean) => void,
 ): { vernietig: () => void } {
   container.innerHTML = '';
@@ -43,6 +43,7 @@ export function renderHakkenEnPlakken(
   kaart.appendChild(letterRij);
 
   let volgendeIndex = 0;
+  let afgehandeld = false;
   const volgorde = schudArray(letters);
 
   for (const letter of volgorde) {
@@ -51,7 +52,7 @@ export function renderHakkenEnPlakken(
     tegel.textContent = letter;
 
     tegel.addEventListener('click', () => {
-      if (tegel.classList.contains('gebruikt')) return;
+      if (afgehandeld || tegel.classList.contains('gebruikt')) return;
 
       if (letter === letters[volgendeIndex]) {
         tegel.classList.add('gebruikt');
@@ -61,12 +62,19 @@ export function renderHakkenEnPlakken(
         volgendeIndex++;
 
         if (volgendeIndex === letters.length) {
+          afgehandeld = true;
           toonGoedFeedback();
           setTimeout(() => afgerond(true), 100);
         }
       } else {
+        toonFoutFeedback();
         tegel.classList.add('fout-gekozen');
-        setTimeout(() => tegel.classList.remove('fout-gekozen'), 350);
+        if (opties.herkansingToegestaan) {
+          setTimeout(() => tegel.classList.remove('fout-gekozen'), 350);
+        } else {
+          afgehandeld = true;
+          afgerond(false);
+        }
       }
     });
 

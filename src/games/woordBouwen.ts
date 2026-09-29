@@ -1,5 +1,5 @@
 import type { OefeningDefinitie } from '../content/types.ts';
-import { toonGoedFeedback } from '../ui/components/FeedbackOverlay.ts';
+import { toonGoedFeedback, toonFoutFeedback } from '../ui/components/FeedbackOverlay.ts';
 import { LetterBlokkenScene } from '../three/letterBlocks.ts';
 
 type Oefening = Extract<OefeningDefinitie, { type: 'woord-bouwen' }>;
@@ -11,7 +11,7 @@ function schudArray<T>(items: T[]): T[] {
 export function renderWoordBouwen(
   container: HTMLElement,
   oefening: Oefening,
-  _opties: { herkansingToegestaan: boolean },
+  opties: { herkansingToegestaan: boolean },
   afgerond: (juist: boolean) => void,
 ): { vernietig: () => void } {
   container.innerHTML = '';
@@ -44,9 +44,12 @@ export function renderWoordBouwen(
   container.appendChild(kaart);
 
   let volgendeIndex = 0;
+  let afgehandeld = false;
   const alleLetters = schudArray([...letters, ...oefening.afleidLetters]);
 
   const scene = new LetterBlokkenScene(canvasHouder, (letter, blokIndex) => {
+    if (afgehandeld) return;
+
     if (letter === letters[volgendeIndex]) {
       scene.markeerGebruikt(blokIndex);
       const sleuf = sleuven[volgendeIndex];
@@ -55,11 +58,17 @@ export function renderWoordBouwen(
       volgendeIndex++;
 
       if (volgendeIndex === letters.length) {
+        afgehandeld = true;
         toonGoedFeedback();
         setTimeout(() => afgerond(true), 100);
       }
     } else {
+      toonFoutFeedback();
       scene.schudFout(blokIndex);
+      if (!opties.herkansingToegestaan) {
+        afgehandeld = true;
+        afgerond(false);
+      }
     }
   });
   scene.toonLetters(alleLetters);
