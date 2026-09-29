@@ -6,6 +6,40 @@ const cache = new Map<string, HTMLAudioElement>();
 let bestaatNietCache = new Set<string>();
 let ontgrendeld = false;
 
+const GEDEMPT_SLEUTEL = 'leren-lezen:gedempt';
+
+// Eén globale, niet per-profiel instelling (het is een instelling van het apparaat/de
+// afspeelknop, niet van welk kind er net speelt) -- zie ook progressStore.ts voor
+// hetzelfde "localStorage mag nooit crashen"-patroon.
+function leesGedemptUitOpslag(): boolean {
+  try {
+    return localStorage.getItem(GEDEMPT_SLEUTEL) === '1';
+  } catch {
+    return false;
+  }
+}
+
+let gedempt = leesGedemptUitOpslag();
+
+export function isGedempt(): boolean {
+  return gedempt;
+}
+
+export function zetGedempt(waarde: boolean): void {
+  gedempt = waarde;
+  try {
+    localStorage.setItem(GEDEMPT_SLEUTEL, waarde ? '1' : '0');
+  } catch {
+    // Genegeerd: voorkeur onthouden is fijn maar niet essentieel.
+  }
+  if (waarde) {
+    for (const element of cache.values()) {
+      element.pause();
+      element.currentTime = 0;
+    }
+  }
+}
+
 export function ontgrendelAudio(): void {
   if (ontgrendeld) return;
   ontgrendeld = true;
@@ -23,7 +57,7 @@ export function woordAudioPad(woord: string): string {
 }
 
 export function speelAf(pad: string | undefined): void {
-  if (!pad || bestaatNietCache.has(pad)) return;
+  if (gedempt || !pad || bestaatNietCache.has(pad)) return;
 
   let element = cache.get(pad);
   if (!element) {

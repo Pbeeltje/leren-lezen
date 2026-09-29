@@ -278,6 +278,40 @@
   border-color: var(--kleur-fout);
 }
 
+.luister-rij {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  justify-content: center;
+}
+
+/* Extra groot t.o.v. keuze-knop--plaatje (96px) -- deze oefening is voor de jongste
+   kinderen (peuters), dus grotere, makkelijker te raken vlakken. */
+.luister-plaatje {
+  width: 160px;
+  height: 160px;
+  padding: 10px;
+  background: #fff;
+  border: 5px solid var(--kleur-secundair);
+  border-radius: var(--radius-groot);
+}
+
+.luister-plaatje img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.luister-plaatje.gevonden {
+  background: var(--kleur-succes);
+  border-color: var(--kleur-succes);
+}
+
+.luister-plaatje.fout-gekozen {
+  background: var(--kleur-fout);
+  border-color: var(--kleur-fout);
+}
+
 .letter-rij {
   display: flex;
   gap: 12px;

@@ -21,6 +21,15 @@ export const TOPICS: Topic[] = [
     beschikbaar: true,
   },
   {
+    id: 'luisteren',
+    // Luister-en-wijs-aan: geen lezen nodig, dus juist voor de jongste kinderen. Ook
+    // beschikbaar voor 6 (leuk als korte, makkelijke afwisseling met lezen/tellen).
+    leeftijd: [3, 4, 5, 6],
+    titel: 'Luisteren',
+    icoonPad: '/assets/icons/luisteren.svg',
+    beschikbaar: true,
+  },
+  {
     id: 'vormen-kleuren',
     leeftijd: [3, 4, 5],
     titel: 'Vormen & kleuren',

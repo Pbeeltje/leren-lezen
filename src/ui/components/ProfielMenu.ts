@@ -9,6 +9,7 @@ import {
   wijzigProfielKleur,
 } from '../../engine/profielStore.ts';
 import { speelSchermOvergang } from '../../three/transitions.ts';
+import { isGedempt, zetGedempt } from '../../engine/audioManager.ts';
 import { AgeSelectScreen } from '../screens/AgeSelectScreen.ts';
 import { ProfileSelectScreen } from '../screens/ProfileSelectScreen.ts';
 
@@ -52,6 +53,28 @@ export function maakProfielMenu(manager: ScreenManager): { element: HTMLElement;
   kleurKnop.textContent = 'Kleur wijzigen';
   kleurKnop.addEventListener('click', () => wisselWeergave(kleurWeergave));
   hoofdWeergave.appendChild(kleurKnop);
+
+  const geluidKnop = document.createElement('button');
+  geluidKnop.className = 'profiel-menu__optie';
+  const geluidIcoon = document.createElement('img');
+  geluidIcoon.className = 'profiel-menu__optie-icoon';
+  geluidIcoon.alt = '';
+  geluidKnop.appendChild(geluidIcoon);
+  const geluidTekst = document.createElement('span');
+  geluidKnop.appendChild(geluidTekst);
+  function werkGeluidKnopBij(): void {
+    const gedempt = isGedempt();
+    geluidIcoon.src = gedempt ? '/assets/icons/geluid-uit.svg' : '/assets/icons/geluid.svg';
+    geluidTekst.textContent = gedempt ? 'Geluid aanzetten' : 'Geluid uitzetten';
+  }
+  werkGeluidKnopBij();
+  geluidKnop.addEventListener('click', () => {
+    zetGedempt(!isGedempt());
+    werkGeluidKnopBij();
+    // Blijft expres open (i.t.t. de andere opties) -- dit is een aan/uit-schakelaar,
+    // geen navigatie, dus geen reden om het paneel te sluiten na een klik.
+  });
+  hoofdWeergave.appendChild(geluidKnop);
 
   const leeftijdKnop = document.createElement('button');
   leeftijdKnop.className = 'profiel-menu__optie';

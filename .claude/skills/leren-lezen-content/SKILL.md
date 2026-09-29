@@ -542,13 +542,24 @@ screens hold the *current* exercise's audio path in a closure variable
 time it advances — don't wire a new "plays audio automatically" spot without
 giving it the same button.
 
-**Word-level pronunciation clips exist but aren't wired to anything yet** —
-`woordAudioPad()` and all ~80 `public/assets/audio/woorden/*.mp3` files are
-ready (e.g. tap a word to hear it spoken), that's just not built. `zin-invullen`
-sentence audio doesn't exist at all yet — playing the target word out loud
-before the child answers would spoil a fill-in-the-blank question, so it
-needs its own design (e.g. read the sentence with a pause where the blank
-is) before it can be recorded and added.
+**Word-level pronunciation clips** (`woordAudioPad()`,
+`public/assets/audio/woorden/*.mp3`) are used by the "Luisteren" topic (see
+below) — not by the reading kernen's exercises, which are still purely
+visual/instruction-audio only. `zin-invullen` sentence audio doesn't exist
+at all yet — playing the target word out loud before the child answers
+would spoil a fill-in-the-blank question, so it needs its own design (e.g.
+read the sentence with a pause where the blank is) before it can be
+recorded and added.
+
+**Mute**: `audioManager.ts`'s `isGedempt()`/`zetGedempt()` (backed by a
+single global `localStorage` key, not per-profile — it's a device/speaker
+setting, not something that should reset when a different kid picks their
+profile) gate `speelAf()` at the top; muting also stops anything already
+playing (iterates the internal clip cache and pauses each element). The
+toggle lives in `ProfielMenu.ts`'s main view as a `.profiel-menu__optie`
+row that swaps its icon/label and, unlike every other option in that menu,
+deliberately does *not* close the panel on click — it's a flip switch, not
+a navigation action.
 
 The clips themselves are the user's own voice, recorded in one continuous
 take from `bronbestanden/audio-script.txt` (the numbered read-aloud script)
@@ -567,3 +578,37 @@ clustered tightly (single Dutch words landed at 0.45-0.85s each), and
 sentence-length instructions scaled up proportionally with no outliers once
 you account for short isolated words naturally having more onset/offset
 overhead per character than fluent sentences.
+
+## "Luisteren" topic — the non-readers' entry point
+
+A third, structurally separate topic (`content/topics.ts`, id `luisteren`,
+ages 3-6, screen `ui/screens/LuisterenScreen.ts`) exists specifically for
+kids too young to read at all: hear a word spoken, tap the matching picture
+from 3 options, no text anywhere on screen. Built once real audio existed —
+this is what "audio narration" was ultimately *for*, from the original ask
+for something a 3-year-old could actually use.
+
+It's deliberately **not** built on the kernen/chapter/oefening-toets
+machinery reading and math use — no letters to learn, no progression, so
+none of that structure applies. `engine/luisterenGenerator.ts`'s
+`woordenpool()` builds its own flat, deduplicated pool by walking every
+reading kern's `woordenbank` and filtering out `vereistTekst` words (a
+3-year-old can't read the disambiguating sentence an adjective like `koud`
+needs, so those are skipped) — meaning **any word added to any reading kern
+automatically becomes available here too**, no separate content to
+maintain. `genereerLuisterVraag()` just picks a random target + 2 random
+distractors from that pool each round; there's no fixed question count or
+end state, `games/luisterKiezen.ts` calls back into
+`LuisterenScreen.ts`'s `volgendeVraag()` on every correct answer and just
+keeps going. Wrong answers always allow retry (no toets-style "fail
+immediately" mode exists here at all — consistent with "nothing is ever
+locked," and doubly appropriate for this age). A correct answer plays a
+small oefening-tier coin reward via the normal `progressStore`/`rewards.ts`
+plumbing, but this topic has no kern id, so none of the star/voortgang
+tracking applies to it.
+
+Picture buttons (`.luister-plaatje`, 160px) are deliberately larger than
+every other picture-choice type in the app (`.keuze-knop--plaatje` is 96px)
+— bigger, easier-to-hit targets for the youngest hands. If you add another
+exercise aimed at this age group, match that sizing rather than reusing the
+6-year-old-oriented touch targets.

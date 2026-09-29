@@ -9,6 +9,7 @@ import { KernOverviewScreen } from './KernOverviewScreen.ts';
 import { RekenKernOverviewScreen } from './RekenKernOverviewScreen.ts';
 import { ComingSoonScreen } from './ComingSoonScreen.ts';
 import { ProfileSelectScreen } from './ProfileSelectScreen.ts';
+import { LuisterenScreen } from './LuisterenScreen.ts';
 
 export function TopicSelectScreen(manager: ScreenManager, leeftijd: LeeftijdId): Screen {
   const el = document.createElement('div');
@@ -36,6 +37,8 @@ export function TopicSelectScreen(manager: ScreenManager, leeftijd: LeeftijdId):
           manager.push((m) => KernOverviewScreen(m));
         } else if (topic.id === 'tellen') {
           manager.push((m) => RekenKernOverviewScreen(m));
+        } else if (topic.id === 'luisteren') {
+          manager.push((m) => LuisterenScreen(m));
         } else {
           manager.push((m) => ComingSoonScreen(m, topic.titel));
         }

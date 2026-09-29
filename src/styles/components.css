@@ -238,6 +238,15 @@
   font-weight: 700;
   font-size: 0.95rem;
   text-align: left;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.profiel-menu__optie-icoon {
+  width: 26px;
+  height: 26px;
+  flex-shrink: 0;
 }
 
 .profiel-menu__optie:active {
