@@ -240,19 +240,34 @@ dry) came from `game-icons:clothesline`, which is **CC BY 3.0** and does
 require attribution; see `ATTRIBUTIONS.md` at the project root, which must be
 kept up to date if more non-MIT icons are added this way.
 
-Seven reading kernen exist now (kern-01 maan/roos/vis, kern-02 weer, kern-03
+Eight reading kernen exist now (kern-01 maan/roos/vis, kern-02 weer, kern-03
 boerderijdieren, kern-04 dierentuindieren, kern-05 "spullen & lijf", kern-06
-"meer woorden", kern-07 "klanken"). Kernen 1-6 deliberately avoided Dutch
-long-vowel-digraph spelling (oo/aa/ee) and true diphthongs (ei/ij/ui/ou/eu/au)
-to keep "difficulty" flat while expanding vocabulary — except the words that
-were already spent as kern-01 structuurwoorden (`maan`, `roos` both contain
-"aa"/"oo" but were unavoidable, being the canonical VLL structure words).
-kern-07 ("klanken") is where all of those combinations get introduced at
-once, via the `klank-herkennen` exercise type; kern-05's words came directly
-from a real "Circuitspelletjes kern 4" worksheet the user provided and do
-include a couple of digraphs (wiel, voet) as an intentional exception — trust
-an authentic sourced worksheet's difficulty judgment over your own stricter
-default, but don't extend that exception to freely-invented words elsewhere.
+"meer woorden", kern-07 "klanken", kern-08 "weer, deel 2"). Kernen 1-6
+deliberately avoided Dutch long-vowel-digraph spelling (oo/aa/ee) and true
+diphthongs (ei/ij/ui/ou/eu/au) to keep "difficulty" flat while expanding
+vocabulary — except the words that were already spent as kern-01
+structuurwoorden (`maan`, `roos` both contain "aa"/"oo" but were unavoidable,
+being the canonical VLL structure words). kern-07 ("klanken") is where all of
+those combinations get introduced at once, via the `klank-herkennen`
+exercise type; kern-05's words came directly from a real "Circuitspelletjes
+kern 4" worksheet the user provided and do include a couple of digraphs
+(wiel, voet) as an intentional exception — trust an authentic sourced
+worksheet's difficulty judgment over your own stricter default, but don't
+extend that exception to freely-invented words elsewhere.
+
+**A theme can span two kernen when its vocabulary's difficulty does.**
+kern-08 exists because the user wanted `onweer`/`sneeuw`/`bliksem`/`hagel`
+added to the weather theme, but they need letters/klanken that don't land
+until kern-03 (h), kern-04 (b), kern-05 (u) and kern-07 (the "ee" klank) —
+too late to just add to kern-02. Rather than either breaking the
+letter-progression invariant or scattering the four words across whichever
+kern happens to unlock their letter, they're kept together as one coherent
+"part 2" chapter placed after every letter/klank they need is available
+(here, right after kern-07). This is the general pattern for "I want these
+specific words in kern X" when some of them aren't valid yet: check every
+word's letters against `nieuweLetters` cumulative through kern X, and if any
+fail, propose a same-theme sequel kern positioned after the last dependency
+instead of silently dropping the request or silently violating the ordering.
 
 **Exercise types** (10 total): `plaatje-woord-keuze`, `woord-plaatje-keuze`,
 `hakken-en-plakken`, `woord-bouwen` (3D), `zin-invullen`, `zelf-typen`,
