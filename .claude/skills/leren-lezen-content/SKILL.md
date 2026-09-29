@@ -222,11 +222,31 @@ independently instead of extrapolating one pitch across the whole sheet).
 Add new `<word>: (row, col)` entries to its `$grid`/`$memGrid` hashtables and
 rerun; `bronbestanden/contact.ps1` renders every image in `_staged/` as one
 labeled contact sheet so you can verify a whole batch in a single Read
-instead of one file at a time. These are real photos, not vectors — the
-`pad()`/`woord()` helper in each kern file takes an `ext` param
-(`woord('maan', 'jpg')` or similar per-file signature) specifically so a
-word can point at a `.jpg` instead of the default `.svg` without changing
-every other call site.
+instead of one file at a time (it picks up both `.jpg` and `.png`). These are
+real photos, not vectors — the `pad()`/`woord()` helper in each kern file
+takes an `ext` param (`woord('maan', 'jpg')` or similar per-file signature)
+specifically so a word can point at a `.jpg`/`.png` instead of the default
+`.svg` without changing every other call site.
+
+**Calibrating a new source image**: don't try to eyeball pixel coordinates
+from a normal Read of the image — render a ruler overlay first. Draw
+gridlines with `System.Drawing.Graphics.DrawLine` every 20-50px and label
+each one with `DrawString` using the *original, unscaled* coordinate value
+(not the scaled/displayed pixel position) — then Read the overlay and read
+the boundaries off the labels directly. Two concrete mistakes already made
+doing this: (1) extrapolating a row pitch from just the first two rows and
+projecting it across the whole sheet compounds a few px of drift into ~75px
+by row 5, enough to crop solid black past the image's bottom edge — anchor
+from both the first *and* last row/column independently instead of
+projecting one pitch across the whole sheet; (2) after scaling an image up
+for a clearer render, writing the *original* value into a text label but
+then, when transcribing that label back into the crop script, accidentally
+using a *displayed/scaled* pixel value instead — this silently shifts a
+whole column into blank space or the next column's text with no error.
+Simplest guard: always draw the axis labels directly on the ruler image
+itself (not just gridlines) so the number you copy into the crop script is
+right there next to the line you're reading, rather than trying to infer it
+from position or a separately-remembered scale factor.
 
 **If Fluent Emoji has no good match either, search other open icon sets via
 Iconify** (`https://api.iconify.design/search?query=<term>`) rather than
@@ -240,9 +260,10 @@ dry) came from `game-icons:clothesline`, which is **CC BY 3.0** and does
 require attribution; see `ATTRIBUTIONS.md` at the project root, which must be
 kept up to date if more non-MIT icons are added this way.
 
-Eight reading kernen exist now (kern-01 maan/roos/vis, kern-02 weer, kern-03
+Ten reading kernen exist now (kern-01 maan/roos/vis, kern-02 weer, kern-03
 boerderijdieren, kern-04 dierentuindieren, kern-05 "spullen & lijf", kern-06
-"meer woorden", kern-07 "klanken", kern-08 "weer, deel 2"). Kernen 1-6
+"meer woorden", kern-07 "klanken", kern-08 "weer, deel 2", kern-09 "kerst",
+kern-10 "klanken, deel 2"). Kernen 1-6
 deliberately avoided Dutch long-vowel-digraph spelling (oo/aa/ee) and true
 diphthongs (ei/ij/ui/ou/eu/au) to keep "difficulty" flat while expanding
 vocabulary — except the words that were already spent as kern-01
@@ -268,6 +289,17 @@ specific words in kern X" when some of them aren't valid yet: check every
 word's letters against `nieuweLetters` cumulative through kern X, and if any
 fail, propose a same-theme sequel kern positioned after the last dependency
 instead of silently dropping the request or silently violating the ordering.
+kern-09 ("kerst") and kern-10 ("klanken, deel 2") are two more examples of
+the same pattern, each built from a full worksheet the user dropped into
+`bronbestanden/` (`woordennogeen.png`, `nogmeerwoordentwee.jpg`) and cropped
+with one-off `crop-kerst.ps1`/`crop-wb2.ps1` scripts (same technique as
+`crop.ps1`, see below) — both needed placing after kern-07 since their
+vocabulary leans on "oo"/"oe"/"ui"/"ou" (`koek` is what introduced the "oe"
+klank to `KLANKEN` in `oefeningGenerator.ts`). When one of these source
+worksheets has a target word alongside 1-2 *wrong* choice words in the same
+grid cell (e.g. "kast / kat / kaas" next to a cat picture, correct = "kat"),
+only crop and use the correct word — the wrong choices were decoys on the
+original worksheet, not vocabulary to add.
 
 **Exercise types** (10 total): `plaatje-woord-keuze`, `woord-plaatje-keuze`,
 `hakken-en-plakken`, `woord-bouwen` (3D), `zin-invullen`, `zelf-typen`,

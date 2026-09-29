@@ -7,6 +7,8 @@ import { kern05SpullenEnLijf } from './kern-05-spullen-en-lijf.ts';
 import { kern06MeerWoorden } from './kern-06-meer-woorden.ts';
 import { kern07Klanken } from './kern-07-klanken.ts';
 import { kern08Weer2 } from './kern-08-weer-2.ts';
+import { kern09Kerst } from './kern-09-kerst.ts';
+import { kern10Klanken2 } from './kern-10-klanken-2.ts';
 
 // Enkel invoerpunt, op volgorde.
 export const KERNEN: Kern[] = [
@@ -18,6 +20,8 @@ export const KERNEN: Kern[] = [
   kern06MeerWoorden,
   kern07Klanken,
   kern08Weer2,
+  kern09Kerst,
+  kern10Klanken2,
 ];
 
 export function vindKern(kernId: string): Kern | undefined {

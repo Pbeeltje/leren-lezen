@@ -1,7 +1,7 @@
 Add-Type -AssemblyName System.Drawing
 
 $staged = "C:\claude\leren-lezen\bronbestanden\_staged"
-$files = Get-ChildItem $staged -Filter "*.jpg" | Sort-Object Name
+$files = Get-ChildItem $staged -Include "*.jpg", "*.png" -Recurse | Sort-Object Name
 
 $cols = 6
 $cellW = 200
