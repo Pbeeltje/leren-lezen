@@ -33,6 +33,8 @@ import { TestResultScreen } from './TestResultScreen.ts';
 import { ChapterScreen } from './ChapterScreen.ts';
 import { KERNEN } from '../../content/lezen/kernen/kernen.index.ts';
 import { maakVoortgangsbalk } from '../components/Voortgangsbalk.ts';
+import { maakAudioKnop } from '../components/AudioKnop.ts';
+import { speelAf, instructieAudioPad } from '../../engine/audioManager.ts';
 
 export type { OefenModus };
 
@@ -100,9 +102,17 @@ export function OefeningScreen(
   const el = document.createElement('div');
   el.className = 'scherm';
 
+  const instructieRij = document.createElement('div');
+  instructieRij.className = 'instructie-rij';
+  el.appendChild(instructieRij);
+
   const instructie = document.createElement('p');
   instructie.className = 'instructie-tekst';
-  el.appendChild(instructie);
+  instructieRij.appendChild(instructie);
+
+  let huidigeAudioPad: string | undefined;
+  const audioKnop = maakAudioKnop(() => speelAf(huidigeAudioPad));
+  instructieRij.appendChild(audioKnop);
 
   const voortgangsbalk = maakVoortgangsbalk(oefeningen.length);
   el.appendChild(voortgangsbalk.element);
@@ -120,6 +130,8 @@ export function OefeningScreen(
     klaarMetDeze = false;
     const oefening = oefeningen[huidigeIndex];
     instructie.textContent = INSTRUCTIES[oefening.type];
+    huidigeAudioPad = instructieAudioPad(oefening.type);
+    speelAf(huidigeAudioPad);
     voortgangsbalk.zetVoortgang(huidigeIndex);
 
     opruimen = renderOefening(

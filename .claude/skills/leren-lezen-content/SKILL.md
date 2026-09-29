@@ -519,34 +519,51 @@ with since that content was never actually overflowing). If you touch
 `.scherm`'s layout, re-test at a narrow *and* short viewport, not just
 desktop width — this class of bug doesn't show up at 1100×850.
 
-## Audio (planned, not wired in yet)
+## Audio
 
-`engine/audioManager.ts`'s `speelAf(pad)` plays a clip if it exists at that
-path and no-ops silently otherwise (the whole point: content/game code can
-call it unconditionally and it's a pure asset drop-in later) — but as of this
-writing **no call site actually calls it**. `ontgrendelAudio()` (the
-iOS/Safari autoplay-unlock hack) is wired at the two profile/age entry
-points; the actual playback function isn't invoked anywhere yet.
+Instruction audio is wired in and working for every reading/math exercise
+type plus the goed/fout feedback phrases. `engine/audioManager.ts`'s
+`speelAf(pad)` plays a clip if it exists at that path and no-ops silently
+otherwise; `instructieAudioPad(type)`/`woordAudioPad(woord)` build the
+`/assets/audio/instructies/<slug>.mp3` / `/assets/audio/woorden/<woord>.mp3`
+paths. `OefeningScreen.ts`/`RekenOefeningScreen.ts` both call
+`speelAf(instructieAudioPad(oefening.type))` the moment a new exercise's
+instruction text is set (in `toonHuidige()`), and `FeedbackOverlay.ts`'s
+`toonOverlay()` picks its message index once and plays
+`feedback-{goed|fout}-{index+1}.mp3` for that *same* index — text and audio
+must stay in sync there, don't let them pick independently.
 
-The recording plan: the user is voicing every clip themselves rather than
-using AI TTS, in one continuous take rather than 100+ separate files.
-`bronbestanden/audio-script.txt` is the numbered script to read aloud
-(instructions for every reading + math exercise type, the 6 feedback
-phrases, then all 73 unique reading vocabulary words, each on its own line,
-grouped into labelled sections); `bronbestanden/audio-manifest.json` is the
-matching `{n, slug, text, path}` list. Once the user hands back one
-recording, split it by silence detection (a portable `ffmpeg` is available
-via `npm install ffmpeg-static` in scratch — no system install needed,
-verified working) and match segments to the manifest in order; save each
-clip to the `path` given there (`public/assets/audio/instructies/*.mp3` or
-`.../woorden/*.mp3`) and only then start wiring `speelAf()` calls into the
-game renderers. `zin-invullen` sentence audio was deliberately left out of
-this first script — playing the target word out loud before the child
-answers would spoil a fill-in-the-blank question; that needs its own design
-(e.g. read the sentence with a pause where the blank is) before recording it.
+**Every place audio plays has a large, obvious replay button next to it**
+(`ui/components/AudioKnop.ts`'s `maakAudioKnop()`, `.audio-knop` in
+screens.css — 72px circle, direct user request) so a child can re-trigger it
+on demand rather than only hearing it once automatically. Both oefening
+screens hold the *current* exercise's audio path in a closure variable
+(`huidigeAudioPad`) that the button replays and `toonHuidige()` updates each
+time it advances — don't wire a new "plays audio automatically" spot without
+giving it the same button.
 
-**UI requirement for whenever this gets wired in**: every place audio plays
-needs a large, obvious replay button next to it (direct user request) — a
-young child needs to be able to re-trigger the instruction/word audio
-on demand, not just hear it once automatically. Don't wire in `speelAf()`
-calls without also adding that button in the same change.
+**Word-level pronunciation clips exist but aren't wired to anything yet** —
+`woordAudioPad()` and all ~80 `public/assets/audio/woorden/*.mp3` files are
+ready (e.g. tap a word to hear it spoken), that's just not built. `zin-invullen`
+sentence audio doesn't exist at all yet — playing the target word out loud
+before the child answers would spoil a fill-in-the-blank question, so it
+needs its own design (e.g. read the sentence with a pause where the blank
+is) before it can be recorded and added.
+
+The clips themselves are the user's own voice, recorded in one continuous
+take from `bronbestanden/audio-script.txt` (the numbered read-aloud script)
+and split by silence detection against `bronbestanden/audio-manifest.json`
+(the matching `{n, slug, text, path}` list) — not AI TTS. The splitting
+approach, if this ever needs redoing for a re-recording or an extension:
+portable `ffmpeg` via `npm install ffmpeg-static` in scratch (no system
+install needed), `silencedetect=noise=-30dB:d=0.5` found silence gaps
+cleanly with the ~1.5-2s pauses the script asked for, and speech segment `i`
+is `[silence_end[i], silence_start[i+1]]` (N silences bookend N-1 speech
+segments — sanity-check that count against the manifest length *before*
+cutting anything). Since there's no transcription/playback available to
+verify content directly, duration-based sanity checking caught the
+segmentation working correctly here: all same-length vocabulary words
+clustered tightly (single Dutch words landed at 0.45-0.85s each), and
+sentence-length instructions scaled up proportionally with no outliers once
+you account for short isolated words naturally having more onset/offset
+overhead per character than fluent sentences.

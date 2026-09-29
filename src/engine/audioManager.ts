@@ -14,6 +14,14 @@ export function ontgrendelAudio(): void {
   stilte.play().catch(() => undefined);
 }
 
+export function instructieAudioPad(type: string): string {
+  return `/assets/audio/instructies/${type}.mp3`;
+}
+
+export function woordAudioPad(woord: string): string {
+  return `/assets/audio/woorden/${woord}.mp3`;
+}
+
 export function speelAf(pad: string | undefined): void {
   if (!pad || bestaatNietCache.has(pad)) return;
 

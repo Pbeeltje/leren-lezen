@@ -694,6 +694,35 @@
   height: 40px;
 }
 
+.instructie-rij {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+}
+
+.audio-knop {
+  flex-shrink: 0;
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  background: var(--kleur-secundair);
+  box-shadow: 0 4px 0 var(--kleur-primair-donker);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.audio-knop img {
+  width: 44px;
+  height: 44px;
+}
+
+.audio-knop:active {
+  transform: translateY(3px);
+  box-shadow: none;
+}
+
 .overslaan-knop {
   position: fixed;
   bottom: 20px;
