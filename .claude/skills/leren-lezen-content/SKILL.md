@@ -585,13 +585,23 @@ install needed), `silencedetect=noise=-30dB:d=0.5` found silence gaps
 cleanly with the ~1.5-2s pauses the script asked for, and speech segment `i`
 is `[silence_end[i], silence_start[i+1]]` (N silences bookend N-1 speech
 segments — sanity-check that count against the manifest length *before*
-cutting anything). Since there's no transcription/playback available to
-verify content directly, duration-based sanity checking caught the
-segmentation working correctly here: all same-length vocabulary words
-clustered tightly (single Dutch words landed at 0.45-0.85s each), and
-sentence-length instructions scaled up proportionally with no outliers once
-you account for short isolated words naturally having more onset/offset
-overhead per character than fluent sentences.
+cutting anything).
+
+**A matching segment count and plausible durations do NOT prove the clips are
+labeled correctly — always verify by transcription.** The first split passed
+both checks and was still wrong for 46 of 106 clips: "Goed zo!" and "Knap
+gedaan!" were read with too short a pause and merged into one segment, and a
+stray extra take near `muis` added a segment back, so the total stayed at 106
+while every clip in between (slots 19-64) held the *next* item's audio. The
+user heard "Bijna!" on correct answers, "mais" for maan, "boom" for bliksem.
+Verify with local speech-to-text: `pip install faster-whisper` (if PyAV
+complains about `metadata_errors`, `pip install "av==13.1.0"`), model `small`,
+`language="nl"`, transcribe every clip and diff against the manifest text.
+Whisper mishears isolated one-syllable Dutch words ("bij"→"Dag", "hond"→"en")
+but a *shift* is unmistakable: the transcript of slot N matches the expected
+text of slot N+1 for a long run. When recording, ask for a clear 2-second pause
+between items, and split any merged clip with a finer `silencedetect`
+(`noise=-35dB:d=0.08`) on just that clip.
 
 ## "Luisteren" topic — the non-readers' entry point
 
@@ -644,9 +654,9 @@ start a new clip without stopping whatever was already playing. Any two
 clips fired close together (e.g. the "Goed zo!" feedback clip, which can run
 past 1.5s, followed ~900ms later by the next round's word) would overlap,
 and a kid can end up hearing the *tail* of the previous clip layered under
-or after the new one — reported as "I hear the sound for corn (mais) but
-it's not an option" when the previous round's word bled into the next
-round's picture set. Fixed by tracking the currently-playing element and
+or after the new one. (The "I hear mais but it's not an option" report that
+prompted this was actually the mislabeled-clip bug described under Audio;
+the overlap fix is still correct, but it wasn't the cause.) Fixed by tracking the currently-playing element and
 pausing it before starting a new one, regardless of path. This matters most
 here because both Luisteren games fire audio in quick succession (flip a
 card, guess again, advance rounds) — anywhere else audio is more spaced out
