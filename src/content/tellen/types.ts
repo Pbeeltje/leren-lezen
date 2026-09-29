@@ -13,6 +13,7 @@ export type RekenOefeningType =
   | 'cijfer-naar-hoeveelheid'
   | 'dobbelsteen-naar-cijfer'
   | 'dubbele-dobbelsteen-naar-cijfer'
+  | 'vingers-naar-cijfer'
   | 'reeks-aanvullen'
   | 'optellen';
 
@@ -29,6 +30,10 @@ export type RekenOefeningDefinitie =
   // rechter toont de eenheid (1-6) — samen 11 t/m 16. Zo blijft het dobbelsteenbeeld
   // bruikbaar voor de 11-20-kern, ook al heeft een dobbelsteen maar 6 kanten.
   | { type: 'dubbele-dobbelsteen-naar-cijfer'; eenheid: number; cijfer: number; afleiders: number[] }
+  // Net als dobbelsteen-naar-cijfer maar met een handplaatje (1-10 vingers) i.p.v. een
+  // dobbelsteenbeeld -- bron: een echte vingertel-kaart (Engels/Nederlands) die de
+  // gebruiker aanleverde.
+  | { type: 'vingers-naar-cijfer'; cijfer: number; afleiders: number[] }
   // Getallenrij met een gat in het midden (bv. 11 - [ ] - 13): geen keuzes, zelf typen.
   | { type: 'reeks-aanvullen'; voor: number; antwoord: number; na: number }
   // Eenvoudig optellen ("erbij"), som altijd onder de 10.

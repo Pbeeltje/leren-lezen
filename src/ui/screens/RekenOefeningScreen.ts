@@ -22,6 +22,7 @@ import { renderHoeveelheidTypen } from '../../games/hoeveelheidTypen.ts';
 import { renderCijferNaarHoeveelheid } from '../../games/cijferNaarHoeveelheid.ts';
 import { renderDobbelsteenNaarCijfer } from '../../games/dobbelsteenNaarCijfer.ts';
 import { renderDubbeleDobbelsteenNaarCijfer } from '../../games/dubbeleDobbelsteenNaarCijfer.ts';
+import { renderVingersNaarCijfer } from '../../games/vingersNaarCijfer.ts';
 import { renderReeksAanvullen } from '../../games/reeksAanvullen.ts';
 import { renderOptellen } from '../../games/optellen.ts';
 import { speelSchermOvergang } from '../../three/transitions.ts';
@@ -40,6 +41,7 @@ const INSTRUCTIES: Record<RekenOefeningDefinitie['type'], string> = {
   'cijfer-naar-hoeveelheid': 'Welk groepje heeft er zoveel?',
   'dobbelsteen-naar-cijfer': 'Welk cijfer hoort bij de dobbelsteen?',
   'dubbele-dobbelsteen-naar-cijfer': 'Welk cijfer hoort bij de dobbelstenen?',
+  'vingers-naar-cijfer': 'Welk cijfer hoort bij de vingers?',
   'reeks-aanvullen': 'Welk getal ontbreekt?',
   optellen: 'Hoeveel is dat samen?',
 };
@@ -61,6 +63,8 @@ function renderOefening(
       return renderDobbelsteenNaarCijfer(container, oefening, opties, afgerond);
     case 'dubbele-dobbelsteen-naar-cijfer':
       return renderDubbeleDobbelsteenNaarCijfer(container, oefening, opties, afgerond);
+    case 'vingers-naar-cijfer':
+      return renderVingersNaarCijfer(container, oefening, opties, afgerond);
     case 'reeks-aanvullen':
       return renderReeksAanvullen(container, oefening, opties, afgerond);
     case 'optellen':

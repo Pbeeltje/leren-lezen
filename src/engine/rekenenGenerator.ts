@@ -9,6 +9,7 @@ const ALLE_TYPEN: RekenOefeningType[] = [
   'hoeveelheid-typen',
   'cijfer-naar-hoeveelheid',
   'dobbelsteen-naar-cijfer',
+  'vingers-naar-cijfer',
   'reeks-aanvullen',
   'optellen',
 ];
@@ -55,6 +56,7 @@ function toepasbareTypen(kern: RekenKern): RekenOefeningType[] {
   const [min, max] = kern.bereik;
   return ALLE_TYPEN.filter((type) => {
     if (type === 'dobbelsteen-naar-cijfer') return min <= 6;
+    if (type === 'vingers-naar-cijfer') return min <= 10;
     if (type === 'dubbele-dobbelsteen-naar-cijfer') return min <= 16 && max >= 11;
     if (type === 'reeks-aanvullen') return max - min >= 2;
     return true;
@@ -79,6 +81,12 @@ function maakOefening(kern: RekenKern, type: RekenOefeningType, tracker: SessieT
       const dobbelBereik: [number, number] = [min, Math.min(max, 6)];
       const cijfer = kiesUniekGetal(dobbelBereik, gebruikt);
       return { type, cijfer, afleiders: kiesAfleidCijfers(dobbelBereik, cijfer, 2) };
+    }
+    case 'vingers-naar-cijfer': {
+      // Handen tonen tot en met 10 vingers, ongeacht het getalbereik van deze kern.
+      const vingerBereik: [number, number] = [min, Math.min(max, 10)];
+      const cijfer = kiesUniekGetal(vingerBereik, gebruikt);
+      return { type, cijfer, afleiders: kiesAfleidCijfers(vingerBereik, cijfer, 2) };
     }
     case 'dubbele-dobbelsteen-naar-cijfer': {
       // Dekt 11 t/m 16 (linker dobbelsteen is altijd de vaste "volle tien").

@@ -14,5 +14,5 @@ export const rekenKern02Getallen1Tot10: RekenKern = {
     { naam: 'eend', icoonPad: pad('telobject-eend') },
     { naam: 'bal', icoonPad: pad('telobject-bal') },
   ],
-  oefeningTypen: ['hoeveelheid-naar-cijfer', 'hoeveelheid-typen', 'cijfer-naar-hoeveelheid', 'dobbelsteen-naar-cijfer'],
+  oefeningTypen: ['hoeveelheid-naar-cijfer', 'hoeveelheid-typen', 'cijfer-naar-hoeveelheid', 'dobbelsteen-naar-cijfer', 'vingers-naar-cijfer'],
 };
