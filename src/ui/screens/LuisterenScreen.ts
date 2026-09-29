@@ -2,16 +2,22 @@ import type { Screen, ScreenManager } from '../../engine/screenManager.ts';
 import { maakTerugKnop } from '../components/TerugKnop.ts';
 import { maakTopRechtsBalk } from '../components/TopRechtsBalk.ts';
 import { maakAudioKnop } from '../components/AudioKnop.ts';
+import { maakVoortgangsbalk } from '../components/Voortgangsbalk.ts';
 import { speelAf, woordAudioPad } from '../../engine/audioManager.ts';
 import { voegMuntenToe } from '../../engine/progressStore.ts';
 import { MUNTEN_OEFENING_GOED } from '../../engine/rewards.ts';
 import { genereerLuisterVraag, type LuisterVraag } from '../../engine/luisterenGenerator.ts';
 import { renderLuisterKiezen } from '../../games/luisterKiezen.ts';
+import { confetti } from '../../three/particles.ts';
+
+const RONDE_LENGTE = 5;
 
 // Luister-en-wijs-aan: alleen plaatjes en geluid, geen tekst, voor kinderen die nog niet
-// kunnen lezen (leeftijd 3+). Geen kernen/hoofdstukken/toets -- gewoon een doorlopende
-// reeks vragen, elke keer opnieuw willekeurig getrokken uit de hele poel. Niets is op
-// slot en er is geen "klaar"-moment; terug gaat gewoon terug naar het onderwerpenscherm.
+// kunnen lezen (leeftijd 3+). Geen kernen/hoofdstukken/toets -- wel een korte, herkenbare
+// ronde van 5 vragen met een klein vuurwerkje aan het eind (net zo'n opsteker als na een
+// goede toets bij de oudere kinderen), waarna vanzelf een nieuwe ronde begint. Niets is
+// op slot en er is geen "gefaald"-moment: fout is gewoon opnieuw proberen. Terug gaat
+// terug naar het onderwerpenscherm.
 export function LuisterenScreen(manager: ScreenManager): Screen {
   const el = document.createElement('div');
   el.className = 'scherm';
@@ -34,16 +40,29 @@ export function LuisterenScreen(manager: ScreenManager): Screen {
   const audioKnop = maakAudioKnop(() => speelAf(woordAudioPad(huidigeVraag.doel.woord)));
   instructieRij.appendChild(audioKnop);
 
+  const voortgangsbalk = maakVoortgangsbalk(RONDE_LENGTE);
+  el.appendChild(voortgangsbalk.element);
+
   const oefenContainer = document.createElement('div');
   el.appendChild(oefenContainer);
 
   let opruimen: (() => void) | null = null;
+  let inRonde = 0;
 
   function volgendeVraag(): void {
     opruimen?.();
+    if (inRonde >= RONDE_LENGTE) {
+      voortgangsbalk.zetVoortgang(RONDE_LENGTE);
+      confetti.vuurwerk('klein');
+      inRonde = 0;
+      setTimeout(volgendeVraag, 1400); // laat het vuurwerkje even zien voor de volgende ronde start
+      return;
+    }
+    voortgangsbalk.zetVoortgang(inRonde);
     huidigeVraag = genereerLuisterVraag(3);
     opruimen = renderLuisterKiezen(oefenContainer, huidigeVraag, () => {
       voegMuntenToe(MUNTEN_OEFENING_GOED);
+      inRonde++;
       volgendeVraag();
     }).vernietig;
   }

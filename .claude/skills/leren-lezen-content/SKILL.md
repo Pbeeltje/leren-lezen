@@ -248,6 +248,20 @@ itself (not just gridlines) so the number you copy into the crop script is
 right there next to the line you're reading, rather than trying to infer it
 from position or a separately-remembered scale factor.
 
+**A third mistake, found later, in production**: `roos.jpg`'s crop left a
+thin sliver of the neighboring cell (`sok`, a blue-striped sock) bleeding in
+along one edge — invisible in `contact.ps1`'s 200×200 preview grid (too
+small a render to notice a few stray pixels) but obvious once actually
+rendered at real size in the app (the user spotted it directly in a
+screenshot). The general lesson: a contact-sheet check at low resolution is
+a good first pass but isn't sufficient proof a crop is clean — for a crop
+you're not fully confident in (tight margins, a cell near the sheet's edge,
+anything cropped from a busy/cluttered source), Read the individual file at
+its native size too before calling it done. Fixed by trimming that one
+crop's right edge further in `crop.ps1` (search for `roos` — it has a
+special-cased narrower width, not the shared per-column inset every other
+`plaatjes3.jpg` word uses).
+
 **If Fluent Emoji has no good match either, search other open icon sets via
 Iconify** (`https://api.iconify.design/search?query=<term>`) rather than
 forcing a bad Fluent Emoji fit — it aggregates hundreds of open-source sets
@@ -582,33 +596,58 @@ overhead per character than fluent sentences.
 ## "Luisteren" topic — the non-readers' entry point
 
 A third, structurally separate topic (`content/topics.ts`, id `luisteren`,
-ages 3-6, screen `ui/screens/LuisterenScreen.ts`) exists specifically for
-kids too young to read at all: hear a word spoken, tap the matching picture
-from 3 options, no text anywhere on screen. Built once real audio existed —
-this is what "audio narration" was ultimately *for*, from the original ask
-for something a 3-year-old could actually use.
+ages 3-6) exists specifically for kids too young to read at all — no text
+anywhere on screen in either of its two games. Built once real audio
+existed — this is what "audio narration" was ultimately *for*, from the
+original ask for something a 3-year-old could actually use. Picking the
+topic lands on `ui/screens/LuisterenKiesScreen.ts`, a small 2-tile chooser
+between the two games below (added after the first version shipped with
+only one game and the user pointed out ~80 recorded words support a lot
+more than that).
 
-It's deliberately **not** built on the kernen/chapter/oefening-toets
-machinery reading and math use — no letters to learn, no progression, so
-none of that structure applies. `engine/luisterenGenerator.ts`'s
-`woordenpool()` builds its own flat, deduplicated pool by walking every
-reading kern's `woordenbank` and filtering out `vereistTekst` words (a
+Both games are deliberately **not** built on the kernen/chapter/oefening-
+toets machinery reading and math use — no letters to learn, no progression,
+so none of that structure applies, and neither has a kern id, so no
+star/voortgang tracking applies to either. Both pull from the same shared
+pool, `engine/luisterenGenerator.ts`'s `woordenpool()`, which walks every
+reading kern's `woordenbank` and filters out `vereistTekst` words (a
 3-year-old can't read the disambiguating sentence an adjective like `koud`
-needs, so those are skipped) — meaning **any word added to any reading kern
-automatically becomes available here too**, no separate content to
-maintain. `genereerLuisterVraag()` just picks a random target + 2 random
-distractors from that pool each round; there's no fixed question count or
-end state, `games/luisterKiezen.ts` calls back into
-`LuisterenScreen.ts`'s `volgendeVraag()` on every correct answer and just
-keeps going. Wrong answers always allow retry (no toets-style "fail
-immediately" mode exists here at all — consistent with "nothing is ever
-locked," and doubly appropriate for this age). A correct answer plays a
-small oefening-tier coin reward via the normal `progressStore`/`rewards.ts`
-plumbing, but this topic has no kern id, so none of the star/voortgang
-tracking applies to it.
+needs) — meaning **any word added to any reading kern automatically becomes
+available in both games**, no separate content to maintain.
 
-Picture buttons (`.luister-plaatje`, 160px) are deliberately larger than
-every other picture-choice type in the app (`.keuze-knop--plaatje` is 96px)
-— bigger, easier-to-hit targets for the youngest hands. If you add another
-exercise aimed at this age group, match that sizing rather than reusing the
-6-year-old-oriented touch targets.
+**Luister & wijs** (`ui/screens/LuisterenScreen.ts`, `games/luisterKiezen.ts`):
+hear a word, tap the matching picture from 3 options. Runs in **rounds of 5**
+(`RONDE_LENGTE`) with a `Voortgangsbalk` and a `confetti.vuurwerk('klein')`
+burst at the end of each round, then a fresh round starts automatically —
+added after the first version ran as one endless undifferentiated stream
+with no sense of progress or payoff. Wrong answers always allow retry (no
+toets-style "fail immediately" mode here at all), a correct answer pays a
+small oefening-tier coin.
+
+**Geheugenspel** (`ui/screens/GeheugenScreen.ts`, `games/geheugenSpel.ts`):
+classic memory/matching-pairs — `genereerGeheugenbord()` picks 4 words from
+the pool, makes 2 cards per word, shuffles. Tapping a face-down card flips it
+and plays that word's audio (bonus repetition, not just a matching game); a
+correct pair locks green, a mismatch flips both back after ~900ms with no
+penalty or fout-feedback at all (deliberately gentler than a wrong guess
+elsewhere in the app — this is unstructured toddler play, not a quiz). A
+cleared board also fires `vuurwerk('klein')` and starts a fresh board.
+
+Picture-ish touch targets in both games (`.luister-plaatje` 160px,
+`.geheugen-kaart` 100px) are sized differently from every picture-choice
+type built for 6-year-olds (`.keuze-knop--plaatje` is 96px) — bigger,
+easier-to-hit targets for younger hands. Match that sizing, not the
+6-year-old one, for anything else aimed at this age group.
+
+**Gotcha this topic exposed in `audioManager.ts`**: `speelAf()` used to
+start a new clip without stopping whatever was already playing. Any two
+clips fired close together (e.g. the "Goed zo!" feedback clip, which can run
+past 1.5s, followed ~900ms later by the next round's word) would overlap,
+and a kid can end up hearing the *tail* of the previous clip layered under
+or after the new one — reported as "I hear the sound for corn (mais) but
+it's not an option" when the previous round's word bled into the next
+round's picture set. Fixed by tracking the currently-playing element and
+pausing it before starting a new one, regardless of path. This matters most
+here because both Luisteren games fire audio in quick succession (flip a
+card, guess again, advance rounds) — anywhere else audio is more spaced out
+by user interaction, but don't assume that holds for a future feature.

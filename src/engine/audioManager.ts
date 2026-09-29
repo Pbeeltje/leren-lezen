@@ -5,6 +5,7 @@
 const cache = new Map<string, HTMLAudioElement>();
 let bestaatNietCache = new Set<string>();
 let ontgrendeld = false;
+let huidigAfspelend: HTMLAudioElement | null = null;
 
 const GEDEMPT_SLEUTEL = 'leren-lezen:gedempt';
 
@@ -68,6 +69,17 @@ export function speelAf(pad: string | undefined): void {
       cache.delete(pad);
     });
   }
+
+  // Zonder dit blijft een vorig clipje (bv. de feedback "Goed zo!" of het vorige
+  // woord) gewoon doorspelen op de achtergrond terwijl het volgende al start -- dan
+  // hoort een kind een heel ander woord dan wat er nu op het scherm staat (precies
+  // gemeld: "ik hoor mais maar dat is geen optie hier"). Altijd eerst het vorige
+  // clipje stoppen voordat het nieuwe begint.
+  if (huidigAfspelend && huidigAfspelend !== element) {
+    huidigAfspelend.pause();
+    huidigAfspelend.currentTime = 0;
+  }
+  huidigAfspelend = element;
 
   element.currentTime = 0;
   element.play().catch(() => {

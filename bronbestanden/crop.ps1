@@ -32,7 +32,12 @@ foreach ($w in $grid.Keys) {
     $r = $grid[$w][0]; $c = $grid[$w][1]
     $x = $colX0 + $c * $colW + 8
     $y = $rowY0 + $r * $rowPairH + $labelH + 8
-    Crop-Save $p3 $x $y ($colW - 24) ($picH - 16) "$staged\p3_$w.jpg"
+    # 'roos' sits right next to 'sok' in the source sheet; the standard inset left a
+    # sliver of sok's blue sock bleeding into the right edge (found by the user in the
+    # rendered app, not visible in a small contact-sheet preview) -- trim its width
+    # further than the rest.
+    $width = if ($w -eq 'roos') { $colW - 24 - 50 } else { $colW - 24 }
+    Crop-Save $p3 $x $y $width ($picH - 16) "$staged\p3_$w.jpg"
 }
 $p3.Dispose()
 
