@@ -87,8 +87,6 @@ body:not(.thema-ruimte) .instructie-tekst:not(.instructie-tekst--donker) {
 }
 .dino--trex { left: 2%; }
 .dino--tri { right: 2%; animation-delay: -1.7s; }
-/* De Fluent-T-rex kijkt naar links; gespiegeld kijkt hij de wei in. */
-.dino--trex .dino__lijf { transform: scaleX(-1); }
 
 .dino__lijf {
   position: relative !important;
@@ -220,14 +218,67 @@ body:not(.thema-ruimte) .instructie-tekst:not(.instructie-tekst--donker) {
   to { transform: translate(var(--dx), var(--dy)) scale(0.3); opacity: 0; }
 }
 
-/* ---- Zee ---- */
-.decor-zee {
-  background: linear-gradient(#34465a 0%, #56697e 50%, #7d8fa2 100%);
+/* ---- Zee (wisselend weer via data-weer = zon | regen | onweer) ---- */
+.zee-lucht {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  transition: opacity 4s ease;
 }
+.zee-lucht--zon { background: linear-gradient(#3f9be6 0%, #7cc3f2 55%, #c4e8fb 100%); }
+.zee-lucht--regen { background: linear-gradient(#4a5d72 0%, #6b7f94 50%, #93a4b5 100%); }
+.zee-lucht--onweer { background: linear-gradient(#1d2533 0%, #34404f 50%, #536273 100%); }
+.decor-zee[data-weer='zon'] .zee-lucht--zon,
+.decor-zee[data-weer='regen'] .zee-lucht--regen,
+.decor-zee[data-weer='onweer'] .zee-lucht--onweer { opacity: 1; }
+
+.zee-zon {
+  top: max(11%, 96px);
+  right: 8%;
+  width: clamp(70px, 10vw, 130px);
+  animation: draai-langzaam 60s linear infinite;
+  transition: opacity 4s ease, transform 4s ease;
+}
+.decor-zee:not([data-weer='zon']) .zee-zon { opacity: 0; }
 
 .zee-wolk {
-  filter: grayscale(0.6) brightness(0.85);
+  transition: filter 4s ease, opacity 4s ease;
 }
+.decor-zee[data-weer='regen'] .zee-wolk { filter: grayscale(0.7) brightness(0.8); }
+.decor-zee[data-weer='onweer'] .zee-wolk { filter: grayscale(1) brightness(0.45); }
+.zee-wolk--storm { opacity: 0; }
+.decor-zee:not([data-weer='zon']) .zee-wolk--storm { opacity: 1; }
+.drijf-wolk--3 { top: 14%; left: -20%; width: clamp(100px, 16vw, 210px); animation-duration: 110s; animation-delay: -30s; }
+
+.zee-flits {
+  position: absolute;
+  inset: 0;
+  background: rgba(255, 255, 240, 0.55);
+  opacity: 0;
+}
+.zee-flits.aan { animation: flits 0.5s ease-out; }
+@keyframes flits {
+  0%, 30% { opacity: 1; }
+  15% { opacity: 0.2; }
+  100% { opacity: 0; }
+}
+
+.zee-bliksem {
+  position: absolute;
+  inset: 0;
+}
+.zee-schicht {
+  position: absolute;
+  top: 8%;
+  width: clamp(30px, 4vw, 60px);
+  filter: drop-shadow(0 0 12px rgba(255, 245, 160, 0.9));
+  animation: flits 0.5s ease-out forwards;
+}
+
+.decor-zee .zee-golven { transition: filter 4s ease; }
+.decor-zee[data-weer='zon'] .zee-golven { filter: saturate(1.3) brightness(1.15); }
+.decor-zee[data-weer='onweer'] .zee-golven { filter: brightness(0.75); }
+.decor-zee[data-weer='onweer'] .zee-golf { animation-duration: 7s; }
 
 .zee-regen {
   position: absolute;
@@ -240,8 +291,11 @@ body:not(.thema-ruimte) .instructie-tekst:not(.instructie-tekst--donker) {
   );
   background-size: 100% 80px;
   animation: regen 0.6s linear infinite;
-  opacity: 0.7;
+  opacity: 0;
+  transition: opacity 4s ease;
 }
+.decor-zee[data-weer='regen'] .zee-regen { opacity: 0.6; }
+.decor-zee[data-weer='onweer'] .zee-regen { opacity: 1; animation-duration: 0.4s; }
 
 @keyframes regen {
   from { transform: translateY(0); }

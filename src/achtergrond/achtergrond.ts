@@ -18,12 +18,14 @@ export interface Decor {
   plaats?: () => void;
   // Groot feest aan het eind van een hele sessie; zonder eigen feest juicht het decor.
   feest?: () => void;
+  // Stopt eigen timers (bv. het wisselende weer) als er een andere achtergrond komt.
+  vernietig?: () => void;
 }
 
 export const THEMAS: { id: ThemaId; naam: string; voorbeeld: string }[] = [
   { id: 'ruimte', naam: 'Ruimte', voorbeeld: '/assets/icons/ster.svg' },
-  { id: 'dino', naam: 'Dino-wei', voorbeeld: '/assets/achtergrond/trex.svg' },
-  { id: 'kasteel', naam: 'Kasteel', voorbeeld: '/assets/achtergrond/kasteel.svg' },
+  { id: 'dino', naam: 'Dino-wei', voorbeeld: '/assets/achtergrond/trex-eigen.svg' },
+  { id: 'kasteel', naam: 'Kasteel', voorbeeld: '/assets/achtergrond/kasteel-eigen.svg' },
   { id: 'zee', naam: 'Zee', voorbeeld: '/assets/achtergrond/vuurtoren.svg' },
 ];
 
@@ -78,6 +80,7 @@ export function huidigThema(): ThemaId {
 
 function toon(id: ThemaId): void {
   if (!laag || huidig?.id === id) return;
+  huidig?.decor?.vernietig?.();
   laag.replaceChildren();
   const decor = id === 'ruimte' ? null : MAKERS[id]();
   if (decor) {

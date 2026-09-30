@@ -1,0 +1,47 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 220 200">
+  <defs>
+    <linearGradient id="tr-lijf" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#6fd3b0"/>
+      <stop offset="1" stop-color="#3fae8a"/>
+    </linearGradient>
+    <linearGradient id="tr-buik" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#fff2c4"/>
+      <stop offset="1" stop-color="#ffe08a"/>
+    </linearGradient>
+  </defs>
+  <!-- staart -->
+  <path d="M86 118 C60 118 30 130 6 150 C34 148 62 144 90 142 Z" fill="url(#tr-lijf)" stroke="#23654f" stroke-width="3" stroke-linejoin="round"/>
+  <!-- achterste poot -->
+  <path d="M84 138 C80 156 82 172 78 184 L98 184 C100 172 102 158 104 144 Z" fill="#3fae8a" stroke="#23654f" stroke-width="3" stroke-linejoin="round"/>
+  <!-- rugstekels -->
+  <g fill="#ffb14a" stroke="#b86b12" stroke-width="2.5" stroke-linejoin="round">
+    <path d="M64 120 L72 104 L80 118 Z"/>
+    <path d="M84 110 L94 92 L102 108 Z"/>
+    <path d="M106 96 L116 76 L124 94 Z"/>
+    <path d="M126 76 L138 56 L144 76 Z"/>
+  </g>
+  <!-- lijf -->
+  <path d="M78 116 C80 92 104 80 128 80 C150 80 160 96 160 116 C160 142 142 156 118 158 C98 160 78 146 78 116 Z" fill="url(#tr-lijf)" stroke="#23654f" stroke-width="3"/>
+  <path d="M104 124 C106 108 124 100 140 104 C150 110 150 132 138 144 C126 154 108 148 104 124 Z" fill="url(#tr-buik)"/>
+  <!-- voorste poot -->
+  <path d="M120 146 C118 162 120 174 116 186 L138 186 C140 172 142 160 142 146 Z" fill="url(#tr-lijf)" stroke="#23654f" stroke-width="3" stroke-linejoin="round"/>
+  <path d="M116 186 L112 190 M124 186 L122 191 M132 186 L132 191" stroke="#23654f" stroke-width="2.5" stroke-linecap="round"/>
+  <!-- kop -->
+  <path d="M132 54 C140 30 170 22 194 30 C212 36 218 52 214 66 C210 80 196 88 176 90 C160 92 146 90 138 84 C130 76 128 64 132 54 Z" fill="url(#tr-lijf)" stroke="#23654f" stroke-width="3" stroke-linejoin="round"/>
+  <!-- bek met tandjes -->
+  <path d="M150 74 C168 80 190 80 208 70" fill="none" stroke="#23654f" stroke-width="3" stroke-linecap="round"/>
+  <path d="M162 77 L165 83 L168 78 M178 79 L181 85 L184 79 M194 76 L196 82 L199 75" fill="#fff" stroke="#23654f" stroke-width="1.8" stroke-linejoin="round"/>
+  <!-- oog, neusgat, wangetje -->
+  <circle cx="170" cy="46" r="8" fill="#fff" stroke="#23654f" stroke-width="2"/>
+  <circle cx="172" cy="47" r="4.5" fill="#1b1b2f"/>
+  <circle cx="173.5" cy="45" r="1.6" fill="#fff"/>
+  <circle cx="204" cy="46" r="2.2" fill="#23654f"/>
+  <ellipse cx="186" cy="64" rx="7" ry="4" fill="#ff9aa2" opacity="0.75"/>
+  <!-- armpjes -->
+  <path d="M146 110 C156 110 162 114 164 120" fill="none" stroke="#23654f" stroke-width="6" stroke-linecap="round"/>
+  <path d="M146 110 C156 110 162 114 164 120" fill="none" stroke="#5ec6a2" stroke-width="3" stroke-linecap="round"/>
+  <!-- vlekjes -->
+  <circle cx="98" cy="100" r="4" fill="#a2ead2"/>
+  <circle cx="112" cy="92" r="3" fill="#a2ead2"/>
+  <circle cx="92" cy="130" r="3.5" fill="#a2ead2"/>
+</svg>

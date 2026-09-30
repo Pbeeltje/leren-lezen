@@ -33,7 +33,7 @@ export function maakDinoDecor(): Decor {
   ];
 
   const trex = el('div', 'dino dino--trex', root);
-  plaatje('/assets/achtergrond/trex.svg', 'dino__lijf', trex);
+  plaatje('/assets/achtergrond/trex-eigen.svg', 'dino__lijf', trex);
   const tri = el('div', 'dino dino--tri', root);
   plaatje('/assets/achtergrond/triceratops.svg', 'dino__lijf', tri);
 
