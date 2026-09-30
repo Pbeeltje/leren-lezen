@@ -3,7 +3,7 @@ import { maakTerugKnop } from '../components/TerugKnop.ts';
 import { maakTopRechtsBalk } from '../components/TopRechtsBalk.ts';
 import { maakAudioKnop } from '../components/AudioKnop.ts';
 import { maakVoortgangsbalk } from '../components/Voortgangsbalk.ts';
-import { speelAf } from '../../engine/audioManager.ts';
+import { naHuidigeAudio, speelAf } from '../../engine/audioManager.ts';
 import { voegMuntenToe } from '../../engine/progressStore.ts';
 import { MUNTEN_OEFENING_GOED } from '../../engine/rewards.ts';
 import { confetti } from '../../three/particles.ts';
@@ -75,7 +75,7 @@ export function RondeScreen(manager: ScreenManager, titelTekst: string, maakVraa
       voegMuntenToe(MUNTEN_OEFENING_GOED);
       inRonde++;
       voortgangsbalk.zetVoortgang(inRonde);
-      timer = window.setTimeout(volgendeVraag, 900);
+      naHuidigeAudio(volgendeVraag); // eerst "Goed gedaan!" laten uitpraten
     });
   }
 

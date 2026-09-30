@@ -1,6 +1,6 @@
 import type { LuisterVraag } from '../engine/luisterenGenerator.ts';
 import { toonGoedFeedback, toonFoutFeedback } from '../ui/components/FeedbackOverlay.ts';
-import { speelAf, woordAudioPad } from '../engine/audioManager.ts';
+import { naHuidigeAudio, speelAf, woordAudioPad } from '../engine/audioManager.ts';
 
 // Puur plaatjes, geen tekst nergens op het scherm -- dit is voor kinderen die nog niet
 // kunnen lezen. Geen toets-achtige "fout is meteen voorbij"-modus: altijd opnieuw
@@ -36,7 +36,7 @@ export function renderLuisterKiezen(
         afgehandeld = true;
         knop.classList.add('gevonden');
         toonGoedFeedback();
-        setTimeout(afgerond, 900);
+        naHuidigeAudio(afgerond);
         return;
       }
 

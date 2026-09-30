@@ -65,6 +65,27 @@ export function stopAudio(): void {
   huidigAfspelend = null;
 }
 
+/**
+ * Roept `fn` aan zodra wat er nu speelt (bv. "Goed gedaan!") klaar is, plus een korte
+ * stilte, zodat het volgende woord niet meteen tegen de feedback aan plakt. Nooit langer
+ * dan `maxMs` wachten, voor als een clipje hapert.
+ */
+export function naHuidigeAudio(fn: () => void, stilteMs = 800, maxMs = 4000): void {
+  const element = huidigAfspelend;
+  let klaar = false;
+  const verder = () => {
+    if (klaar) return;
+    klaar = true;
+    window.clearTimeout(noodrem);
+    element?.removeEventListener('ended', naEinde);
+    window.setTimeout(fn, stilteMs);
+  };
+  const naEinde = () => verder();
+  const noodrem = window.setTimeout(verder, maxMs);
+  if (!element || element.paused || element.ended) verder();
+  else element.addEventListener('ended', naEinde);
+}
+
 export function speelAf(pad: string | undefined): void {
   if (gedempt || !pad || bestaatNietCache.has(pad)) return;
 
