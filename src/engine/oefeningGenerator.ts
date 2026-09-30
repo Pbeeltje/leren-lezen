@@ -1,18 +1,14 @@
 import type { Kern, OefeningDefinitie, OefeningType, Woord } from '../content/types.ts';
-import { haalBlootstelling, haalVoortgang } from './progressStore.ts';
+import { haalVoortgang } from './progressStore.ts';
 
 export type OefenModus = 'oefenen' | 'toets';
 export type OefeningNummer = 1 | 2 | 3;
 
 const OEFENEN_AANTAL_WOORDEN = 5;
-// Een woord moet minstens dit vaak op een andere manier geoefend zijn voordat
-// "zelf-typen" (helemaal zelf typen, geen keuzes) ervoor mag verschijnen.
-const MIN_BLOOTSTELLING_VOOR_TYPEN = 2;
 
-// Zesjarigen vonden het te makkelijk: zelf typen mag meteen, en de zwaardere vormen komen
-// vaker voor dan de simpele meerkeuze. Vijfjarigen houden de gelijke verdeling.
+// Zesjarigen vonden het te makkelijk: de zwaardere vormen komen vaker voor dan de simpele
+// meerkeuze, en elke reeks eindigt met zelf typen. Vijfjarigen: gelijke verdeling, geen typen.
 const GEWICHT_ZES: Partial<Record<OefeningType, number>> = {
-  'zelf-typen': 3,
   'zin-invullen': 1.5,
   'woord-bouwen': 1.3,
   'drie-koppelen': 1.3,
@@ -138,7 +134,6 @@ function beschikbareTypen(kern: Kern, doel: Woord, uitgesloten: OefeningType[]):
   if (doel.woord.length > 8) basis = basis.filter((type) => type !== 'woord-bouwen');
   if (doel.woord.length > 10) basis = basis.filter((type) => type !== 'hakken-en-plakken');
   if (kern.zinnen.some((z) => z.doel.woord === doel.woord)) basis.push('zin-invullen');
-  if (!doel.vereistTekst && (isZes() || haalBlootstelling(doel.woord) >= MIN_BLOOTSTELLING_VOOR_TYPEN)) basis.push('zelf-typen');
   if (kiesBesteLetter(doel, kern.woordenbank)) basis.push('letter-herkennen');
   const klank = vindKlank(doel.woord);
   if (klank && klankAfleiders(kern.woordenbank, doel, klank).length > 0) {
@@ -183,7 +178,8 @@ function maakOefening(kern: Kern, doel: Woord, type: OefeningType, aantalAfleide
         zin: zin.zin,
         doel: zin.doel,
         afleiders: handAfleiders.length > 0 ? handAfleiders : kiesAfleiders(kern.woordenbank, doel, aantalAfleiders, false),
-        modus: Math.random() < (isZes() ? 0.7 : 0.5) ? 'typen' : 'meerkeuze',
+        // Typen alleen aan het eind van de reeks (zie voegTypenToe), dus hier altijd meerkeuze.
+        modus: 'meerkeuze',
       };
     }
     case 'woordwolk': {
@@ -232,23 +228,51 @@ function woordenVoorOefening(kern: Kern, nummer: OefeningNummer): Woord[] {
   return deel.length > 0 ? deel : kern.woordenbank;
 }
 
+// Zelf typen alleen voor een woord dat eerder in dezelfde reeks al voorbijkwam, anders is
+// het te moeilijk (verzoek van de eigenaar). Daarom staat zelf-typen nooit in de gewone
+// vragen, maar komt het aan het eind, voor een woord dat al 1 of 2 keer langskwam.
+function woordenIn(o: OefeningDefinitie): Woord[] {
+  if ('paren' in o) return [...o.paren];
+  if ('woord' in o) return [o.woord];
+  return [o.doel];
+}
+
+function voegTypenToe(kern: Kern, sessie: OefeningDefinitie[], aantal: number, voorkeur?: Woord): void {
+  const gezien = new Map<string, Woord>();
+  for (const o of sessie) for (const w of woordenIn(o)) gezien.set(w.woord, w);
+  const geschikt = [...gezien.values()].filter((w) => !w.vereistTekst && w.woord.length <= 8);
+  const kort = schud(geschikt).sort((a, b) => Number(a.woord.length > 6) - Number(b.woord.length > 6));
+  const volgorde = voorkeur && geschikt.includes(voorkeur) ? [voorkeur, ...kort.filter((w) => w !== voorkeur)] : kort;
+  for (const w of volgorde.slice(0, aantal)) sessie.push(maakOefening(kern, w, 'zelf-typen', 0));
+}
+
 export function genereerSessie(kern: Kern, modus: OefenModus, oefeningNummer: OefeningNummer = 1): OefeningDefinitie[] {
   const aantalAfleiders = modus === 'oefenen' ? 2 : 3;
+  const vraagVoor = (doel: Woord) => maakOefening(kern, doel, kiesType(beschikbareTypen(kern, doel, [])), aantalAfleiders);
 
   if (modus === 'oefenen') {
     const pool = woordenVoorOefening(kern, oefeningNummer);
     const woorden = kiesN(pool, Math.min(OEFENEN_AANTAL_WOORDEN, pool.length));
-    return woorden.map((doel) => {
-      const type = kiesType(beschikbareTypen(kern, doel, []));
-      return maakOefening(kern, doel, type, aantalAfleiders);
-    });
+    const sessie = woorden.map(vraagVoor);
+    // Extra kies-vragen over woorden die al eerder in de reeks zaten (herhaling): minstens
+    // één, en bij kleine oefeningen (3-4 woorden) zoveel dat er 6 vragen zijn vóór het typen.
+    const herhalingen = kiesN(woorden, Math.max(1, 6 - woorden.length));
+    for (const herhaal of herhalingen) {
+      const soort = herhaal.vereistTekst
+        ? kiesType(beschikbareTypen(kern, herhaal, []))
+        : kiesN<OefeningType>(['plaatje-woord-keuze', 'woord-plaatje-keuze'], 1)[0];
+      const eerste = sessie.findIndex((o) => woordenIn(o).includes(herhaal));
+      const plek = eerste + 1 + Math.floor(Math.random() * (sessie.length - eerste));
+      sessie.splice(plek, 0, maakOefening(kern, herhaal, soort, aantalAfleiders));
+    }
+    if (isZes()) voegTypenToe(kern, sessie, 1, herhalingen[0]);
+    return sessie;
   }
 
   // Toets: de hele woordenbank van deze kern, één vraag per woord -- de samenvattende
-  // herhaling van alles wat de 3 oefeningen afzonderlijk behandelden.
-  const sessie = kern.woordenbank.map((doel) => {
-    const type = kiesType(beschikbareTypen(kern, doel, []));
-    return maakOefening(kern, doel, type, aantalAfleiders);
-  });
-  return schud(sessie);
+  // herhaling van alles wat de 3 oefeningen afzonderlijk behandelden -- en aan het eind
+  // twee keer zelf typen van woorden uit deze toets.
+  const sessie = schud(kern.woordenbank.map(vraagVoor));
+  if (isZes()) voegTypenToe(kern, sessie, 2);
+  return sessie;
 }

@@ -155,13 +155,12 @@ so far, plus optional `zinnen` (fill-in-the-blank sentences, picture-
 supported; sentence *filler* words can exceed the known-letters set, but the
 blank target word itself must come from the woordenbank).
 
-`zelf-typen` (type the word from scratch, no choices) only becomes an
-eligible exercise type for a given word once `haalBlootstelling(woord) >=
-MIN_BLOOTSTELLING_VOOR_TYPEN` (currently 2) — i.e. after it's shown up in at
-least 2 *other* exercise types. This is tracked per-word, per-profile, in
-`progressStore`'s `woordBlootstelling` map, incremented in
-`OefeningScreen.afhandelenResultaat` for every exercise type except
-`zelf-typen` itself.
+`zelf-typen` (type the word from scratch, no choices) is **never** picked as a
+regular question. It is only added at the end of a series, for a word that already
+came up earlier in that same series (the owner's rule: "only for words that have
+come up in that series of questions before, otherwise it's too hard"). See
+`voegTypenToe()` in `oefeningGenerator.ts`. zin-invullen is always multiple choice.
+(`woordBlootstelling` in progressStore is still tracked but no longer gates typing.)
 
 **Adding a word**: source/crop an image into `public/assets/images/woorden/`,
 add `{ woord, afbeeldingPad }` to the kern's `woordenbank` array, optionally
@@ -320,13 +319,18 @@ original worksheet, not vocabulary to add.
 `woordwolk`, `letter-herkennen`, `klank-herkennen`, `drie-koppelen`.
 
 **Exercise type per word: weighted by age, not by kern.** `kiesType()` in
-`oefeningGenerator.ts`: for 6-year-olds (`GEWICHT_ZES`) typing is weighted
-heavily (zelf-typen 3, available from the first time a word is seen, and
-zin-invullen typed 70% of the time), and building words and drie-koppelen come
-up more, while the simple multiple-choice types come up less. That makes about
-a third of the questions typed. This was a direct request ("it's too easy
-overall for 6 year olds, mix in more type-it-yourself"). Age 5 keeps the
-uniform pick. In math, `hoeveelheid-typen`/`reeks-aanvullen` count double. An
+`oefeningGenerator.ts`: for 6-year-olds (`GEWICHT_ZES`) building words, zin-invullen
+and drie-koppelen come up more, and the simple multiple-choice types come up less.
+Age 5 gets a uniform pick. **Session shape:**
+- Oefenen: one question per pool word (3-5 words), then extra repeat
+  plaatje/woord-keuze questions for words already asked (at least 1, filled up to 6),
+  then, for age 6, one zelf-typen question for a repeated word. That is always 7
+  questions for age 6 and 6 for age 5.
+- Toets: every bank word once, then, for age 6, 2 zelf-typen questions for words from
+  that toets.
+- In math, `hoeveelheid-typen`/`reeks-aanvullen` count double.
+
+An
 earlier kern-position "difficulty ramp" (harder types in later kernen) was
 explicitly rejected; don't reintroduce weighting by chapter position.
 
