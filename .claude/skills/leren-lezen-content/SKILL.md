@@ -606,6 +606,12 @@ text of slot N+1 for a long run. When recording, ask for a clear 2-second pause
 between items, and split any merged clip with a finer `silencedetect`
 (`noise=-35dB:d=0.08`) on just that clip.
 
+**After replacing clips, make git re-read their contents.** Clips of equal length have
+exactly the same file size, and git's quick check can then miss a changed file: the
+corrected `kat.mp3` was never committed, so the live site kept playing "kip" for the cat.
+After writing audio, run `git rm -r -q --cached public/assets && git add public/assets`
+and look at `git status` before committing.
+
 ## "Luisteren" topic — the non-readers' entry point
 
 A third, structurally separate topic (`content/topics.ts`, id `luisteren`,
