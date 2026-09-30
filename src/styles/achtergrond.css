@@ -597,3 +597,37 @@ body:not(.thema-ruimte) .instructie-tekst:not(.instructie-tekst--donker) {
   45% { transform: translate(calc(-50% + var(--dx) * 0.6), var(--dy)) scale(1); opacity: 1; }
   100% { transform: translate(calc(-50% + var(--dx)), calc(var(--dy) * -0.2 + 80px)) scale(0.6); opacity: 0; }
 }
+
+/* ---- Back-up in het profielmenu ---- */
+.backup-weergave {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  width: 240px;
+}
+
+.backup-weergave[hidden] {
+  display: none;
+}
+
+.backup-uitleg,
+.backup-melding {
+  margin: 0;
+  font-size: 0.85rem;
+  color: var(--kleur-tekst);
+}
+
+.backup-melding:empty {
+  display: none;
+}
+
+.backup-code {
+  font: inherit;
+  font-size: 0.75rem;
+  padding: 8px;
+  border-radius: 10px;
+  border: 2px solid #d5d9e4;
+  resize: none;
+  word-break: break-all;
+  user-select: text;
+}

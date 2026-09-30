@@ -11,6 +11,7 @@ import {
 import { speelSchermOvergang } from '../../three/transitions.ts';
 import { isGedempt, zetGedempt } from '../../engine/audioManager.ts';
 import { THEMAS, huidigThema, kiesAchtergrond } from '../../achtergrond/achtergrond.ts';
+import { leesBackupCode, maakBackupCode, zetBackupTerug } from '../../engine/backup.ts';
 import { AgeSelectScreen } from '../screens/AgeSelectScreen.ts';
 import { ProfileSelectScreen } from '../screens/ProfileSelectScreen.ts';
 
@@ -92,6 +93,12 @@ export function maakProfielMenu(manager: ScreenManager): { element: HTMLElement;
     manager.replace((m) => AgeSelectScreen(m));
   });
   hoofdWeergave.appendChild(leeftijdKnop);
+
+  const backupKnop = document.createElement('button');
+  backupKnop.className = 'profiel-menu__optie';
+  backupKnop.textContent = 'Back-up';
+  backupKnop.addEventListener('click', () => wisselWeergave(backupWeergave));
+  hoofdWeergave.appendChild(backupKnop);
 
   const profielKnop = document.createElement('button');
   profielKnop.className = 'profiel-menu__optie';
@@ -176,11 +183,64 @@ export function maakProfielMenu(manager: ScreenManager): { element: HTMLElement;
   }
   paneel.appendChild(achtergrondWeergave);
 
+  // Back-up: voortgang overzetten naar een ander apparaat (voor ouders).
+  const backupWeergave = document.createElement('div');
+  backupWeergave.className = 'backup-weergave';
+  backupWeergave.hidden = true;
+  const uitleg = document.createElement('p');
+  uitleg.className = 'backup-uitleg';
+  uitleg.textContent = 'Zet alle profielen en voortgang over naar een ander apparaat.';
+  const maakKnop = document.createElement('button');
+  maakKnop.className = 'profiel-menu__optie';
+  const kanDelen = typeof navigator.share === 'function';
+  maakKnop.textContent = kanDelen ? 'Back-up delen' : 'Back-up kopiëren';
+  const codeVak = document.createElement('textarea');
+  codeVak.className = 'backup-code';
+  codeVak.placeholder = 'Plak hier een back-up-code';
+  codeVak.rows = 3;
+  const terugKnop = document.createElement('button');
+  terugKnop.className = 'profiel-menu__optie';
+  terugKnop.textContent = 'Terugzetten';
+  const melding = document.createElement('p');
+  melding.className = 'backup-melding';
+  backupWeergave.append(uitleg, maakKnop, codeVak, terugKnop, melding);
+  paneel.appendChild(backupWeergave);
+
+  maakKnop.addEventListener('click', async () => {
+    try {
+      const code = await maakBackupCode();
+      codeVak.value = code;
+      if (kanDelen) {
+        await navigator.share({ title: 'Leren Lezen back-up', text: code }).catch(() => undefined);
+        melding.textContent = 'Code staat ook hierboven.';
+      } else {
+        await navigator.clipboard?.writeText(code).catch(() => undefined);
+        codeVak.select();
+        melding.textContent = 'Gekopieerd!';
+      }
+    } catch {
+      melding.textContent = 'Back-up maken lukte niet.';
+    }
+  });
+  terugKnop.addEventListener('click', async () => {
+    try {
+      const { backup, namen } = await leesBackupCode(codeVak.value);
+      const lijst = namen.length ? namen.join(', ') : 'geen profielen';
+      if (!window.confirm(`Deze profielen terugzetten: ${lijst}?
+Bestaande profielen met dezelfde naam worden overschreven.`)) return;
+      zetBackupTerug(backup);
+      location.reload();
+    } catch {
+      melding.textContent = 'Dat is geen geldige back-up-code.';
+    }
+  });
+
   function wisselWeergave(doel: HTMLElement): void {
     hoofdWeergave.hidden = true;
     avatarWeergave.hidden = doel !== avatarWeergave;
     kleurWeergave.hidden = doel !== kleurWeergave;
     achtergrondWeergave.hidden = doel !== achtergrondWeergave;
+    backupWeergave.hidden = doel !== backupWeergave;
     for (const k of achtergrondKnoppen) k.classList.toggle('geselecteerd', k.dataset.thema === huidigThema());
   }
 
@@ -192,6 +252,9 @@ export function maakProfielMenu(manager: ScreenManager): { element: HTMLElement;
     avatarWeergave.hidden = true;
     kleurWeergave.hidden = true;
     achtergrondWeergave.hidden = true;
+    backupWeergave.hidden = true;
+    codeVak.value = '';
+    melding.textContent = '';
     document.removeEventListener('pointerdown', opBuitenKlik);
   }
 
