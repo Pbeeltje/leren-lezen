@@ -92,3 +92,18 @@ const box = await canvas.boundingBox();
 
 Give it ~600ms after the exercise mounts before clicking — the font loads
 asynchronously (`FontLoader`) before blocks are created.
+
+## Hosting (GitHub Pages)
+
+The app is published at https://pbeeltje.github.io/leren-lezen/ by
+`.github/workflows/deploy.yml` on every push to `main` (build, then deploy-pages).
+It is served from the `/leren-lezen/` subfolder, so:
+- `vite.config.ts` uses `base: './'`;
+- **every asset path in code must be relative**: `'assets/images/...'`, never
+  `'/assets/...'`. A leading slash works in `npm run dev` but breaks on Pages.
+  Check with `grep -rnE "[\"'\`]/assets/" src` (it should return nothing).
+- Source media (worksheets, raw `.m4a` recordings) are git-ignored in `bronbestanden/`
+  and were removed from history on purpose; never commit them (the repo is public).
+To test the subfolder setup locally: copy `dist/` to `<tmp>/leren-lezen/`, run
+`python -m http.server` in `<tmp>`, open `http://localhost:8000/leren-lezen/`, and check
+for 404s.
