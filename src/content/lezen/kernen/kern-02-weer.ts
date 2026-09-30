@@ -17,7 +17,7 @@ const hagel = { woord: 'hagel', afbeeldingPad: 'assets/images/woorden/weer/hagel
 
 export const kern02Weer: Kern = {
   id: 'kern-02',
-  volgnummer: 7,
+  volgnummer: 13,
   titel: 'weer',
   structuurwoorden: [],
   nieuweLetters: [],

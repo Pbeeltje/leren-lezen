@@ -16,7 +16,7 @@ const flos = { woord: 'flos', afbeeldingPad: 'assets/images/woorden/milou/flos.p
 
 export const kern10Klanken2: Kern = {
   id: 'kern-10',
-  volgnummer: 15,
+  volgnummer: 21,
   titel: 'woord bij plaatje',
   structuurwoorden: [],
   nieuweLetters: [],

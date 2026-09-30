@@ -691,3 +691,17 @@ Math also has **bussommen** (`games/bussom.ts`, type `bussom`, chapter `reken-ke
 the bus shows the starting passengers, the stop shows who gets on or off, and the sum
 is written below. `start` is always one of the distractors, because forgetting who got
 on or off is the classic mistake.
+
+## VLL kern 7-12 (Lezen 7-12)
+
+From kern 7 on VLL adds no new single letters and no own structure words, only sound
+groups, per the 2nd maan-versie goal posters (jufinger.nl) and KlasCement Logico cards:
+kern 7 sch/ng (+ mmkm/mkmm, compounds), kern 8 ch(t)/nk (+ mmkmm, words ending in a
+vowel), kern 9 aai/ooi/oei (+ two syllables), kern 10 eeuw/ieuw/uw (+ open syllables),
+kern 11 -ig/-lijk/-ing (+ long words), kern 12 review. Files `vll-kern-7..12.ts`; the
+practice words are our own choice (pictures: Fluent Emoji, kooi from juf-milou), so don't
+present them as original VLL word lists. The themed chapters follow as Lezen 13-21 (ids
+kern-02..kern-10 kept for saved stars). `KLANKEN` in oefeningGenerator lists the longer
+groups first ('aai' before 'aa', 'sch' before 'ch'). Words longer than 8 letters skip
+woord-bouwen, longer than 10 skip hakken-en-plakken. Their audio is on
+`opnamelijst-3-deel-1`.

@@ -122,7 +122,8 @@ export class LetterBlokkenScene {
     // Op een smal scherm (telefoon) werden ze zo piepklein: dan twee rijen.
     const rijen = (zichtbareBreedte * 0.92) / aantal < 1.25 && aantal > 3 ? 2 : 1;
     const perRij = Math.ceil(aantal / rijen);
-    const spacing = Math.min(maxSpacing, (zichtbareBreedte * 0.92) / perRij);
+    // Twee rijen op een telefoon: wat kleiner, anders vult één blok bijna de hele breedte.
+    const spacing = Math.min(rijen === 2 ? 1.3 : maxSpacing, (zichtbareBreedte * (rijen === 2 ? 0.8 : 0.92)) / perRij);
     const schaal = Math.min(1, (spacing * 0.6) / BASIS_GROOTTE);
     this.blokken.forEach((blok, index) => {
       const rij = Math.floor(index / perRij);

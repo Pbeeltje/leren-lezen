@@ -17,7 +17,7 @@ const krijtje = bestaand('krijtje', 'svg');
 
 export const kern06MeerWoorden: Kern = {
   id: 'kern-06',
-  volgnummer: 11,
+  volgnummer: 17,
   titel: 'speelgoed',
   structuurwoorden: [],
   nieuweLetters: [],

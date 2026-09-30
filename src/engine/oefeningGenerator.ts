@@ -13,7 +13,8 @@ const MIN_BLOOTSTELLING_VOOR_TYPEN = 2;
 // 'oe' erbij vanaf kern-09 (koek) -- een van de meest voorkomende Nederlandse
 // klankcombinaties, dus de moeite waard ook al is er (nog) maar één woord voor.
 // Volgorde telt: 'ee' en 'ie' vóór 'eu', anders krijgt "sneeuw"/"nieuw" de klank 'eu'.
-const KLANKEN = ['ee', 'ie', 'oe', 'oo', 'aa', 'eu', 'au', 'ou', 'ui', 'ij', 'ei', 'uu'];
+// Langere klankgroepen (VLL kern 7-10) eerst, anders wint bv. 'aa' van 'aai' en 'ch' van 'sch'.
+const KLANKEN = ['eeuw', 'ieuw', 'aai', 'ooi', 'oei', 'sch', 'ng', 'nk', 'ch', 'ee', 'ie', 'oe', 'oo', 'aa', 'eu', 'au', 'ou', 'ui', 'ij', 'ei', 'uu'];
 // Klanken die hetzelfde klinken: een afleider met de "tweeling" is geen eerlijk fout antwoord.
 const ZELFDE_KLANK: Record<string, string[]> = { ei: ['ij'], ij: ['ei'], au: ['ou'], ou: ['au'] };
 
@@ -106,6 +107,9 @@ function beschikbareTypen(kern: Kern, doel: Woord, uitgesloten: OefeningType[]):
     'woordwolk',
   ];
   if (doel.vereistTekst) basis = basis.filter((type) => !ALLEEN_PLAATJE_TYPEN.includes(type));
+  // Heel lange woorden (lieveheersbeestje) geven te veel blokjes of letters om te tikken.
+  if (doel.woord.length > 8) basis = basis.filter((type) => type !== 'woord-bouwen');
+  if (doel.woord.length > 10) basis = basis.filter((type) => type !== 'hakken-en-plakken');
   if (kern.zinnen.some((z) => z.doel.woord === doel.woord)) basis.push('zin-invullen');
   if (!doel.vereistTekst && haalBlootstelling(doel.woord) >= MIN_BLOOTSTELLING_VOOR_TYPEN) basis.push('zelf-typen');
   if (kiesBesteLetter(doel, kern.woordenbank)) basis.push('letter-herkennen');

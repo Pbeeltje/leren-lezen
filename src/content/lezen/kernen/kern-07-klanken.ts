@@ -15,7 +15,7 @@ const droog = bestaand('droog', 'svg', true);
 
 export const kern07Klanken: Kern = {
   id: 'kern-07',
-  volgnummer: 12,
+  volgnummer: 18,
   titel: 'klanken',
   structuurwoorden: [],
   nieuweLetters: [],

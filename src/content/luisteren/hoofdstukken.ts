@@ -26,13 +26,13 @@ export const LUISTER_HOOFDSTUKKEN: LuisterHoofdstuk[] = [
     id: 'dieren',
     titel: 'Nog meer dieren',
     icoonWoord: 'vos',
-    woorden: ['vos', 'wolf', 'egel', 'das', 'mol', 'bij', 'vis', 'uil', 'duif', 'pauw', 'geit', 'slak', 'mier', 'vlieg', 'haai', 'zwaan', 'ijsbeer', 'lam'],
+    woorden: ['vos', 'wolf', 'egel', 'das', 'mol', 'bij', 'vis', 'uil', 'duif', 'pauw', 'geit', 'slak', 'mier', 'vlieg', 'haai', 'zwaan', 'ijsbeer', 'lam', 'kikker', 'dolfijn', 'spin', 'krab', 'schildpad', 'lieveheersbeestje', 'vogel', 'leeuw'],
   },
   {
     id: 'eten',
     titel: 'Eten',
     icoonWoord: 'kaas',
-    woorden: ['kaas', 'koek', 'fruit', 'noot', 'zout', 'ijs', 'ei', 'brood', 'soep', 'peer', 'kers', 'taart', 'melk'],
+    woorden: ['kaas', 'koek', 'fruit', 'noot', 'zout', 'ijs', 'ei', 'brood', 'soep', 'peer', 'kers', 'taart', 'melk', 'appel', 'banaan', 'tomaat', 'wortel', 'aardbei', 'sinaasappel', 'honing', 'sla', 'paddenstoel'],
   },
   {
     id: 'lijf',
@@ -44,18 +44,18 @@ export const LUISTER_HOOFDSTUKKEN: LuisterHoofdstuk[] = [
     id: 'spullen',
     titel: 'Kleren & spullen',
     icoonWoord: 'sok',
-    woorden: ['pet', 'sok', 'trui', 'kous', 'muts', 'tas', 'jas', 'riem', 'pen', 'vaas', 'pot', 'bel', 'wiel', 'deur', 'raam', 'boek', 'bed', 'stoel', 'lamp', 'klok', 'bril', 'schaar', 'lepel', 'kopje', 'sleutel', 'laars', 'kroon'],
+    woorden: ['pet', 'sok', 'trui', 'kous', 'muts', 'tas', 'jas', 'riem', 'pen', 'vaas', 'pot', 'bel', 'wiel', 'deur', 'raam', 'boek', 'bed', 'stoel', 'lamp', 'klok', 'bril', 'schaar', 'lepel', 'kopje', 'sleutel', 'laars', 'kroon', 'schoen', 'ring', 'broek', 'strik', 'emmer', 'hamer', 'ladder', 'fles', 'spons', 'krant', 'bank', 'kraan'],
   },
   {
     id: 'buiten',
     titel: 'Buiten',
     icoonWoord: 'zon',
-    woorden: ['zon', 'maan', 'ster', 'wolk', 'regen', 'wind', 'sneeuw', 'onweer', 'bliksem', 'boom', 'tak', 'roos', 'tuin', 'huis', 'vuur', 'hout', 'hagel', 'bloem', 'blad', 'regenboog', 'hulst'],
+    woorden: ['zon', 'maan', 'ster', 'wolk', 'regen', 'wind', 'sneeuw', 'onweer', 'bliksem', 'boom', 'tak', 'roos', 'tuin', 'huis', 'vuur', 'hout', 'hagel', 'bloem', 'blad', 'regenboog', 'hulst', 'nacht', 'plant', 'schelp', 'kerk', 'school'],
   },
   {
     id: 'speelgoed',
     titel: 'Speelgoed & vervoer',
     icoonWoord: 'bal',
-    woorden: ['bal', 'ballon', 'vlieger', 'knuffel', 'trommel', 'gitaar', 'puzzel', 'robot', 'raket', 'step', 'auto', 'bus', 'fiets', 'trein', 'boot', 'vliegtuig', 'helikopter', 'taxi', 'schip', 'tram', 'slee', 'spook'],
+    woorden: ['bal', 'ballon', 'vlieger', 'knuffel', 'trommel', 'gitaar', 'puzzel', 'robot', 'raket', 'step', 'auto', 'bus', 'fiets', 'trein', 'boot', 'vliegtuig', 'helikopter', 'taxi', 'schip', 'tram', 'slee', 'spook', 'voetbal', 'ski', 'piano', 'radio'],
   },
 ];

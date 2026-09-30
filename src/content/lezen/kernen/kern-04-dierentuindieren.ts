@@ -21,7 +21,7 @@ const zeehond = bestaand('zeehond', 'svg');
 
 export const kern04Dierentuindieren: Kern = {
   id: 'kern-04',
-  volgnummer: 9,
+  volgnummer: 15,
   titel: 'dierentuindieren',
   structuurwoorden: [],
   nieuweLetters: [],

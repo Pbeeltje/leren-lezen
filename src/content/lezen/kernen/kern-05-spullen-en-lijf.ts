@@ -16,7 +16,7 @@ const vinger = bestaand('vinger', 'svg');
 
 export const kern05SpullenEnLijf: Kern = {
   id: 'kern-05',
-  volgnummer: 10,
+  volgnummer: 16,
   titel: 'spullen & lijf',
   structuurwoorden: [],
   nieuweLetters: [],

@@ -1253,7 +1253,7 @@
   }
   /* Twee rijen letterblokken (zie letterBlocks.ts) hebben wat meer hoogte nodig. */
   .blokken-canvas {
-    height: 240px;
+    height: 210px;
   }
 }
 

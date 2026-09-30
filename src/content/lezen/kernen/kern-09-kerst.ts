@@ -14,7 +14,7 @@ const muts = bestaand('muts', 'png');
 
 export const kern09Kerst: Kern = {
   id: 'kern-09',
-  volgnummer: 14,
+  volgnummer: 20,
   titel: 'kerst',
   structuurwoorden: [],
   nieuweLetters: [],

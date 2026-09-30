@@ -16,7 +16,7 @@ const tractor = bestaand('tractor', 'svg');
 
 export const kern03Boerderijdieren: Kern = {
   id: 'kern-03',
-  volgnummer: 8,
+  volgnummer: 14,
   titel: 'boerderijdieren',
   structuurwoorden: [],
   nieuweLetters: [],

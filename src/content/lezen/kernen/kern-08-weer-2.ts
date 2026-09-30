@@ -15,7 +15,7 @@ const tram = bestaand('tram', 'svg');
 
 export const kern08Weer2: Kern = {
   id: 'kern-08',
-  volgnummer: 13,
+  volgnummer: 19,
   titel: 'vervoer',
   structuurwoorden: [],
   nieuweLetters: [],
