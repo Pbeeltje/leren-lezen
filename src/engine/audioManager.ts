@@ -50,11 +50,11 @@ export function ontgrendelAudio(): void {
 }
 
 export function instructieAudioPad(type: string): string {
-  return `/assets/audio/instructies/${type}.mp3`;
+  return `assets/audio/instructies/${type}.mp3`;
 }
 
 export function woordAudioPad(woord: string): string {
-  return `/assets/audio/woorden/${woord}.mp3`;
+  return `assets/audio/woorden/${woord}.mp3`;
 }
 
 /** Stopt wat er nu speelt, bv. bij het verlaten van een scherm. */

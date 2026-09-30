@@ -8,7 +8,7 @@ export const TOPICS: Topic[] = [
     id: 'lezen',
     leeftijd: [5, 6],
     titel: 'Leren lezen',
-    icoonPad: '/assets/icons/boek.svg',
+    icoonPad: 'assets/icons/boek.svg',
     beschikbaar: true,
   },
   {
@@ -16,7 +16,7 @@ export const TOPICS: Topic[] = [
     // Vijf jaar ziet alleen de eerste twee hoofdstukken (engine/leeftijdGrens.ts).
     leeftijd: [5, 6],
     titel: 'Tellen',
-    icoonPad: '/assets/icons/tellen.svg',
+    icoonPad: 'assets/icons/tellen.svg',
     beschikbaar: true,
   },
   {
@@ -24,7 +24,7 @@ export const TOPICS: Topic[] = [
     // Luister-en-wijs-aan: geen lezen nodig, alleen voor de jongste kinderen.
     leeftijd: [3],
     titel: 'Luisteren',
-    icoonPad: '/assets/icons/luisteren.svg',
+    icoonPad: 'assets/icons/luisteren.svg',
     beschikbaar: true,
   },
   {
@@ -32,14 +32,14 @@ export const TOPICS: Topic[] = [
     id: 'ontdekken',
     leeftijd: [3],
     titel: 'Ontdekken',
-    icoonPad: '/assets/icons/vormen.svg',
+    icoonPad: 'assets/icons/vormen.svg',
     beschikbaar: true,
   },
   {
     id: 'natuur',
     leeftijd: [3, 4, 5, 6],
     titel: 'Natuur',
-    icoonPad: '/assets/icons/natuur.svg',
+    icoonPad: 'assets/icons/natuur.svg',
     beschikbaar: false,
   },
 ];

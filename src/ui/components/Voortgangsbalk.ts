@@ -13,13 +13,13 @@ export function maakVoortgangsbalk(totaal: number): { element: HTMLElement; zetV
 
   const loper = document.createElement('img');
   loper.className = 'voortgangsbalk__loper';
-  loper.src = '/assets/icons/avatar-kat.svg';
+  loper.src = 'assets/icons/avatar-kat.svg';
   loper.alt = '';
   spoor.appendChild(loper);
 
   const kom = document.createElement('img');
   kom.className = 'voortgangsbalk__kom';
-  kom.src = '/assets/icons/kom.svg';
+  kom.src = 'assets/icons/kom.svg';
   kom.alt = '';
 
   element.appendChild(spoor);

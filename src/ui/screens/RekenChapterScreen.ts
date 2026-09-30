@@ -60,7 +60,7 @@ export function RekenChapterScreen(manager: ScreenManager, index: number): Scree
       tegel.className = 'hoofdstuk-tegel';
       if (voortgang.oefenSessies >= i) tegel.classList.add('gedaan');
       const icoon = document.createElement('img');
-      icoon.src = '/assets/icons/potlood.svg';
+      icoon.src = 'assets/icons/potlood.svg';
       icoon.alt = '';
       tegel.appendChild(icoon);
       const label = document.createElement('span');
@@ -76,7 +76,7 @@ export function RekenChapterScreen(manager: ScreenManager, index: number): Scree
     const toetsTegel = document.createElement('button');
     toetsTegel.className = 'hoofdstuk-tegel hoofdstuk-tegel--toets';
     const toetsIcoon = document.createElement('img');
-    toetsIcoon.src = '/assets/icons/trofee.svg';
+    toetsIcoon.src = 'assets/icons/trofee.svg';
     toetsIcoon.alt = '';
     toetsTegel.appendChild(toetsIcoon);
     const toetsLabel = document.createElement('span');

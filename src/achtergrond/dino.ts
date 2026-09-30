@@ -12,30 +12,30 @@ const HEUVELS = `
 
 export function maakDinoDecor(): Decor {
   const root = el('div', 'decor decor-dino');
-  plaatje('/assets/achtergrond/zon.svg', 'dino-zon', root);
-  plaatje('/assets/achtergrond/wolk.svg', 'drijf-wolk drijf-wolk--1', root);
-  plaatje('/assets/achtergrond/wolk.svg', 'drijf-wolk drijf-wolk--2', root);
+  plaatje('assets/achtergrond/zon.svg', 'dino-zon', root);
+  plaatje('assets/achtergrond/wolk.svg', 'drijf-wolk drijf-wolk--1', root);
+  plaatje('assets/achtergrond/wolk.svg', 'drijf-wolk drijf-wolk--2', root);
   // Vóór de heuvels in de DOM, zodat de achterste heuvel over de voet van de vulkaan valt.
   const vulkaan = el('div', 'vulkaan', root);
   const rook = el('div', 'vulkaan__rook', vulkaan);
   for (let i = 0; i < 3; i++) el('div', 'vulkaan__pluim', rook).style.animationDelay = `${i * 1.3}s`;
   el('div', 'vulkaan__gloed', vulkaan);
-  plaatje('/assets/achtergrond/vulkaan.svg', 'vulkaan__berg', vulkaan);
+  plaatje('assets/achtergrond/vulkaan.svg', 'vulkaan__berg', vulkaan);
   const heuvels = svgUitTekst(HEUVELS, 'dino-heuvels', root);
   const [achter, midden] = [...heuvels.querySelectorAll('path')];
 
   // [plaatje, klasse, op welke heuvel]: de kleine bomen aan de rand staan verder weg.
   const bomen: [HTMLImageElement, SVGPathElement][] = [
-    [plaatje('/assets/achtergrond/den.svg', 'dino-boom dino-boom--1', root), achter],
-    [plaatje('/assets/achtergrond/boom.svg', 'dino-boom dino-boom--2', root), midden],
-    [plaatje('/assets/achtergrond/boom.svg', 'dino-boom dino-boom--3', root), midden],
-    [plaatje('/assets/achtergrond/den.svg', 'dino-boom dino-boom--4', root), achter],
+    [plaatje('assets/achtergrond/den.svg', 'dino-boom dino-boom--1', root), achter],
+    [plaatje('assets/achtergrond/boom.svg', 'dino-boom dino-boom--2', root), midden],
+    [plaatje('assets/achtergrond/boom.svg', 'dino-boom dino-boom--3', root), midden],
+    [plaatje('assets/achtergrond/den.svg', 'dino-boom dino-boom--4', root), achter],
   ];
 
   const trex = el('div', 'dino dino--trex', root);
-  plaatje('/assets/achtergrond/trex-eigen.svg', 'dino__lijf', trex);
+  plaatje('assets/achtergrond/trex-eigen.svg', 'dino__lijf', trex);
   const tri = el('div', 'dino dino--tri', root);
-  plaatje('/assets/achtergrond/triceratops.svg', 'dino__lijf', tri);
+  plaatje('assets/achtergrond/triceratops.svg', 'dino__lijf', tri);
 
   const plaatsBomen = () => {
     zetOpPad(vulkaan, achter, 18, true);

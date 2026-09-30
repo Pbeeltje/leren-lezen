@@ -9,7 +9,7 @@ export function toonKlaarKaart(container: HTMLElement, onVerder: () => void): vo
   kaart.className = 'oefen-kaart klaar-kaart';
 
   const beker = document.createElement('img');
-  beker.src = '/assets/icons/trofee.svg';
+  beker.src = 'assets/icons/trofee.svg';
   beker.alt = '';
   beker.className = 'klaar-kaart__beker';
   kaart.appendChild(beker);
@@ -18,7 +18,7 @@ export function toonKlaarKaart(container: HTMLElement, onVerder: () => void): vo
   sterren.className = 'klaar-kaart__sterren';
   for (let i = 0; i < 3; i++) {
     const ster = document.createElement('img');
-    ster.src = '/assets/icons/ster.svg';
+    ster.src = 'assets/icons/ster.svg';
     ster.alt = '';
     ster.style.animationDelay = `${0.2 + i * 0.25}s`;
     sterren.appendChild(ster);
@@ -29,7 +29,7 @@ export function toonKlaarKaart(container: HTMLElement, onVerder: () => void): vo
   knop.className = 'klaar-kaart__knop';
   knop.setAttribute('aria-label', 'Klaar, terug');
   const pijl = document.createElement('img');
-  pijl.src = '/assets/icons/huis.svg';
+  pijl.src = 'assets/icons/huis.svg';
   pijl.alt = '';
   knop.appendChild(pijl);
   knop.addEventListener('click', onVerder);

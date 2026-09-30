@@ -1,6 +1,6 @@
 import type { RekenKern } from '../types.ts';
 
-const pad = (naam: string) => `/assets/icons/${naam}.svg`;
+const pad = (naam: string) => `assets/icons/${naam}.svg`;
 
 export const rekenKern02Getallen1Tot10: RekenKern = {
   id: 'reken-kern-02',

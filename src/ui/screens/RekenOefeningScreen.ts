@@ -214,7 +214,7 @@ export function RekenOefeningScreen(
   overslaanKnop.className = 'overslaan-knop';
   overslaanKnop.textContent = 'Overslaan';
   const overslaanIcoon = document.createElement('img');
-  overslaanIcoon.src = '/assets/icons/overslaan.svg';
+  overslaanIcoon.src = 'assets/icons/overslaan.svg';
   overslaanIcoon.alt = '';
   overslaanKnop.appendChild(overslaanIcoon);
   overslaanKnop.addEventListener('click', overslaan);

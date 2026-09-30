@@ -71,7 +71,7 @@ export function maakProfielMenu(manager: ScreenManager): { element: HTMLElement;
   geluidKnop.appendChild(geluidTekst);
   function werkGeluidKnopBij(): void {
     const gedempt = isGedempt();
-    geluidIcoon.src = gedempt ? '/assets/icons/geluid-uit.svg' : '/assets/icons/geluid.svg';
+    geluidIcoon.src = gedempt ? 'assets/icons/geluid-uit.svg' : 'assets/icons/geluid.svg';
     geluidTekst.textContent = gedempt ? 'Geluid aanzetten' : 'Geluid uitzetten';
   }
   werkGeluidKnopBij();

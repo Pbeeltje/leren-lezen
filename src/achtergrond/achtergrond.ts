@@ -23,10 +23,10 @@ export interface Decor {
 }
 
 export const THEMAS: { id: ThemaId; naam: string; voorbeeld: string }[] = [
-  { id: 'ruimte', naam: 'Ruimte', voorbeeld: '/assets/icons/ster.svg' },
-  { id: 'dino', naam: 'Dino-wei', voorbeeld: '/assets/achtergrond/trex-eigen.svg' },
-  { id: 'kasteel', naam: 'Kasteel', voorbeeld: '/assets/achtergrond/kasteel-eigen.svg' },
-  { id: 'zee', naam: 'Zee', voorbeeld: '/assets/achtergrond/vuurtoren.svg' },
+  { id: 'ruimte', naam: 'Ruimte', voorbeeld: 'assets/icons/ster.svg' },
+  { id: 'dino', naam: 'Dino-wei', voorbeeld: 'assets/achtergrond/trex-eigen.svg' },
+  { id: 'kasteel', naam: 'Kasteel', voorbeeld: 'assets/achtergrond/kasteel-eigen.svg' },
+  { id: 'zee', naam: 'Zee', voorbeeld: 'assets/achtergrond/vuurtoren.svg' },
 ];
 
 const MAKERS: Record<Exclude<ThemaId, 'ruimte'>, () => Decor> = {

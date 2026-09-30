@@ -25,7 +25,7 @@ export function AgeSelectScreen(manager: ScreenManager): Screen {
 
   for (const leeftijd of LEEFTIJDEN) {
     const tegel = maakIconTile({
-      icoonPad: `/assets/icons/leeftijd-${leeftijd}.svg`,
+      icoonPad: `assets/icons/leeftijd-${leeftijd}.svg`,
       label: `${leeftijd} jaar`,
       onClick: () => {
         ontgrendelAudio();

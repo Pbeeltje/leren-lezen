@@ -39,7 +39,7 @@ export const AVATAR_ICONEN = [
 export type AvatarIcoon = (typeof AVATAR_ICONEN)[number];
 
 export function avatarPad(icoonId: string): string {
-  return `/assets/icons/avatar-${icoonId}.svg`;
+  return `assets/icons/avatar-${icoonId}.svg`;
 }
 
 const PROFIELEN_SLEUTEL = 'leren-lezen:profielen';

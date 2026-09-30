@@ -15,7 +15,7 @@ function laadFont(): Promise<Font> {
   if (fontCache) return Promise.resolve(fontCache);
   if (!fontBeloften) {
     const loader = new FontLoader();
-    fontBeloften = loader.loadAsync('/assets/fonts/helvetiker_bold.typeface.json').then((font) => {
+    fontBeloften = loader.loadAsync('assets/fonts/helvetiker_bold.typeface.json').then((font) => {
       fontCache = font;
       return font;
     });

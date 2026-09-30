@@ -8,7 +8,7 @@ import type { RekenKern } from '../types.ts';
 // voorbeeld, en de vijfstructuur (getallen rond 5 opbouwen) als organiserend principe
 // voor het bereik tot en met 10. Getallen 1 t/m 6 dekken zowel de vijfstructuur als het
 // volledige dobbelsteenbereik — een logische eerste stap vóór 7 t/m 10.
-const pad = (naam: string) => `/assets/icons/${naam}.svg`;
+const pad = (naam: string) => `assets/icons/${naam}.svg`;
 
 export const rekenKern01Getallen1Tot6: RekenKern = {
   id: 'reken-kern-01',

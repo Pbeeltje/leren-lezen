@@ -38,7 +38,7 @@ export function TestResultScreen(
   const muntenRij = document.createElement('div');
   muntenRij.className = 'resultaat-munten-rij';
   const muntIcoon = document.createElement('img');
-  muntIcoon.src = '/assets/icons/munt.svg';
+  muntIcoon.src = 'assets/icons/munt.svg';
   muntIcoon.alt = '';
   muntenRij.appendChild(muntIcoon);
   const muntenTekst = document.createElement('span');

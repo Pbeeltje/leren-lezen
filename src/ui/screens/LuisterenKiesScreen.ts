@@ -24,7 +24,7 @@ export function LuisterenKiesScreen(manager: ScreenManager): Screen {
 
   grid.appendChild(
     maakIconTile({
-      icoonPad: '/assets/icons/luisteren-wijzen.svg',
+      icoonPad: 'assets/icons/luisteren-wijzen.svg',
       label: 'Luister & wijs',
       onClick: () => {
         speelSchermOvergang();
@@ -35,7 +35,7 @@ export function LuisterenKiesScreen(manager: ScreenManager): Screen {
 
   grid.appendChild(
     maakIconTile({
-      icoonPad: '/assets/icons/geheugenspel.svg',
+      icoonPad: 'assets/icons/geheugenspel.svg',
       label: 'Geheugenspel',
       onClick: () => {
         speelSchermOvergang();

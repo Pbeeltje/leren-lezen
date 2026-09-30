@@ -10,7 +10,7 @@ export function ComingSoonScreen(manager: ScreenManager, onderwerpTitel: string)
   kaart.className = 'komt-eraan-kaart';
 
   const icoon = document.createElement('img');
-  icoon.src = '/assets/icons/ster.svg';
+  icoon.src = 'assets/icons/ster.svg';
   icoon.alt = '';
   kaart.appendChild(icoon);
 

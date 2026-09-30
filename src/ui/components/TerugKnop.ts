@@ -4,7 +4,7 @@ export function maakTerugKnop(onClick: () => void): HTMLButtonElement {
   knop.setAttribute('aria-label', 'Terug');
 
   const icoon = document.createElement('img');
-  icoon.src = '/assets/icons/terug.svg';
+  icoon.src = 'assets/icons/terug.svg';
   icoon.alt = '';
   knop.appendChild(icoon);
 

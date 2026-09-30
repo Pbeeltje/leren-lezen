@@ -61,7 +61,7 @@ export function maakMeerMinderVraag(): RondeVraag {
         knop.className = 'meer-minder-groep';
         for (let i = 0; i < aantal; i++) {
           const img = document.createElement('img');
-          img.src = `/assets/icons/${icoon}.svg`;
+          img.src = `assets/icons/${icoon}.svg`;
           img.alt = '';
           knop.appendChild(img);
         }

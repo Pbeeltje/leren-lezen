@@ -20,7 +20,7 @@ export function renderVingersNaarCijfer(
 
   const plaatje = document.createElement('img');
   plaatje.className = 'oefen-kaart__plaatje';
-  plaatje.src = `/assets/images/vingers/vinger-${oefening.cijfer}.png`;
+  plaatje.src = `assets/images/vingers/vinger-${oefening.cijfer}.png`;
   plaatje.alt = '';
   kaart.appendChild(plaatje);
 

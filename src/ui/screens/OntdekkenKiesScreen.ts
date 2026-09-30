@@ -35,7 +35,7 @@ export function OntdekkenKiesScreen(manager: ScreenManager): Screen {
   for (const spel of SPELLEN) {
     grid.appendChild(
       maakIconTile({
-        icoonPad: `/assets/icons/${spel.icoon}.svg`,
+        icoonPad: `assets/icons/${spel.icoon}.svg`,
         label: spel.label,
         onClick: () => {
           speelSchermOvergang();

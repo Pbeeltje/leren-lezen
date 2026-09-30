@@ -6,7 +6,7 @@ export function maakAudioKnop(opAfspelen: () => void): HTMLButtonElement {
   knop.className = 'audio-knop';
   knop.setAttribute('aria-label', 'Herhaal het geluid');
   const icoon = document.createElement('img');
-  icoon.src = '/assets/icons/geluid.svg';
+  icoon.src = 'assets/icons/geluid.svg';
   icoon.alt = '';
   knop.appendChild(icoon);
   knop.addEventListener('click', opAfspelen);

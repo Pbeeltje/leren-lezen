@@ -25,3 +25,10 @@ dist-ssr
 
 # Ruwe opnames horen niet in de repo (alleen de geknipte clips in public/).
 bronbestanden/*.m4a
+# Bronplaatjes (werkbladen, kaarten) blijven lokaal; alleen de uitgesneden plaatjes staan in public/.
+bronbestanden/*.jpg
+bronbestanden/*.jpeg
+bronbestanden/*.png
+bronbestanden/tegels/
+bronbestanden/fotometnaam/
+bronbestanden/_staged/

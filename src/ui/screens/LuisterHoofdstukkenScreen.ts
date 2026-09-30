@@ -31,7 +31,7 @@ export function LuisterHoofdstukkenScreen(manager: ScreenManager): Screen {
       const sterren = haalKernVoortgang(`luister-${hoofdstuk.id}`).sterren;
       grid.appendChild(
         maakIconTile({
-          icoonPad: plaatjeVan(hoofdstuk.icoonWoord) ?? '/assets/icons/luisteren.svg',
+          icoonPad: plaatjeVan(hoofdstuk.icoonWoord) ?? 'assets/icons/luisteren.svg',
           label: hoofdstuk.titel,
           beschikbaar: speelbaar,
           badge: !speelbaar ? 'binnenkort' : sterren > 0 ? '★★★' : undefined,

@@ -73,7 +73,7 @@ export function maakKasteelDecor(): Decor {
   const heuvel = el('div', 'kasteel-heuvel', root);
   const heuvelSvg = svgUitTekst(HEUVEL, 'kasteel-heuvel__svg', heuvel);
   const kasteel = el('div', 'kasteel', heuvel);
-  plaatje('/assets/achtergrond/kasteel-eigen.svg', 'kasteel__plaatje', kasteel);
+  plaatje('assets/achtergrond/kasteel-eigen.svg', 'kasteel__plaatje', kasteel);
   svgUitTekst(HEUVEL_VOOR, 'kasteel-heuvel__svg', heuvel);
   for (let i = 0; i < 9; i++) {
     const l = el('div', 'kasteel-lichtje', heuvel);
@@ -85,7 +85,7 @@ export function maakKasteelDecor(): Decor {
 
   svgUitTekst(grasSvg(), 'kasteel-gras', root);
   const eenhoorn = el('div', 'eenhoorn', root);
-  plaatje('/assets/achtergrond/eenhoorn.svg', 'eenhoorn__lijf', eenhoorn);
+  plaatje('assets/achtergrond/eenhoorn.svg', 'eenhoorn__lijf', eenhoorn);
 
   const juich = () => {
     kortAan(kasteel, 'straalt', 1600);

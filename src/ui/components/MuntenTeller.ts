@@ -8,7 +8,7 @@ export function maakMuntenTeller(): { element: HTMLElement; vernietig: () => voi
 
   const icoon = document.createElement('img');
   icoon.className = 'munten-teller__icoon';
-  icoon.src = '/assets/icons/munt.svg';
+  icoon.src = 'assets/icons/munt.svg';
   icoon.alt = '';
   element.appendChild(icoon);
 

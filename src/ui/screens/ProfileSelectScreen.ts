@@ -53,7 +53,7 @@ export function ProfileSelectScreen(manager: ScreenManager): Screen {
 
     grid.appendChild(
       maakIconTile({
-        icoonPad: '/assets/icons/plus.svg',
+        icoonPad: 'assets/icons/plus.svg',
         label: 'Nieuw profiel',
         onClick: () => {
           ontgrendelAudio();

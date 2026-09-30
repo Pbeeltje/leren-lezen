@@ -23,10 +23,10 @@ export function maakZeeDecor(): Decor {
   el('div', 'zee-lucht zee-lucht--zon', root);
   el('div', 'zee-lucht zee-lucht--regen', root);
   el('div', 'zee-lucht zee-lucht--onweer', root);
-  plaatje('/assets/achtergrond/zon.svg', 'zee-zon', root);
-  plaatje('/assets/achtergrond/wolk.svg', 'drijf-wolk drijf-wolk--1 zee-wolk', root);
-  plaatje('/assets/achtergrond/wolk.svg', 'drijf-wolk drijf-wolk--2 zee-wolk', root);
-  plaatje('/assets/achtergrond/wolk.svg', 'drijf-wolk drijf-wolk--3 zee-wolk zee-wolk--storm', root);
+  plaatje('assets/achtergrond/zon.svg', 'zee-zon', root);
+  plaatje('assets/achtergrond/wolk.svg', 'drijf-wolk drijf-wolk--1 zee-wolk', root);
+  plaatje('assets/achtergrond/wolk.svg', 'drijf-wolk drijf-wolk--2 zee-wolk', root);
+  plaatje('assets/achtergrond/wolk.svg', 'drijf-wolk drijf-wolk--3 zee-wolk zee-wolk--storm', root);
   const bliksemHouder = el('div', 'zee-bliksem', root);
   el('div', 'zee-regen', root);
   const flits = el('div', 'zee-flits', root);
@@ -34,14 +34,14 @@ export function maakZeeDecor(): Decor {
   const golven = el('div', 'zee-golven', root);
   svgUitTekst(golf('#3f6f93'), 'zee-golf zee-golf--achter', golven);
   const boot = el('div', 'zee-boot', golven);
-  plaatje('/assets/achtergrond/boot-eigen.svg', 'zee-boot__plaatje', boot);
+  plaatje('assets/achtergrond/boot-eigen.svg', 'zee-boot__plaatje', boot);
   svgUitTekst(golf('#2f5a7c'), 'zee-golf zee-golf--midden', golven);
 
   // Tussen de middelste en voorste golf: de voorste golf spoelt over de rotsen.
   const toren = el('div', 'vuurtoren', golven);
   const straal = el('div', 'vuurtoren__straal', toren);
   el('div', 'vuurtoren__gloed', toren);
-  plaatje('/assets/achtergrond/vuurtoren.svg', 'vuurtoren__plaatje', toren);
+  plaatje('assets/achtergrond/vuurtoren.svg', 'vuurtoren__plaatje', toren);
   svgUitTekst(golf('#244a68'), 'zee-golf zee-golf--voor', golven);
 
   let weer: Weer = 'zon';
