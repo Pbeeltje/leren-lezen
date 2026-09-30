@@ -138,7 +138,9 @@ export function maakRuimte(): void {
     planeet.position.set(-p.b + 0.6, -p.h + 1.0, PLANEET_DIEPTE);
     const m = zichtveld(MAAN_DIEPTE);
     // Onder de munten/profielknop rechtsboven.
-    maan.position.set(m.b - 1.6, m.h - 2.6, MAAN_DIEPTE);
+    // Staand scherm (telefoon): rechts halverwege, anders zit hij achter de titels.
+    if (sceneManager.camera.aspect < 1) maan.position.set(m.b - 0.9, -m.h * 0.25, MAAN_DIEPTE);
+    else maan.position.set(m.b - 1.6, m.h - 2.6, MAAN_DIEPTE);
   }
   plaats();
   window.addEventListener('resize', plaats);

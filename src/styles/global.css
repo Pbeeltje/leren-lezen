@@ -136,3 +136,11 @@ img {
     font-size: 1.6rem;
   }
 }
+
+/* Telefoon/tablet: geen per-ongeluk zoomen (dubbeltik) of pagina verversen door omlaag te
+   vegen; kinderen doen beide per ongeluk. */
+html,
+body {
+  overscroll-behavior: none;
+  touch-action: manipulation;
+}

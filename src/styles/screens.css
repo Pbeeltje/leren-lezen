@@ -1246,3 +1246,32 @@
   from { opacity: 0; transform: scale(0.2) rotate(-90deg); }
   to { opacity: 1; transform: scale(1) rotate(0); }
 }
+
+@media (max-width: 600px) {
+  .instructie-tekst {
+    font-size: 1.25rem;
+  }
+  /* Twee rijen letterblokken (zie letterBlocks.ts) hebben wat meer hoogte nodig. */
+  .blokken-canvas {
+    height: 240px;
+  }
+}
+
+/* Liggende telefoon (kort scherm): kop compact, zodat de antwoorden zonder scrollen in
+   beeld passen. De titel mag weg; de instructie + luisterknop zeggen al wat er moet. */
+@media (max-height: 500px) {
+  .scherm { gap: 8px; padding-top: 12px; padding-bottom: 12px; }
+  .scherm:has(.voortgangsbalk) .scherm-titel { display: none; }
+  .scherm-titel { font-size: 1.3rem; }
+  .instructie-tekst { font-size: 1rem; }
+  .audio-knop { width: 52px; height: 52px; }
+  .oefen-kaart { padding: 14px 16px; gap: 12px; }
+  .vergelijk-optie:not(.vergelijk-optie--breed) { width: 130px; height: 130px; }
+  .vergelijk-optie--breed { height: 64px; }
+  .vergelijk-rij--kolom { gap: 10px; }
+  .luister-plaatje { width: 120px; height: 120px; }
+  .meer-minder-groep { min-height: 130px; }
+  .zoek-ding { width: 64px; height: 64px; padding: 8px; }
+  .zoek-voorbeeld { width: 60px; height: 60px; }
+  .keuze-knop--plaatje, .koppel-plaatje { max-height: 80px; }
+}

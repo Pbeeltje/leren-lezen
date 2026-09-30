@@ -1,0 +1,16 @@
+{
+  "name": "Leren Lezen",
+  "short_name": "Leren Lezen",
+  "description": "Speels leren lezen, tellen en luisteren voor kinderen van 3 tot 6.",
+  "lang": "nl",
+  "start_url": "./",
+  "scope": "./",
+  "display": "fullscreen",
+  "orientation": "any",
+  "background_color": "#0f1b3d",
+  "theme_color": "#0f1b3d",
+  "icons": [
+    { "src": "app/icoon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any maskable" },
+    { "src": "app/icoon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" }
+  ]
+}

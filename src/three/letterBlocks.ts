@@ -119,12 +119,18 @@ export class LetterBlokkenScene {
     const zichtbareBreedte = 2 * Math.tan(vFovRad / 2) * this.camera.position.z * this.camera.aspect;
     const maxSpacing = 1.8;
     // Plaats voor aantal blokjes van ~1.4 lettergrootte breed, met wat lucht aan de randen.
-    const spacing = Math.min(maxSpacing, (zichtbareBreedte * 0.92) / aantal);
+    // Op een smal scherm (telefoon) werden ze zo piepklein: dan twee rijen.
+    const rijen = (zichtbareBreedte * 0.92) / aantal < 1.25 && aantal > 3 ? 2 : 1;
+    const perRij = Math.ceil(aantal / rijen);
+    const spacing = Math.min(maxSpacing, (zichtbareBreedte * 0.92) / perRij);
     const schaal = Math.min(1, (spacing * 0.6) / BASIS_GROOTTE);
-    const breedteTotaal = (aantal - 1) * spacing;
     this.blokken.forEach((blok, index) => {
-      blok.basisX = index * spacing - breedteTotaal / 2;
+      const rij = Math.floor(index / perRij);
+      const inRij = rij === rijen - 1 ? aantal - perRij * (rijen - 1) : perRij;
+      const kolom = index - rij * perRij;
+      blok.basisX = kolom * spacing - ((inRij - 1) * spacing) / 2;
       blok.groep.position.x = blok.basisX;
+      blok.groep.position.y = rijen === 2 ? (rij === 0 ? 0.62 : -0.62) * spacing : 0;
       blok.groep.scale.setScalar(schaal);
     });
   }
