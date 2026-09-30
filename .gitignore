@@ -22,3 +22,6 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Ruwe opnames horen niet in de repo (alleen de geknipte clips in public/).
+bronbestanden/*.m4a
