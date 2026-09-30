@@ -17,7 +17,7 @@ import {
   MUNTEN_TOETS_HERHAALD,
   MUNTEN_TOETS_PERFECT_BONUS,
 } from '../../engine/rewards.ts';
-import { type OefenModus, type OefeningNummer, genereerSessie, woordVanOefening } from '../../engine/oefeningGenerator.ts';
+import { type OefenModus, type OefeningNummer, genereerSessie, woordenVanOefening } from '../../engine/oefeningGenerator.ts';
 import { renderPlaatjeWoordKeuze } from '../../games/plaatjeWoordKeuze.ts';
 import { renderWoordPlaatjeKeuze } from '../../games/woordPlaatjeKeuze.ts';
 import { renderHakkenEnPlakken } from '../../games/hakkenEnPlakken.ts';
@@ -45,7 +45,7 @@ const INSTRUCTIES: Record<OefeningDefinitie['type'], string> = {
   'woord-bouwen': 'Bouw het woord met de blokjes',
   'zelf-typen': 'Typ het woord dat je op het plaatje ziet',
   'zin-invullen': 'Welk woord past in de zin?',
-  woordwolk: 'Tik alle woorden aan die bij het plaatje horen',
+  woordwolk: 'Tik het woord aan dat bij het plaatje hoort',
   'letter-herkennen': 'Welk woord heeft deze letter?',
   'klank-herkennen': 'Welk woord heeft deze klank?',
   'drie-koppelen': 'Welk plaatje hoort bij welk woord?',
@@ -97,7 +97,9 @@ export function OefeningScreen(
   // deze poging als "eerste keer" of "herhaling" beloond wordt.
   const voortgangBijStart = haalKernVoortgang(kern.id);
   const wasAlGeoefend = voortgangBijStart.gestart;
-  const wasAlGehaald = voortgangBijStart.voltooid;
+  // Een eerdere toets met 0 sterren telt niet als "gehaald": een herkansing verdient dan
+  // gewoon de munten per goed antwoord.
+  const wasAlGehaald = voortgangBijStart.voltooid && voortgangBijStart.sterren > 0;
 
   const el = document.createElement('div');
   el.className = 'scherm';
@@ -125,6 +127,8 @@ export function OefeningScreen(
   let muntenDitKeer = 0;
   let opruimen: (() => void) | null = null;
   let klaarMetDeze = false; // voorkomt dubbele afhandeling als overslaan en afgerond() elkaar kruisen
+  let volgendeTimer: number | undefined;
+  let gemountOp = 0;
 
   function toonHuidige(): void {
     klaarMetDeze = false;
@@ -138,7 +142,10 @@ export function OefeningScreen(
       oefenContainer,
       oefening,
       { herkansingToegestaan: modus === 'oefenen' },
-      (juist) => afhandelenResultaat(oefening, juist),
+      // Een late afgerond() van een vorige oefening (timer na overslaan) mag deze niet afhandelen.
+      (juist) => {
+        if (oefeningen[huidigeIndex] === oefening) afhandelenResultaat(oefening, juist);
+      },
     ).vernietig;
   }
 
@@ -161,9 +168,9 @@ export function OefeningScreen(
     // "zelf-typen" telt niet mee voor zijn eigen vrijspeelvoorwaarde; elke andere
     // vorm telt als geoefend, ongeacht of het antwoord goed was.
     if (oefening.type !== 'zelf-typen') {
-      verhoogBlootstelling(woordVanOefening(oefening));
+      for (const woord of woordenVanOefening(oefening)) verhoogBlootstelling(woord);
     }
-    setTimeout(volgende, 900);
+    volgendeTimer = window.setTimeout(volgende, 900);
   }
 
   function overslaan(): void {
@@ -175,7 +182,9 @@ export function OefeningScreen(
   }
 
   function volgende(): void {
+    clearTimeout(volgendeTimer);
     opruimen?.();
+    opruimen = null;
     huidigeIndex++;
     if (huidigeIndex >= oefeningen.length) {
       afronden();
@@ -217,10 +226,18 @@ export function OefeningScreen(
   }
   toonHuidige();
 
-  const terug = maakTerugKnop(() => {
-    opruimen?.();
-    manager.pop();
-  });
+  const terug = maakTerugKnop(() => manager.pop());
+
+  // Een dubbelklik op de tegel in ChapterScreen mag niet meteen een antwoord aantikken.
+  const tegenDubbelklik = (event: Event): void => {
+    if (performance.now() - gemountOp < 300) {
+      event.stopImmediatePropagation();
+      event.preventDefault();
+    }
+  };
+  el.addEventListener('click', tegenDubbelklik, true);
+  el.addEventListener('pointerdown', tegenDubbelklik, true);
+  terug.addEventListener('click', tegenDubbelklik, true);
 
   const overslaanKnop = document.createElement('button');
   overslaanKnop.className = 'overslaan-knop';
@@ -235,6 +252,7 @@ export function OefeningScreen(
 
   return {
     mount(root) {
+      gemountOp = performance.now();
       root.appendChild(el);
       root.appendChild(terug);
       root.appendChild(overslaanKnop);
@@ -242,7 +260,11 @@ export function OefeningScreen(
       root.appendChild(topRechts.element);
     },
     unmount() {
+      // Anders loopt de sessie na "terug" onzichtbaar door (en pop't bij de laatste vraag
+      // het hoofdstukscherm weg).
+      clearTimeout(volgendeTimer);
       opruimen?.();
+      opruimen = null;
       el.remove();
       terug.remove();
       overslaanKnop.remove();

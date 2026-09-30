@@ -53,11 +53,29 @@ export function woordenpool(): Woord[] {
   return poolCache;
 }
 
-/** Kiest een doelwoord en `aantalOpties - 1` afleiders, allemaal geschud. */
-export function genereerLuisterVraag(aantalOpties = 3): LuisterVraag {
+/** Woorden met onderling verschillende plaatjes (sommige woorden delen een plaatje). */
+export function kiesVerschillendePlaatjes(woorden: Woord[], aantal: number): Woord[] {
+  const gezien = new Set<string>();
+  const gekozen: Woord[] = [];
+  for (const w of woorden) {
+    if (gekozen.length >= aantal) break;
+    if (gezien.has(w.afbeeldingPad)) continue;
+    gezien.add(w.afbeeldingPad);
+    gekozen.push(w);
+  }
+  return gekozen;
+}
+
+/**
+ * Kiest een doelwoord en `aantalOpties - 1` afleiders, allemaal geschud. `vorigDoel`
+ * wordt vermeden, zodat hetzelfde woord niet twee keer achter elkaar gevraagd wordt.
+ */
+export function genereerLuisterVraag(aantalOpties = 3, vorigDoel?: string): LuisterVraag {
   const pool = woordenpool();
   const geschud = schud(pool);
-  const doel = geschud[0];
-  const afleiders = geschud.slice(1, aantalOpties);
+  const doelIndex = geschud.length > 1 && geschud[0].woord === vorigDoel ? 1 : 0;
+  const doel = geschud[doelIndex];
+  const rest = geschud.filter((_, i) => i !== doelIndex);
+  const afleiders = kiesVerschillendePlaatjes([doel, ...rest], aantalOpties).slice(1);
   return { doel, opties: schud([doel, ...afleiders]) };
 }

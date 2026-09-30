@@ -1,11 +1,8 @@
 import type { OefeningDefinitie } from '../content/types.ts';
 import { toonGoedFeedback, toonFoutFeedback } from '../ui/components/FeedbackOverlay.ts';
+import { schud } from '../engine/oefeningGenerator.ts';
 
 type Oefening = Extract<OefeningDefinitie, { type: 'zin-invullen' }>;
-
-function schudArray<T>(items: T[]): T[] {
-  return [...items].sort(() => Math.random() - 0.5);
-}
 
 export function renderZinInvullen(
   container: HTMLElement,
@@ -49,7 +46,7 @@ export function renderZinInvullen(
   if (oefening.modus === 'meerkeuze') {
     const keuzeRij = document.createElement('div');
     keuzeRij.className = 'keuze-rij';
-    const alleOpties = schudArray([oefening.doel, ...oefening.afleiders]);
+    const alleOpties = schud([oefening.doel, ...oefening.afleiders]);
 
     for (const optie of alleOpties) {
       const knop = document.createElement('button');
@@ -103,7 +100,8 @@ export function renderZinInvullen(
     invoer.addEventListener('keydown', (event) => {
       if (event.key === 'Enter') controleer();
     });
-    invoer.focus();
+    // Bij de eerste vraag hangt het scherm nog niet in de pagina; focus pas na het mounten.
+    requestAnimationFrame(() => invoer.focus());
   }
 
   container.appendChild(kaart);

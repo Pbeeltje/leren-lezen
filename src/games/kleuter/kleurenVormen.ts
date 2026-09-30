@@ -111,7 +111,7 @@ export function maakKleurVormVraag(): RondeVraag {
     render(container, afgerond) {
       container.innerHTML = '';
       const kaart = document.createElement('div');
-      kaart.className = 'oefen-kaart';
+      kaart.className = 'oefen-kaart zoek-kaart';
 
       const voorbeeld = document.createElement('div');
       voorbeeld.className = 'zoek-voorbeeld';

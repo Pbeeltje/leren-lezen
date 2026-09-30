@@ -1,11 +1,8 @@
 import type { OefeningDefinitie } from '../content/types.ts';
 import { toonGoedFeedback, toonFoutFeedback } from '../ui/components/FeedbackOverlay.ts';
+import { schud } from '../engine/oefeningGenerator.ts';
 
 type Oefening = Extract<OefeningDefinitie, { type: 'woordwolk' }>;
-
-function schudArray<T>(items: T[]): T[] {
-  return [...items].sort(() => Math.random() - 0.5);
-}
 
 // Plaatje in het midden, één doelwoord verstopt tussen een wolk van afleiders; tik het
 // juiste woord aan. Losjes geïnspireerd op het klassieke "kleur de juiste woorden bij
@@ -32,7 +29,7 @@ export function renderWoordwolk(
   wolk.className = 'woordwolk-rij';
   kaart.appendChild(wolk);
 
-  const tegels = schudArray([oefening.doel, ...oefening.afleiders]);
+  const tegels = schud([oefening.doel, ...oefening.afleiders]);
   let afgehandeld = false;
 
   for (const optie of tegels) {

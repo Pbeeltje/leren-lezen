@@ -1,11 +1,10 @@
 import type { OefeningDefinitie, Woord } from '../content/types.ts';
 import { toonGoedFeedback, toonFoutFeedback } from '../ui/components/FeedbackOverlay.ts';
+import { schud, schudAnders } from '../engine/oefeningGenerator.ts';
 
 type Oefening = Extract<OefeningDefinitie, { type: 'drie-koppelen' }>;
 
-function schudArray<T>(items: T[]): T[] {
-  return [...items].sort(() => Math.random() - 0.5);
-}
+const SVG_NS = 'http://www.w3.org/2000/svg';
 
 export function renderDrieKoppelen(
   container: HTMLElement,
@@ -30,10 +29,33 @@ export function renderDrieKoppelen(
   woordenKolom.className = 'koppel-kolom';
   rijen.appendChild(woordenKolom);
 
-  const gevonden = new Set<string>();
+  // Lijnen tussen gevonden paren, over de kolommen heen getekend.
+  const lijnenLaag = document.createElementNS(SVG_NS, 'svg');
+  lijnenLaag.classList.add('koppel-lijnen');
+  lijnenLaag.setAttribute('aria-hidden', 'true');
+  rijen.appendChild(lijnenLaag);
+
+  const gevondenParen: { plaatje: HTMLButtonElement; woord: HTMLButtonElement; lijn: SVGLineElement }[] = [];
   let gekozenPlaatje: { woord: Woord; knop: HTMLButtonElement } | null = null;
   let gekozenWoord: { woord: Woord; knop: HTMLButtonElement } | null = null;
   let vergrendeld = false;
+  let foutTimer: number | undefined;
+
+  function tekenLijnen(): void {
+    const basis = rijen.getBoundingClientRect();
+    lijnenLaag.setAttribute('viewBox', `0 0 ${basis.width} ${basis.height}`);
+    for (const { plaatje, woord, lijn } of gevondenParen) {
+      const p = plaatje.getBoundingClientRect();
+      const w = woord.getBoundingClientRect();
+      lijn.setAttribute('x1', String(p.right - basis.left));
+      lijn.setAttribute('y1', String(p.top + p.height / 2 - basis.top));
+      lijn.setAttribute('x2', String(w.left - basis.left));
+      lijn.setAttribute('y2', String(w.top + w.height / 2 - basis.top));
+    }
+  }
+
+  const grootteWacht = new ResizeObserver(() => tekenLijnen());
+  grootteWacht.observe(rijen);
 
   function terugzetten(): void {
     gekozenPlaatje?.knop.classList.remove('geselecteerd');
@@ -47,17 +69,19 @@ export function renderDrieKoppelen(
     const juist = gekozenPlaatje.woord.woord === gekozenWoord.woord.woord;
 
     if (juist) {
-      gevonden.add(gekozenPlaatje.woord.woord);
-      gekozenPlaatje.knop.classList.remove('geselecteerd');
-      gekozenWoord.knop.classList.remove('geselecteerd');
-      gekozenPlaatje.knop.classList.add('gevonden');
-      gekozenWoord.knop.classList.add('gevonden');
-      gekozenPlaatje.knop.disabled = true;
-      gekozenWoord.knop.disabled = true;
+      for (const knop of [gekozenPlaatje.knop, gekozenWoord.knop]) {
+        knop.classList.remove('geselecteerd');
+        knop.classList.add('gevonden');
+        knop.disabled = true;
+      }
+      const lijn = document.createElementNS(SVG_NS, 'line');
+      lijnenLaag.appendChild(lijn);
+      gevondenParen.push({ plaatje: gekozenPlaatje.knop, woord: gekozenWoord.knop, lijn });
+      tekenLijnen();
       toonGoedFeedback();
       gekozenPlaatje = null;
       gekozenWoord = null;
-      if (gevonden.size === oefening.paren.length) {
+      if (gevondenParen.length === oefening.paren.length) {
         vergrendeld = true;
         afgerond(true);
       }
@@ -65,66 +89,60 @@ export function renderDrieKoppelen(
     }
 
     toonFoutFeedback();
+    const foutePlaatje = gekozenPlaatje.knop;
+    const fouteWoord = gekozenWoord.knop;
+    foutePlaatje.classList.add('fout-gekozen');
+    fouteWoord.classList.add('fout-gekozen');
+    vergrendeld = true;
     if (opties.herkansingToegestaan) {
-      const foutePlaatje = gekozenPlaatje.knop;
-      const fouteWoord = gekozenWoord.knop;
-      foutePlaatje.classList.add('fout-gekozen');
-      fouteWoord.classList.add('fout-gekozen');
-      vergrendeld = true;
-      setTimeout(() => {
+      foutTimer = window.setTimeout(() => {
         foutePlaatje.classList.remove('fout-gekozen');
         fouteWoord.classList.remove('fout-gekozen');
         vergrendeld = false;
       }, 500);
       terugzetten();
     } else {
-      vergrendeld = true;
       afgerond(false);
     }
   }
 
-  for (const woord of schudArray(oefening.paren)) {
+  function maakKnop(woord: Woord, soort: 'plaatje' | 'woord'): HTMLButtonElement {
     const knop = document.createElement('button');
-    knop.className = 'koppel-plaatje';
-    const img = document.createElement('img');
-    img.src = woord.afbeeldingPad;
-    img.alt = '';
-    knop.appendChild(img);
+    knop.className = soort === 'plaatje' ? 'koppel-plaatje' : 'koppel-woord';
+    if (soort === 'plaatje') {
+      const img = document.createElement('img');
+      img.src = woord.afbeeldingPad;
+      img.alt = '';
+      knop.appendChild(img);
+    } else {
+      knop.textContent = woord.woord;
+    }
     knop.addEventListener('click', () => {
       if (vergrendeld || knop.disabled) return;
-      if (gekozenPlaatje?.knop === knop) {
-        knop.classList.remove('geselecteerd');
-        gekozenPlaatje = null;
-        return;
-      }
-      gekozenPlaatje?.knop.classList.remove('geselecteerd');
-      knop.classList.add('geselecteerd');
-      gekozenPlaatje = { woord, knop };
+      const huidige = soort === 'plaatje' ? gekozenPlaatje : gekozenWoord;
+      huidige?.knop.classList.remove('geselecteerd');
+      const nieuw = huidige?.knop === knop ? null : { woord, knop };
+      if (nieuw) knop.classList.add('geselecteerd');
+      if (soort === 'plaatje') gekozenPlaatje = nieuw;
+      else gekozenWoord = nieuw;
       probeerKoppeling();
     });
-    plaatjesKolom.appendChild(knop);
+    return knop;
   }
 
-  for (const woord of schudArray(oefening.paren)) {
-    const knop = document.createElement('button');
-    knop.className = 'koppel-woord';
-    knop.textContent = woord.woord;
-    knop.addEventListener('click', () => {
-      if (vergrendeld || knop.disabled) return;
-      if (gekozenWoord?.knop === knop) {
-        knop.classList.remove('geselecteerd');
-        gekozenWoord = null;
-        return;
-      }
-      gekozenWoord?.knop.classList.remove('geselecteerd');
-      knop.classList.add('geselecteerd');
-      gekozenWoord = { woord, knop };
-      probeerKoppeling();
-    });
-    woordenKolom.appendChild(knop);
-  }
+  // Woorden nooit in precies dezelfde volgorde als de plaatjes (dan is het recht oversteken).
+  const plaatjesVolgorde = schud(oefening.paren);
+  const woordenVolgorde = schudAnders(plaatjesVolgorde, (a, b) => a.woord === b.woord);
+  for (const woord of plaatjesVolgorde) plaatjesKolom.appendChild(maakKnop(woord, 'plaatje'));
+  for (const woord of woordenVolgorde) woordenKolom.appendChild(maakKnop(woord, 'woord'));
 
   container.appendChild(kaart);
 
-  return { vernietig: () => container.replaceChildren() };
+  return {
+    vernietig: () => {
+      clearTimeout(foutTimer);
+      grootteWacht.disconnect();
+      container.replaceChildren();
+    },
+  };
 }

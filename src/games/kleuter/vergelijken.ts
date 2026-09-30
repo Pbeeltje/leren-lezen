@@ -44,6 +44,10 @@ function woordMetPlaatje(naam: string): Woord | undefined {
   return undefined;
 }
 
+function zwaarLichtParen(): [string, string][] {
+  return ZWAAR_LICHT.filter(([a, b]) => woordMetPlaatje(a) && woordMetPlaatje(b));
+}
+
 function plaatjesPool(): Woord[] {
   const gezien = new Set<string>();
   const pool: Woord[] = [];
@@ -99,7 +103,7 @@ function maakOpties(soort: Soort): { opties: Optie[]; kolom: boolean } {
     return { opties: [{ inhoud: maak(100), juist: soort === 'groot' }, { inhoud: maak(42), juist: soort === 'klein' }], kolom: false };
   }
   if (soort === 'zwaar' || soort === 'licht') {
-    const paren = ZWAAR_LICHT.filter(([a, b]) => woordMetPlaatje(a) && woordMetPlaatje(b));
+    const paren = zwaarLichtParen();
     const [zwaar, licht] = kies(paren).map((n) => woordMetPlaatje(n)!);
     const maak = (w: Woord) => () => {
       const img = document.createElement('img');
@@ -120,7 +124,10 @@ function maakOpties(soort: Soort): { opties: Optie[]; kolom: boolean } {
 }
 
 export function maakVergelijkVraag(): RondeVraag {
-  const soort = kies<Soort>(['groot', 'klein', 'zwaar', 'licht', 'lang', 'kort']);
+  // Zwaar/licht alleen als er (na een content-wijziging) nog paren met plaatjes zijn.
+  const soorten: Soort[] = ['groot', 'klein', 'lang', 'kort'];
+  if (zwaarLichtParen().length > 0) soorten.push('zwaar', 'licht');
+  const soort = kies(soorten);
   const { opties, kolom } = maakOpties(soort);
   return {
     instructie: INSTRUCTIE[soort],

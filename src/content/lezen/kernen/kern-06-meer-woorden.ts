@@ -1,15 +1,12 @@
 import type { Kern } from '../../types.ts';
 
-// Bron: een Larsen "woordpuzzel" (40 woord-plaatjes) die de gebruiker aanleverde. Deze
-// kern gebruikt alleen woorden die met de al bekende 22 letters klankzuiver zijn — dus
-// puur woordenschat-uitbreiding, geen nieuwe letters, net als gevraagd ("zelfde
-// moeilijkheidsgraad, gewoon meer woorden"). Woorden met tweeklanken (duim, fruit, huis,
-// koe, muis, poes, uil, hoed, geit, trein) en kleurwoorden (rood — geen eenduidig plaatje)
-// zijn bewust overgeslagen voor een latere, aparte kern. Alle 11 woorden hier gebruiken de
-// echte foto's uit die woordpuzzel zelf (bronbestanden/plaatjes3.jpg, uitgesneden met
-// bronbestanden/crop.ps1), niet generieke iconen.
+// Bron: een Larsen "woordpuzzel" (40 woord-plaatjes) die de gebruiker aanleverde
+// (bronbestanden/plaatjes3.jpg, uitgesneden met bronbestanden/crop.ps1). Puur
+// woordenschat-uitbreiding na VLL kern 6. 'sok' en 'vuur' gebruiken het VLL-plaatje:
+// hun Larsen-uitsnede had tekst (www.larsen...) resp. een stukje van de wolf aan de rand.
 const pad = (woord: string) => `/assets/images/woorden/${woord}.jpg`;
 const woord = (w: string) => ({ woord: w, afbeeldingPad: pad(w) });
+const vll = (w: string) => ({ woord: w, afbeeldingPad: `/assets/images/woorden/vll/${w}.png` });
 
 export const kern06MeerWoorden: Kern = {
   id: 'kern-06',
@@ -29,10 +26,13 @@ export const kern06MeerWoorden: Kern = {
     woord('noot'),
     woord('oog'),
     woord('pet'),
-    woord('sok'),
+    vll('sok'),
     woord('ster'),
-    woord('vuur'),
+    vll('vuur'),
     woord('wolf'),
   ],
-  zinnen: [],
+  zinnen: [
+    { zin: 'De ___ heeft heel veel stekels.', doel: woord('egel'), afleiders: [woord('gans'), woord('wolf')] },
+    { zin: 'Op mijn hoofd zet ik een ___.', doel: woord('pet'), afleiders: [vll('sok'), woord('bal')] },
+  ],
 };

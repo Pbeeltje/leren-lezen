@@ -2,20 +2,26 @@ import type { Kern } from '../../types.ts';
 import { bestaand, vll } from './vll-hulp.ts';
 
 // Veilig Leren Lezen maan-versie, kern 3: doos, poes, koek, ijs, zeep.
-// Nieuw: d, z en de klanken oe, ij.
+// Nieuw: d, z en de klanken oe, ij. Nog geen korte a (kern 4). 'droog' staat hier
+// bewust niet: zijn plaatje (een zon) is niet te onderscheiden van 'zon'.
 const doos = vll('doos');
 const poes = vll('poes');
 const koek = vll('koek');
 const ijs = vll('ijs');
 const zeep = vll('zeep');
-const das = bestaand('das', 'svg');
 const zon = bestaand('zon', 'jpg');
 const bij = bestaand('bij', 'jpg');
 const deur = bestaand('deur', 'svg');
-const zebra = bestaand('zebra', 'svg');
 const voet = bestaand('voet', 'jpg');
 const eend = bestaand('eend', 'jpg');
-const droog = bestaand('droog', 'svg', true);
+// Extra woorden met Fluent Emoji-plaatjes (MIT), alleen met letters die al bekend zijn.
+const boek = bestaand('boek', 'svg');
+const hoed = bestaand('hoed', 'svg');
+const soep = bestaand('soep', 'svg');
+const zee = bestaand('zee', 'svg');
+const bed = bestaand('bed', 'svg');
+const koe = bestaand('koe', 'svg');
+const brood = bestaand('brood', 'svg');
 
 export const vllKern3: Kern = {
   id: 'vll-kern-3',
@@ -28,12 +34,11 @@ export const vllKern3: Kern = {
     { woord: 'ijs', afbeeldingPad: ijs.afbeeldingPad, nieuweLetters: ['ij'] },
     { woord: 'zeep', afbeeldingPad: zeep.afbeeldingPad, nieuweLetters: ['z'] },
   ],
-  nieuweLetters: ['d', 'z'],
-  woordenbank: [doos, poes, koek, ijs, zeep, das, zon, bij, deur, zebra, voet, eend, droog],
+  nieuweLetters: ['d', 'oe', 'ij', 'z'],
+  woordenbank: [doos, poes, koek, ijs, zeep, zon, bij, deur, voet, eend, boek, hoed, soep, zee, bed, koe, brood],
   zinnen: [
-    { zin: 'De was is niet meer nat. Hij is ___.', doel: droog, afleiders: [zeep, koek] },
     { zin: 'De ___ speelt met een bolletje wol.', doel: poes, afleiders: [doos, koek] },
-    { zin: 'Op een warme dag eet ik een ___.', doel: ijs, afleiders: [zeep, doos] },
+    { zin: 'Het is warm. Ik lik aan een ___.', doel: ijs, afleiders: [zeep, doos] },
     { zin: 'Ik was mijn handen met ___.', doel: zeep, afleiders: [ijs, koek] },
     { zin: 'Het cadeau zit in een grote ___.', doel: doos, afleiders: [poes, zeep] },
     { zin: 'Bij de thee eet ik een ___.', doel: koek, afleiders: [doos, ijs] },

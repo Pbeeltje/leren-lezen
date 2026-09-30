@@ -10,6 +10,7 @@ function schudArray<T>(items: T[]): T[] {
 function maakGroep(icoonPad: string, aantal: number): HTMLElement {
   const groep = document.createElement('div');
   groep.className = 'telplaatjes-groepje';
+  groep.style.gridTemplateColumns = `repeat(${Math.min(Math.max(aantal, 1), 5)}, auto)`;
   for (let i = 0; i < aantal; i++) {
     const img = document.createElement('img');
     img.src = icoonPad;

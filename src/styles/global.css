@@ -126,3 +126,13 @@ img {
   margin: 0;
   text-shadow: 0 2px 8px rgba(0, 0, 0, 0.35);
 }
+
+@media (max-height: 720px) {
+  .scherm {
+    gap: 12px;
+  }
+
+  .scherm-titel {
+    font-size: 1.6rem;
+  }
+}

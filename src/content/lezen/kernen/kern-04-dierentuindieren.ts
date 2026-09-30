@@ -1,7 +1,8 @@
 import type { Kern } from '../../types.ts';
 
-// Thema "dierentuindieren" (bekende, makkelijke namen — geen tweetekenklanken zoals
-// leeuw/tijger die het net te moeilijk zouden maken). Introduceert f, b.
+// Themahoofdstuk "dierentuindieren" (na VLL kern 6). Bekende namen, ook woorden van
+// twee of drie lettergrepen; geen lastige klanken zoals leeuw/tijger. Let op: 'giraf'
+// spreek je uit met een 'zj' — niet klankzuiver, maar bewust gehouden als bekend dier.
 const pad = (woord: string, ext = 'svg') => `/assets/images/woorden/${woord}.${ext}`;
 const woord = (w: string, ext = 'svg') => ({ woord: w, afbeeldingPad: pad(w, ext) });
 
@@ -11,10 +12,10 @@ export const kern04Dierentuindieren: Kern = {
   titel: 'dierentuindieren',
   structuurwoorden: [
     { woord: 'aap', afbeeldingPad: pad('aap', 'jpg'), nieuweLetters: [] },
-    { woord: 'olifant', afbeeldingPad: pad('olifant'), nieuweLetters: ['f'] },
-    { woord: 'zebra', afbeeldingPad: pad('zebra'), nieuweLetters: ['b'] },
+    { woord: 'olifant', afbeeldingPad: pad('olifant'), nieuweLetters: [] },
+    { woord: 'zebra', afbeeldingPad: pad('zebra'), nieuweLetters: [] },
   ],
-  nieuweLetters: ['f', 'b'],
+  nieuweLetters: [],
   woordenbank: [
     woord('aap', 'jpg'),
     woord('olifant'),
@@ -27,5 +28,9 @@ export const kern04Dierentuindieren: Kern = {
     woord('beer', 'jpg'),
     woord('das'),
   ],
-  zinnen: [],
+  zinnen: [
+    { zin: 'De ___ heeft een hele lange nek.', doel: woord('giraf'), afleiders: [woord('zebra'), woord('kameel')] },
+    { zin: 'De ___ heeft een lange slurf.', doel: woord('olifant'), afleiders: [woord('krokodil'), woord('panda')] },
+    { zin: 'De ___ heeft zwarte en witte strepen.', doel: woord('zebra'), afleiders: [woord('giraf'), woord('beer', 'jpg')] },
+  ],
 };

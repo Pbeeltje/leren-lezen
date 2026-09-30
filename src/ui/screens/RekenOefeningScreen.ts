@@ -113,6 +113,11 @@ export function RekenOefeningScreen(
   let muntenDitKeer = 0;
   let opruimen: (() => void) | null = null;
   let klaarMetDeze = false;
+  // Zonder deze timer-handle liep een antwoord vlak voor "terug" nog door op het
+  // volgende scherm: nieuwe vraag + instructie-audio, of bij de laatste toetsvraag zelfs
+  // een sprong naar het resultaatscherm.
+  let timer: number | undefined;
+  let actief = true;
 
   function toonHuidige(): void {
     klaarMetDeze = false;
@@ -131,8 +136,9 @@ export function RekenOefeningScreen(
   }
 
   function afhandelenResultaat(juist: boolean): void {
-    if (klaarMetDeze) return;
+    if (klaarMetDeze || !actief) return;
     klaarMetDeze = true;
+    voortgangsbalk.zetVoortgang(huidigeIndex + 1);
     if (juist) {
       aantalGoed++;
       if (modus === 'oefenen') {
@@ -144,16 +150,17 @@ export function RekenOefeningScreen(
         muntenDitKeer += MUNTEN_TOETS_GOED;
       }
     }
-    setTimeout(volgende, 900);
+    timer = window.setTimeout(volgende, 900);
   }
 
   function overslaan(): void {
-    if (klaarMetDeze) return;
+    if (klaarMetDeze || !actief) return;
     klaarMetDeze = true;
     volgende();
   }
 
   function volgende(): void {
+    if (!actief) return;
     opruimen?.();
     huidigeIndex++;
     if (huidigeIndex >= oefeningen.length) {
@@ -214,6 +221,7 @@ export function RekenOefeningScreen(
 
   return {
     mount(root) {
+      actief = true;
       root.appendChild(el);
       root.appendChild(terug);
       root.appendChild(overslaanKnop);
@@ -221,6 +229,8 @@ export function RekenOefeningScreen(
       root.appendChild(topRechts.element);
     },
     unmount() {
+      actief = false;
+      window.clearTimeout(timer);
       opruimen?.();
       el.remove();
       terug.remove();

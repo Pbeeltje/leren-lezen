@@ -1,5 +1,5 @@
 import type { Woord } from '../content/types.ts';
-import { woordenpool } from './luisterenGenerator.ts';
+import { kiesVerschillendePlaatjes, woordenpool } from './luisterenGenerator.ts';
 
 export interface GeheugenKaart {
   id: number; // uniek per kaart (twee kaarten kunnen hetzelfde woord hebben)
@@ -12,7 +12,9 @@ function schud<T>(items: T[]): T[] {
 
 /** `aantalParen` woorden × 2 kaarten, geschud. */
 export function genereerGeheugenbord(aantalParen = 4): GeheugenKaart[] {
-  const pool = schud(woordenpool()).slice(0, aantalParen);
+  // Twee woorden met hetzelfde plaatje zouden vier gelijke kaarten geven die toch niet
+  // allemaal bij elkaar passen.
+  const pool = kiesVerschillendePlaatjes(schud(woordenpool()), aantalParen);
   const kaarten: GeheugenKaart[] = [];
   let id = 0;
   for (const woord of pool) {

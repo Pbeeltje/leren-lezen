@@ -16,6 +16,8 @@ export function renderHoeveelheidTypen(
 
   const plaatjesRij = document.createElement('div');
   plaatjesRij.className = 'telplaatjes-rij';
+  // Vijfstructuur: hoogstens 5 per rij, zodat bv. 8 als 5 + 3 te zien is.
+  plaatjesRij.style.gridTemplateColumns = `repeat(${Math.min(Math.max(oefening.aantal, 1), 5)}, auto)`;
   for (let i = 0; i < oefening.aantal; i++) {
     const img = document.createElement('img');
     img.src = oefening.object.icoonPad;

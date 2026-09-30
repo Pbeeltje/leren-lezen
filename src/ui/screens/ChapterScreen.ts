@@ -99,8 +99,20 @@ export function ChapterScreen(manager: ScreenManager, index: number): Screen {
   });
   let topRechts: ReturnType<typeof maakTopRechtsBalk> | null = null;
 
+  // De tweede klik van een dubbelklik op het vorige scherm mag hier niets openen.
+  let gemountOp = 0;
+  const tegenDubbelklik = (event: Event): void => {
+    if (performance.now() - gemountOp < 300) {
+      event.stopImmediatePropagation();
+      event.preventDefault();
+    }
+  };
+  el.addEventListener('click', tegenDubbelklik, true);
+  terug.addEventListener('click', tegenDubbelklik, true);
+
   return {
     mount(root) {
+      gemountOp = performance.now();
       root.appendChild(el);
       root.appendChild(terug);
       topRechts = maakTopRechtsBalk(manager);

@@ -2,19 +2,22 @@ import type { Kern } from '../../types.ts';
 import { bestaand, vll } from './vll-hulp.ts';
 
 // Veilig Leren Lezen maan-versie, kern 6: geit, uil, pauw, duif, ei.
-// Nieuw: f en de klanken ei, au(w).
+// Nieuw: f en de klanken ei, au(w). Aangevuld met eenlettergrepige woorden;
+// olifant/giraf/auto/krokodil/flat passen hier niet (open lettergrepen, g als 'zj',
+// Engelse a) en staan alleen nog in de themahoofdstukken.
 const geit = vll('geit');
 const uil = vll('uil');
 const pauw = vll('pauw');
 const duif = vll('duif');
 const ei = vll('ei');
-const olifant = bestaand('olifant', 'svg');
-const giraf = bestaand('giraf', 'svg');
-const flat = bestaand('flat', 'png');
 const fruit = bestaand('fruit', 'png');
-const auto = bestaand('auto', 'svg');
 const wolf = bestaand('wolf', 'jpg');
-const krokodil = bestaand('krokodil', 'svg');
+const spook = bestaand('spook', 'png');
+const pot = bestaand('pot', 'png');
+const boom = bestaand('boom', 'png');
+// Extra woorden met Fluent Emoji-plaatjes (MIT), alleen met letters die al bekend zijn.
+const fiets = bestaand('fiets', 'svg');
+const trein = bestaand('trein', 'svg');
 
 export const vllKern6: Kern = {
   id: 'vll-kern-6',
@@ -27,12 +30,12 @@ export const vllKern6: Kern = {
     { woord: 'duif', afbeeldingPad: duif.afbeeldingPad, nieuweLetters: ['f'] },
     { woord: 'ei', afbeeldingPad: ei.afbeeldingPad, nieuweLetters: [] },
   ],
-  nieuweLetters: ['f'],
-  woordenbank: [geit, uil, pauw, duif, ei, olifant, giraf, flat, fruit, auto, wolf, krokodil],
+  nieuweLetters: ['ei', 'au', 'f'],
+  woordenbank: [geit, uil, pauw, duif, ei, fruit, wolf, spook, pot, boom, fiets, trein],
   zinnen: [
     { zin: 'De kip legt een ___.', doel: ei, afleiders: [uil, duif] },
     { zin: "'s Nachts roept de ___ oehoe.", doel: uil, afleiders: [geit, pauw] },
-    { zin: 'De ___ heeft een prachtige staart.', doel: pauw, afleiders: [duif, geit] },
+    { zin: 'De ___ zet zijn staart open, vol mooie kleuren.', doel: pauw, afleiders: [duif, geit] },
     { zin: 'De ___ geeft melk en eet gras.', doel: geit, afleiders: [uil, ei] },
     { zin: 'Op het plein pikt een ___ broodkruimels.', doel: duif, afleiders: [pauw, geit] },
   ],

@@ -36,8 +36,8 @@ export function LuisterenScreen(manager: ScreenManager): Screen {
   instructie.textContent = 'Welk plaatje hoort bij het geluid?';
   instructieRij.appendChild(instructie);
 
-  let huidigeVraag: LuisterVraag;
-  const audioKnop = maakAudioKnop(() => speelAf(woordAudioPad(huidigeVraag.doel.woord)));
+  let huidigeVraag: LuisterVraag | undefined;
+  const audioKnop = maakAudioKnop(() => huidigeVraag && speelAf(woordAudioPad(huidigeVraag.doel.woord)));
   instructieRij.appendChild(audioKnop);
 
   const voortgangsbalk = maakVoortgangsbalk(RONDE_LENGTE);
@@ -48,19 +48,25 @@ export function LuisterenScreen(manager: ScreenManager): Screen {
 
   let opruimen: (() => void) | null = null;
   let inRonde = 0;
+  // Na "terug" mag er niets meer doorlopen: geen nieuw woord dat op het volgende scherm
+  // hardop klinkt, geen munten voor een vraag die al weg is.
+  let actief = true;
+  let timer: number | undefined;
 
   function volgendeVraag(): void {
+    if (!actief) return;
     opruimen?.();
     if (inRonde >= RONDE_LENGTE) {
       voortgangsbalk.zetVoortgang(RONDE_LENGTE);
       confetti.vuurwerk('klein');
       inRonde = 0;
-      setTimeout(volgendeVraag, 1400); // laat het vuurwerkje even zien voor de volgende ronde start
+      timer = window.setTimeout(volgendeVraag, 1400); // laat het vuurwerkje even zien voor de volgende ronde start
       return;
     }
     voortgangsbalk.zetVoortgang(inRonde);
-    huidigeVraag = genereerLuisterVraag(3);
+    huidigeVraag = genereerLuisterVraag(3, huidigeVraag?.doel.woord);
     opruimen = renderLuisterKiezen(oefenContainer, huidigeVraag, () => {
+      if (!actief) return;
       voegMuntenToe(MUNTEN_OEFENING_GOED);
       inRonde++;
       volgendeVraag();
@@ -83,6 +89,8 @@ export function LuisterenScreen(manager: ScreenManager): Screen {
       root.appendChild(topRechts.element);
     },
     unmount() {
+      actief = false;
+      window.clearTimeout(timer);
       opruimen?.();
       el.remove();
       terug.remove();

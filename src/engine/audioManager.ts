@@ -57,6 +57,14 @@ export function woordAudioPad(woord: string): string {
   return `/assets/audio/woorden/${woord}.mp3`;
 }
 
+/** Stopt wat er nu speelt, bv. bij het verlaten van een scherm. */
+export function stopAudio(): void {
+  if (!huidigAfspelend) return;
+  huidigAfspelend.pause();
+  huidigAfspelend.currentTime = 0;
+  huidigAfspelend = null;
+}
+
 export function speelAf(pad: string | undefined): void {
   if (gedempt || !pad || bestaatNietCache.has(pad)) return;
 

@@ -71,7 +71,8 @@ export function renderZelfTypen(
   });
 
   container.appendChild(kaart);
-  invoer.focus();
+  // Bij de eerste vraag hangt het scherm nog niet in de pagina; focus pas na het mounten.
+  requestAnimationFrame(() => invoer.focus());
 
   return { vernietig: () => container.replaceChildren() };
 }

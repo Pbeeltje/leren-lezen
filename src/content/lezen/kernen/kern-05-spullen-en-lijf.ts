@@ -1,12 +1,9 @@
 import type { Kern } from '../../types.ts';
 
-// Bron: een echt "Circuitspelletjes kern 4"-werkblad (memory-kaartjes) dat de gebruiker
-// aanleverde — vandaar dat een paar woorden hier tweetekenklanken bevatten (wiel/voet:
-// ie/oe, zout: ou) die kern-02/03/04 bewust meden: dit is precies wat een echte methode
-// op dit punt al gebruikt, dus vertrouwd als leidraad i.p.v. de eigen simpelere aanname.
-// Introduceert j, u. Alle plaatjes in deze kern zijn de echte, door de gebruiker
-// aangeleverde memory-kaartjes zelf (bronbestanden/memory.jpg, uitgesneden met
-// bronbestanden/crop.ps1) — geen generieke iconen.
+// Bron: een "Circuitspelletjes kern 4"-werkblad (memory-kaartjes) dat de gebruiker
+// aanleverde; alle plaatjes zijn uitgesneden uit bronbestanden/memory.jpg met
+// bronbestanden/crop.ps1. Dat werkblad hoort niet bij de maan-versie (wiel/zout/voet
+// passen niet bij maan-versie kern 4); hier gewoon een themahoofdstuk na VLL kern 6.
 const pad = (woord: string) => `/assets/images/woorden/${woord}.jpg`;
 const woord = (w: string) => ({ woord: w, afbeeldingPad: pad(w) });
 
@@ -15,10 +12,10 @@ export const kern05SpullenEnLijf: Kern = {
   volgnummer: 10,
   titel: 'spullen & lijf',
   structuurwoorden: [
-    { woord: 'bij', afbeeldingPad: pad('bij'), nieuweLetters: ['j'] },
-    { woord: 'zout', afbeeldingPad: pad('zout'), nieuweLetters: ['u'] },
+    { woord: 'bij', afbeeldingPad: pad('bij'), nieuweLetters: [] },
+    { woord: 'zout', afbeeldingPad: pad('zout'), nieuweLetters: [] },
   ],
-  nieuweLetters: ['j', 'u'],
+  nieuweLetters: [],
   woordenbank: [
     woord('bij'),
     woord('tak'),
@@ -29,5 +26,8 @@ export const kern05SpullenEnLijf: Kern = {
     woord('zeep'),
     woord('voet'),
   ],
-  zinnen: [],
+  zinnen: [
+    { zin: 'Ik doe een beetje ___ op mijn ei.', doel: woord('zout'), afleiders: [woord('zeep'), woord('wol')] },
+    { zin: 'Oma breit een trui van ___.', doel: woord('wol'), afleiders: [woord('zout'), woord('tak')] },
+  ],
 };

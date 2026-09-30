@@ -1,11 +1,8 @@
 import type { OefeningDefinitie } from '../content/types.ts';
 import { toonGoedFeedback, toonFoutFeedback } from '../ui/components/FeedbackOverlay.ts';
+import { schudAnders } from '../engine/oefeningGenerator.ts';
 
 type Oefening = Extract<OefeningDefinitie, { type: 'hakken-en-plakken' }>;
-
-function schudArray<T>(items: T[]): T[] {
-  return [...items].sort(() => Math.random() - 0.5);
-}
 
 // "Hakken" (het woord in klanken opdelen) is hier de letterrij die al los staat;
 // "plakken" (weer samenvoegen) is de tik-in-de-juiste-volgorde-actie van het kind.
@@ -44,7 +41,8 @@ export function renderHakkenEnPlakken(
 
   let volgendeIndex = 0;
   let afgehandeld = false;
-  const volgorde = schudArray(letters);
+  const volgorde = schudAnders(letters);
+  let klaarTimer: number | undefined;
 
   for (const letter of volgorde) {
     const tegel = document.createElement('button');
@@ -64,7 +62,7 @@ export function renderHakkenEnPlakken(
         if (volgendeIndex === letters.length) {
           afgehandeld = true;
           toonGoedFeedback();
-          setTimeout(() => afgerond(true), 100);
+          klaarTimer = window.setTimeout(() => afgerond(true), 100);
         }
       } else {
         toonFoutFeedback();
@@ -83,5 +81,10 @@ export function renderHakkenEnPlakken(
 
   container.appendChild(kaart);
 
-  return { vernietig: () => container.replaceChildren() };
+  return {
+    vernietig: () => {
+      clearTimeout(klaarTimer);
+      container.replaceChildren();
+    },
+  };
 }

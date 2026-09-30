@@ -30,14 +30,18 @@ export function GeheugenScreen(manager: ScreenManager): Screen {
   el.appendChild(oefenContainer);
 
   let opruimen: (() => void) | null = null;
+  let actief = true;
+  let timer: number | undefined;
 
   function nieuwBord(): void {
+    if (!actief) return;
     opruimen?.();
     const kaarten = genereerGeheugenbord(AANTAL_PAREN);
     opruimen = renderGeheugenSpel(oefenContainer, kaarten, () => {
+      if (!actief) return;
       voegMuntenToe(MUNTEN_TOETS_GOED);
       confetti.vuurwerk('klein');
-      setTimeout(nieuwBord, 1400);
+      timer = window.setTimeout(nieuwBord, 1400);
     }).vernietig;
   }
 
@@ -57,6 +61,8 @@ export function GeheugenScreen(manager: ScreenManager): Screen {
       root.appendChild(topRechts.element);
     },
     unmount() {
+      actief = false;
+      window.clearTimeout(timer);
       opruimen?.();
       el.remove();
       terug.remove();

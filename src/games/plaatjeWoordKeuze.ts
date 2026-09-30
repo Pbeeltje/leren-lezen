@@ -1,11 +1,8 @@
 import type { OefeningDefinitie, Woord } from '../content/types.ts';
 import { toonGoedFeedback, toonFoutFeedback } from '../ui/components/FeedbackOverlay.ts';
+import { schud } from '../engine/oefeningGenerator.ts';
 
 type Oefening = Extract<OefeningDefinitie, { type: 'plaatje-woord-keuze' }>;
-
-function schudArray<T>(items: T[]): T[] {
-  return [...items].sort(() => Math.random() - 0.5);
-}
 
 export function renderPlaatjeWoordKeuze(
   container: HTMLElement,
@@ -28,7 +25,7 @@ export function renderPlaatjeWoordKeuze(
   keuzeRij.className = 'keuze-rij';
   kaart.appendChild(keuzeRij);
 
-  const opties_: Woord[] = schudArray([oefening.doel, ...oefening.afleiders]);
+  const opties_: Woord[] = schud([oefening.doel, ...oefening.afleiders]);
   let afgehandeld = false;
 
   for (const optie of opties_) {

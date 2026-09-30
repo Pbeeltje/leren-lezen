@@ -1,11 +1,8 @@
 import type { OefeningDefinitie } from '../content/types.ts';
 import { toonGoedFeedback, toonFoutFeedback } from '../ui/components/FeedbackOverlay.ts';
+import { schud } from '../engine/oefeningGenerator.ts';
 
 type Oefening = Extract<OefeningDefinitie, { type: 'klank-herkennen' }>;
-
-function schudArray<T>(items: T[]): T[] {
-  return [...items].sort(() => Math.random() - 0.5);
-}
 
 export function renderKlankHerkennen(
   container: HTMLElement,
@@ -27,7 +24,7 @@ export function renderKlankHerkennen(
   keuzeRij.className = 'keuze-rij';
   kaart.appendChild(keuzeRij);
 
-  const opties_ = schudArray([oefening.doel, ...oefening.afleiders]);
+  const opties_ = schud([oefening.doel, ...oefening.afleiders]);
   let afgehandeld = false;
 
   for (const optie of opties_) {

@@ -1,4 +1,5 @@
 // Minimale scherm-stack navigator: geen URL-routing nodig voor dit aantal schermen.
+import { stopAudio } from './audioManager.ts';
 
 export interface Screen {
   mount(root: HTMLElement): void;
@@ -16,6 +17,7 @@ export class ScreenManager {
   }
 
   push(fabriek: ScreenFactory): void {
+    stopAudio(); // geen instructie/woord van het vorige scherm dat doorpraat
     this.huidig()?.unmount();
     const scherm = fabriek(this);
     this.stack.push(scherm);
@@ -24,6 +26,7 @@ export class ScreenManager {
 
   pop(): void {
     if (this.stack.length <= 1) return;
+    stopAudio();
     this.huidig()?.unmount();
     this.stack.pop();
     this.huidig()?.mount(this.root);
@@ -46,6 +49,7 @@ export class ScreenManager {
   }
 
   replace(fabriek: ScreenFactory): void {
+    stopAudio();
     this.huidig()?.unmount();
     this.stack = [];
     const scherm = fabriek(this);

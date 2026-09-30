@@ -45,17 +45,17 @@ class Mascotte {
     this.groep.scale.setScalar(BASIS_SCHAAL);
     sceneManager.scene.add(this.groep);
 
-    sceneManager.opAnimatie((_delta, verlopen) => this.tik(verlopen));
+    sceneManager.opAnimatie((delta, verlopen) => this.tik(delta, verlopen));
   }
 
-  private tik(verlopen: number): void {
+  private tik(delta: number, verlopen: number): void {
     const zweef = Math.sin(verlopen * 1.6) * 0.08;
     this.groep.position.y = BASIS_Y + zweef;
     this.groep.rotation.z = Math.sin(verlopen * 0.8) * 0.03;
 
     if (this.reactie === 'rustig') return;
 
-    this.reactieTijd += 0.016;
+    this.reactieTijd += delta; // niet per frame: op een 120Hz-scherm was de reactie anders half zo lang
     const voortgang = Math.min(this.reactieTijd / 0.5, 1);
 
     if (this.reactie === 'goed') {

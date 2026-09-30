@@ -106,9 +106,12 @@ function maakOefening(kern: RekenKern, type: RekenOefeningType, tracker: SessieT
       }
       if (links + rechts > grens) [links, rechts] = [1, 1];
       const cijfer = links + rechts;
-      // Stippen van alleen de grootste dobbelsteen: de klassieke fout "maar één geteld".
-      const kandidaten = [Math.max(links, rechts), cijfer + 1, cijfer - 1, cijfer + 2].filter(
-        (n, i, lijst) => n >= 1 && n !== cijfer && lijst.indexOf(n) === i,
+      // Soms de stippen van alleen de grootste dobbelsteen (de klassieke fout "maar één
+      // geteld"), verder buurgetallen. Geschud, anders stond het goede antwoord altijd in
+      // het midden van de drie knoppen.
+      const buren = schud([cijfer - 2, cijfer - 1, cijfer + 1, cijfer + 2]);
+      const kandidaten = (Math.random() < 0.5 ? [Math.max(links, rechts), ...buren] : buren).filter(
+        (n, i, lijst) => n >= 1 && n <= grens && n !== cijfer && lijst.indexOf(n) === i,
       );
       return { type, links, rechts, cijfer, afleiders: kandidaten.slice(0, 2) };
     }
@@ -153,7 +156,10 @@ function maakOefening(kern: RekenKern, type: RekenOefeningType, tracker: SessieT
         if (tracker.optelCombinaties.has(sleutel) && poging < 15) continue;
         tracker.optelCombinaties.add(sleutel);
         // 'start' als afleider: de klassieke fout is vergeten dat er iemand in/uit stapte.
-        const kandidaten = [start, antwoord + 1, antwoord - 1, antwoord + 2].filter(
+        // De buren geschud: anders was het goede antwoord bij 'eraf' altijd het kleinste
+        // getal en kon er bij een volle bus maar één afleider overblijven.
+        const buren = schud([antwoord + 1, antwoord - 1, antwoord + 2, antwoord - 2]);
+        const kandidaten = [start, ...buren].filter(
           (n, i, lijst) => n >= 1 && n <= bovengrens && n !== antwoord && lijst.indexOf(n) === i,
         );
         return { type, start, verandering, antwoord, afleiders: kandidaten.slice(0, 2) };

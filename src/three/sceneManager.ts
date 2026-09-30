@@ -65,7 +65,8 @@ class SceneManager {
 
   private tik(tijd: number): void {
     this.klok.update(tijd);
-    const delta = this.klok.getDelta();
+    // Begrensd: na een tijd in een ander tabblad is de eerste delta anders seconden groot.
+    const delta = Math.min(this.klok.getDelta(), 0.1);
     const verlopen = this.klok.getElapsed();
 
     if (this.sterren) {

@@ -45,12 +45,23 @@ export function avatarPad(icoonId: string): string {
 const PROFIELEN_SLEUTEL = 'leren-lezen:profielen';
 const ACTIEF_PROFIEL_SLEUTEL = 'leren-lezen:actief-profiel';
 
+// Zonder werkende opslag leven profielen en het actieve profiel alleen in het geheugen
+// van deze paginasessie (anders is een net gemaakt profiel meteen weer weg).
+let profielenInGeheugen: Profiel[] | null = null;
+let actiefInGeheugen: string | null = null;
+
+function isGeldigProfiel(p: unknown): p is Profiel {
+  const x = p as Profiel | null;
+  return !!x && typeof x.id === 'string' && typeof x.naam === 'string' && typeof x.icoonId === 'string';
+}
+
 function leesProfielen(): Profiel[] {
+  if (profielenInGeheugen) return profielenInGeheugen;
   try {
     const ruw = localStorage.getItem(PROFIELEN_SLEUTEL);
     if (!ruw) return [];
     const data = JSON.parse(ruw);
-    return Array.isArray(data) ? data : [];
+    return Array.isArray(data) ? data.filter(isGeldigProfiel) : [];
   } catch {
     return [];
   }
@@ -59,8 +70,9 @@ function leesProfielen(): Profiel[] {
 function schrijfProfielen(profielen: Profiel[]): void {
   try {
     localStorage.setItem(PROFIELEN_SLEUTEL, JSON.stringify(profielen));
+    profielenInGeheugen = null;
   } catch {
-    // geen opslag beschikbaar: profielen bestaan dan alleen voor deze paginasessie
+    profielenInGeheugen = profielen;
   }
 }
 
@@ -99,6 +111,7 @@ export function wijzigProfielKleur(id: string, kleur: number): void {
 }
 
 export function zetActiefProfiel(id: string): void {
+  actiefInGeheugen = id;
   try {
     sessionStorage.setItem(ACTIEF_PROFIEL_SLEUTEL, id);
   } catch {
@@ -108,9 +121,9 @@ export function zetActiefProfiel(id: string): void {
 
 export function haalActiefProfielId(): string | null {
   try {
-    return sessionStorage.getItem(ACTIEF_PROFIEL_SLEUTEL);
+    return sessionStorage.getItem(ACTIEF_PROFIEL_SLEUTEL) ?? actiefInGeheugen;
   } catch {
-    return null;
+    return actiefInGeheugen;
   }
 }
 

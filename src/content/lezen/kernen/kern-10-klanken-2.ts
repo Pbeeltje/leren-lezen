@@ -1,11 +1,11 @@
 import type { Kern } from '../../types.ts';
 
-// "Klanken, deel 2": nog een set klankcombinatie-woorden (ui/ee/oo/ou), dit keer uit een
-// echt "Woord bij plaatje"-werkblad (juf-milou.nl) dat de gebruiker aanleverde. Net als
-// kern-07/08/09 staat dit na kern-07 omdat ui/ee/oo/ou pas dan mogen. Van het bronwerkblad
-// is 'kat' overgeslagen (al gebruikt in kern-03); 'moe'/'bol'/'lees'/'snee'/'koos'/'poos'/
-// 'riet'/'tuur'/'kop'/'als'/'vla'/'een'/'ren'/'aai'/'haai' waren afleiders op dat werkblad,
-// geen doelwoorden, en zijn hier dus niet meegenomen.
+// "Klanken, deel 2": klankcombinatie-woorden (ui/ee/oo/ou) uit een "Woord bij
+// plaatje"-werkblad (juf-milou.nl) dat de gebruiker aanleverde (bronbestanden/
+// nogmeerwoordentwee.jpg, uitgesneden met crop-wb2.ps1). Van dat werkblad overgeslagen:
+// 'kat' (staat al in "boerderijdieren"), 'zaai' (aai leert VLL kern 1-6 niet aan, en het
+// plaatje is niet eenduidig) en 'flat' (Engelse uitspraak "flet", niet klankzuiver). De
+// overige woorden op het werkblad waren afleiders, geen doelwoorden.
 const pad = (woord: string, ext = 'png') => `/assets/images/woorden/${woord}.${ext}`;
 const woord = (w: string, vereistTekst = false, ext = 'png') => ({ woord: w, afbeeldingPad: pad(w, ext), vereistTekst });
 
@@ -27,14 +27,12 @@ export const kern10Klanken2: Kern = {
     woord('trui'),
     woord('pot'),
     woord('kous'),
-    woord('flat'),
-    // 'eet' en 'zaai' zijn werkwoorden -- een kaal plaatje (jongen die eet / man die
-    // strooit) is niet eenduidig zonder tekst erbij (zelfde reden als bij droog/koud/heet).
+    // 'eet' is een werkwoord: een kaal plaatje (jongen die eet) is niet eenduidig.
     woord('eet', true),
-    woord('zaai', true),
   ],
   zinnen: [
     { zin: 'De jongen ___ een stuk pizza.', doel: woord('eet', true), afleiders: [woord('mol'), woord('pot')] },
-    { zin: 'De tuinman ___ zaadjes in de aarde.', doel: woord('zaai', true), afleiders: [woord('spook'), woord('trui')] },
+    { zin: 'In de sneeuw zit ik op de ___.', doel: woord('slee'), afleiders: [woord('trui'), woord('tuin')] },
+    { zin: 'Boe! Daar is het ___!', doel: woord('spook'), afleiders: [woord('mol'), woord('fruit')] },
   ],
 };

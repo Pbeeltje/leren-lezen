@@ -288,8 +288,9 @@
 /* Extra groot t.o.v. keuze-knop--plaatje (96px) -- deze oefening is voor de jongste
    kinderen (peuters), dus grotere, makkelijker te raken vlakken. */
 .luister-plaatje {
-  width: 160px;
-  height: 160px;
+  /* 150 i.p.v. 160: dan passen er drie naast elkaar in de kaart (was altijd 2 + 1). */
+  width: 150px;
+  height: 150px;
   padding: 10px;
   background: #fff;
   border: 5px solid var(--kleur-secundair);
@@ -634,12 +635,10 @@
 }
 
 .telplaatjes-rij {
-  display: flex;
-  flex-wrap: wrap;
+  display: grid;
   justify-content: center;
   align-items: center;
   gap: 10px;
-  max-width: 380px;
 }
 
 .telplaatjes-rij__plaatje {
@@ -675,13 +674,12 @@
   min-width: 120px;
 }
 
+/* Vijfstructuur: hoogstens 5 per rij (kolommen inline gezet), zodat 7 = 5 + 2. */
 .telplaatjes-groepje {
-  display: flex;
-  flex-wrap: wrap;
+  display: grid;
   justify-content: center;
   align-items: center;
   gap: 4px;
-  max-width: 130px;
 }
 
 .telplaatjes-groepje img {
@@ -812,6 +810,10 @@
 .audio-knop:active {
   transform: translateY(3px);
   box-shadow: none;
+}
+
+.scherm:has(~ .overslaan-knop) {
+  padding-bottom: 96px;
 }
 
 .overslaan-knop {
@@ -993,9 +995,15 @@
   gap: 14px;
 }
 
+/* Op een breed scherm staat het voorbeeld naast het rooster en schaalt het rooster mee
+   met de hoogte: op een laptop viel de derde rij anders onder de rand. */
+@media (min-width: 561px) {
+  .zoek-kaart { flex-direction: row; justify-content: center; }
+}
+
 .zoek-ding {
-  width: 110px;
-  height: 110px;
+  width: clamp(76px, calc((100dvh - 480px) / 3), 110px);
+  height: clamp(76px, calc((100dvh - 480px) / 3), 110px);
   padding: 12px;
   background: #fff;
   border: 5px solid #cfd8dc;
@@ -1105,10 +1113,75 @@
   color: var(--kleur-tekst);
 }
 
+/* Laag laptopscherm (bv. 1366x768 met browserbalken): anders viel de onderste rij
+   antwoorden net onder de rand. */
+@media (max-height: 720px) {
+  .zoek-ding { width: clamp(64px, calc((100dvh - 400px) / 3), 110px); height: clamp(64px, calc((100dvh - 400px) / 3), 110px); }
+}
+
 @media (max-width: 560px) {
-  .bus-scene { flex-direction: column; align-items: center; }
-  .bus { width: 240px; }
+  /* Twee dobbelstenen naast elkaar passen anders niet in de kaart op een telefoon. */
+  .dubbele-dobbelsteen-rij { gap: 8px; }
+  .dubbele-dobbelsteen-rij .dobbelsteen { width: 118px; height: 118px; padding: 12px; gap: 4px; border-radius: 18px; }
+  .dubbele-dobbelsteen-rij .dobbelsteen__punt { width: 16px; height: 16px; }
+  .telplaatjes-rij__plaatje { width: 46px; height: 46px; }
+  .oefen-kaart { padding: 24px 16px; }
+  /* Kaarten zijn 92vw breed; met 24px zijmarge schoof het scherm dan 8px horizontaal. */
+  .scherm { padding-left: 12px; padding-right: 12px; }
+  /* Bus en halte naast elkaar houden (dan wijzen de pijlen ook echt naar/van de bus);
+     onder elkaar werd de kaart zo hoog dat de antwoordknoppen onder "Overslaan" vielen. */
+  .bus-scene { align-items: center; gap: 6px; }
+  .bus { width: 196px; height: 112px; padding: 10px 34px 24px 10px; flex-shrink: 0; }
+  .bus::before, .bus::after { width: 30px; height: 30px; bottom: -16px; border-width: 5px; }
+  .bus::before { left: 26px; }
+  .bus::after { right: 34px; }
+  .bus-poppetje { width: 22px; height: 30px; }
+  .bus-halte { min-width: 0; flex: 1; }
+  .bus-halte__pijl { font-size: 2.4rem; }
+  .bus-halte__groep { max-width: 100px; }
+  .bus-halte__label { font-size: 1rem; text-align: center; }
+  .oefen-kaart__som { font-size: 2.4rem; }
+  /* 4 x 100px paste niet op een telefoon: de linkerkaarten vielen half buiten beeld. */
+  .geheugen-bord { gap: 10px; }
+  .geheugen-kaart { width: min(100px, calc((100vw - 54px) / 4)); height: min(100px, calc((100vw - 54px) / 4)); }
   .vergelijk-optie { width: 150px; height: 150px; }
-  .zoek-ding { width: 86px; height: 86px; }
+  .zoek-ding { width: clamp(64px, calc((100dvh - 522px) / 3), 86px); height: clamp(64px, calc((100dvh - 522px) / 3), 86px); }
+  .zoek-rooster { gap: 10px; }
+  .zoek-ding { padding: 8px; }
+  .zoek-voorbeeld { width: 80px; height: 80px; }
+  /* Twee per rij i.p.v. drie onder elkaar: anders viel het derde plaatje onder de rand. */
+  .luister-rij { gap: 14px; }
+  .luister-plaatje {
+    width: min(146px, calc(46vw - 24px), calc(50dvh - 210px));
+    height: min(146px, calc(46vw - 24px), calc(50dvh - 210px));
+  }
   .meer-minder-groep img { width: 40px; height: 40px; }
+}
+
+/* ---- review: lezen ---- */
+/* drie-koppelen: ruimte tussen de kolommen voor de verbindingslijnen */
+.koppel-rijen {
+  position: relative;
+  gap: clamp(44px, 14vw, 120px);
+}
+
+.koppel-lijnen {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  overflow: visible;
+}
+
+.koppel-lijnen line {
+  stroke: var(--kleur-succes);
+  stroke-width: 8;
+  stroke-linecap: round;
+  animation: koppel-lijn-in 250ms ease-out;
+}
+
+@keyframes koppel-lijn-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
 }

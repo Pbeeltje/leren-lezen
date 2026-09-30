@@ -1,6 +1,7 @@
 import * as THREE from 'three';
 import { FontLoader, type Font } from 'three/examples/jsm/loaders/FontLoader.js';
 import { TextGeometry } from 'three/examples/jsm/geometries/TextGeometry.js';
+import { RoundedBoxGeometry } from 'three/examples/jsm/geometries/RoundedBoxGeometry.js';
 
 // Eigen, kleine three.js-scene (los van de gedeelde achtergrondlaag) speciaal voor
 // de woord-bouwen-oefening: klikbare 3D letterblokjes.
@@ -23,10 +24,15 @@ function laadFont(): Promise<Font> {
 }
 
 interface Blok {
-  mesh: THREE.Mesh;
+  groep: THREE.Group;
   letter: string;
   gebruikt: boolean;
+  materialen: THREE.MeshStandardMaterial[];
+  basisX: number;
 }
+
+// Maten bij schaal 1; bij een andere schermbreedte wordt de hele groep geschaald.
+const BASIS_GROOTTE = 0.8;
 
 export class LetterBlokkenScene {
   private scene = new THREE.Scene();
@@ -38,15 +44,19 @@ export class LetterBlokkenScene {
   private container: HTMLElement;
   private actief = true;
   private onLetterGekozen: (letter: string, blokIndex: number) => void;
+  private klikLuisteraar = (event: PointerEvent) => this.klik(event);
+  // Bij de eerste vraag hangt de kaart nog niet in de pagina (breedte 0): volg de echte maat.
+  private grootteWacht = new ResizeObserver(() => this.pasGrootteAan());
 
   constructor(container: HTMLElement, onLetterGekozen: (letter: string, blokIndex: number) => void) {
     this.container = container;
     this.onLetterGekozen = onLetterGekozen;
     this.renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+    this.renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
     container.appendChild(this.renderer.domElement);
     this.renderer.domElement.style.touchAction = 'none';
 
-    this.camera.position.set(0, 0.4, 6);
+    this.camera.position.set(0, 0.3, 4.5);
     this.camera.lookAt(0, 0, 0);
 
     this.scene.add(new THREE.AmbientLight(0xffffff, 1));
@@ -57,57 +67,75 @@ export class LetterBlokkenScene {
     this.pasGrootteAan();
     this.renderer.setAnimationLoop((tijd) => this.tik(tijd));
 
-    this.renderer.domElement.addEventListener('pointerdown', (event) => this.klik(event));
+    this.renderer.domElement.addEventListener('pointerdown', this.klikLuisteraar);
+    this.grootteWacht.observe(container);
   }
 
   async toonLetters(letters: string[]): Promise<void> {
     const font = await laadFont();
+    // De scene kan al vernietigd zijn terwijl het lettertype nog laadde.
+    if (!this.actief) return;
     this.ruimOp();
 
-    // Vaste 1.6-eenheden-afstand kon bij een smal venster/kaart buiten het camerabeeld
-    // vallen (de buitenste blokjes leken dan "verdwenen"). Bereken daarom de zichtbare
-    // breedte op z=0 uit de huidige camera en pas spacing (en lettergrootte) daarop aan,
-    // zodat alle blokjes altijd binnen beeld blijven, ongeacht schermbreedte.
-    const afstandTotCamera = this.camera.position.z;
-    const vFovRad = (this.camera.fov * Math.PI) / 180;
-    const zichtbareHoogte = 2 * Math.tan(vFovRad / 2) * afstandTotCamera;
-    const zichtbareBreedte = zichtbareHoogte * this.camera.aspect;
-    const marge = 0.85; // laat wat lucht over aan de randen
-    const maxSpacing = 1.6;
-    const spacing =
-      letters.length > 1 ? Math.min(maxSpacing, (zichtbareBreedte * marge) / (letters.length - 1)) : maxSpacing;
-    const letterGrootte = Math.min(0.7, spacing * 0.55);
-
-    const breedteTotaal = (letters.length - 1) * spacing;
+    // Elk blokje is een gekleurd kubusje met de letter ervoor: het hele blokje is
+    // aantikbaar, niet alleen de dunne lijnen van de letter (lastig bij een i of l).
+    const blokGeometrie = new RoundedBoxGeometry(BASIS_GROOTTE * 1.4, BASIS_GROOTTE * 1.5, BASIS_GROOTTE * 0.6, 3, 0.12);
     letters.forEach((letter, index) => {
-      const geometrie = new TextGeometry(letter, {
+      const letterGeometrie = new TextGeometry(letter, {
         font,
-        size: letterGrootte,
-        depth: letterGrootte * 0.5,
+        size: BASIS_GROOTTE,
+        depth: BASIS_GROOTTE * 0.2,
         curveSegments: 6,
         bevelEnabled: true,
         bevelThickness: 0.03,
         bevelSize: 0.02,
       });
-      geometrie.computeBoundingBox();
-      geometrie.center();
+      letterGeometrie.computeBoundingBox();
+      letterGeometrie.center();
 
-      const kleur = new THREE.Color().setHSL((index * 0.15) % 1, 0.55, 0.6);
-      const materiaal = new THREE.MeshStandardMaterial({ color: kleur, roughness: 0.4 });
-      const mesh = new THREE.Mesh(geometrie, materiaal);
-      mesh.position.set(index * spacing - breedteTotaal / 2, 0, 0);
-      mesh.userData.blokIndex = index;
-      this.scene.add(mesh);
+      const tint = (index * 0.15) % 1;
+      const blokMateriaal = new THREE.MeshStandardMaterial({ color: new THREE.Color().setHSL(tint, 0.75, 0.75), roughness: 0.5 });
+      const letterMateriaal = new THREE.MeshStandardMaterial({ color: 0x2d2a4a, roughness: 0.4 });
+      const blok = new THREE.Mesh(blokGeometrie.clone(), blokMateriaal);
+      const tekst = new THREE.Mesh(letterGeometrie, letterMateriaal);
+      tekst.position.z = BASIS_GROOTTE * 0.4;
 
-      this.blokken.push({ mesh, letter, gebruikt: false });
+      const groep = new THREE.Group();
+      groep.add(blok, tekst);
+      groep.userData.blokIndex = index;
+      this.scene.add(groep);
+      this.blokken.push({ groep, letter, gebruikt: false, materialen: [blokMateriaal, letterMateriaal], basisX: 0 });
+    });
+    blokGeometrie.dispose();
+    this.plaatsBlokken();
+  }
+
+  // Vaste afstanden vielen bij een smal venster buiten beeld: reken de zichtbare breedte
+  // op z=0 uit de huidige camera en schaal afstand en grootte daarop (ook na een resize).
+  private plaatsBlokken(): void {
+    const aantal = this.blokken.length;
+    if (aantal === 0) return;
+    const vFovRad = (this.camera.fov * Math.PI) / 180;
+    const zichtbareBreedte = 2 * Math.tan(vFovRad / 2) * this.camera.position.z * this.camera.aspect;
+    const maxSpacing = 1.8;
+    // Plaats voor aantal blokjes van ~1.4 lettergrootte breed, met wat lucht aan de randen.
+    const spacing = Math.min(maxSpacing, (zichtbareBreedte * 0.92) / aantal);
+    const schaal = Math.min(1, (spacing * 0.6) / BASIS_GROOTTE);
+    const breedteTotaal = (aantal - 1) * spacing;
+    this.blokken.forEach((blok, index) => {
+      blok.basisX = index * spacing - breedteTotaal / 2;
+      blok.groep.position.x = blok.basisX;
+      blok.groep.scale.setScalar(schaal);
     });
   }
 
   private ruimOp(): void {
     for (const blok of this.blokken) {
-      this.scene.remove(blok.mesh);
-      blok.mesh.geometry.dispose();
-      (blok.mesh.material as THREE.Material).dispose();
+      this.scene.remove(blok.groep);
+      blok.groep.traverse((obj) => {
+        if (obj instanceof THREE.Mesh) obj.geometry.dispose();
+      });
+      for (const materiaal of blok.materialen) materiaal.dispose();
     }
     this.blokken = [];
   }
@@ -116,14 +144,16 @@ export class LetterBlokkenScene {
     const blok = this.blokken[blokIndex];
     if (!blok) return;
     blok.gebruikt = true;
-    (blok.mesh.material as THREE.MeshStandardMaterial).opacity = 0.25;
-    (blok.mesh.material as THREE.MeshStandardMaterial).transparent = true;
+    for (const materiaal of blok.materialen) {
+      materiaal.transparent = true;
+      materiaal.opacity = 0.25;
+    }
   }
 
   schudFout(blokIndex: number): void {
     const blok = this.blokken[blokIndex];
     if (!blok) return;
-    blok.mesh.userData.schudTot = performance.now() + 300;
+    blok.groep.userData.schudTot = performance.now() + 300;
   }
 
   private klik(event: PointerEvent): void {
@@ -133,24 +163,24 @@ export class LetterBlokkenScene {
     this.muisVector.y = -((event.clientY - rect.top) / rect.height) * 2 + 1;
 
     this.raycaster.setFromCamera(this.muisVector, this.camera);
-    const meshes = this.blokken.filter((b) => !b.gebruikt).map((b) => b.mesh);
-    const treffers = this.raycaster.intersectObjects(meshes, false);
+    const groepen = this.blokken.filter((b) => !b.gebruikt).map((b) => b.groep);
+    const treffers = this.raycaster.intersectObjects(groepen, true);
     if (treffers.length === 0) return;
 
-    const geraakt = treffers[0].object as THREE.Mesh;
-    const blokIndex = geraakt.userData.blokIndex as number;
+    const groep = treffers[0].object.parent as THREE.Group;
+    const blokIndex = groep.userData.blokIndex as number;
     const blok = this.blokken[blokIndex];
+    if (!blok) return;
     this.onLetterGekozen(blok.letter, blokIndex);
   }
 
   private tik(tijd: number): void {
+    const nu = performance.now();
     for (const blok of this.blokken) {
-      blok.mesh.rotation.y = Math.sin(tijd * 0.0006 + blok.mesh.position.x) * 0.15;
-
-      const schudTot = blok.mesh.userData.schudTot as number | undefined;
-      if (schudTot && tijd < schudTot) {
-        blok.mesh.position.x += Math.sin(tijd * 0.08) * 0.03;
-      }
+      blok.groep.rotation.y = Math.sin(tijd * 0.0006 + blok.basisX) * 0.15;
+      // Schudden rond de vaste plek, zodat een blokje na een fout niet langzaam wegdrijft.
+      const schudTot = blok.groep.userData.schudTot as number | undefined;
+      blok.groep.position.x = schudTot && nu < schudTot ? blok.basisX + Math.sin(nu * 0.08) * 0.08 : blok.basisX;
     }
     this.renderer.render(this.scene, this.camera);
   }
@@ -158,16 +188,24 @@ export class LetterBlokkenScene {
   pasGrootteAan(): void {
     const breedte = this.container.clientWidth || 320;
     const hoogte = this.container.clientHeight || 200;
-    this.renderer.setSize(breedte, hoogte);
+    // false: de CSS bepaalt de weergavemaat, anders blijft een inline 320px-breedte hangen.
+    this.renderer.setSize(breedte, hoogte, false);
     this.camera.aspect = breedte / hoogte;
     this.camera.updateProjectionMatrix();
+    this.plaatsBlokken();
   }
 
   vernietig(): void {
+    if (!this.actief) return;
     this.actief = false;
+    this.grootteWacht.disconnect();
     this.ruimOp();
     this.renderer.setAnimationLoop(null);
+    this.renderer.domElement.removeEventListener('pointerdown', this.klikLuisteraar);
     this.renderer.dispose();
+    // Browsers houden maar ~16 WebGL-contexten tegelijk; zonder dit kan na veel
+    // woord-bouwen-oefeningen de achtergrondlaag zijn context kwijtraken.
+    this.renderer.forceContextLoss();
     this.renderer.domElement.remove();
   }
 }

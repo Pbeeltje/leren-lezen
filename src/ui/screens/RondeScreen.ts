@@ -50,8 +50,10 @@ export function RondeScreen(manager: ScreenManager, titelTekst: string, maakVraa
   let opruimen: (() => void) | null = null;
   let inRonde = 0;
   let timer: number | undefined;
+  let actief = true;
 
   function volgendeVraag(): void {
+    if (!actief) return;
     opruimen?.();
     opruimen = null;
     if (inRonde >= RONDE_LENGTE) {
@@ -66,9 +68,13 @@ export function RondeScreen(manager: ScreenManager, titelTekst: string, maakVraa
     instructie.textContent = vraag.instructie;
     huidigeAudio = vraag.audioPad;
     speelAf(huidigeAudio);
+    let beantwoord = false;
     opruimen = vraag.render(container, () => {
+      if (!actief || beantwoord) return;
+      beantwoord = true;
       voegMuntenToe(MUNTEN_OEFENING_GOED);
       inRonde++;
+      voortgangsbalk.zetVoortgang(inRonde);
       timer = window.setTimeout(volgendeVraag, 900);
     });
   }
@@ -86,6 +92,7 @@ export function RondeScreen(manager: ScreenManager, titelTekst: string, maakVraa
       root.appendChild(topRechts.element);
     },
     unmount() {
+      actief = false;
       window.clearTimeout(timer);
       opruimen?.();
       el.remove();

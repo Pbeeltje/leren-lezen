@@ -40,6 +40,10 @@ const geheugenFallback = new Map<string, VoortgangData>();
 
 function leesRuw(): VoortgangData {
   const sleutel = opslagSleutel();
+  // Lukte schrijven eerder niet (vol/geblokkeerd, terwijl lezen wél werkt), dan is het
+  // geheugen de nieuwste stand; anders "vergeet" de app elke munt meteen weer.
+  const inGeheugen = geheugenFallback.get(sleutel);
+  if (inGeheugen) return inGeheugen;
   try {
     const ruw = localStorage.getItem(sleutel);
     if (!ruw) return leegVoortgang();
@@ -49,6 +53,10 @@ function leesRuw(): VoortgangData {
     if (!data.woordBlootstelling) data.woordBlootstelling = {};
     if (!data.kernen) data.kernen = {};
     for (const kernId in data.kernen) {
+      if (!data.kernen[kernId] || typeof data.kernen[kernId] !== 'object') {
+        delete data.kernen[kernId];
+        continue;
+      }
       if (typeof data.kernen[kernId].oefenSessies !== 'number') {
         // Oudere opslag zonder dit veld: als de kern al gestart/voltooid was, tellen we
         // dat als 1 sessie zodat niemand plots opnieuw vanaf 0 hoeft te oefenen.
@@ -65,6 +73,7 @@ function schrijfRuw(data: VoortgangData): void {
   const sleutel = opslagSleutel();
   try {
     localStorage.setItem(sleutel, JSON.stringify(data));
+    geheugenFallback.delete(sleutel);
   } catch {
     geheugenFallback.set(sleutel, data);
   }

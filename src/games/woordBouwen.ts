@@ -1,12 +1,9 @@
 import type { OefeningDefinitie } from '../content/types.ts';
 import { toonGoedFeedback, toonFoutFeedback } from '../ui/components/FeedbackOverlay.ts';
+import { schudAnders } from '../engine/oefeningGenerator.ts';
 import { LetterBlokkenScene } from '../three/letterBlocks.ts';
 
 type Oefening = Extract<OefeningDefinitie, { type: 'woord-bouwen' }>;
-
-function schudArray<T>(items: T[]): T[] {
-  return [...items].sort(() => Math.random() - 0.5);
-}
 
 export function renderWoordBouwen(
   container: HTMLElement,
@@ -45,7 +42,8 @@ export function renderWoordBouwen(
 
   let volgendeIndex = 0;
   let afgehandeld = false;
-  const alleLetters = schudArray([...letters, ...oefening.afleidLetters]);
+  const alleLetters = schudAnders([...letters, ...oefening.afleidLetters]);
+  let klaarTimer: number | undefined;
 
   const scene = new LetterBlokkenScene(canvasHouder, (letter, blokIndex) => {
     if (afgehandeld) return;
@@ -60,7 +58,7 @@ export function renderWoordBouwen(
       if (volgendeIndex === letters.length) {
         afgehandeld = true;
         toonGoedFeedback();
-        setTimeout(() => afgerond(true), 100);
+        klaarTimer = window.setTimeout(() => afgerond(true), 100);
       }
     } else {
       toonFoutFeedback();
@@ -73,12 +71,10 @@ export function renderWoordBouwen(
   });
   scene.toonLetters(alleLetters);
 
-  const groottePas = () => scene.pasGrootteAan();
-  window.addEventListener('resize', groottePas);
 
   return {
     vernietig: () => {
-      window.removeEventListener('resize', groottePas);
+      clearTimeout(klaarTimer);
       scene.vernietig();
       container.replaceChildren();
     },
