@@ -1,4 +1,5 @@
 import type { Screen, ScreenManager } from '../../engine/screenManager.ts';
+import { events } from '../../engine/events.ts';
 import type { Kern, OefeningDefinitie } from '../../content/types.ts';
 import { maakTerugKnop } from '../components/TerugKnop.ts';
 import { maakTopRechtsBalk } from '../components/TopRechtsBalk.ts';
@@ -194,6 +195,7 @@ export function OefeningScreen(
   }
 
   function afronden(): void {
+    events.emit('sessie-klaar', undefined);
     if (modus === 'toets') {
       const fractie = aantalGoed / oefeningen.length;
       const sterren: 0 | 1 | 2 | 3 = fractie === 1 ? 3 : fractie >= 0.7 ? 2 : fractie >= 0.4 ? 1 : 0;

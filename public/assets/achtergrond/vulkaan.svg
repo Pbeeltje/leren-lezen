@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 170">
+  <defs>
+    <linearGradient id="vk-berg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#8d6e63"/>
+      <stop offset="1" stop-color="#5d4037"/>
+    </linearGradient>
+    <linearGradient id="vk-lava" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#ffd54f"/>
+      <stop offset="0.5" stop-color="#ff8a3d"/>
+      <stop offset="1" stop-color="#e64a19"/>
+    </linearGradient>
+  </defs>
+  <!-- berg -->
+  <path d="M4 170 L88 30 C96 20 144 20 152 30 L236 170 Z" fill="url(#vk-berg)" stroke="#3e2723" stroke-width="3" stroke-linejoin="round"/>
+  <!-- schaduwkant -->
+  <path d="M136 26 C144 26 150 28 152 30 L236 170 L170 170 Z" fill="#4e342e" opacity="0.35"/>
+  <!-- lavastromen -->
+  <path d="M92 28 C100 40 94 58 102 70 C108 80 104 92 110 100 C114 88 112 72 118 60 C124 72 122 86 128 96 C134 84 130 66 138 54 C142 44 140 34 148 28 Z" fill="url(#vk-lava)" stroke="#bf360c" stroke-width="2.5" stroke-linejoin="round"/>
+  <!-- krater -->
+  <ellipse cx="120" cy="28" rx="30" ry="7" fill="#ff7043" stroke="#3e2723" stroke-width="3"/>
+  <ellipse cx="120" cy="27" rx="20" ry="3.5" fill="#ffd54f"/>
+  <!-- rotsjes -->
+  <circle cx="60" cy="130" r="5" fill="#4e342e"/>
+  <circle cx="178" cy="120" r="4" fill="#4e342e"/>
+  <circle cx="190" cy="148" r="6" fill="#4e342e"/>
+</svg>

@@ -16,6 +16,8 @@ export interface Decor {
   juich: () => void;
   // Legt losse plaatjes na het tonen (en bij elke schermwijziging) op de heuvels.
   plaats?: () => void;
+  // Groot feest aan het eind van een hele sessie; zonder eigen feest juicht het decor.
+  feest?: () => void;
 }
 
 export const THEMAS: { id: ThemaId; naam: string; voorbeeld: string }[] = [
@@ -53,6 +55,16 @@ export function initAchtergrond(app: HTMLElement): void {
   app.prepend(laag);
   maakRuimte();
   window.addEventListener('resize', () => huidig?.decor?.plaats?.());
+  events.on('sessie-klaar', () => {
+    const decor = huidig?.decor;
+    if (!decor) {
+      [0, 500, 1000].forEach((ms) => window.setTimeout(schietVallendeSter, ms));
+    } else if (decor.feest) decor.feest();
+    else {
+      decor.juich();
+      window.setTimeout(decor.juich, 1300);
+    }
+  });
   events.on('antwoord-goed', () => {
     if (huidig?.decor) huidig.decor.juich();
     else schietVallendeSter();

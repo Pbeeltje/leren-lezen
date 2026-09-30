@@ -5,6 +5,8 @@ export interface EventMap {
   'antwoord-fout': undefined;
   'munten-veranderd': { totaal: number; verschil: number };
   'kern-voltooid': { kernId: string; sterren: 0 | 1 | 2 | 3 };
+  // Een hele oefensessie, toets of kleuterhoofdstuk is klaar (de achtergrond viert feest).
+  'sessie-klaar': undefined;
 }
 
 type Handler<K extends keyof EventMap> = (payload: EventMap[K]) => void;

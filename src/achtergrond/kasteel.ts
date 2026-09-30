@@ -2,13 +2,63 @@ import type { Decor } from './achtergrond.ts';
 import { el, kortAan, plaatje, svgUitTekst, zetOpPad } from './hulp.ts';
 
 // Prinsessenkasteel op een heuvel rechtsonder (buiten het midden, waar de vragen staan),
-// in een zachte avondlucht met twinkelende sterretjes en zwevende lichtjes. Bij een goed
-// antwoord gaat het kasteel stralen en spatten er vonkjes omhoog.
+// in een avondlucht met sterretjes en zwevende lichtjes, heuvels in de verte en roze gras
+// vooraan met een eenhoorn. Bij een goed antwoord gaat het kasteel stralen, spatten er
+// vonkjes omhoog en springt de eenhoorn.
+const HEUVEL_PAD = 'M0 300 L0 250 C120 230 200 150 330 120 C450 95 540 130 600 150 L600 300 Z';
 const HEUVEL = `
 <svg viewBox="0 0 600 300" preserveAspectRatio="none">
-  <path d="M0 300 L0 250 C120 230 200 150 330 120 C450 95 540 130 600 150 L600 300 Z" fill="#6a4fa3"/>
+  <path d="${HEUVEL_PAD}" fill="#6a4fa3"/>
+</svg>`;
+// Hetzelfde pad nog eens vóór het kasteel: zo zakt de voet van het kasteel ín de heuvel
+// en zweeft het nergens, hoe het scherm de heuvel ook uitrekt.
+const HEUVEL_VOOR = `
+<svg viewBox="0 0 600 300" preserveAspectRatio="none">
+  <path d="${HEUVEL_PAD}" fill="#6a4fa3"/>
   <path d="M0 300 L0 275 C140 262 260 230 380 225 C480 222 560 240 600 250 L600 300 Z" fill="#553d8c"/>
 </svg>`;
+
+const VERRE_HEUVELS = `
+<svg viewBox="0 0 1000 200" preserveAspectRatio="none">
+  <path d="M0 110 C120 60 240 70 360 105 C470 135 560 60 680 70 C800 80 900 120 1000 95 L1000 200 L0 200 Z" fill="#9b78c9" opacity="0.55"/>
+  <path d="M0 150 C150 110 300 120 440 145 C580 170 720 115 860 125 C930 130 970 140 1000 138 L1000 200 L0 200 Z" fill="#8a67bd" opacity="0.7"/>
+</svg>`;
+
+// Roze weide: een glooiende bovenrand met dunne, gebogen grassprieten in een paar tinten
+// en hier en daar een bloemetje. Vaste pseudo-willekeur, zodat het er elke keer hetzelfde
+// uitziet.
+function grasSvg(): string {
+  let zaad = 7;
+  const rnd = () => ((zaad = (zaad * 9301 + 49297) % 233280) / 233280);
+  const rand = (x: number) => 52 + Math.sin(x / 170) * 12 + Math.sin(x / 61 + 1) * 5;
+  let rug = 'M0 160 L0 ' + rand(0).toFixed(1);
+  for (let x = 10; x <= 1000; x += 10) rug += ` L${x} ${rand(x).toFixed(1)}`;
+  rug += ' L1000 160 Z';
+
+  const tinten = ['#f7a8d0', '#ee8bbf', '#e071ad', '#fbc2de'];
+  const sprieten = tinten.map(() => '');
+  for (let x = 0; x < 1000; x += 3.2) {
+    const basis = rand(x) + 6 + rnd() * 6;
+    const h = 10 + rnd() * 16;
+    const buig = (rnd() - 0.5) * 14;
+    const i = Math.floor(rnd() * tinten.length);
+    sprieten[i] += `M${x.toFixed(1)} ${basis.toFixed(1)} Q${(x + buig * 0.3).toFixed(1)} ${(basis - h * 0.6).toFixed(1)} ${(x + buig).toFixed(1)} ${(basis - h).toFixed(1)} `;
+  }
+  let bloemen = '';
+  for (let n = 0; n < 26; n++) {
+    const x = rnd() * 1000;
+    const y = rand(x) + 10 + rnd() * 40;
+    const kleur = ['#ffffff', '#fff3a6', '#ffd6ec'][n % 3];
+    bloemen += `<circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="2.6" fill="${kleur}" vector-effect="non-scaling-stroke"/>`;
+  }
+  return `
+<svg viewBox="0 0 1000 160" preserveAspectRatio="none">
+  <path d="${rug}" fill="#f29bc7"/>
+  <path d="M0 160 L0 110 C200 98 420 118 620 106 C800 96 920 112 1000 104 L1000 160 Z" fill="#e889bb" opacity="0.7"/>
+  ${sprieten.map((d, i) => `<path d="${d}" fill="none" stroke="${tinten[i]}" stroke-width="2.2" stroke-linecap="round" vector-effect="non-scaling-stroke"/>`).join('')}
+  ${bloemen}
+</svg>`;
+}
 
 export function maakKasteelDecor(): Decor {
   const root = el('div', 'decor decor-kasteel');
@@ -18,10 +68,13 @@ export function maakKasteelDecor(): Decor {
     s.style.top = `${Math.random() * 55}%`;
     s.style.animationDelay = `${(Math.random() * 4).toFixed(2)}s`;
   }
+  svgUitTekst(VERRE_HEUVELS, 'kasteel-verte', root);
+
   const heuvel = el('div', 'kasteel-heuvel', root);
   const heuvelSvg = svgUitTekst(HEUVEL, 'kasteel-heuvel__svg', heuvel);
   const kasteel = el('div', 'kasteel', heuvel);
   plaatje('/assets/achtergrond/kasteel.svg', 'kasteel__plaatje', kasteel);
+  svgUitTekst(HEUVEL_VOOR, 'kasteel-heuvel__svg', heuvel);
   for (let i = 0; i < 9; i++) {
     const l = el('div', 'kasteel-lichtje', heuvel);
     l.style.left = `${40 + Math.random() * 55}%`;
@@ -30,8 +83,13 @@ export function maakKasteelDecor(): Decor {
     l.style.animationDuration = `${(5 + Math.random() * 4).toFixed(2)}s`;
   }
 
+  svgUitTekst(grasSvg(), 'kasteel-gras', root);
+  const eenhoorn = el('div', 'eenhoorn', root);
+  plaatje('/assets/achtergrond/eenhoorn.svg', 'eenhoorn__lijf', eenhoorn);
+
   const juich = () => {
     kortAan(kasteel, 'straalt', 1600);
+    kortAan(eenhoorn, 'juicht', 1200);
     for (let i = 0; i < 12; i++) {
       const v = el('div', 'kasteel-vonk', kasteel);
       const hoek = -Math.PI / 2 + (Math.random() - 0.5) * 2.2;
@@ -41,7 +99,13 @@ export function maakKasteelDecor(): Decor {
       v.style.background = ['#ffe36e', '#ff9ad5', '#b8f0ff', '#ffffff'][i % 4];
       window.setTimeout(() => v.remove(), 1300);
     }
+    for (const teken of ['♥', '★', '♥']) {
+      const h = el('div', 'eenhoorn__hartje', eenhoorn);
+      h.textContent = teken;
+      h.style.left = `${30 + Math.random() * 40}%`;
+      window.setTimeout(() => h.remove(), 1300);
+    }
   };
   const top = heuvelSvg.querySelector('path')!;
-  return { element: root, juich, plaats: () => zetOpPad(kasteel, top, 10) };
+  return { element: root, juich, plaats: () => zetOpPad(kasteel, top, 4, true) };
 }

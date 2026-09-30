@@ -27,23 +27,28 @@ export function kortAan(e: Element, klasse: string, ms: number): void {
  * meerekken (preserveAspectRatio="none") en losse plaatjes dat niet doen: zonder dit
  * zweefden bomen en kasteel boven de heuvel op brede schermen.
  */
-export function zetOpPad(e: HTMLElement, pad: SVGPathElement, zak = 6): void {
+export function zetOpPad(e: HTMLElement, pad: SVGPathElement, zak = 6, overBreedte = false): void {
   const houder = e.offsetParent as HTMLElement | null;
   const matrix = pad.getScreenCTM();
   if (!houder || !matrix) return;
   const vak = e.getBoundingClientRect();
-  const midden = vak.left + vak.width / 2;
-  const xSvg = (midden - matrix.e) / matrix.a;
   const lengte = pad.getTotalLength();
-  let y = 0;
   // De bovenrand is het eerste stuk van het pad (van links naar rechts), dus de eerste
-  // punt die voorbij xSvg ligt is de goede.
-  for (let l = 0; l <= lengte; l += 2) {
-    const p = pad.getPointAtLength(l);
-    y = p.y;
-    if (p.x >= xSvg) break;
-  }
-  const yScherm = y * matrix.d + matrix.f;
+  // punt die voorbij x ligt is de goede.
+  const yOp = (xScherm: number): number => {
+    const xSvg = (xScherm - matrix.e) / matrix.a;
+    let y = 0;
+    for (let l = 0; l <= lengte; l += 2) {
+      const p = pad.getPointAtLength(l);
+      y = p.y;
+      if (p.x >= xSvg) break;
+    }
+    return y * matrix.d + matrix.f;
+  };
+  // Brede dingen (een kasteel op een helling): het laagste punt onder de hele breedte,
+  // anders hangt één kant in de lucht.
+  const xs = overBreedte ? [0.04, 0.5, 0.96].map((f) => vak.left + vak.width * f) : [vak.left + vak.width / 2];
+  const yScherm = Math.max(...xs.map(yOp));
   const houderVak = houder.getBoundingClientRect();
   e.style.bottom = `${houderVak.bottom - yScherm - zak}px`;
 }

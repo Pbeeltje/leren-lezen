@@ -1,8 +1,8 @@
 import type { Decor } from './achtergrond.ts';
 import { el, kortAan, plaatje, svgUitTekst, zetOpPad } from './hulp.ts';
 
-// Groene wei met heuvels en bomen; een T-rex links en een triceratops rechts die bij een
-// goed antwoord opspringen en juichen.
+// Groene wei met heuvels, bomen en een vulkaan; een T-rex links en een triceratops rechts
+// die bij een goed antwoord opspringen. Aan het eind van een hele sessie barst de vulkaan uit.
 const HEUVELS = `
 <svg viewBox="0 0 1000 300" preserveAspectRatio="none">
   <path d="M0 150 C160 60 320 70 480 130 C640 190 820 80 1000 120 L1000 300 L0 300 Z" fill="#7ccf5d"/>
@@ -15,6 +15,12 @@ export function maakDinoDecor(): Decor {
   plaatje('/assets/achtergrond/zon.svg', 'dino-zon', root);
   plaatje('/assets/achtergrond/wolk.svg', 'drijf-wolk drijf-wolk--1', root);
   plaatje('/assets/achtergrond/wolk.svg', 'drijf-wolk drijf-wolk--2', root);
+  // Vóór de heuvels in de DOM, zodat de achterste heuvel over de voet van de vulkaan valt.
+  const vulkaan = el('div', 'vulkaan', root);
+  const rook = el('div', 'vulkaan__rook', vulkaan);
+  for (let i = 0; i < 3; i++) el('div', 'vulkaan__pluim', rook).style.animationDelay = `${i * 1.3}s`;
+  el('div', 'vulkaan__gloed', vulkaan);
+  plaatje('/assets/achtergrond/vulkaan.svg', 'vulkaan__berg', vulkaan);
   const heuvels = svgUitTekst(HEUVELS, 'dino-heuvels', root);
   const [achter, midden] = [...heuvels.querySelectorAll('path')];
 
@@ -32,7 +38,24 @@ export function maakDinoDecor(): Decor {
   plaatje('/assets/achtergrond/triceratops.svg', 'dino__lijf', tri);
 
   const plaatsBomen = () => {
+    zetOpPad(vulkaan, achter, 18, true);
     for (const [boom, pad] of bomen) zetOpPad(boom, pad);
+  };
+
+  const feest = () => {
+    kortAan(vulkaan, 'barst-uit', 3000);
+    for (let i = 0; i < 26; i++) {
+      const brok = el('div', 'vulkaan__lava', vulkaan);
+      const hoek = -Math.PI / 2 + (Math.random() - 0.5) * 1.6;
+      const kracht = 90 + Math.random() * 170;
+      brok.style.setProperty('--dx', `${Math.cos(hoek) * kracht}px`);
+      brok.style.setProperty('--dy', `${Math.sin(hoek) * kracht}px`);
+      brok.style.animationDelay = `${(Math.random() * 0.6).toFixed(2)}s`;
+      const maat = 8 + Math.random() * 14;
+      brok.style.width = brok.style.height = `${maat}px`;
+      window.setTimeout(() => brok.remove(), 2600);
+    }
+    juich();
   };
 
   const juich = () => {
@@ -43,5 +66,5 @@ export function maakDinoDecor(): Decor {
       window.setTimeout(() => hoera.remove(), 1200);
     }
   };
-  return { element: root, juich, plaats: plaatsBomen };
+  return { element: root, juich, feest, plaats: plaatsBomen };
 }
