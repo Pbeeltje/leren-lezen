@@ -1,0 +1,266 @@
+[
+  {
+    "n": 1,
+    "slug": "schoen",
+    "text": "schoen",
+    "path": "public/assets/audio/woorden/schoen.mp3"
+  },
+  {
+    "n": 2,
+    "slug": "schelp",
+    "text": "schelp",
+    "path": "public/assets/audio/woorden/schelp.mp3"
+  },
+  {
+    "n": 3,
+    "slug": "school",
+    "text": "school",
+    "path": "public/assets/audio/woorden/school.mp3"
+  },
+  {
+    "n": 4,
+    "slug": "ring",
+    "text": "ring",
+    "path": "public/assets/audio/woorden/ring.mp3"
+  },
+  {
+    "n": 5,
+    "slug": "spin",
+    "text": "spin",
+    "path": "public/assets/audio/woorden/spin.mp3"
+  },
+  {
+    "n": 6,
+    "slug": "krab",
+    "text": "krab",
+    "path": "public/assets/audio/woorden/krab.mp3"
+  },
+  {
+    "n": 7,
+    "slug": "broek",
+    "text": "broek",
+    "path": "public/assets/audio/woorden/broek.mp3"
+  },
+  {
+    "n": 8,
+    "slug": "kraan",
+    "text": "kraan",
+    "path": "public/assets/audio/woorden/kraan.mp3"
+  },
+  {
+    "n": 9,
+    "slug": "strik",
+    "text": "strik",
+    "path": "public/assets/audio/woorden/strik.mp3"
+  },
+  {
+    "n": 10,
+    "slug": "kerk",
+    "text": "kerk",
+    "path": "public/assets/audio/woorden/kerk.mp3"
+  },
+  {
+    "n": 11,
+    "slug": "voetbal",
+    "text": "voetbal",
+    "path": "public/assets/audio/woorden/voetbal.mp3"
+  },
+  {
+    "n": 12,
+    "slug": "bank",
+    "text": "bank",
+    "path": "public/assets/audio/woorden/bank.mp3"
+  },
+  {
+    "n": 13,
+    "slug": "nacht",
+    "text": "nacht",
+    "path": "public/assets/audio/woorden/nacht.mp3"
+  },
+  {
+    "n": 14,
+    "slug": "spons",
+    "text": "spons",
+    "path": "public/assets/audio/woorden/spons.mp3"
+  },
+  {
+    "n": 15,
+    "slug": "web",
+    "text": "web",
+    "path": "public/assets/audio/woorden/web.mp3"
+  },
+  {
+    "n": 16,
+    "slug": "sla",
+    "text": "sla",
+    "path": "public/assets/audio/woorden/sla.mp3"
+  },
+  {
+    "n": 17,
+    "slug": "plant",
+    "text": "plant",
+    "path": "public/assets/audio/woorden/plant.mp3"
+  },
+  {
+    "n": 18,
+    "slug": "fles",
+    "text": "fles",
+    "path": "public/assets/audio/woorden/fles.mp3"
+  },
+  {
+    "n": 19,
+    "slug": "ski",
+    "text": "ski",
+    "path": "public/assets/audio/woorden/ski.mp3"
+  },
+  {
+    "n": 20,
+    "slug": "krant",
+    "text": "krant",
+    "path": "public/assets/audio/woorden/krant.mp3"
+  },
+  {
+    "n": 21,
+    "slug": "boei",
+    "text": "boei",
+    "path": "public/assets/audio/woorden/boei.mp3"
+  },
+  {
+    "n": 22,
+    "slug": "emmer",
+    "text": "emmer",
+    "path": "public/assets/audio/woorden/emmer.mp3"
+  },
+  {
+    "n": 23,
+    "slug": "kikker",
+    "text": "kikker",
+    "path": "public/assets/audio/woorden/kikker.mp3"
+  },
+  {
+    "n": 24,
+    "slug": "appel",
+    "text": "appel",
+    "path": "public/assets/audio/woorden/appel.mp3"
+  },
+  {
+    "n": 25,
+    "slug": "dolfijn",
+    "text": "dolfijn",
+    "path": "public/assets/audio/woorden/dolfijn.mp3"
+  },
+  {
+    "n": 26,
+    "slug": "wortel",
+    "text": "wortel",
+    "path": "public/assets/audio/woorden/wortel.mp3"
+  },
+  {
+    "n": 27,
+    "slug": "paddenstoel",
+    "text": "paddenstoel",
+    "path": "public/assets/audio/woorden/paddenstoel.mp3"
+  },
+  {
+    "n": 28,
+    "slug": "vogel",
+    "text": "vogel",
+    "path": "public/assets/audio/woorden/vogel.mp3"
+  },
+  {
+    "n": 29,
+    "slug": "hamer",
+    "text": "hamer",
+    "path": "public/assets/audio/woorden/hamer.mp3"
+  },
+  {
+    "n": 30,
+    "slug": "banaan",
+    "text": "banaan",
+    "path": "public/assets/audio/woorden/banaan.mp3"
+  },
+  {
+    "n": 31,
+    "slug": "tomaat",
+    "text": "tomaat",
+    "path": "public/assets/audio/woorden/tomaat.mp3"
+  },
+  {
+    "n": 32,
+    "slug": "ladder",
+    "text": "ladder",
+    "path": "public/assets/audio/woorden/ladder.mp3"
+  },
+  {
+    "n": 33,
+    "slug": "piano",
+    "text": "piano",
+    "path": "public/assets/audio/woorden/piano.mp3"
+  },
+  {
+    "n": 34,
+    "slug": "radio",
+    "text": "radio",
+    "path": "public/assets/audio/woorden/radio.mp3"
+  },
+  {
+    "n": 35,
+    "slug": "koning",
+    "text": "koning",
+    "path": "public/assets/audio/woorden/koning.mp3"
+  },
+  {
+    "n": 36,
+    "slug": "koningin",
+    "text": "koningin",
+    "path": "public/assets/audio/woorden/koningin.mp3"
+  },
+  {
+    "n": 37,
+    "slug": "honing",
+    "text": "honing",
+    "path": "public/assets/audio/woorden/honing.mp3"
+  },
+  {
+    "n": 38,
+    "slug": "tekening",
+    "text": "tekening",
+    "path": "public/assets/audio/woorden/tekening.mp3"
+  },
+  {
+    "n": 39,
+    "slug": "vuilnisbak",
+    "text": "vuilnisbak",
+    "path": "public/assets/audio/woorden/vuilnisbak.mp3"
+  },
+  {
+    "n": 40,
+    "slug": "schildpad",
+    "text": "schildpad",
+    "path": "public/assets/audio/woorden/schildpad.mp3"
+  },
+  {
+    "n": 41,
+    "slug": "lieveheersbeestje",
+    "text": "lieveheersbeestje",
+    "path": "public/assets/audio/woorden/lieveheersbeestje.mp3"
+  },
+  {
+    "n": 42,
+    "slug": "sinaasappel",
+    "text": "sinaasappel",
+    "path": "public/assets/audio/woorden/sinaasappel.mp3"
+  },
+  {
+    "n": 43,
+    "slug": "aardbei",
+    "text": "aardbei",
+    "path": "public/assets/audio/woorden/aardbei.mp3"
+  },
+  {
+    "n": 44,
+    "slug": "vrolijk",
+    "text": "vrolijk",
+    "path": "public/assets/audio/woorden/vrolijk.mp3"
+  }
+]

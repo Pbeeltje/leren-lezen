@@ -92,6 +92,10 @@ def lijn_uit(transcripten, lijst):
                 c = k + 1.0
                 if c < kosten[i][j + 1]:
                     kosten[i][j + 1], terug[i][j + 1] = c, ("mist", i, j)
+            if i + 1 < n and j < m:  # één regel in twee stukjes (pauze midden in een zin)
+                c = k + 0.3 + (1 - lijkt(transcripten[i] + " " + transcripten[i + 1], lijst[j]["text"]))
+                if c < kosten[i + 2][j + 1]:
+                    kosten[i + 2][j + 1], terug[i + 2][j + 1] = c, ("twee", i, j)
             if i < n and j + 1 < m:  # twee regels in één stukje
                 samen = lijst[j]["text"] + " " + lijst[j + 1]["text"]
                 c = k + 0.3 + (1 - lijkt(transcripten[i], samen))
@@ -105,6 +109,26 @@ def lijn_uit(transcripten, lijst):
         soort, pi, pj = stap
         i, j = pi, pj
     return list(reversed(stappen))
+
+
+def transcribeer(model, opname, van, tot, woordenschat):
+    wav = Path(tempfile.mkdtemp()) / "deel.wav"
+    snij(opname, van, tot, wav, fade=False)
+    segs, _ = model.transcribe(str(wav), language="nl", beam_size=5, initial_prompt=woordenschat)
+    return " ".join(x.text.strip() for x in segs).strip()
+
+
+def splits_op_pauze(opname, van, tot):
+    """Zoekt de langste korte stilte binnen een stukje; geeft twee (van, tot)-delen of None."""
+    wav = Path(tempfile.mkdtemp()) / "zoek.wav"
+    snij(opname, van, tot, wav, fade=False)
+    starts, ends, _ = stiltes(str(wav), "-35dB", 0.1)
+    kandidaten = [(e - s, s, e) for s, e in zip(starts, ends) if 0.25 < s < (tot - van) - 0.25]
+    if not kandidaten:
+        return None
+    _, s, e = max(kandidaten)
+    begin = van - 0.08  # snij() begon 0.08 s eerder
+    return (van, begin + s), (begin + e, tot)
 
 
 def main():
@@ -126,8 +150,8 @@ def main():
         transcripten.append(" ".join(s.text.strip() for s in segs).strip())
 
     stappen = lijn_uit(transcripten, lijst)
-    twijfel = 0
     koppels = []
+    twijfel = 0
     for soort, i, j in stappen:
         if soort == "koppel":
             score = lijkt(transcripten[i], lijst[j]["text"])
@@ -141,9 +165,30 @@ def main():
         elif soort == "mist":
             twijfel += 1
             print(f"!! regel {lijst[j]['n']} {lijst[j]['text']!r} niet gevonden")
+        elif soort == "twee":
+            van, tot = stukjes[i][0], stukjes[i + 1][1]
+            print(f"   {lijst[j]['n']:>3} {lijst[j]['text']!r:<40} <- stukjes {i}+{i+1} samengevoegd  hoorde {transcripten[i] + ' ' + transcripten[i+1]!r}")
+            koppels.append((j, (van, tot)))
         elif soort == "samen":
-            twijfel += 1
-            print(f"!! regels {lijst[j]['n']}+{lijst[j+1]['n']} samen in stukje {i}: {transcripten[i]!r}")
+            van, tot = stukjes[i]
+            delen = splits_op_pauze(opname, van, tot)
+            if delen:
+                (a, b), (c, d) = delen
+                ta, tb = transcribeer(model, opname, a, b, woordenschat), transcribeer(model, opname, c, d, woordenschat)
+                print(f"~~ stukje {i} gesplitst op een korte pauze: {ta!r} | {tb!r}")
+                for jj, (x, y, t) in zip((j, j + 1), ((a, b, ta), (c, d, tb))):
+                    score = lijkt(t, lijst[jj]["text"])
+                    if score < 0.6:
+                        twijfel += 1
+                    print(f"{'  ' if score >= 0.6 else '??'} {lijst[jj]['n']:>3} {lijst[jj]['text']!r:<40} <- deel van stukje {i}  hoorde {t!r}")
+                    koppels.append((jj, (x, y)))
+            else:
+                beste = max((j, j + 1), key=lambda jj: lijkt(transcripten[i], lijst[jj]["text"]))
+                andere = j + 1 if beste == j else j
+                twijfel += 1
+                print(f"   {lijst[beste]['n']:>3} {lijst[beste]['text']!r:<40} <- stukje {i}  hoorde {transcripten[i]!r}")
+                print(f"!! regel {lijst[andere]['n']} {lijst[andere]['text']!r} niet gevonden (niet ingesproken?)")
+                koppels.append((beste, stukjes[i]))
     print(f"\n{len(koppels)} gekoppeld, {twijfel} twijfelgevallen")
 
     if schrijf:
@@ -152,6 +197,13 @@ def main():
             doel.parent.mkdir(parents=True, exist_ok=True)
             snij(opname, van, tot, doel)
         print(f"{len(koppels)} clips geschreven")
+        # Alleen wat echt is opgenomen komt in het manifest (Luisteren gebruikt dit om te
+        # bepalen welke woorden een geluid hebben).
+        naam = Path(lijstpad).stem.replace("opnamelijst-", "audio-manifest-")
+        opgenomen = [dict(lijst[j], n=k + 1) for k, (j, _) in enumerate(sorted(koppels))]
+        (Path(lijstpad).parent / f"{naam}.json").write_text(json.dumps(opgenomen, ensure_ascii=False, indent=2), encoding="utf-8")
+        ontbreekt = [lijst[j]["text"] for j in range(len(lijst)) if j not in {k for k, _ in koppels}]
+        print(f"manifest {naam}.json: {len(opgenomen)} clips; niet opgenomen: {ontbreekt or 'niets'}")
 
 
 main()
