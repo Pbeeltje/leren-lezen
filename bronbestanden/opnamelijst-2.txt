@@ -1,5 +1,5 @@
-Opnamelijst 2 - lees alles in een keer voor, met 2 seconden stilte tussen elk woord.
-Zeg alleen het woord, niet het nummer.
+Opnamelijst 2 - lees alles in een keer voor, met 2 seconden stilte tussen elke regel.
+Zeg alleen de tekst, niet het nummer.
 
 1. ik
 2. aan
@@ -23,3 +23,20 @@ Zeg alleen het woord, niet het nummer.
 20. pauw
 21. duif
 22. ei
+23. Tik de grote.
+24. Tik de kleine.
+25. Welke is zwaar?
+26. Welke is licht?
+27. Welke is lang?
+28. Welke is kort?
+29. Waar zijn er meer?
+30. Waar zijn er minder?
+31. Tik alle rode dingen.
+32. Tik alle blauwe dingen.
+33. Tik alle gele dingen.
+34. Tik alle groene dingen.
+35. Tik alle rondjes.
+36. Tik alle vierkanten.
+37. Tik alle driehoeken.
+38. Tik alle sterren.
+39. Hoeveel mensen zitten er nu in de bus?

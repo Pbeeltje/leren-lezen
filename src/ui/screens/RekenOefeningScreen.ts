@@ -25,6 +25,7 @@ import { renderDubbeleDobbelsteenNaarCijfer } from '../../games/dubbeleDobbelste
 import { renderVingersNaarCijfer } from '../../games/vingersNaarCijfer.ts';
 import { renderReeksAanvullen } from '../../games/reeksAanvullen.ts';
 import { renderOptellen } from '../../games/optellen.ts';
+import { renderBussom } from '../../games/bussom.ts';
 import { speelSchermOvergang } from '../../three/transitions.ts';
 import { TestResultScreen } from './TestResultScreen.ts';
 import { RekenChapterScreen } from './RekenChapterScreen.ts';
@@ -44,6 +45,7 @@ const INSTRUCTIES: Record<RekenOefeningDefinitie['type'], string> = {
   'vingers-naar-cijfer': 'Welk cijfer hoort bij de vingers?',
   'reeks-aanvullen': 'Welk getal ontbreekt?',
   optellen: 'Hoeveel is dat samen?',
+  bussom: 'Hoeveel mensen zitten er nu in de bus?',
 };
 
 function renderOefening(
@@ -69,6 +71,8 @@ function renderOefening(
       return renderReeksAanvullen(container, oefening, opties, afgerond);
     case 'optellen':
       return renderOptellen(container, oefening, opties, afgerond);
+    case 'bussom':
+      return renderBussom(container, oefening, opties, afgerond);
   }
 }
 

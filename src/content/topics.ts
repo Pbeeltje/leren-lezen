@@ -30,11 +30,12 @@ export const TOPICS: Topic[] = [
     beschikbaar: true,
   },
   {
-    id: 'vormen-kleuren',
-    leeftijd: [3, 4, 5],
-    titel: 'Vormen & kleuren',
+    // Kleuterbegrippen zonder lezen: groot/klein, meer/minder, kleuren & vormen.
+    id: 'ontdekken',
+    leeftijd: [3, 4, 5, 6],
+    titel: 'Ontdekken',
     icoonPad: '/assets/icons/vormen.svg',
-    beschikbaar: false,
+    beschikbaar: true,
   },
   {
     id: 'natuur',

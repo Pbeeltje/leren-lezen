@@ -661,3 +661,30 @@ pausing it before starting a new one, regardless of path. This matters most
 here because both Luisteren games fire audio in quick succession (flip a
 card, guess again, advance rounds) — anywhere else audio is more spaced out
 by user interaction, but don't assume that holds for a future feature.
+
+## "Ontdekken" topic — kleuter concepts (ages 3-6)
+
+Topic id `ontdekken` (it replaced the old "Vormen & kleuren" placeholder) opens
+`ui/screens/OntdekkenKiesScreen.ts`, a chooser for three games inspired by Squla's
+kleuter topics (see `onderzoek/squla.md`):
+- **Groot of klein?** (`games/kleuter/vergelijken.ts`): groot/klein (same picture at
+  100% and 42%), zwaar/licht (curated pairs from the reading pictures, both shown the
+  same size so the child can't just pick the bigger picture), lang/kort (SVG pencils).
+- **Meer of minder?** (`games/kleuter/meerMinder.ts`): two groups of the same counting
+  icon, up to 6, with a difference of at least 2 so it's visible without counting. The
+  "=" button is correct when both groups are equal (~15% of questions).
+- **Kleuren & vormen** (`games/kleuter/kleurenVormen.ts`): a 3×3 grid of coloured shapes
+  and a sample that tells the child what to find without reading: a paint splat for a
+  colour (drawn from circles, so it never looks like one of the game's shapes) or a
+  white outline for a shape. Tap every match.
+
+Each game is only a `maakVraag(): RondeVraag` function. `ui/screens/RondeScreen.ts` is
+the shared shell (rounds of 5, progress bar, fireworks, coins, replay-audio button).
+A new kleuter game is one new `maakVraag` function plus a tile in `SPELLEN`.
+Instruction audio lives at `instructies/vergelijk-*`, `meer-minder-*`,
+`zoek-kleur-*` and `zoek-vorm-*`; these clips are on `opnamelijst-2`.
+
+Math also has **bussommen** (`games/bussom.ts`, type `bussom`, chapter `reken-kern-05`):
+the bus shows the starting passengers, the stop shows who gets on or off, and the sum
+is written below. `start` is always one of the distractors, because forgetting who got
+on or off is the classic mistake.

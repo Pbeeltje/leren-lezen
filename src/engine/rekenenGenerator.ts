@@ -12,6 +12,7 @@ const ALLE_TYPEN: RekenOefeningType[] = [
   'vingers-naar-cijfer',
   'reeks-aanvullen',
   'optellen',
+  'bussom',
 ];
 
 function schud<T>(items: T[]): T[] {
@@ -59,6 +60,7 @@ function toepasbareTypen(kern: RekenKern): RekenOefeningType[] {
     if (type === 'vingers-naar-cijfer') return min <= 10;
     if (type === 'dubbele-dobbelsteen-naar-cijfer') return min <= 16 && max >= 11;
     if (type === 'reeks-aanvullen') return max - min >= 2;
+    if (type === 'bussom') return max >= 3 && max <= 10;
     return true;
   });
 }
@@ -122,6 +124,26 @@ function maakOefening(kern: RekenKern, type: RekenOefeningType, tracker: SessieT
         [som - 1, som + 1, som - 2, som + 2].filter((n) => n >= 1 && n <= 9 && n !== som),
       ).slice(0, 2);
       return { type, a, b, antwoord: som, afleiders };
+    }
+    case 'bussom': {
+      // Totaal blijft binnen het bereik en de bus wordt nooit leeg.
+      const bovengrens = Math.min(max, 10);
+      for (let poging = 0; ; poging++) {
+        const start = 1 + Math.floor(Math.random() * (bovengrens - 1));
+        const erin = start === 1 || Math.random() < 0.5;
+        const ruimte = erin ? bovengrens - start : start - 1;
+        const stap = 1 + Math.floor(Math.random() * Math.min(ruimte, 4));
+        const verandering = erin ? stap : -stap;
+        const antwoord = start + verandering;
+        const sleutel = `${start}${verandering}`;
+        if (tracker.optelCombinaties.has(sleutel) && poging < 15) continue;
+        tracker.optelCombinaties.add(sleutel);
+        // 'start' als afleider: de klassieke fout is vergeten dat er iemand in/uit stapte.
+        const kandidaten = [start, antwoord + 1, antwoord - 1, antwoord + 2].filter(
+          (n, i, lijst) => n >= 1 && n <= bovengrens && n !== antwoord && lijst.indexOf(n) === i,
+        );
+        return { type, start, verandering, antwoord, afleiders: kandidaten.slice(0, 2) };
+      }
     }
     case 'hoeveelheid-naar-cijfer': {
       const cijfer = kiesUniekGetal(kern.bereik, gebruikt);

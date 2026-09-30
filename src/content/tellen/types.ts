@@ -15,7 +15,8 @@ export type RekenOefeningType =
   | 'dubbele-dobbelsteen-naar-cijfer'
   | 'vingers-naar-cijfer'
   | 'reeks-aanvullen'
-  | 'optellen';
+  | 'optellen'
+  | 'bussom';
 
 export type RekenOefeningDefinitie =
   // Getalbeeld/tellen: N plaatjes zien, het juiste cijfer kiezen.
@@ -37,7 +38,10 @@ export type RekenOefeningDefinitie =
   // Getallenrij met een gat in het midden (bv. 11 - [ ] - 13): geen keuzes, zelf typen.
   | { type: 'reeks-aanvullen'; voor: number; antwoord: number; na: number }
   // Eenvoudig optellen ("erbij"), som altijd onder de 10.
-  | { type: 'optellen'; a: number; b: number; antwoord: number; afleiders: number[] };
+  | { type: 'optellen'; a: number; b: number; antwoord: number; afleiders: number[] }
+  // Bussom (idee: Squla groep 3): er zitten `start` mensen in de bus, bij de halte stappen
+  // er `verandering` in (positief) of uit (negatief). Hoeveel zitten er nu in?
+  | { type: 'bussom'; start: number; verandering: number; antwoord: number; afleiders: number[] };
 
 export interface RekenKern {
   id: string; // bv. 'reken-kern-01'

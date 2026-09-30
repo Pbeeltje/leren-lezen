@@ -875,3 +875,240 @@
   font-weight: 800;
   color: var(--kleur-tekst);
 }
+
+/* ---- Ontdekken (kleuterspellen) ---- */
+.vergelijk-rij {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 24px;
+  justify-content: center;
+  align-items: flex-end;
+}
+
+.vergelijk-rij--kolom {
+  flex-direction: column;
+  align-items: stretch;
+  width: 100%;
+}
+
+/* Twee even grote vakken; bij groot/klein zit het verschil alleen in het plaatje zelf,
+   dat onderaan uitgelijnd staat zodat het op dezelfde "grond" staat. */
+.vergelijk-optie {
+  width: 200px;
+  height: 200px;
+  padding: 12px;
+  background: #fff;
+  border: 5px solid var(--kleur-secundair);
+  border-radius: var(--radius-groot);
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+}
+
+.vergelijk-optie img {
+  object-fit: contain;
+  width: 100%;
+  height: 100%;
+}
+
+.vergelijk-optie--breed {
+  width: 100%;
+  height: 96px;
+  align-items: center;
+  justify-content: flex-start;
+}
+
+.vergelijk-optie.gevonden,
+.meer-minder-groep.gevonden,
+.meer-minder-gelijk.gevonden {
+  background: var(--kleur-succes);
+  border-color: var(--kleur-succes);
+}
+
+.vergelijk-optie.fout-gekozen,
+.meer-minder-groep.fout-gekozen,
+.meer-minder-gelijk.fout-gekozen,
+.zoek-ding.fout-gekozen {
+  background: var(--kleur-fout);
+  border-color: var(--kleur-fout);
+}
+
+.meer-minder-rij {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  width: 100%;
+}
+
+.meer-minder-groep {
+  flex: 1;
+  min-height: 200px;
+  max-width: 210px;
+  padding: 12px;
+  background: #fff;
+  border: 5px solid var(--kleur-secundair);
+  border-radius: var(--radius-groot);
+  display: flex;
+  flex-wrap: wrap;
+  align-content: center;
+  justify-content: center;
+  gap: 6px;
+}
+
+.meer-minder-groep img {
+  width: 52px;
+  height: 52px;
+}
+
+.meer-minder-gelijk {
+  width: 72px;
+  height: 72px;
+  flex-shrink: 0;
+  border-radius: 50%;
+  background: #fff;
+  border: 5px solid var(--kleur-secundair);
+  font-size: 2.4rem;
+  font-weight: 800;
+  color: var(--kleur-tekst);
+}
+
+.zoek-voorbeeld {
+  width: 96px;
+  height: 96px;
+  padding: 8px;
+  border: 4px dashed #90a4ae;
+  border-radius: var(--radius-groot);
+}
+
+.zoek-voorbeeld svg,
+.zoek-ding svg {
+  width: 100%;
+  height: 100%;
+}
+
+.zoek-rooster {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 14px;
+}
+
+.zoek-ding {
+  width: 110px;
+  height: 110px;
+  padding: 12px;
+  background: #fff;
+  border: 5px solid #cfd8dc;
+  border-radius: var(--radius-groot);
+  position: relative;
+}
+
+.zoek-ding.gevonden {
+  border-color: var(--kleur-succes);
+  background: #e8f9ee;
+}
+
+.zoek-ding.gevonden::after {
+  content: '✔';
+  position: absolute;
+  top: -12px;
+  right: -12px;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: var(--kleur-succes);
+  color: #fff;
+  font-size: 1.3rem;
+  line-height: 36px;
+}
+
+/* ---- Bussommen ---- */
+.bus-scene {
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  gap: 18px;
+  width: 100%;
+}
+
+.bus {
+  position: relative;
+  width: 280px;
+  height: 130px;
+  background: #fdd835;
+  border: 4px solid #263238;
+  border-radius: 18px 36px 12px 12px;
+  padding: 14px 44px 30px 14px;
+}
+
+/* wielen */
+.bus::before,
+.bus::after {
+  content: '';
+  position: absolute;
+  bottom: -20px;
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: #37474f;
+  border: 6px solid #90a4ae;
+}
+.bus::before { left: 36px; }
+.bus::after { right: 44px; }
+
+.bus__ramen {
+  height: 100%;
+  background: #b3e5fc;
+  border: 3px solid #263238;
+  border-radius: 8px;
+  display: flex;
+  flex-wrap: wrap;
+  align-content: flex-end;
+  gap: 2px 4px;
+  padding: 4px;
+}
+
+.bus-poppetje {
+  width: 28px;
+  height: 38px;
+}
+
+.bus-halte {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  min-width: 110px;
+}
+
+.bus-halte__pijl {
+  font-size: 3.4rem;
+  color: var(--kleur-primair);
+  line-height: 1;
+}
+
+.bus-halte__groep {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 4px;
+  max-width: 130px;
+}
+
+.bus-halte--uit .bus-halte__groep {
+  opacity: 0.85;
+}
+
+.bus-halte__label {
+  font-weight: 800;
+  font-size: 1.1rem;
+  color: var(--kleur-tekst);
+}
+
+@media (max-width: 560px) {
+  .bus-scene { flex-direction: column; align-items: center; }
+  .bus { width: 240px; }
+  .vergelijk-optie { width: 150px; height: 150px; }
+  .zoek-ding { width: 86px; height: 86px; }
+  .meer-minder-groep img { width: 40px; height: 40px; }
+}
