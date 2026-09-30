@@ -1,4 +1,4 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 380" overflow="visible">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 380">
   <defs>
     <linearGradient id="ks-muur" x1="0" y1="0" x2="0" y2="1">
       <stop offset="0" stop-color="#fff6fc"/>
@@ -122,6 +122,6 @@
   </g>
 
   <!-- eigen heuveltje in de kleur van de heuvel: het kasteel staat er altijd óp -->
-  <path d="M-40 380 C30 340 110 306 200 304 C290 306 370 340 440 380 Z" fill="#6a4fa3"/>
-  <path d="M70 330 C120 314 160 310 200 310 C240 310 280 314 330 330" fill="none" stroke="#7d62b6" stroke-width="3" stroke-linecap="round" opacity="0.7"/>
+  <path d="M0 380 L0 318 C50 304 120 300 200 302 C280 300 350 304 400 318 L400 380 Z" fill="#6a4fa3"/>
+  <path d="M40 312 C100 306 150 306 200 307 C250 306 300 306 360 312" fill="none" stroke="#7d62b6" stroke-width="3" stroke-linecap="round"/>
 </svg>
