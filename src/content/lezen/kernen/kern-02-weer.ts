@@ -1,19 +1,19 @@
 import type { Kern } from '../../types.ts';
 import { bestaand } from './vll-hulp.ts';
 
-// Themahoofdstuk (na VLL kern 6). Alle weerwoorden samen (vroeger verdeeld over twee hoofdstukken).
-const zon = bestaand('zon', 'jpg');
-const regen = bestaand('regen', 'svg');
+// Themahoofdstuk (na VLL kern 6). Weerplaatjes: eigen tekeningen (bronbestanden/teken-weer.py). Alle weerwoorden samen (vroeger verdeeld over twee hoofdstukken).
+const zon = { woord: 'zon', afbeeldingPad: 'assets/images/woorden/weer/zon.svg' };
+const regen = { woord: 'regen', afbeeldingPad: 'assets/images/woorden/weer/regen.svg' };
 const nat = bestaand('nat', 'svg', true);
-const wind = bestaand('wind', 'svg');
-const wolk = bestaand('wolk', 'svg');
+const wind = { woord: 'wind', afbeeldingPad: 'assets/images/woorden/weer/wind.svg' };
+const wolk = { woord: 'wolk', afbeeldingPad: 'assets/images/woorden/weer/wolk.svg' };
 const koud = bestaand('koud', 'svg', true);
-const regenboog = bestaand('regenboog', 'svg');
+const regenboog = { woord: 'regenboog', afbeeldingPad: 'assets/images/woorden/weer/regenboog.svg' };
 const paraplu = bestaand('paraplu', 'svg');
-const onweer = bestaand('onweer', 'svg');
-const bliksem = bestaand('bliksem', 'svg');
-const sneeuw = bestaand('sneeuw', 'svg');
-const hagel = bestaand('hagel', 'svg', true);
+const onweer = { woord: 'onweer', afbeeldingPad: 'assets/images/woorden/weer/onweer.svg' };
+const bliksem = { woord: 'bliksem', afbeeldingPad: 'assets/images/woorden/weer/bliksem.svg' };
+const sneeuw = { woord: 'sneeuw', afbeeldingPad: 'assets/images/woorden/weer/sneeuw.svg' };
+const hagel = { woord: 'hagel', afbeeldingPad: 'assets/images/woorden/weer/hagel.svg', vereistTekst: true };
 
 export const kern02Weer: Kern = {
   id: 'kern-02',
