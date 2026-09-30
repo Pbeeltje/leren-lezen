@@ -1,0 +1,62 @@
+[
+  {
+    "n": 1,
+    "slug": "zwaan",
+    "text": "zwaan",
+    "path": "public/assets/audio/woorden/zwaan.mp3"
+  },
+  {
+    "n": 2,
+    "slug": "vingers-naar-cijfer",
+    "text": "Welk cijfer hoort bij de vingers?",
+    "path": "public/assets/audio/instructies/vingers-naar-cijfer.mp3"
+  },
+  {
+    "n": 3,
+    "slug": "teen",
+    "text": "teen",
+    "path": "public/assets/audio/woorden/teen.mp3"
+  },
+  {
+    "n": 4,
+    "slug": "bijl",
+    "text": "bijl",
+    "path": "public/assets/audio/woorden/bijl.mp3"
+  },
+  {
+    "n": 5,
+    "slug": "hand",
+    "text": "hand",
+    "path": "public/assets/audio/woorden/hand.mp3"
+  },
+  {
+    "n": 6,
+    "slug": "tand",
+    "text": "tand",
+    "path": "public/assets/audio/woorden/tand.mp3"
+  },
+  {
+    "n": 7,
+    "slug": "jurk",
+    "text": "jurk",
+    "path": "public/assets/audio/woorden/jurk.mp3"
+  },
+  {
+    "n": 8,
+    "slug": "duim",
+    "text": "duim",
+    "path": "public/assets/audio/woorden/duim.mp3"
+  },
+  {
+    "n": 9,
+    "slug": "flos",
+    "text": "flos",
+    "path": "public/assets/audio/woorden/flos.mp3"
+  },
+  {
+    "n": 10,
+    "slug": "boei",
+    "text": "boei",
+    "path": "public/assets/audio/woorden/boei.mp3"
+  }
+]
