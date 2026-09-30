@@ -183,9 +183,13 @@ function maakOefening(kern: RekenKern, type: RekenOefeningType, tracker: SessieT
 export function genereerRekenSessie(kern: RekenKern, modus: RekenModus): RekenOefeningDefinitie[] {
   const aantal = modus === 'oefenen' ? OEFENEN_AANTAL : TOETS_AANTAL;
   const typen = toepasbareTypen(kern);
+  // Zelf typen (hoeveelheid-typen, reeks-aanvullen) twee keer zo vaak: meerkeuze alleen
+  // was te makkelijk voor zesjarigen.
+  const TYPEN: RekenOefeningType[] = ['hoeveelheid-typen', 'reeks-aanvullen'];
+  const gewogen = typen.flatMap((t) => (TYPEN.includes(t) && typen.length > 1 ? [t, t] : [t]));
   const typeVolgorde: RekenOefeningType[] = [];
   while (typeVolgorde.length < aantal) {
-    typeVolgorde.push(...schud([...typen]));
+    typeVolgorde.push(...schud([...gewogen]));
   }
   const tracker: SessieTracker = { getallenPerType: new Map(), optelCombinaties: new Set() };
   return typeVolgorde.slice(0, aantal).map((type) => maakOefening(kern, type, tracker));

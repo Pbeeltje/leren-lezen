@@ -1,5 +1,5 @@
 import type { Kern, OefeningDefinitie, OefeningType, Woord } from '../content/types.ts';
-import { haalBlootstelling } from './progressStore.ts';
+import { haalBlootstelling, haalVoortgang } from './progressStore.ts';
 
 export type OefenModus = 'oefenen' | 'toets';
 export type OefeningNummer = 1 | 2 | 3;
@@ -8,6 +8,33 @@ const OEFENEN_AANTAL_WOORDEN = 5;
 // Een woord moet minstens dit vaak op een andere manier geoefend zijn voordat
 // "zelf-typen" (helemaal zelf typen, geen keuzes) ervoor mag verschijnen.
 const MIN_BLOOTSTELLING_VOOR_TYPEN = 2;
+
+// Zesjarigen vonden het te makkelijk: zelf typen mag meteen, en de zwaardere vormen komen
+// vaker voor dan de simpele meerkeuze. Vijfjarigen houden de gelijke verdeling.
+const GEWICHT_ZES: Partial<Record<OefeningType, number>> = {
+  'zelf-typen': 3,
+  'zin-invullen': 1.5,
+  'woord-bouwen': 1.3,
+  'drie-koppelen': 1.3,
+  'hakken-en-plakken': 1,
+  'plaatje-woord-keuze': 0.7,
+  'woord-plaatje-keuze': 0.7,
+  'letter-herkennen': 0.7,
+  'klank-herkennen': 0.7,
+  woordwolk: 0.7,
+};
+const isZes = () => haalVoortgang().laatstGekozenLeeftijd !== 5;
+
+function kiesType(typen: OefeningType[]): OefeningType {
+  if (!isZes()) return kiesN(typen, 1)[0];
+  const gewichten = typen.map((t) => GEWICHT_ZES[t] ?? 1);
+  let lot = Math.random() * gewichten.reduce((a, b) => a + b, 0);
+  for (let i = 0; i < typen.length; i++) {
+    lot -= gewichten[i];
+    if (lot <= 0) return typen[i];
+  }
+  return typen[typen.length - 1];
+}
 
 // Tweeklanken/klankcombinaties waarop klank-herkennen let (zie kern-07-klanken.ts).
 // 'oe' erbij vanaf kern-09 (koek) -- een van de meest voorkomende Nederlandse
@@ -111,7 +138,7 @@ function beschikbareTypen(kern: Kern, doel: Woord, uitgesloten: OefeningType[]):
   if (doel.woord.length > 8) basis = basis.filter((type) => type !== 'woord-bouwen');
   if (doel.woord.length > 10) basis = basis.filter((type) => type !== 'hakken-en-plakken');
   if (kern.zinnen.some((z) => z.doel.woord === doel.woord)) basis.push('zin-invullen');
-  if (!doel.vereistTekst && haalBlootstelling(doel.woord) >= MIN_BLOOTSTELLING_VOOR_TYPEN) basis.push('zelf-typen');
+  if (!doel.vereistTekst && (isZes() || haalBlootstelling(doel.woord) >= MIN_BLOOTSTELLING_VOOR_TYPEN)) basis.push('zelf-typen');
   if (kiesBesteLetter(doel, kern.woordenbank)) basis.push('letter-herkennen');
   const klank = vindKlank(doel.woord);
   if (klank && klankAfleiders(kern.woordenbank, doel, klank).length > 0) {
@@ -156,7 +183,7 @@ function maakOefening(kern: Kern, doel: Woord, type: OefeningType, aantalAfleide
         zin: zin.zin,
         doel: zin.doel,
         afleiders: handAfleiders.length > 0 ? handAfleiders : kiesAfleiders(kern.woordenbank, doel, aantalAfleiders, false),
-        modus: Math.random() < 0.5 ? 'meerkeuze' : 'typen',
+        modus: Math.random() < (isZes() ? 0.7 : 0.5) ? 'typen' : 'meerkeuze',
       };
     }
     case 'woordwolk': {
@@ -212,7 +239,7 @@ export function genereerSessie(kern: Kern, modus: OefenModus, oefeningNummer: Oe
     const pool = woordenVoorOefening(kern, oefeningNummer);
     const woorden = kiesN(pool, Math.min(OEFENEN_AANTAL_WOORDEN, pool.length));
     return woorden.map((doel) => {
-      const type = kiesN(beschikbareTypen(kern, doel, []), 1)[0];
+      const type = kiesType(beschikbareTypen(kern, doel, []));
       return maakOefening(kern, doel, type, aantalAfleiders);
     });
   }
@@ -220,7 +247,7 @@ export function genereerSessie(kern: Kern, modus: OefenModus, oefeningNummer: Oe
   // Toets: de hele woordenbank van deze kern, één vraag per woord -- de samenvattende
   // herhaling van alles wat de 3 oefeningen afzonderlijk behandelden.
   const sessie = kern.woordenbank.map((doel) => {
-    const type = kiesN(beschikbareTypen(kern, doel, []), 1)[0];
+    const type = kiesType(beschikbareTypen(kern, doel, []));
     return maakOefening(kern, doel, type, aantalAfleiders);
   });
   return schud(sessie);

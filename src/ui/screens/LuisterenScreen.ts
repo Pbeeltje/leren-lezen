@@ -20,7 +20,7 @@ const AANTAL_RONDES = 2;
 // vuurwerkje na elke ronde en aan het eind een "klaar"-kaart met groot feest. Fout is
 // gewoon opnieuw proberen; er is geen "gefaald"-moment.
 export function LuisterenScreen(manager: ScreenManager, hoofdstuk: LuisterHoofdstuk): Screen {
-  const woorden = hoofdstukWoorden(hoofdstuk.woorden);
+  const woorden = hoofdstukWoorden(hoofdstuk.woorden, hoofdstuk.plaatjes);
   const el = document.createElement('div');
   el.className = 'scherm';
 

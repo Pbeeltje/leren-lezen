@@ -319,14 +319,16 @@ original worksheet, not vocabulary to add.
 `hakken-en-plakken`, `woord-bouwen` (3D), `zin-invullen`, `zelf-typen`,
 `woordwolk`, `letter-herkennen`, `klank-herkennen`, `drie-koppelen`.
 
-**Exercise type per word is picked uniformly at random** (`kiesN(types, 1)`
-in `genereerSessie`/`maakOefening`) — every applicable type for that word has
-an equal chance, in every kern. An earlier version weighted the pick toward
-harder types in later kernen (a difficulty "ramp"); that was explicitly
-walked back after the user tried it and found it wasn't landing ("the
-difficulty level doesn't really matter now, it's all too easy so far, so
-just use all difficulties together we've used so far") — don't reintroduce
-kern-position-based weighting without a fresh, explicit ask.
+**Exercise type per word: weighted by age, not by kern.** `kiesType()` in
+`oefeningGenerator.ts`: for 6-year-olds (`GEWICHT_ZES`) typing is weighted
+heavily (zelf-typen 3, available from the first time a word is seen, and
+zin-invullen typed 70% of the time), and building words and drie-koppelen come
+up more, while the simple multiple-choice types come up less. That makes about
+a third of the questions typed. This was a direct request ("it's too easy
+overall for 6 year olds, mix in more type-it-yourself"). Age 5 keeps the
+uniform pick. In math, `hoeveelheid-typen`/`reeks-aanvullen` count double. An
+earlier kern-position "difficulty ramp" (harder types in later kernen) was
+explicitly rejected; don't reintroduce weighting by chapter position.
 
 **Each Oefening 1/2/3 covers a distinct, fixed third of the kern's
 woordenbank; the toets is the one place that reviews all of it.**

@@ -7,6 +7,8 @@ export interface LuisterHoofdstuk {
   titel: string;
   icoonWoord: string; // welk woordplaatje op de tegel staat
   woorden: string[];
+  // Eigen plaatjes voor sommige woorden in dit hoofdstuk (bv. de schattige weerplaatjes).
+  plaatjes?: Record<string, string>;
 }
 
 export const LUISTER_HOOFDSTUKKEN: LuisterHoofdstuk[] = [
@@ -50,6 +52,17 @@ export const LUISTER_HOOFDSTUKKEN: LuisterHoofdstuk[] = [
     id: 'buiten',
     titel: 'Buiten',
     icoonWoord: 'zon',
+    plaatjes: {
+      zon: 'assets/images/woorden/weer/zon.svg',
+      wolk: 'assets/images/woorden/weer/wolk.svg',
+      regen: 'assets/images/woorden/weer/regen.svg',
+      onweer: 'assets/images/woorden/weer/onweer.svg',
+      bliksem: 'assets/images/woorden/weer/bliksem.svg',
+      sneeuw: 'assets/images/woorden/weer/sneeuw.svg',
+      hagel: 'assets/images/woorden/weer/hagel.svg',
+      wind: 'assets/images/woorden/weer/wind.svg',
+      regenboog: 'assets/images/woorden/weer/regenboog.svg',
+    },
     woorden: ['zon', 'maan', 'ster', 'wolk', 'regen', 'wind', 'sneeuw', 'onweer', 'bliksem', 'boom', 'tak', 'roos', 'tuin', 'huis', 'vuur', 'hout', 'hagel', 'bloem', 'blad', 'regenboog', 'hulst', 'nacht', 'plant', 'schelp', 'kerk', 'school'],
   },
   {

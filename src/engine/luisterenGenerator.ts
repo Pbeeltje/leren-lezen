@@ -81,9 +81,11 @@ export function genereerLuisterVraag(aantalOpties = 3, vorigDoel?: string, woord
 }
 
 /** Alle bruikbare woorden (plaatje + opname) van een luisterhoofdstuk. */
-export function hoofdstukWoorden(namen: string[]): Woord[] {
+export function hoofdstukWoorden(namen: string[], plaatjes: Record<string, string> = {}): Woord[] {
   const gewenst = new Set(namen);
-  return woordenpool().filter((w) => gewenst.has(w.woord));
+  return woordenpool()
+    .filter((w) => gewenst.has(w.woord))
+    .map((w) => (plaatjes[w.woord] ? { ...w, afbeeldingPad: plaatjes[w.woord] } : w));
 }
 
 /** Een willekeurig plaatje voor een woord, ook als het (nog) geen opname heeft. */
