@@ -7,7 +7,7 @@ const woord = (w: string, ext = 'svg') => ({ woord: w, afbeeldingPad: pad(w, ext
 
 export const kern04Dierentuindieren: Kern = {
   id: 'kern-04',
-  volgnummer: 4,
+  volgnummer: 9,
   titel: 'dierentuindieren',
   structuurwoorden: [
     { woord: 'aap', afbeeldingPad: pad('aap', 'jpg'), nieuweLetters: [] },

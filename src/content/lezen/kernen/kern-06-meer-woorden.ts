@@ -13,7 +13,7 @@ const woord = (w: string) => ({ woord: w, afbeeldingPad: pad(w) });
 
 export const kern06MeerWoorden: Kern = {
   id: 'kern-06',
-  volgnummer: 6,
+  volgnummer: 11,
   titel: 'meer woorden',
   structuurwoorden: [
     { woord: 'bal', afbeeldingPad: pad('bal'), nieuweLetters: [] },

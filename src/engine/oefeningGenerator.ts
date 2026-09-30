@@ -12,7 +12,7 @@ const MIN_BLOOTSTELLING_VOOR_TYPEN = 2;
 // Tweeklanken/klankcombinaties waarop klank-herkennen let (zie kern-07-klanken.ts).
 // 'oe' erbij vanaf kern-09 (koek) -- een van de meest voorkomende Nederlandse
 // klankcombinaties, dus de moeite waard ook al is er (nog) maar één woord voor.
-const KLANKEN = ['oo', 'aa', 'au', 'ou', 'ui', 'eu', 'ee', 'oe'];
+const KLANKEN = ['oo', 'aa', 'au', 'ou', 'ui', 'eu', 'ee', 'oe', 'ie', 'ij', 'ei', 'uu'];
 
 function schud<T>(items: T[]): T[] {
   return [...items].sort(() => Math.random() - 0.5);

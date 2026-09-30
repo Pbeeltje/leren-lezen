@@ -11,7 +11,7 @@ const woord = (w: string, vereistTekst = false, ext = 'png') => ({ woord: w, afb
 
 export const kern09Kerst: Kern = {
   id: 'kern-09',
-  volgnummer: 9,
+  volgnummer: 14,
   titel: 'kerst',
   structuurwoorden: [
     { woord: 'bel', afbeeldingPad: pad('bel'), nieuweLetters: [] },

@@ -1,0 +1,25 @@
+Opnamelijst 2 - lees alles in een keer voor, met 2 seconden stilte tussen elk woord.
+Zeg alleen het woord, niet het nummer.
+
+1. ik
+2. aan
+3. pen
+4. en
+5. teen
+6. een
+7. buik
+8. doos
+9. poes
+10. ijs
+11. weg
+12. bos
+13. hut
+14. reus
+15. jas
+16. riem
+17. bijl
+18. geit
+19. uil
+20. pauw
+21. duif
+22. ei

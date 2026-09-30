@@ -12,7 +12,7 @@ const woord = (w: string) => ({ woord: w, afbeeldingPad: pad(w) });
 
 export const kern05SpullenEnLijf: Kern = {
   id: 'kern-05',
-  volgnummer: 5,
+  volgnummer: 10,
   titel: 'spullen & lijf',
   structuurwoorden: [
     { woord: 'bij', afbeeldingPad: pad('bij'), nieuweLetters: ['j'] },

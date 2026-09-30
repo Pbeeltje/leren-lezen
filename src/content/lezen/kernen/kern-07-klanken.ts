@@ -14,7 +14,7 @@ const woord = (w: string, vereistTekst = false, ext = 'svg') => ({ woord: w, afb
 
 export const kern07Klanken: Kern = {
   id: 'kern-07',
-  volgnummer: 7,
+  volgnummer: 12,
   titel: 'klanken',
   structuurwoorden: [
     { woord: 'huis', afbeeldingPad: pad('huis', 'jpg'), nieuweLetters: [] },

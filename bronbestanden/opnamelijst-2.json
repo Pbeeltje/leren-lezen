@@ -1,0 +1,134 @@
+[
+  {
+    "n": 1,
+    "slug": "ik",
+    "text": "ik",
+    "path": "public/assets/audio/woorden/ik.mp3"
+  },
+  {
+    "n": 2,
+    "slug": "aan",
+    "text": "aan",
+    "path": "public/assets/audio/woorden/aan.mp3"
+  },
+  {
+    "n": 3,
+    "slug": "pen",
+    "text": "pen",
+    "path": "public/assets/audio/woorden/pen.mp3"
+  },
+  {
+    "n": 4,
+    "slug": "en",
+    "text": "en",
+    "path": "public/assets/audio/woorden/en.mp3"
+  },
+  {
+    "n": 5,
+    "slug": "teen",
+    "text": "teen",
+    "path": "public/assets/audio/woorden/teen.mp3"
+  },
+  {
+    "n": 6,
+    "slug": "een",
+    "text": "een",
+    "path": "public/assets/audio/woorden/een.mp3"
+  },
+  {
+    "n": 7,
+    "slug": "buik",
+    "text": "buik",
+    "path": "public/assets/audio/woorden/buik.mp3"
+  },
+  {
+    "n": 8,
+    "slug": "doos",
+    "text": "doos",
+    "path": "public/assets/audio/woorden/doos.mp3"
+  },
+  {
+    "n": 9,
+    "slug": "poes",
+    "text": "poes",
+    "path": "public/assets/audio/woorden/poes.mp3"
+  },
+  {
+    "n": 10,
+    "slug": "ijs",
+    "text": "ijs",
+    "path": "public/assets/audio/woorden/ijs.mp3"
+  },
+  {
+    "n": 11,
+    "slug": "weg",
+    "text": "weg",
+    "path": "public/assets/audio/woorden/weg.mp3"
+  },
+  {
+    "n": 12,
+    "slug": "bos",
+    "text": "bos",
+    "path": "public/assets/audio/woorden/bos.mp3"
+  },
+  {
+    "n": 13,
+    "slug": "hut",
+    "text": "hut",
+    "path": "public/assets/audio/woorden/hut.mp3"
+  },
+  {
+    "n": 14,
+    "slug": "reus",
+    "text": "reus",
+    "path": "public/assets/audio/woorden/reus.mp3"
+  },
+  {
+    "n": 15,
+    "slug": "jas",
+    "text": "jas",
+    "path": "public/assets/audio/woorden/jas.mp3"
+  },
+  {
+    "n": 16,
+    "slug": "riem",
+    "text": "riem",
+    "path": "public/assets/audio/woorden/riem.mp3"
+  },
+  {
+    "n": 17,
+    "slug": "bijl",
+    "text": "bijl",
+    "path": "public/assets/audio/woorden/bijl.mp3"
+  },
+  {
+    "n": 18,
+    "slug": "geit",
+    "text": "geit",
+    "path": "public/assets/audio/woorden/geit.mp3"
+  },
+  {
+    "n": 19,
+    "slug": "uil",
+    "text": "uil",
+    "path": "public/assets/audio/woorden/uil.mp3"
+  },
+  {
+    "n": 20,
+    "slug": "pauw",
+    "text": "pauw",
+    "path": "public/assets/audio/woorden/pauw.mp3"
+  },
+  {
+    "n": 21,
+    "slug": "duif",
+    "text": "duif",
+    "path": "public/assets/audio/woorden/duif.mp3"
+  },
+  {
+    "n": 22,
+    "slug": "ei",
+    "text": "ei",
+    "path": "public/assets/audio/woorden/ei.mp3"
+  }
+]
