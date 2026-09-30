@@ -6,25 +6,23 @@ import type { Topic } from './types.ts';
 export const TOPICS: Topic[] = [
   {
     id: 'lezen',
-    leeftijd: [6],
+    leeftijd: [5, 6],
     titel: 'Leren lezen',
     icoonPad: '/assets/icons/boek.svg',
     beschikbaar: true,
   },
   {
     id: 'tellen',
-    // Alleen leeftijd 6: reken-kern-01 (getallen 1 t/m 6) is groep-3-niveau.
-    // Als er ooit peuter/kleuter-geschikte tel-inhoud bijkomt, dan ook 4/5 toevoegen.
-    leeftijd: [6],
+    // Vijf jaar ziet alleen de eerste twee hoofdstukken (engine/leeftijdGrens.ts).
+    leeftijd: [5, 6],
     titel: 'Tellen',
     icoonPad: '/assets/icons/tellen.svg',
     beschikbaar: true,
   },
   {
     id: 'luisteren',
-    // Luister-en-wijs-aan: geen lezen nodig, dus juist voor de jongste kinderen. Ook
-    // beschikbaar voor 6 (leuk als korte, makkelijke afwisseling met lezen/tellen).
-    leeftijd: [3, 4, 5, 6],
+    // Luister-en-wijs-aan: geen lezen nodig, alleen voor de jongste kinderen.
+    leeftijd: [3],
     titel: 'Luisteren',
     icoonPad: '/assets/icons/luisteren.svg',
     beschikbaar: true,
@@ -32,7 +30,7 @@ export const TOPICS: Topic[] = [
   {
     // Kleuterbegrippen zonder lezen: groot/klein, meer/minder, kleuren & vormen.
     id: 'ontdekken',
-    leeftijd: [3, 4, 5, 6],
+    leeftijd: [3],
     titel: 'Ontdekken',
     icoonPad: '/assets/icons/vormen.svg',
     beschikbaar: true,

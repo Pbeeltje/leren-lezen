@@ -10,6 +10,7 @@ import {
 } from '../../engine/profielStore.ts';
 import { speelSchermOvergang } from '../../three/transitions.ts';
 import { isGedempt, zetGedempt } from '../../engine/audioManager.ts';
+import { THEMAS, huidigThema, kiesAchtergrond } from '../../achtergrond/achtergrond.ts';
 import { AgeSelectScreen } from '../screens/AgeSelectScreen.ts';
 import { ProfileSelectScreen } from '../screens/ProfileSelectScreen.ts';
 
@@ -53,6 +54,12 @@ export function maakProfielMenu(manager: ScreenManager): { element: HTMLElement;
   kleurKnop.textContent = 'Kleur wijzigen';
   kleurKnop.addEventListener('click', () => wisselWeergave(kleurWeergave));
   hoofdWeergave.appendChild(kleurKnop);
+
+  const achtergrondKnop = document.createElement('button');
+  achtergrondKnop.className = 'profiel-menu__optie';
+  achtergrondKnop.textContent = 'Achtergrond kiezen';
+  achtergrondKnop.addEventListener('click', () => wisselWeergave(achtergrondWeergave));
+  hoofdWeergave.appendChild(achtergrondKnop);
 
   const geluidKnop = document.createElement('button');
   geluidKnop.className = 'profiel-menu__optie';
@@ -148,10 +155,33 @@ export function maakProfielMenu(manager: ScreenManager): { element: HTMLElement;
   }
   paneel.appendChild(kleurWeergave);
 
+  const achtergrondWeergave = document.createElement('div');
+  achtergrondWeergave.className = 'achtergrond-rij';
+  achtergrondWeergave.hidden = true;
+  const achtergrondKnoppen: HTMLButtonElement[] = [];
+  for (const thema of THEMAS) {
+    const optie = document.createElement('button');
+    optie.className = 'achtergrond-keuze';
+    const voorbeeld = document.createElement('img');
+    voorbeeld.src = thema.voorbeeld;
+    voorbeeld.alt = '';
+    optie.append(voorbeeld, thema.naam);
+    optie.dataset.thema = thema.id;
+    optie.addEventListener('click', () => {
+      kiesAchtergrond(thema.id);
+      sluitPaneel();
+    });
+    achtergrondKnoppen.push(optie);
+    achtergrondWeergave.appendChild(optie);
+  }
+  paneel.appendChild(achtergrondWeergave);
+
   function wisselWeergave(doel: HTMLElement): void {
     hoofdWeergave.hidden = true;
     avatarWeergave.hidden = doel !== avatarWeergave;
     kleurWeergave.hidden = doel !== kleurWeergave;
+    achtergrondWeergave.hidden = doel !== achtergrondWeergave;
+    for (const k of achtergrondKnoppen) k.classList.toggle('geselecteerd', k.dataset.thema === huidigThema());
   }
 
   element.appendChild(paneel);
@@ -161,6 +191,7 @@ export function maakProfielMenu(manager: ScreenManager): { element: HTMLElement;
     hoofdWeergave.hidden = false;
     avatarWeergave.hidden = true;
     kleurWeergave.hidden = true;
+    achtergrondWeergave.hidden = true;
     document.removeEventListener('pointerdown', opBuitenKlik);
   }
 

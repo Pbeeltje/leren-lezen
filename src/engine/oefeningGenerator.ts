@@ -48,6 +48,17 @@ function kiesAfleiders(pool: Woord[], doel: Woord, aantal: number, metPlaatje: b
   return kiesN(kandidaten, Math.min(aantal, kandidaten.length));
 }
 
+// Foute keuzes waar alleen tekst getoond wordt: eerst de lijkt-erop-woorden van het doel,
+// aangevuld met gewone woorden uit de bank.
+function tekstAfleiders(pool: Woord[], doel: Woord, aantal: number): Woord[] {
+  const lijkend = kiesN(doel.lijktOp ?? [], Math.min(aantal, doel.lijktOp?.length ?? 0)).map(
+    (woord): Woord => ({ woord, afbeeldingPad: '' }),
+  );
+  const bezet = new Set([doel.woord, ...lijkend.map((w) => w.woord)]);
+  const aanvulling = kiesAfleiders(pool.filter((w) => !bezet.has(w.woord)), doel, aantal - lijkend.length, true);
+  return schud([...lijkend, ...aanvulling]);
+}
+
 function alleLettersVanPool(pool: Woord[]): string[] {
   const set = new Set<string>();
   for (const w of pool) for (const letter of w.woord) set.add(letter);
@@ -117,7 +128,7 @@ function drieKoppelKandidaten(kern: Kern, doel: Woord): Woord[] {
 function maakOefening(kern: Kern, doel: Woord, type: OefeningType, aantalAfleiders: number): OefeningDefinitie {
   switch (type) {
     case 'plaatje-woord-keuze':
-      return { type, doel, afleiders: kiesAfleiders(kern.woordenbank, doel, aantalAfleiders, true) };
+      return { type, doel, afleiders: tekstAfleiders(kern.woordenbank, doel, aantalAfleiders) };
     case 'woord-plaatje-keuze':
       return { type, doel, afleiders: kiesAfleiders(kern.woordenbank, doel, aantalAfleiders, true) };
     case 'hakken-en-plakken':
@@ -147,7 +158,7 @@ function maakOefening(kern: Kern, doel: Woord, type: OefeningType, aantalAfleide
     case 'woordwolk': {
       // Eén doelwoord tussen een wolk van ~6 afleiders.
       const wolkGrootte = 7;
-      return { type, doel, afleiders: kiesAfleiders(kern.woordenbank, doel, wolkGrootte - 1, true) };
+      return { type, doel, afleiders: tekstAfleiders(kern.woordenbank, doel, wolkGrootte - 1) };
     }
     case 'letter-herkennen': {
       // Afwisselen tussen de letters die genoeg afleiders geven, i.p.v. elke keer dezelfde.

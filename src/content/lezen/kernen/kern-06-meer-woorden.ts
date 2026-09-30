@@ -1,38 +1,35 @@
 import type { Kern } from '../../types.ts';
+import { bestaand } from './vll-hulp.ts';
 
-// Bron: een Larsen "woordpuzzel" (40 woord-plaatjes) die de gebruiker aanleverde
-// (bronbestanden/plaatjes3.jpg, uitgesneden met bronbestanden/crop.ps1). Puur
-// woordenschat-uitbreiding na VLL kern 6. 'sok' en 'vuur' gebruiken het VLL-plaatje:
-// hun Larsen-uitsnede had tekst (www.larsen...) resp. een stukje van de wolf aan de rand.
-const pad = (woord: string) => `/assets/images/woorden/${woord}.jpg`;
-const woord = (w: string) => ({ woord: w, afbeeldingPad: pad(w) });
-const vll = (w: string) => ({ woord: w, afbeeldingPad: `/assets/images/woorden/vll/${w}.png` });
+// Themahoofdstuk (na VLL kern 6). Speelgoed (vroeger 'meer woorden': die woorden staan nu in de VLL-hoofdstukken).
+const bal = bestaand('bal', 'jpg');
+const ballon = bestaand('ballon', 'svg');
+const vlieger = bestaand('vlieger', 'svg');
+const knuffel = bestaand('knuffel', 'svg');
+const trommel = bestaand('trommel', 'svg');
+const gitaar = bestaand('gitaar', 'svg');
+const puzzel = bestaand('puzzel', 'svg');
+const dobbelsteen = bestaand('dobbelsteen', 'svg');
+const robot = bestaand('robot', 'svg');
+const raket = bestaand('raket', 'svg');
+const step = bestaand('step', 'svg');
+const krijtje = bestaand('krijtje', 'svg');
 
 export const kern06MeerWoorden: Kern = {
   id: 'kern-06',
   volgnummer: 11,
-  titel: 'meer woorden',
-  structuurwoorden: [
-    { woord: 'bal', afbeeldingPad: pad('bal'), nieuweLetters: [] },
-    { woord: 'kaas', afbeeldingPad: pad('kaas'), nieuweLetters: [] },
-    { woord: 'noot', afbeeldingPad: pad('noot'), nieuweLetters: [] },
-  ],
+  titel: 'speelgoed',
+  structuurwoorden: [],
   nieuweLetters: [],
-  woordenbank: [
-    woord('bal'),
-    woord('egel'),
-    woord('gans'),
-    woord('kaas'),
-    woord('noot'),
-    woord('oog'),
-    woord('pet'),
-    vll('sok'),
-    woord('ster'),
-    vll('vuur'),
-    woord('wolf'),
-  ],
+  woordenbank: [bal, ballon, vlieger, knuffel, trommel, gitaar, puzzel, dobbelsteen, robot, raket, step, krijtje],
   zinnen: [
-    { zin: 'De ___ heeft heel veel stekels.', doel: woord('egel'), afleiders: [woord('gans'), woord('wolf')] },
-    { zin: 'Op mijn hoofd zet ik een ___.', doel: woord('pet'), afleiders: [vll('sok'), woord('bal')] },
+    { zin: 'Het waait. Ik laat mijn ___ hoog in de lucht vliegen.', doel: vlieger, afleiders: [trommel, puzzel] },
+    { zin: 'Op mijn feestje hangt een rode ___.', doel: ballon, afleiders: [step, robot] },
+    { zin: 'In bed slaap ik met mijn zachte ___.', doel: knuffel, afleiders: [gitaar, trommel] },
+    { zin: 'Boem boem! Ik sla op de ___.', doel: trommel, afleiders: [puzzel, step] },
+    { zin: 'Ik gooi de ___ en het zijn zes stippen.', doel: dobbelsteen, afleiders: [knuffel, gitaar] },
+    { zin: 'Met een ___ tekenen we op de stoep.', doel: krijtje, afleiders: [ballon, trommel] },
+    { zin: 'De ___ vliegt naar de maan.', doel: raket, afleiders: [step, puzzel] },
+    { zin: 'Ik schop de ___ in het doel.', doel: bal, afleiders: [robot, knuffel] },
   ],
 };

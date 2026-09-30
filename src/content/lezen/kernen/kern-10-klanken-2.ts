@@ -1,38 +1,30 @@
 import type { Kern } from '../../types.ts';
 
-// "Klanken, deel 2": klankcombinatie-woorden (ui/ee/oo/ou) uit een "Woord bij
-// plaatje"-werkblad (juf-milou.nl) dat de gebruiker aanleverde (bronbestanden/
-// nogmeerwoordentwee.jpg, uitgesneden met crop-wb2.ps1). Van dat werkblad overgeslagen:
-// 'kat' (staat al in "boerderijdieren"), 'zaai' (aai leert VLL kern 1-6 niet aan, en het
-// plaatje is niet eenduidig) en 'flat' (Engelse uitspraak "flet", niet klankzuiver). De
-// overige woorden op het werkblad waren afleiders, geen doelwoorden.
-const pad = (woord: string, ext = 'png') => `/assets/images/woorden/${woord}.${ext}`;
-const woord = (w: string, vereistTekst = false, ext = 'png') => ({ woord: w, afbeeldingPad: pad(w, ext), vereistTekst });
+// Themahoofdstuk (na VLL kern 6). Bron: juf-milou.nl werkblad 'Woord bij plaatje' (bronbestanden/plaatje_zin_woord_zwart_wit_g3_1.jpg), uitgesneden met bronbestanden/crop-woordbijplaatje.py, met de lijkt-erop-woorden van het blad.
+const pijl = { woord: 'pijl', afbeeldingPad: '/assets/images/woorden/milou/pijl.png', lijktOp: ['bijl', 'pijp'] };
+const gras = { woord: 'gras', afbeeldingPad: '/assets/images/woorden/milou/gras.png', lijktOp: ['gas', 'glas'] };
+const voet = { woord: 'voet', afbeeldingPad: '/assets/images/woorden/milou/voet.png', lijktOp: ['vier', 'boer'] };
+const kooi = { woord: 'kooi', afbeeldingPad: '/assets/images/woorden/milou/kooi.png', lijktOp: ['dooi', 'mooi'] };
+const taart = { woord: 'taart', afbeeldingPad: '/assets/images/woorden/milou/taart.png', lijktOp: ['staart', 'traan'] };
+const riet = { woord: 'riet', afbeeldingPad: '/assets/images/woorden/milou/riet.png', lijktOp: ['niet', 'riem'] };
+const tuin = { woord: 'tuin', afbeeldingPad: '/assets/images/woorden/milou/tuin.png', lijktOp: ['puin', 'tuit'] };
+const zing = { woord: 'zing', afbeeldingPad: '/assets/images/woorden/milou/zing.png', lijktOp: ['zin', 'hing'], vereistTekst: true };
+const gier = { woord: 'gier', afbeeldingPad: '/assets/images/woorden/milou/gier.png', lijktOp: ['gaar', 'giet'] };
+const kar = { woord: 'kar', afbeeldingPad: '/assets/images/woorden/milou/kar.png', lijktOp: ['kaas', 'kat'] };
+const weeg = { woord: 'weeg', afbeeldingPad: '/assets/images/woorden/milou/weeg.png', lijktOp: ['weer', 'web'], vereistTekst: true };
+const flos = { woord: 'flos', afbeeldingPad: '/assets/images/woorden/milou/flos.png', lijktOp: ['vlok', 'los'], vereistTekst: true };
 
 export const kern10Klanken2: Kern = {
   id: 'kern-10',
   volgnummer: 15,
-  titel: 'klanken, deel 2',
-  structuurwoorden: [
-    { woord: 'fruit', afbeeldingPad: pad('fruit'), nieuweLetters: [] },
-    { woord: 'spook', afbeeldingPad: pad('spook'), nieuweLetters: [] },
-  ],
+  titel: 'woord bij plaatje',
+  structuurwoorden: [],
   nieuweLetters: [],
-  woordenbank: [
-    woord('fruit'),
-    woord('tuin'),
-    woord('slee'),
-    woord('mol'),
-    woord('spook'),
-    woord('trui'),
-    woord('pot'),
-    woord('kous'),
-    // 'eet' is een werkwoord: een kaal plaatje (jongen die eet) is niet eenduidig.
-    woord('eet', true),
-  ],
+  woordenbank: [pijl, gras, voet, kooi, taart, riet, tuin, zing, gier, kar, weeg, flos],
   zinnen: [
-    { zin: 'De jongen ___ een stuk pizza.', doel: woord('eet', true), afleiders: [woord('mol'), woord('pot')] },
-    { zin: 'In de sneeuw zit ik op de ___.', doel: woord('slee'), afleiders: [woord('trui'), woord('tuin')] },
-    { zin: 'Boe! Daar is het ___!', doel: woord('spook'), afleiders: [woord('mol'), woord('fruit')] },
+    { zin: 'Ik ___ een liedje voor oma.', doel: zing, afleiders: [weeg, flos] },
+    { zin: 'Op de weegschaal ___ ik mezelf.', doel: weeg, afleiders: [zing, flos] },
+    { zin: 'Na het poetsen ___ ik tussen mijn tanden.', doel: flos, afleiders: [zing, weeg] },
+    { zin: 'De ___ zit in een kooi.', doel: gier, afleiders: [kar, gras] },
   ],
 };

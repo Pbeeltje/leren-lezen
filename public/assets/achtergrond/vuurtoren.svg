@@ -1,0 +1,34 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 140 280">
+  <defs>
+    <linearGradient id="vt-rots" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#6d7a86"/>
+      <stop offset="1" stop-color="#3f4a55"/>
+    </linearGradient>
+    <clipPath id="vt-toren">
+      <path d="M46 96 L94 96 L104 244 L36 244 Z"/>
+    </clipPath>
+  </defs>
+  <!-- rotsen -->
+  <path d="M0 280 L6 250 C14 236 30 238 40 240 C56 232 84 232 100 240 C114 236 130 240 136 254 L140 280 Z" fill="url(#vt-rots)" stroke="#2b333b" stroke-width="3" stroke-linejoin="round"/>
+  <!-- toren met rode en witte banden -->
+  <g clip-path="url(#vt-toren)">
+    <rect x="30" y="96" width="80" height="150" fill="#f7f7f2"/>
+    <rect x="30" y="118" width="80" height="24" fill="#e0453a"/>
+    <rect x="30" y="166" width="80" height="24" fill="#e0453a"/>
+    <rect x="30" y="214" width="80" height="24" fill="#e0453a"/>
+  </g>
+  <path d="M46 96 L94 96 L104 244 L36 244 Z" fill="none" stroke="#2b333b" stroke-width="3" stroke-linejoin="round"/>
+  <!-- deurtje en raampje -->
+  <path d="M62 244 L62 226 C62 220 78 220 78 226 L78 244 Z" fill="#6b4a33" stroke="#2b333b" stroke-width="2.5"/>
+  <rect x="64" y="148" width="12" height="14" rx="3" fill="#2d4a6b" stroke="#2b333b" stroke-width="2"/>
+  <!-- omloop -->
+  <rect x="36" y="86" width="68" height="12" rx="3" fill="#3c4650" stroke="#2b333b" stroke-width="2.5"/>
+  <path d="M40 86 L40 76 M52 86 L52 76 M64 86 L64 76 M76 86 L76 76 M88 86 L88 76 M100 86 L100 76 M38 76 L102 76" stroke="#3c4650" stroke-width="3" stroke-linecap="round"/>
+  <!-- lantaarnkamer: de lamp krijgt class 'vuurtoren-lamp' zodat CSS hem kan laten gloeien -->
+  <rect x="50" y="50" width="40" height="28" rx="4" fill="#c9e3f5" stroke="#2b333b" stroke-width="3"/>
+  <circle class="vuurtoren-lamp" cx="70" cy="64" r="9" fill="#ffe79a"/>
+  <path d="M60 50 L60 78 M80 50 L80 78" stroke="#2b333b" stroke-width="2"/>
+  <!-- dak -->
+  <path d="M44 52 C48 30 92 30 96 52 Z" fill="#e0453a" stroke="#2b333b" stroke-width="3" stroke-linejoin="round"/>
+  <circle cx="70" cy="30" r="4" fill="#3c4650" stroke="#2b333b" stroke-width="2"/>
+</svg>

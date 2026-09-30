@@ -1,11 +1,12 @@
 import './styles/global.css';
 import './styles/components.css';
 import './styles/screens.css';
+import './styles/achtergrond.css';
 
 import { ScreenManager } from './engine/screenManager.ts';
 import { sceneManager } from './three/sceneManager.ts';
-import { mascotte } from './three/mascotte.ts';
 import { ProfileSelectScreen } from './ui/screens/ProfileSelectScreen.ts';
+import { initAchtergrond } from './achtergrond/achtergrond.ts';
 
 // Kinderen drukken per ongeluk op de terug/vooruit-knoppen van de muis (knop 4 en 5), en
 // de app heeft geen URL-routes, dus de browser zou de hele app verlaten. Blokkeer die
@@ -29,7 +30,7 @@ const drieLaag = document.createElement('div');
 drieLaag.id = 'drie-laag';
 app.appendChild(drieLaag);
 sceneManager.init(drieLaag);
-mascotte.mount();
+initAchtergrond(app);
 
 const schermHouder = document.createElement('div');
 schermHouder.id = 'scherm-houder';

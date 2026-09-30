@@ -9,7 +9,6 @@ class SceneManager {
   private renderer?: THREE.WebGLRenderer;
   private klok = new THREE.Timer();
   private animatieFuncties = new Set<(delta: number, verlopen: number) => void>();
-  private sterren?: THREE.Points;
 
   init(container: HTMLElement): void {
     if (this.renderer) return; // al geïnitialiseerd
@@ -25,27 +24,11 @@ class SceneManager {
     richtingsLicht.position.set(3, 5, 4);
     this.scene.add(richtingsLicht);
 
-    this.maakAchtergrondSterren();
 
     this.pasGrootteAan();
     window.addEventListener('resize', () => this.pasGrootteAan());
 
     this.renderer.setAnimationLoop((tijd) => this.tik(tijd));
-  }
-
-  private maakAchtergrondSterren(): void {
-    const aantal = 180;
-    const posities = new Float32Array(aantal * 3);
-    for (let i = 0; i < aantal; i++) {
-      posities[i * 3] = (Math.random() - 0.5) * 30;
-      posities[i * 3 + 1] = (Math.random() - 0.5) * 20;
-      posities[i * 3 + 2] = -10 - Math.random() * 10;
-    }
-    const geometrie = new THREE.BufferGeometry();
-    geometrie.setAttribute('position', new THREE.BufferAttribute(posities, 3));
-    const materiaal = new THREE.PointsMaterial({ color: 0xffffff, size: 0.12, transparent: true, opacity: 0.7 });
-    this.sterren = new THREE.Points(geometrie, materiaal);
-    this.scene.add(this.sterren);
   }
 
   private pasGrootteAan(): void {
@@ -68,10 +51,6 @@ class SceneManager {
     // Begrensd: na een tijd in een ander tabblad is de eerste delta anders seconden groot.
     const delta = Math.min(this.klok.getDelta(), 0.1);
     const verlopen = this.klok.getElapsed();
-
-    if (this.sterren) {
-      this.sterren.rotation.y = verlopen * 0.01;
-    }
 
     this.animatieFuncties.forEach((fn) => fn(delta, verlopen));
     this.renderer?.render(this.scene, this.camera);

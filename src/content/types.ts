@@ -26,6 +26,10 @@ export interface Woord {
   // oefeningGenerator.ts. Types waar de tekst wél zichtbaar is (meerkeuze met
   // woordkeuzes, zin-invullen) blijven gewoon beschikbaar.
   vereistTekst?: boolean;
+  // Met de hand gekozen woorden die er net op lijken (pijl → bijl, pijp), zoals op een
+  // "onderstreep het juiste woord"-werkblad. Alleen tekst, geen plaatje nodig: ze worden
+  // als foute keuzes gebruikt waar alleen woorden staan (plaatje-woord-keuze, woordwolk).
+  lijktOp?: string[];
 }
 
 // Een kant-en-klare invulzin voor één woord uit de woordenbank, met plaatjecontext.

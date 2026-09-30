@@ -1,5 +1,6 @@
 import type { Screen, ScreenManager } from '../../engine/screenManager.ts';
 import { KERNEN } from '../../content/lezen/kernen/kernen.index.ts';
+import { aantalHoofdstukken } from '../../engine/leeftijdGrens.ts';
 import { maakTerugKnop } from '../components/TerugKnop.ts';
 import { maakTopRechtsBalk } from '../components/TopRechtsBalk.ts';
 import { maakSterBalk } from '../components/ProgressStars.ts';
@@ -40,7 +41,7 @@ export function ChapterScreen(manager: ScreenManager, index: number): Screen {
   volgendeKnop.className = 'hoofdstuk-pijl';
   volgendeKnop.textContent = '›';
   volgendeKnop.setAttribute('aria-label', 'Volgend hoofdstuk');
-  volgendeKnop.disabled = index === KERNEN.length - 1;
+  volgendeKnop.disabled = index >= aantalHoofdstukken(KERNEN.length) - 1;
   volgendeKnop.addEventListener('click', () => {
     speelSchermOvergang();
     manager.replace((m) => ChapterScreen(m, index + 1));

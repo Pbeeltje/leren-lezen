@@ -1,33 +1,33 @@
 import type { Kern } from '../../types.ts';
+import { bestaand } from './vll-hulp.ts';
 
-// Bron: een "Circuitspelletjes kern 4"-werkblad (memory-kaartjes) dat de gebruiker
-// aanleverde; alle plaatjes zijn uitgesneden uit bronbestanden/memory.jpg met
-// bronbestanden/crop.ps1. Dat werkblad hoort niet bij de maan-versie (wiel/zout/voet
-// passen niet bij maan-versie kern 4); hier gewoon een themahoofdstuk na VLL kern 6.
-const pad = (woord: string) => `/assets/images/woorden/${woord}.jpg`;
-const woord = (w: string) => ({ woord: w, afbeeldingPad: pad(w) });
+// Themahoofdstuk (na VLL kern 6). Spullen in huis en een paar lichaamsdelen.
+const schaar = bestaand('schaar', 'svg');
+const lepel = bestaand('lepel', 'svg');
+const kopje = bestaand('kopje', 'svg');
+const bad = bestaand('bad', 'svg');
+const douche = bestaand('douche', 'svg');
+const spiegel = bestaand('spiegel', 'svg');
+const telefoon = bestaand('telefoon', 'svg');
+const tandenborstel = bestaand('tandenborstel', 'svg');
+const tong = bestaand('tong', 'svg');
+const duim = bestaand('duim', 'svg');
+const vinger = bestaand('vinger', 'svg');
 
 export const kern05SpullenEnLijf: Kern = {
   id: 'kern-05',
   volgnummer: 10,
   titel: 'spullen & lijf',
-  structuurwoorden: [
-    { woord: 'bij', afbeeldingPad: pad('bij'), nieuweLetters: [] },
-    { woord: 'zout', afbeeldingPad: pad('zout'), nieuweLetters: [] },
-  ],
+  structuurwoorden: [],
   nieuweLetters: [],
-  woordenbank: [
-    woord('bij'),
-    woord('tak'),
-    woord('wiel'),
-    woord('wol'),
-    woord('zout'),
-    woord('neus'),
-    woord('zeep'),
-    woord('voet'),
-  ],
+  woordenbank: [schaar, lepel, kopje, bad, douche, spiegel, telefoon, tandenborstel, tong, duim, vinger],
   zinnen: [
-    { zin: 'Ik doe een beetje ___ op mijn ei.', doel: woord('zout'), afleiders: [woord('zeep'), woord('wol')] },
-    { zin: 'Oma breit een trui van ___.', doel: woord('wol'), afleiders: [woord('zout'), woord('tak')] },
+    { zin: 'Met de ___ knip ik papier.', doel: schaar, afleiders: [lepel, spiegel] },
+    { zin: 'Ik eet mijn soep met een ___.', doel: lepel, afleiders: [schaar, duim] },
+    { zin: '\'s Avonds poets ik mijn tanden met mijn ___.', doel: tandenborstel, afleiders: [telefoon, lepel] },
+    { zin: 'In de ___ kijk ik naar mezelf.', doel: spiegel, afleiders: [bad, kopje] },
+    { zin: 'Oma belt ons op met de ___.', doel: telefoon, afleiders: [spiegel, schaar] },
+    { zin: 'Ik zit in het warme ___ met veel schuim.', doel: bad, afleiders: [telefoon, schaar] },
+    { zin: 'Ik steek mijn ___ uit bij de dokter: aaa!', doel: tong, afleiders: [spiegel, kopje] },
   ],
 };

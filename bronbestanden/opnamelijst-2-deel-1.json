@@ -349,170 +349,32 @@
   },
   {
     "n": 59,
-    "slug": "vergelijk-groot",
-    "text": "Tik de grote.",
-    "path": "public/assets/audio/instructies/vergelijk-groot.mp3"
+    "slug": "ambulance",
+    "text": "ambulance",
+    "path": "public/assets/audio/woorden/ambulance.mp3"
   },
   {
     "n": 60,
-    "slug": "vergelijk-klein",
-    "text": "Tik de kleine.",
-    "path": "public/assets/audio/instructies/vergelijk-klein.mp3"
+    "slug": "baard",
+    "text": "baard",
+    "path": "public/assets/audio/woorden/baard.mp3"
   },
   {
     "n": 61,
-    "slug": "vergelijk-zwaar",
-    "text": "Welke is zwaar?",
-    "path": "public/assets/audio/instructies/vergelijk-zwaar.mp3"
+    "slug": "bad",
+    "text": "bad",
+    "path": "public/assets/audio/woorden/bad.mp3"
   },
   {
     "n": 62,
-    "slug": "vergelijk-licht",
-    "text": "Welke is licht?",
-    "path": "public/assets/audio/instructies/vergelijk-licht.mp3"
+    "slug": "ballon",
+    "text": "ballon",
+    "path": "public/assets/audio/woorden/ballon.mp3"
   },
   {
     "n": 63,
-    "slug": "vergelijk-lang",
-    "text": "Welke is lang?",
-    "path": "public/assets/audio/instructies/vergelijk-lang.mp3"
-  },
-  {
-    "n": 64,
-    "slug": "vergelijk-kort",
-    "text": "Welke is kort?",
-    "path": "public/assets/audio/instructies/vergelijk-kort.mp3"
-  },
-  {
-    "n": 65,
-    "slug": "meer-minder-meer",
-    "text": "Waar zijn er meer?",
-    "path": "public/assets/audio/instructies/meer-minder-meer.mp3"
-  },
-  {
-    "n": 66,
-    "slug": "meer-minder-minder",
-    "text": "Waar zijn er minder?",
-    "path": "public/assets/audio/instructies/meer-minder-minder.mp3"
-  },
-  {
-    "n": 67,
-    "slug": "zoek-kleur-rood",
-    "text": "Tik alle rode dingen.",
-    "path": "public/assets/audio/instructies/zoek-kleur-rood.mp3"
-  },
-  {
-    "n": 68,
-    "slug": "zoek-kleur-blauw",
-    "text": "Tik alle blauwe dingen.",
-    "path": "public/assets/audio/instructies/zoek-kleur-blauw.mp3"
-  },
-  {
-    "n": 69,
-    "slug": "zoek-kleur-geel",
-    "text": "Tik alle gele dingen.",
-    "path": "public/assets/audio/instructies/zoek-kleur-geel.mp3"
-  },
-  {
-    "n": 70,
-    "slug": "zoek-kleur-groen",
-    "text": "Tik alle groene dingen.",
-    "path": "public/assets/audio/instructies/zoek-kleur-groen.mp3"
-  },
-  {
-    "n": 71,
-    "slug": "zoek-vorm-rondje",
-    "text": "Tik alle rondjes.",
-    "path": "public/assets/audio/instructies/zoek-vorm-rondje.mp3"
-  },
-  {
-    "n": 72,
-    "slug": "zoek-vorm-vierkant",
-    "text": "Tik alle vierkanten.",
-    "path": "public/assets/audio/instructies/zoek-vorm-vierkant.mp3"
-  },
-  {
-    "n": 73,
-    "slug": "zoek-vorm-driehoek",
-    "text": "Tik alle driehoeken.",
-    "path": "public/assets/audio/instructies/zoek-vorm-driehoek.mp3"
-  },
-  {
-    "n": 74,
-    "slug": "zoek-vorm-ster",
-    "text": "Tik alle sterren.",
-    "path": "public/assets/audio/instructies/zoek-vorm-ster.mp3"
-  },
-  {
-    "n": 75,
-    "slug": "bussom",
-    "text": "Hoeveel mensen zitten er nu in de bus?",
-    "path": "public/assets/audio/instructies/bussom.mp3"
-  },
-  {
-    "n": 76,
-    "slug": "woordwolk",
-    "text": "Tik het woord aan dat bij het plaatje hoort.",
-    "path": "public/assets/audio/instructies/woordwolk.mp3"
-  },
-  {
-    "n": 77,
-    "slug": "feedback-goed-5",
-    "text": "Super!",
-    "path": "public/assets/audio/instructies/feedback-goed-5.mp3"
-  },
-  {
-    "n": 78,
-    "slug": "feedback-goed-6",
-    "text": "Heel goed!",
-    "path": "public/assets/audio/instructies/feedback-goed-6.mp3"
-  },
-  {
-    "n": 79,
-    "slug": "feedback-goed-7",
-    "text": "Goed gedaan!",
-    "path": "public/assets/audio/instructies/feedback-goed-7.mp3"
-  },
-  {
-    "n": 80,
-    "slug": "feedback-goed-8",
-    "text": "Wauw!",
-    "path": "public/assets/audio/instructies/feedback-goed-8.mp3"
-  },
-  {
-    "n": 81,
-    "slug": "feedback-goed-9",
-    "text": "Prima!",
-    "path": "public/assets/audio/instructies/feedback-goed-9.mp3"
-  },
-  {
-    "n": 82,
-    "slug": "feedback-goed-10",
-    "text": "Fantastisch!",
-    "path": "public/assets/audio/instructies/feedback-goed-10.mp3"
-  },
-  {
-    "n": 83,
-    "slug": "feedback-goed-11",
-    "text": "Jij kunt het!",
-    "path": "public/assets/audio/instructies/feedback-goed-11.mp3"
-  },
-  {
-    "n": 84,
-    "slug": "feedback-goed-12",
-    "text": "Hoera!",
-    "path": "public/assets/audio/instructies/feedback-goed-12.mp3"
-  },
-  {
-    "n": 85,
-    "slug": "feedback-goed-13",
-    "text": "Wat knap!",
-    "path": "public/assets/audio/instructies/feedback-goed-13.mp3"
-  },
-  {
-    "n": 86,
-    "slug": "feedback-goed-14",
-    "text": "Helemaal goed!",
-    "path": "public/assets/audio/instructies/feedback-goed-14.mp3"
+    "slug": "brandweerauto",
+    "text": "brandweerauto",
+    "path": "public/assets/audio/woorden/brandweerauto.mp3"
   }
 ]

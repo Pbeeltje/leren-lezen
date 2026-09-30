@@ -1,36 +1,39 @@
 import type { Kern } from '../../types.ts';
+import { bestaand } from './vll-hulp.ts';
 
-// Themahoofdstuk "dierentuindieren" (na VLL kern 6). Bekende namen, ook woorden van
-// twee of drie lettergrepen; geen lastige klanken zoals leeuw/tijger. Let op: 'giraf'
-// spreek je uit met een 'zj' — niet klankzuiver, maar bewust gehouden als bekend dier.
-const pad = (woord: string, ext = 'svg') => `/assets/images/woorden/${woord}.${ext}`;
-const woord = (w: string, ext = 'svg') => ({ woord: w, afbeeldingPad: pad(w, ext) });
+// Themahoofdstuk (na VLL kern 6). Dierentuindieren.
+const aap = bestaand('aap', 'jpg');
+const olifant = bestaand('olifant', 'svg');
+const zebra = bestaand('zebra', 'svg');
+const giraf = bestaand('giraf', 'svg');
+const panda = bestaand('panda', 'svg');
+const kameel = bestaand('kameel', 'svg');
+const krokodil = bestaand('krokodil', 'svg');
+const das = bestaand('das', 'svg');
+const leeuw = bestaand('leeuw', 'svg');
+const tijger = bestaand('tijger', 'svg');
+const nijlpaard = bestaand('nijlpaard', 'svg');
+const neushoorn = bestaand('neushoorn', 'svg');
+const slang = bestaand('slang', 'svg');
+const flamingo = bestaand('flamingo', 'svg');
+const kangoeroe = bestaand('kangoeroe', 'svg');
+const zeehond = bestaand('zeehond', 'svg');
 
 export const kern04Dierentuindieren: Kern = {
   id: 'kern-04',
   volgnummer: 9,
   titel: 'dierentuindieren',
-  structuurwoorden: [
-    { woord: 'aap', afbeeldingPad: pad('aap', 'jpg'), nieuweLetters: [] },
-    { woord: 'olifant', afbeeldingPad: pad('olifant'), nieuweLetters: [] },
-    { woord: 'zebra', afbeeldingPad: pad('zebra'), nieuweLetters: [] },
-  ],
+  structuurwoorden: [],
   nieuweLetters: [],
-  woordenbank: [
-    woord('aap', 'jpg'),
-    woord('olifant'),
-    woord('zebra'),
-    woord('giraf'),
-    woord('panda'),
-    woord('kameel'),
-    woord('krokodil'),
-    woord('vos'),
-    woord('beer', 'jpg'),
-    woord('das'),
-  ],
+  woordenbank: [aap, olifant, zebra, giraf, panda, kameel, krokodil, das, leeuw, tijger, nijlpaard, neushoorn, slang, flamingo, kangoeroe, zeehond],
   zinnen: [
-    { zin: 'De ___ heeft een hele lange nek.', doel: woord('giraf'), afleiders: [woord('zebra'), woord('kameel')] },
-    { zin: 'De ___ heeft een lange slurf.', doel: woord('olifant'), afleiders: [woord('krokodil'), woord('panda')] },
-    { zin: 'De ___ heeft zwarte en witte strepen.', doel: woord('zebra'), afleiders: [woord('giraf'), woord('beer', 'jpg')] },
+    { zin: 'De ___ is de koning van de dieren.', doel: leeuw, afleiders: [slang, flamingo] },
+    { zin: 'De ___ heeft een hele lange nek.', doel: giraf, afleiders: [nijlpaard, kangoeroe] },
+    { zin: 'De ___ heeft een lange slurf.', doel: olifant, afleiders: [zebra, giraf] },
+    { zin: 'De ___ springt en draagt haar baby in een buidel.', doel: kangoeroe, afleiders: [leeuw, slang] },
+    { zin: 'De ___ is roze en staat op één poot.', doel: flamingo, afleiders: [tijger, krokodil] },
+    { zin: 'De ___ kruipt over de grond en sist.', doel: slang, afleiders: [kameel, aap] },
+    { zin: 'De ___ heeft twee bulten op zijn rug.', doel: kameel, afleiders: [aap, leeuw] },
+    { zin: 'De ___ eet bamboe.', doel: panda, afleiders: [krokodil, zeehond] },
   ],
 };

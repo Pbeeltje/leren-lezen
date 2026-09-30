@@ -1,33 +1,33 @@
 import type { Kern } from '../../types.ts';
+import { bestaand } from './vll-hulp.ts';
 
-// Themahoofdstuk "boerderijdieren" (na VLL kern 6: alle letters zijn al bekend).
-const pad = (woord: string, ext = 'svg') => `/assets/images/woorden/${woord}.${ext}`;
-const woord = (w: string, ext = 'svg') => ({ woord: w, afbeeldingPad: pad(w, ext) });
+// Themahoofdstuk (na VLL kern 6). Dieren en dingen op de boerderij. 'lam' is vervangen door 'schaap': het plaatje is een schaap.
+const koe = bestaand('koe', 'svg');
+const kip = bestaand('kip', 'svg');
+const haan = bestaand('haan', 'svg');
+const eend = bestaand('eend', 'jpg');
+const varken = bestaand('varken', 'svg');
+const ezel = bestaand('ezel', 'svg');
+const paard = bestaand('paard', 'svg');
+const schaap = bestaand('schaap', 'svg');
+const konijn = bestaand('konijn', 'svg');
+const kalkoen = bestaand('kalkoen', 'svg');
+const tractor = bestaand('tractor', 'svg');
 
 export const kern03Boerderijdieren: Kern = {
   id: 'kern-03',
   volgnummer: 8,
   titel: 'boerderijdieren',
-  structuurwoorden: [
-    { woord: 'kat', afbeeldingPad: pad('kat'), nieuweLetters: [] },
-    { woord: 'hond', afbeeldingPad: pad('hond'), nieuweLetters: [] },
-    { woord: 'kip', afbeeldingPad: pad('kip'), nieuweLetters: [] },
-  ],
+  structuurwoorden: [],
   nieuweLetters: [],
-  woordenbank: [
-    woord('kat'),
-    woord('hond'),
-    woord('kip'),
-    woord('varken'),
-    woord('eend', 'jpg'),
-    woord('haan'),
-    woord('ezel'),
-    woord('lam'),
-    woord('paard'),
-  ],
+  woordenbank: [koe, kip, haan, eend, varken, ezel, paard, schaap, konijn, kalkoen, tractor],
   zinnen: [
-    { zin: "'s Ochtends vroeg roept de ___: kukeleku!", doel: woord('haan'), afleiders: [woord('kip'), woord('eend', 'jpg')] },
-    { zin: 'Het roze ___ rolt graag in de modder.', doel: woord('varken'), afleiders: [woord('lam'), woord('paard')] },
-    { zin: 'Kwak kwak, zegt de ___ in de sloot.', doel: woord('eend', 'jpg'), afleiders: [woord('kip'), woord('haan')] },
+    { zin: 'De ___ geeft ons melk.', doel: koe, afleiders: [kip, varken] },
+    { zin: 'Het ___ rolt in de modder en zegt knor.', doel: varken, afleiders: [schaap, paard] },
+    { zin: 'De ___ legt elke dag een ei.', doel: kip, afleiders: [haan, koe] },
+    { zin: 'Kukeleku! roept de ___ in de ochtend.', doel: haan, afleiders: [koe, ezel] },
+    { zin: 'Het ___ heeft een dikke wollen vacht.', doel: schaap, afleiders: [paard, konijn] },
+    { zin: 'De boer rijdt op zijn ___ over het land.', doel: tractor, afleiders: [kip, eend] },
+    { zin: 'De ___ zwemt in de sloot en zegt kwak.', doel: eend, afleiders: [kip, kalkoen] },
   ],
 };

@@ -99,10 +99,12 @@ and the finger crops shipped with grid lines and cut-off fingertips.
 ### 8. Queue the audio
 Every new word needs `/assets/audio/woorden/<woord>.mp3`; every new pattern
 needs `/assets/audio/instructies/<type>.mp3`. Missing clips fail silently. Add them to
-a new numbered read-aloud list: `bronbestanden/opnamelijst-N.txt` + `opnamelijst-N.json`,
-same `{n, slug, text, path}` format as `audio-manifest.json`. The user records the
-whole list in one take. **Only after the recording is split and verified, rename
-the json to `audio-manifest-N.json`.** `engine/luisterenGenerator.ts` globs
+a new numbered read-aloud list, split into parts of about 3 minutes each (user
+request). Estimate 2.8 s per single word and 4.5 s per sentence, and balance the parts
+evenly: `bronbestanden/opnamelijst-N-deel-M.txt` + `.json`, same `{n, slug, text, path}`
+format as `audio-manifest.json`, numbered from 1 in each part. The user records each
+part as its own file. **Only after a part is split and verified, rename its json to
+`audio-manifest-N-M.json`.** `engine/luisterenGenerator.ts` globs
 `audio-manifest*.json` to decide which words have audio. The Luisteren games
 only use those words, so a manifest listing unrecorded words would make them play
 silence. Tell the user which words are still

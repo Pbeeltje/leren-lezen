@@ -42,8 +42,22 @@ function zichtveld(diepte: number): { b: number; h: number } {
   return { b: h * cam.aspect, h };
 }
 
+const groep = new THREE.Group();
+let vraagVallendeSter = false;
+
+/** Laat de ruimte zien of verbergt hem (andere achtergronden tekenen hun eigen decor). */
+export function zetRuimteZichtbaar(zichtbaar: boolean): void {
+  groep.visible = zichtbaar;
+}
+
+/** Een vallende ster als beloning voor een goed antwoord. */
+export function schietVallendeSter(): void {
+  vraagVallendeSter = true;
+}
+
 export function maakRuimte(): void {
-  const scene = sceneManager.scene;
+  const scene = groep;
+  sceneManager.scene.add(groep);
   const stip = zachteStipTextuur();
 
   // Drie sterrenlagen met eigen kleur, grootte en twinkeltempo.
@@ -105,7 +119,7 @@ export function maakRuimte(): void {
     new THREE.RingGeometry(2.1, 2.9, 64),
     new THREE.MeshBasicMaterial({ color: 0xffe0b8, transparent: true, opacity: 0.45, side: THREE.DoubleSide, depthWrite: false }),
   );
-  ring.rotation.x = Math.PI / 2.3;
+  ring.rotation.x = 1.15; // schuin, zodat de ring als ellips zichtbaar is
   planeet.add(ring);
   planeet.rotation.z = 0.35;
   scene.add(planeet);
@@ -123,7 +137,8 @@ export function maakRuimte(): void {
     const p = zichtveld(PLANEET_DIEPTE);
     planeet.position.set(-p.b + 0.6, -p.h + 1.0, PLANEET_DIEPTE);
     const m = zichtveld(MAAN_DIEPTE);
-    maan.position.set(m.b - 1.4, m.h - 1.3, MAAN_DIEPTE);
+    // Onder de munten/profielknop rechtsboven.
+    maan.position.set(m.b - 1.6, m.h - 2.6, MAAN_DIEPTE);
   }
   plaats();
   window.addEventListener('resize', plaats);
@@ -140,7 +155,7 @@ export function maakRuimte(): void {
   sceneManager.opAnimatie((delta, verlopen) => {
     bol.rotation.y += delta * 0.05;
     maan.rotation.y += delta * 0.03;
-    if (rustigeBeweging) return;
+    if (rustigeBeweging || !groep.visible) return;
 
     lagen.forEach((laag, i) => {
       const mat = laag.punten.material as THREE.PointsMaterial;
@@ -150,7 +165,8 @@ export function maakRuimte(): void {
     planeet.position.y += Math.sin(verlopen * 0.4) * delta * 0.03;
 
     volgendeVal -= delta;
-    if (volgendeVal <= 0 && valTijd < 0) {
+    if ((volgendeVal <= 0 || vraagVallendeSter) && valTijd < 0) {
+      vraagVallendeSter = false;
       const v = zichtveld(-12);
       valStart.set((Math.random() * 1.2 - 0.2) * v.b, v.h * (0.3 + Math.random() * 0.6), -12);
       valTijd = 0;

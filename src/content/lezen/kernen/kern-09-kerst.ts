@@ -1,23 +1,31 @@
 import type { Kern } from '../../types.ts';
+import { bestaand } from './vll-hulp.ts';
 
-// "Kerst": bron is een Junior Einstein-werkblad (groep 3/4) dat de gebruiker aanleverde,
-// uitgesneden met bronbestanden/crop-kerst.ps1. Themahoofdstuk na VLL kern 6.
-const pad = (woord: string, ext = 'png') => `/assets/images/woorden/${woord}.${ext}`;
-const woord = (w: string, vereistTekst = false, ext = 'png') => ({ woord: w, afbeeldingPad: pad(w, ext), vereistTekst });
+// Themahoofdstuk (na VLL kern 6). Kerst. bel, muts en hulst komen van het Junior Einstein-werkblad (bronbestanden/).
+const bel = bestaand('bel', 'svg');
+const hulst = bestaand('hulst', 'png');
+const kerstboom = bestaand('kerstboom', 'svg');
+const kerstman = bestaand('kerstman', 'svg');
+const sneeuwpop = bestaand('sneeuwpop', 'svg');
+const pakje = bestaand('pakje', 'svg');
+const rendier = bestaand('rendier', 'svg');
+const engel = bestaand('engel', 'svg');
+const muts = bestaand('muts', 'png');
 
 export const kern09Kerst: Kern = {
   id: 'kern-09',
   volgnummer: 14,
   titel: 'kerst',
-  structuurwoorden: [
-    { woord: 'bel', afbeeldingPad: pad('bel', 'svg'), nieuweLetters: [] },
-    { woord: 'boom', afbeeldingPad: pad('boom'), nieuweLetters: [] },
-  ],
+  structuurwoorden: [],
   nieuweLetters: [],
-  woordenbank: [woord('bel', false, 'svg'), woord('muts'), woord('koek'), woord('hulst'), woord('boom')],
+  woordenbank: [bel, hulst, kerstboom, kerstman, sneeuwpop, pakje, rendier, engel, muts],
   zinnen: [
-    { zin: 'Met kerst zetten we een ___ in de kamer, vol lichtjes.', doel: woord('boom'), afleiders: [woord('bel', false, 'svg'), woord('hulst')] },
-    { zin: 'Tingeling! Hoor je de ___?', doel: woord('bel', false, 'svg'), afleiders: [woord('muts'), woord('koek')] },
-    { zin: 'Het is koud. Zet je ___ op je hoofd.', doel: woord('muts'), afleiders: [woord('koek'), woord('boom')] },
+    { zin: 'Tingeling! Hoor je de ___?', doel: bel, afleiders: [muts, pakje] },
+    { zin: 'Onder de ___ liggen de cadeautjes.', doel: kerstboom, afleiders: [muts, bel] },
+    { zin: 'De ___ heeft een rode jas en een witte baard.', doel: kerstman, afleiders: [sneeuwpop, engel] },
+    { zin: 'In de sneeuw maken we een ___ met een wortel als neus.', doel: sneeuwpop, afleiders: [bel, hulst] },
+    { zin: 'Het ___ trekt de slee door de lucht.', doel: rendier, afleiders: [hulst, bel] },
+    { zin: 'Ik krijg een ___ met een strik erom.', doel: pakje, afleiders: [rendier, hulst] },
+    { zin: 'Het is koud. Zet je ___ op!', doel: muts, afleiders: [bel, pakje] },
   ],
 };

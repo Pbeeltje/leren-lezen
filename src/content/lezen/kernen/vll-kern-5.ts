@@ -13,7 +13,6 @@ const vuur = vll('vuur');
 const wiel = bestaand('wiel', 'jpg');
 const wolk = bestaand('wolk', 'svg');
 const mol = bestaand('mol', 'png');
-const lam = bestaand('lam', 'svg');
 const bal = bestaand('bal', 'jpg');
 const kous = bestaand('kous', 'png');
 const zout = bestaand('zout', 'jpg');
@@ -47,7 +46,7 @@ export const vllKern5: Kern = {
     { woord: 'vuur', afbeeldingPad: vuur.afbeeldingPad, nieuweLetters: ['uu'] },
   ],
   nieuweLetters: ['j', 'ie', 'l', 'ou', 'uu'],
-  woordenbank: [reus, jas, riem, bijl, hout, vuur, wiel, wolk, mol, lam, bal, kous, zout, slee, wol, koud, lamp, bril, bloem, blad, slak, klok, stoel, mier, vlieg, melk, jurk, vlag],
+  woordenbank: [reus, jas, riem, bijl, hout, vuur, wiel, wolk, mol, bal, kous, zout, slee, wol, koud, lamp, bril, bloem, blad, slak, klok, stoel, mier, vlieg, melk, jurk, vlag],
   zinnen: [
     { zin: 'In de winter is het buiten ___.', doel: koud, afleiders: [vuur, hout] },
     { zin: 'De ___ is heel groot en sterk.', doel: reus, afleiders: [jas, riem] },

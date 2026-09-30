@@ -1,0 +1,236 @@
+[
+  {
+    "n": 1,
+    "slug": "zwaan",
+    "text": "zwaan",
+    "path": "public/assets/audio/woorden/zwaan.mp3"
+  },
+  {
+    "n": 2,
+    "slug": "vergelijk-groot",
+    "text": "Tik de grote.",
+    "path": "public/assets/audio/instructies/vergelijk-groot.mp3"
+  },
+  {
+    "n": 3,
+    "slug": "vergelijk-klein",
+    "text": "Tik de kleine.",
+    "path": "public/assets/audio/instructies/vergelijk-klein.mp3"
+  },
+  {
+    "n": 4,
+    "slug": "vergelijk-zwaar",
+    "text": "Welke is zwaar?",
+    "path": "public/assets/audio/instructies/vergelijk-zwaar.mp3"
+  },
+  {
+    "n": 5,
+    "slug": "vergelijk-licht",
+    "text": "Welke is licht?",
+    "path": "public/assets/audio/instructies/vergelijk-licht.mp3"
+  },
+  {
+    "n": 6,
+    "slug": "vergelijk-lang",
+    "text": "Welke is lang?",
+    "path": "public/assets/audio/instructies/vergelijk-lang.mp3"
+  },
+  {
+    "n": 7,
+    "slug": "vergelijk-kort",
+    "text": "Welke is kort?",
+    "path": "public/assets/audio/instructies/vergelijk-kort.mp3"
+  },
+  {
+    "n": 8,
+    "slug": "meer-minder-meer",
+    "text": "Waar zijn er meer?",
+    "path": "public/assets/audio/instructies/meer-minder-meer.mp3"
+  },
+  {
+    "n": 9,
+    "slug": "meer-minder-minder",
+    "text": "Waar zijn er minder?",
+    "path": "public/assets/audio/instructies/meer-minder-minder.mp3"
+  },
+  {
+    "n": 10,
+    "slug": "zoek-kleur-rood",
+    "text": "Tik alle rode dingen.",
+    "path": "public/assets/audio/instructies/zoek-kleur-rood.mp3"
+  },
+  {
+    "n": 11,
+    "slug": "zoek-kleur-blauw",
+    "text": "Tik alle blauwe dingen.",
+    "path": "public/assets/audio/instructies/zoek-kleur-blauw.mp3"
+  },
+  {
+    "n": 12,
+    "slug": "zoek-kleur-geel",
+    "text": "Tik alle gele dingen.",
+    "path": "public/assets/audio/instructies/zoek-kleur-geel.mp3"
+  },
+  {
+    "n": 13,
+    "slug": "zoek-kleur-groen",
+    "text": "Tik alle groene dingen.",
+    "path": "public/assets/audio/instructies/zoek-kleur-groen.mp3"
+  },
+  {
+    "n": 14,
+    "slug": "zoek-vorm-rondje",
+    "text": "Tik alle rondjes.",
+    "path": "public/assets/audio/instructies/zoek-vorm-rondje.mp3"
+  },
+  {
+    "n": 15,
+    "slug": "zoek-vorm-vierkant",
+    "text": "Tik alle vierkanten.",
+    "path": "public/assets/audio/instructies/zoek-vorm-vierkant.mp3"
+  },
+  {
+    "n": 16,
+    "slug": "zoek-vorm-driehoek",
+    "text": "Tik alle driehoeken.",
+    "path": "public/assets/audio/instructies/zoek-vorm-driehoek.mp3"
+  },
+  {
+    "n": 17,
+    "slug": "zoek-vorm-ster",
+    "text": "Tik alle sterren.",
+    "path": "public/assets/audio/instructies/zoek-vorm-ster.mp3"
+  },
+  {
+    "n": 18,
+    "slug": "bussom",
+    "text": "Hoeveel mensen zitten er nu in de bus?",
+    "path": "public/assets/audio/instructies/bussom.mp3"
+  },
+  {
+    "n": 19,
+    "slug": "woordwolk",
+    "text": "Tik het woord aan dat bij het plaatje hoort.",
+    "path": "public/assets/audio/instructies/woordwolk.mp3"
+  },
+  {
+    "n": 20,
+    "slug": "vorm-rondje",
+    "text": "Waar is het rondje?",
+    "path": "public/assets/audio/instructies/vorm-rondje.mp3"
+  },
+  {
+    "n": 21,
+    "slug": "vorm-vierkant",
+    "text": "Waar is het vierkant?",
+    "path": "public/assets/audio/instructies/vorm-vierkant.mp3"
+  },
+  {
+    "n": 22,
+    "slug": "vorm-driehoek",
+    "text": "Waar is de driehoek?",
+    "path": "public/assets/audio/instructies/vorm-driehoek.mp3"
+  },
+  {
+    "n": 23,
+    "slug": "vorm-ster",
+    "text": "Waar is de ster?",
+    "path": "public/assets/audio/instructies/vorm-ster.mp3"
+  },
+  {
+    "n": 24,
+    "slug": "vorm-hartje",
+    "text": "Waar is het hartje?",
+    "path": "public/assets/audio/instructies/vorm-hartje.mp3"
+  },
+  {
+    "n": 25,
+    "slug": "vorm-rechthoek",
+    "text": "Waar is de rechthoek?",
+    "path": "public/assets/audio/instructies/vorm-rechthoek.mp3"
+  },
+  {
+    "n": 26,
+    "slug": "vorm-ovaal",
+    "text": "Waar is het ovaal?",
+    "path": "public/assets/audio/instructies/vorm-ovaal.mp3"
+  },
+  {
+    "n": 27,
+    "slug": "vorm-ruit",
+    "text": "Waar is de ruit?",
+    "path": "public/assets/audio/instructies/vorm-ruit.mp3"
+  },
+  {
+    "n": 28,
+    "slug": "vorm-maan",
+    "text": "Waar is de maan?",
+    "path": "public/assets/audio/instructies/vorm-maan.mp3"
+  },
+  {
+    "n": 29,
+    "slug": "vorm-kruis",
+    "text": "Waar is het kruis?",
+    "path": "public/assets/audio/instructies/vorm-kruis.mp3"
+  },
+  {
+    "n": 30,
+    "slug": "feedback-goed-5",
+    "text": "Super!",
+    "path": "public/assets/audio/instructies/feedback-goed-5.mp3"
+  },
+  {
+    "n": 31,
+    "slug": "feedback-goed-6",
+    "text": "Heel goed!",
+    "path": "public/assets/audio/instructies/feedback-goed-6.mp3"
+  },
+  {
+    "n": 32,
+    "slug": "feedback-goed-7",
+    "text": "Goed gedaan!",
+    "path": "public/assets/audio/instructies/feedback-goed-7.mp3"
+  },
+  {
+    "n": 33,
+    "slug": "feedback-goed-8",
+    "text": "Wauw!",
+    "path": "public/assets/audio/instructies/feedback-goed-8.mp3"
+  },
+  {
+    "n": 34,
+    "slug": "feedback-goed-9",
+    "text": "Prima!",
+    "path": "public/assets/audio/instructies/feedback-goed-9.mp3"
+  },
+  {
+    "n": 35,
+    "slug": "feedback-goed-10",
+    "text": "Fantastisch!",
+    "path": "public/assets/audio/instructies/feedback-goed-10.mp3"
+  },
+  {
+    "n": 36,
+    "slug": "feedback-goed-11",
+    "text": "Jij kunt het!",
+    "path": "public/assets/audio/instructies/feedback-goed-11.mp3"
+  },
+  {
+    "n": 37,
+    "slug": "feedback-goed-12",
+    "text": "Hoera!",
+    "path": "public/assets/audio/instructies/feedback-goed-12.mp3"
+  },
+  {
+    "n": 38,
+    "slug": "feedback-goed-13",
+    "text": "Wat knap!",
+    "path": "public/assets/audio/instructies/feedback-goed-13.mp3"
+  },
+  {
+    "n": 39,
+    "slug": "feedback-goed-14",
+    "text": "Helemaal goed!",
+    "path": "public/assets/audio/instructies/feedback-goed-14.mp3"
+  }
+]

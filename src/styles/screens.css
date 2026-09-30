@@ -1185,3 +1185,14 @@
   from { opacity: 0; }
   to { opacity: 1; }
 }
+
+/* Welke vorm?: de vorm vult het vak, gecentreerd (vergelijk-optie lijnt onderaan uit). */
+.vorm-optie {
+  align-items: center;
+  padding: 24px;
+}
+
+.vorm-optie svg {
+  width: 100%;
+  height: 100%;
+}

@@ -1,4 +1,5 @@
 import type { Screen, ScreenManager } from '../../engine/screenManager.ts';
+import { pasAchtergrondVanProfielToe } from '../../achtergrond/achtergrond.ts';
 import { maakTerugKnop } from '../components/TerugKnop.ts';
 import { AVATAR_ICONEN, AVATAR_KLEUREN, avatarFilter, avatarPad, maakProfiel, zetActiefProfiel } from '../../engine/profielStore.ts';
 import { speelSchermOvergang } from '../../three/transitions.ts';
@@ -109,6 +110,7 @@ export function NewProfileScreen(manager: ScreenManager): Screen {
     if (submitKnop.disabled || !gekozenIcoon) return;
     const profiel = maakProfiel(invoer.value, gekozenIcoon, gekozenKleur);
     zetActiefProfiel(profiel.id);
+    pasAchtergrondVanProfielToe();
     speelSchermOvergang();
     manager.replace((m) => AgeSelectScreen(m));
   });

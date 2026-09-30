@@ -1,0 +1,397 @@
+/* Kiesbare achtergronden (src/achtergrond/). De decorlaag ligt onder de three.js-laag en
+   de schermen, klikt nooit mee en houdt het midden vrij voor de vragen. */
+#decor-laag {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.decor {
+  position: absolute;
+  inset: 0;
+}
+
+.decor img {
+  position: absolute;
+  user-select: none;
+}
+
+/* Witte titels en instructies blijven leesbaar op de lichtere achtergronden. */
+body:not(.thema-ruimte) .scherm-titel,
+body:not(.thema-ruimte) .instructie-tekst:not(.instructie-tekst--donker) {
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.55), 0 0 14px rgba(0, 0, 0, 0.35);
+}
+
+.drijf-wolk {
+  width: clamp(90px, 14vw, 180px);
+  opacity: 0.9;
+  animation: drijf-wolk 90s linear infinite;
+}
+.drijf-wolk--1 { top: 8%; left: -20%; }
+.drijf-wolk--2 { top: 22%; left: -20%; width: clamp(70px, 10vw, 130px); animation-duration: 130s; animation-delay: -60s; }
+
+@keyframes drijf-wolk {
+  from { transform: translateX(0); }
+  to { transform: translateX(140vw); }
+}
+
+/* ---- Dino-wei ---- */
+.decor-dino {
+  background: linear-gradient(#4aa7f0 0%, #8fcdf7 55%, #cdeefc 100%);
+}
+
+.dino-zon {
+  top: max(11%, 96px);
+  right: 5%;
+  width: clamp(70px, 10vw, 130px);
+  animation: draai-langzaam 60s linear infinite;
+}
+
+@keyframes draai-langzaam {
+  to { transform: rotate(360deg); }
+}
+
+.dino-heuvels {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  width: 100%;
+  height: 34vh;
+}
+
+.dino-boom {
+  bottom: 18vh;
+  width: clamp(60px, 9vw, 120px);
+  transform-origin: bottom center;
+  animation: wiebel 6s ease-in-out infinite;
+}
+.dino-boom--1 { left: 3%; }
+.dino-boom--2 { left: 13%; width: clamp(70px, 11vw, 140px); animation-delay: -2s; }
+.dino-boom--3 { right: 12%; animation-delay: -4s; }
+.dino-boom--4 { right: 2%; width: clamp(50px, 7vw, 100px); animation-delay: -1s; }
+
+@keyframes wiebel {
+  0%, 100% { transform: rotate(-1.5deg); }
+  50% { transform: rotate(1.5deg); }
+}
+
+.dino {
+  position: absolute;
+  bottom: 2vh;
+  width: clamp(110px, 17vw, 230px);
+  transform-origin: bottom center;
+  animation: adem 3.5s ease-in-out infinite;
+}
+.dino--trex { left: 2%; }
+.dino--tri { right: 2%; animation-delay: -1.7s; }
+/* De Fluent-T-rex kijkt naar links; gespiegeld kijkt hij de wei in. */
+.dino--trex .dino__lijf { transform: scaleX(-1); }
+
+.dino__lijf {
+  position: relative !important;
+  width: 100%;
+  display: block;
+}
+
+@keyframes adem {
+  0%, 100% { transform: scaleY(1); }
+  50% { transform: scaleY(1.03); }
+}
+
+.dino.juicht {
+  animation: juich-sprong 0.6s ease-out 2;
+}
+
+@keyframes juich-sprong {
+  0% { transform: translateY(0) rotate(0); }
+  35% { transform: translateY(-40px) rotate(-6deg); }
+  60% { transform: translateY(-40px) rotate(6deg); }
+  100% { transform: translateY(0) rotate(0); }
+}
+
+.dino__hoera {
+  position: absolute;
+  top: -10px;
+  left: 50%;
+  font-size: 2.2rem;
+  color: #ffd23f;
+  text-shadow: 0 2px 0 #c77d00;
+  animation: hoera-op 1.2s ease-out forwards;
+}
+
+@keyframes hoera-op {
+  from { transform: translate(-50%, 0) scale(0.6); opacity: 1; }
+  to { transform: translate(-50%, -80px) scale(1.3); opacity: 0; }
+}
+
+/* ---- Kasteel ---- */
+.decor-kasteel {
+  background: linear-gradient(#241a52 0%, #5b3f95 45%, #c47bb5 80%, #f3b6c9 100%);
+}
+
+.kasteel-ster {
+  position: absolute;
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: 0 0 6px 2px rgba(255, 255, 255, 0.6);
+  animation: twinkel 4s ease-in-out infinite;
+}
+
+@keyframes twinkel {
+  0%, 100% { opacity: 0.25; }
+  50% { opacity: 1; }
+}
+
+.kasteel-heuvel {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  width: min(48vw, 560px);
+  height: min(46vh, 420px);
+}
+
+.kasteel-heuvel__svg {
+  position: absolute;
+  inset: auto 0 0 0;
+  width: 100%;
+  height: 55%;
+}
+
+.kasteel {
+  position: absolute;
+  left: 32%; /* midden op de top van de heuvel (x = 330 van 600) */
+  bottom: 38%;
+  width: 46%;
+}
+
+.kasteel__plaatje {
+  position: relative !important;
+  width: 100%;
+  display: block;
+  filter: drop-shadow(0 0 12px rgba(255, 214, 240, 0.55));
+}
+
+.kasteel.straalt .kasteel__plaatje {
+  animation: straal 1.6s ease-out;
+}
+
+@keyframes straal {
+  0% { filter: drop-shadow(0 0 12px rgba(255, 214, 240, 0.55)); }
+  30% { filter: drop-shadow(0 0 34px rgba(255, 240, 150, 1)) brightness(1.2); }
+  100% { filter: drop-shadow(0 0 12px rgba(255, 214, 240, 0.55)); }
+}
+
+.kasteel-lichtje {
+  position: absolute;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #fff6b0;
+  box-shadow: 0 0 10px 4px rgba(255, 236, 140, 0.7);
+  animation: zweef 7s ease-in-out infinite;
+}
+
+@keyframes zweef {
+  0%, 100% { transform: translate(0, 0); opacity: 0.2; }
+  30% { opacity: 1; }
+  50% { transform: translate(18px, -26px); opacity: 0.8; }
+  75% { transform: translate(-12px, -10px); opacity: 0.4; }
+}
+
+.kasteel-vonk {
+  position: absolute;
+  left: 50%;
+  top: 30%;
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  box-shadow: 0 0 8px 2px rgba(255, 255, 255, 0.8);
+  animation: vonk 1.3s ease-out forwards;
+}
+
+@keyframes vonk {
+  from { transform: translate(0, 0) scale(1); opacity: 1; }
+  to { transform: translate(var(--dx), var(--dy)) scale(0.3); opacity: 0; }
+}
+
+/* ---- Zee ---- */
+.decor-zee {
+  background: linear-gradient(#34465a 0%, #56697e 50%, #7d8fa2 100%);
+}
+
+.zee-wolk {
+  filter: grayscale(0.6) brightness(0.85);
+}
+
+.zee-regen {
+  position: absolute;
+  inset: -50% -10% 0 -10%;
+  background-image: repeating-linear-gradient(
+    105deg,
+    transparent 0 22px,
+    rgba(210, 225, 240, 0.35) 22px 23px,
+    transparent 23px 47px
+  );
+  background-size: 100% 80px;
+  animation: regen 0.6s linear infinite;
+  opacity: 0.7;
+}
+
+@keyframes regen {
+  from { transform: translateY(0); }
+  to { transform: translateY(80px); }
+}
+
+.zee-golven {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 26vh;
+}
+
+.zee-golf {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 200%;
+  animation: golf 14s linear infinite;
+}
+.zee-golf--achter { height: 100%; animation-duration: 22s; }
+.zee-golf--midden { height: 75%; animation-duration: 16s; animation-direction: reverse; }
+.zee-golf--voor { height: 50%; }
+
+@keyframes golf {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+
+.zee-boot {
+  position: absolute;
+  bottom: 62%;
+  left: -15%;
+  width: clamp(70px, 10vw, 130px);
+  animation: boot-vaart 80s linear infinite;
+}
+
+.zee-boot__plaatje {
+  position: relative !important;
+  width: 100%;
+  display: block;
+  animation: dobber 3s ease-in-out infinite;
+}
+
+@keyframes boot-vaart {
+  from { transform: translateX(0); }
+  to { transform: translateX(130vw); }
+}
+
+@keyframes dobber {
+  0%, 100% { transform: translateY(0) rotate(-3deg); }
+  50% { transform: translateY(6px) rotate(3deg); }
+}
+
+.vuurtoren {
+  position: absolute;
+  left: 3%;
+  bottom: 10%;
+  width: clamp(70px, 9vw, 120px);
+  aspect-ratio: 140 / 280;
+}
+
+.vuurtoren__plaatje {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+}
+
+/* Lamp zit op 50% / 22.9% van de toren (zie vuurtoren.svg). */
+.vuurtoren__gloed {
+  position: absolute;
+  left: 50%;
+  top: 22.9%;
+  width: 40%;
+  aspect-ratio: 1;
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(255, 240, 160, 0.9), rgba(255, 220, 120, 0) 70%);
+  opacity: 0.25;
+  transition: opacity 0.3s, width 0.3s;
+  z-index: 1;
+}
+
+.vuurtoren.licht-aan .vuurtoren__gloed {
+  opacity: 1;
+  width: 110%;
+}
+
+.vuurtoren__straal {
+  position: absolute;
+  left: 50%;
+  top: 22.9%;
+  width: 70vw;
+  height: 16vh;
+  transform-origin: 0 50%;
+  transform: translateY(-50%) rotate(-8deg);
+  background: linear-gradient(90deg, rgba(255, 240, 170, 0.75), rgba(255, 240, 170, 0));
+  clip-path: polygon(0 45%, 100% 0, 100% 100%, 0 55%);
+  opacity: 0;
+}
+
+.vuurtoren__straal.zwaait {
+  animation: straal-zwaai 2.6s ease-in-out;
+}
+
+@keyframes straal-zwaai {
+  0% { opacity: 0; transform: translateY(-50%) rotate(-24deg); }
+  20% { opacity: 1; }
+  80% { opacity: 1; }
+  100% { opacity: 0; transform: translateY(-50%) rotate(10deg); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .decor *,
+  .decor *::before {
+    animation: none !important;
+  }
+}
+
+/* ---- Achtergrond kiezen in het profielmenu ---- */
+.achtergrond-rij {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+}
+
+.achtergrond-rij[hidden] {
+  display: none;
+}
+
+.achtergrond-keuze {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 8px;
+  border-radius: 14px;
+  border: 3px solid transparent;
+  background: #f1f2f6;
+  font-weight: 800;
+  color: var(--kleur-tekst);
+}
+
+.achtergrond-keuze img {
+  width: 52px;
+  height: 52px;
+  object-fit: contain;
+}
+
+.achtergrond-keuze.geselecteerd {
+  border-color: var(--kleur-secundair);
+  background: #e4f5ff;
+}
