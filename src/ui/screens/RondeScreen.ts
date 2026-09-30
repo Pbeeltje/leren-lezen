@@ -7,8 +7,10 @@ import { naHuidigeAudio, speelAf } from '../../engine/audioManager.ts';
 import { voegMuntenToe } from '../../engine/progressStore.ts';
 import { MUNTEN_OEFENING_GOED } from '../../engine/rewards.ts';
 import { confetti } from '../../three/particles.ts';
+import { toonKlaarKaart } from '../components/KlaarKaart.ts';
 
 const RONDE_LENGTE = 5;
+const AANTAL_RONDES = 2;
 
 export interface RondeVraag {
   instructie: string;
@@ -18,9 +20,9 @@ export interface RondeVraag {
   render: (container: HTMLElement, afgerond: () => void) => () => void;
 }
 
-// Gedeelde schil voor de kleuterspellen: rondes van 5 vragen met een voortgangsbalk en
-// een klein vuurwerkje aan het eind, daarna vanzelf een nieuwe ronde (zelfde opzet als
-// LuisterenScreen). Geen hoofdstukken, geen toets, niets op slot.
+// Gedeelde schil voor de kleuterspellen: 2 rondes van 5 vragen met een voortgangsbalk,
+// een klein vuurwerkje na elke ronde en dan de klaar-kaart (zelfde opzet als
+// LuisterenScreen). Geen toets, niets op slot, fout is opnieuw proberen.
 export function RondeScreen(manager: ScreenManager, titelTekst: string, maakVraag: () => RondeVraag): Screen {
   const el = document.createElement('div');
   el.className = 'scherm';
@@ -49,6 +51,7 @@ export function RondeScreen(manager: ScreenManager, titelTekst: string, maakVraa
 
   let opruimen: (() => void) | null = null;
   let inRonde = 0;
+  let rondesKlaar = 0;
   let timer: number | undefined;
   let actief = true;
 
@@ -58,6 +61,13 @@ export function RondeScreen(manager: ScreenManager, titelTekst: string, maakVraa
     opruimen = null;
     if (inRonde >= RONDE_LENGTE) {
       voortgangsbalk.zetVoortgang(RONDE_LENGTE);
+      rondesKlaar++;
+      if (rondesKlaar >= AANTAL_RONDES) {
+        instructieRij.style.display = 'none';
+        voortgangsbalk.element.style.display = 'none';
+        toonKlaarKaart(container, () => manager.pop());
+        return;
+      }
       confetti.vuurwerk('klein');
       inRonde = 0;
       timer = window.setTimeout(volgendeVraag, 1400);

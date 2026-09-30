@@ -70,12 +70,27 @@ export function kiesVerschillendePlaatjes(woorden: Woord[], aantal: number): Woo
  * Kiest een doelwoord en `aantalOpties - 1` afleiders, allemaal geschud. `vorigDoel`
  * wordt vermeden, zodat hetzelfde woord niet twee keer achter elkaar gevraagd wordt.
  */
-export function genereerLuisterVraag(aantalOpties = 3, vorigDoel?: string): LuisterVraag {
-  const pool = woordenpool();
+export function genereerLuisterVraag(aantalOpties = 3, vorigDoel?: string, woorden?: Woord[]): LuisterVraag {
+  const pool = woorden && woorden.length >= aantalOpties ? woorden : woordenpool();
   const geschud = schud(pool);
   const doelIndex = geschud.length > 1 && geschud[0].woord === vorigDoel ? 1 : 0;
   const doel = geschud[doelIndex];
   const rest = geschud.filter((_, i) => i !== doelIndex);
   const afleiders = kiesVerschillendePlaatjes([doel, ...rest], aantalOpties).slice(1);
   return { doel, opties: schud([doel, ...afleiders]) };
+}
+
+/** Alle bruikbare woorden (plaatje + opname) van een luisterhoofdstuk. */
+export function hoofdstukWoorden(namen: string[]): Woord[] {
+  const gewenst = new Set(namen);
+  return woordenpool().filter((w) => gewenst.has(w.woord));
+}
+
+/** Een willekeurig plaatje voor een woord, ook als het (nog) geen opname heeft. */
+export function plaatjeVan(naam: string): string | undefined {
+  for (const kern of KERNEN) {
+    const w = kern.woordenbank.find((x) => x.woord === naam);
+    if (w) return w.afbeeldingPad;
+  }
+  return undefined;
 }

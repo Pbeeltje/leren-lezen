@@ -1,0 +1,61 @@
+// Hoofdstukken voor Luisteren: woorden per thema. Alleen woorden die in een leeskern staan
+// én een opname hebben doen mee (zie hoofdstukWoorden in luisterenGenerator.ts), dus een
+// hoofdstuk groeit vanzelf mee met nieuwe opnames. Te weinig woorden -> nog "binnenkort".
+
+export interface LuisterHoofdstuk {
+  id: string;
+  titel: string;
+  icoonWoord: string; // welk woordplaatje op de tegel staat
+  woorden: string[];
+}
+
+export const LUISTER_HOOFDSTUKKEN: LuisterHoofdstuk[] = [
+  {
+    id: 'boerderij',
+    titel: 'Boerderij',
+    icoonWoord: 'kip',
+    woorden: ['kip', 'haan', 'eend', 'varken', 'ezel', 'paard', 'schaap', 'koe', 'konijn', 'kalkoen', 'kat', 'hond', 'gans', 'ram', 'muis', 'tractor'],
+  },
+  {
+    id: 'dierentuin',
+    titel: 'Dierentuin',
+    icoonWoord: 'olifant',
+    woorden: ['aap', 'olifant', 'zebra', 'giraf', 'panda', 'kameel', 'krokodil', 'leeuw', 'tijger', 'nijlpaard', 'neushoorn', 'slang', 'flamingo', 'kangoeroe', 'zeehond', 'beer'],
+  },
+  {
+    id: 'dieren',
+    titel: 'Nog meer dieren',
+    icoonWoord: 'vos',
+    woorden: ['vos', 'wolf', 'egel', 'das', 'mol', 'bij', 'vis', 'uil', 'duif', 'pauw', 'geit', 'slak', 'mier', 'vlieg', 'haai', 'zwaan', 'ijsbeer', 'lam'],
+  },
+  {
+    id: 'eten',
+    titel: 'Eten',
+    icoonWoord: 'kaas',
+    woorden: ['kaas', 'koek', 'fruit', 'noot', 'zout', 'ijs', 'ei', 'brood', 'soep', 'peer', 'kers', 'taart', 'melk'],
+  },
+  {
+    id: 'lijf',
+    titel: 'Mijn lijf',
+    icoonWoord: 'neus',
+    woorden: ['arm', 'neus', 'oog', 'oor', 'voet', 'teen', 'buik', 'hand', 'tand', 'mond', 'been', 'duim', 'tong', 'vinger'],
+  },
+  {
+    id: 'spullen',
+    titel: 'Kleren & spullen',
+    icoonWoord: 'sok',
+    woorden: ['pet', 'sok', 'trui', 'kous', 'muts', 'tas', 'jas', 'riem', 'pen', 'vaas', 'pot', 'bel', 'wiel', 'deur', 'raam', 'boek', 'bed', 'stoel', 'lamp', 'klok', 'bril', 'schaar', 'lepel', 'kopje', 'sleutel', 'laars', 'kroon'],
+  },
+  {
+    id: 'buiten',
+    titel: 'Buiten',
+    icoonWoord: 'zon',
+    woorden: ['zon', 'maan', 'ster', 'wolk', 'regen', 'wind', 'sneeuw', 'onweer', 'bliksem', 'boom', 'tak', 'roos', 'tuin', 'huis', 'vuur', 'hout', 'hagel', 'bloem', 'blad', 'regenboog', 'hulst'],
+  },
+  {
+    id: 'speelgoed',
+    titel: 'Speelgoed & vervoer',
+    icoonWoord: 'bal',
+    woorden: ['bal', 'ballon', 'vlieger', 'knuffel', 'trommel', 'gitaar', 'puzzel', 'robot', 'raket', 'step', 'auto', 'bus', 'fiets', 'trein', 'boot', 'vliegtuig', 'helikopter', 'taxi', 'schip', 'tram', 'slee', 'spook'],
+  },
+];

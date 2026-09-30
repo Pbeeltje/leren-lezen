@@ -6,12 +6,13 @@ import { MUNTEN_TOETS_GOED } from '../../engine/rewards.ts';
 import { genereerGeheugenbord } from '../../engine/geheugenGenerator.ts';
 import { renderGeheugenSpel } from '../../games/geheugenSpel.ts';
 import { confetti } from '../../three/particles.ts';
+import { toonKlaarKaart } from '../components/KlaarKaart.ts';
 
 const AANTAL_PAREN = 4;
+const AANTAL_BORDEN = 3;
 
 // Klassiek geheugenspel met dezelfde plaatjes/geluiden als "Luisteren". Elk voltooid
-// bord (alle paren gevonden) is zijn eigen "ronde" en eindigt met een vuurwerkje,
-// net als bij Luisteren -- daarna meteen een nieuw bord, eindeloos door te spelen.
+// bord eindigt met een vuurwerkje; na 3 borden volgt de klaar-kaart met groot feest.
 export function GeheugenScreen(manager: ScreenManager): Screen {
   const el = document.createElement('div');
   el.className = 'scherm';
@@ -32,6 +33,7 @@ export function GeheugenScreen(manager: ScreenManager): Screen {
   let opruimen: (() => void) | null = null;
   let actief = true;
   let timer: number | undefined;
+  let bordenKlaar = 0;
 
   function nieuwBord(): void {
     if (!actief) return;
@@ -40,6 +42,17 @@ export function GeheugenScreen(manager: ScreenManager): Screen {
     opruimen = renderGeheugenSpel(oefenContainer, kaarten, () => {
       if (!actief) return;
       voegMuntenToe(MUNTEN_TOETS_GOED);
+      bordenKlaar++;
+      if (bordenKlaar >= AANTAL_BORDEN) {
+        timer = window.setTimeout(() => {
+          if (!actief) return;
+          opruimen?.();
+          opruimen = null;
+          instructie.style.display = 'none';
+          toonKlaarKaart(oefenContainer, () => manager.pop());
+        }, 1000);
+        return;
+      }
       confetti.vuurwerk('klein');
       timer = window.setTimeout(nieuwBord, 1400);
     }).vernietig;

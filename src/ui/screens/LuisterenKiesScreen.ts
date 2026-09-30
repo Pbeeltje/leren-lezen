@@ -3,7 +3,7 @@ import { maakIconTile } from '../components/IconTile.ts';
 import { maakTerugKnop } from '../components/TerugKnop.ts';
 import { maakTopRechtsBalk } from '../components/TopRechtsBalk.ts';
 import { speelSchermOvergang } from '../../three/transitions.ts';
-import { LuisterenScreen } from './LuisterenScreen.ts';
+import { LuisterHoofdstukkenScreen } from './LuisterHoofdstukkenScreen.ts';
 import { GeheugenScreen } from './GeheugenScreen.ts';
 
 // Kleine keuze-tussenstop binnen het "Luisteren"-onderwerp: twee spelvormen die allebei
@@ -28,7 +28,7 @@ export function LuisterenKiesScreen(manager: ScreenManager): Screen {
       label: 'Luister & wijs',
       onClick: () => {
         speelSchermOvergang();
-        manager.push((m) => LuisterenScreen(m));
+        manager.push((m) => LuisterHoofdstukkenScreen(m));
       },
     }),
   );

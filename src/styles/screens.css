@@ -1196,3 +1196,53 @@
   width: 100%;
   height: 100%;
 }
+
+/* Eindkaart van een kleuterhoofdstuk (KlaarKaart.ts). */
+.klaar-kaart {
+  gap: 18px;
+}
+
+.klaar-kaart__beker {
+  width: 120px;
+  height: 120px;
+  animation: klaar-hup 0.8s ease-out;
+}
+
+.klaar-kaart__sterren {
+  display: flex;
+  gap: 12px;
+}
+
+.klaar-kaart__sterren img {
+  width: 64px;
+  height: 64px;
+  opacity: 0;
+  animation: klaar-ster 0.5s ease-out forwards;
+}
+
+.klaar-kaart__knop {
+  width: 110px;
+  height: 110px;
+  border-radius: 50%;
+  background: var(--kleur-succes);
+  border: 6px solid #fff;
+  box-shadow: 0 6px 0 #2a9a52;
+  display: grid;
+  place-items: center;
+}
+
+.klaar-kaart__knop img {
+  width: 60px;
+  height: 60px;
+}
+
+@keyframes klaar-hup {
+  0% { transform: scale(0.3) rotate(-20deg); }
+  60% { transform: scale(1.15) rotate(6deg); }
+  100% { transform: scale(1) rotate(0); }
+}
+
+@keyframes klaar-ster {
+  from { opacity: 0; transform: scale(0.2) rotate(-90deg); }
+  to { opacity: 1; transform: scale(1) rotate(0); }
+}
