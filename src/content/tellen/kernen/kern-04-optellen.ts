@@ -8,5 +8,6 @@ export const rekenKern04Optellen: RekenKern = {
   titel: 'Optellen tot 10',
   bereik: [1, 9],
   objecten: [],
-  oefeningTypen: ['optellen'],
+  // Twee dobbelstenen = stippen samentellen, een plaatjesversie van dezelfde som.
+  oefeningTypen: ['optellen', 'dubbele-dobbelsteen-naar-cijfer'],
 };

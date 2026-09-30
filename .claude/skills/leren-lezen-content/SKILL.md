@@ -390,8 +390,11 @@ questions where you see pictures, say 10 trees, and have to type 10
 yourself"), `cijfer-naar-hoeveelheid` (see a numeral, pick the group with
 that many pictures), `dobbelsteen-naar-cijfer` (classic 1-6 dice-pip pattern
 via `ui/components/Dobbelsteen.ts` — pure CSS grid, no image asset — pick the
-numeral), `dubbele-dobbelsteen-naar-cijfer` (a fixed "volle tien" die plus an
-ordinary 1-6 die, covers 11-16 since a single die can't show past 6),
+numeral), `dubbele-dobbelsteen-naar-cijfer` (two ordinary dice, the answer
+is all pips added together, sum ≤ 10, in the "Optellen tot 10" chapter. An
+earlier version made one pip on the left die mean "ten" to cover 11-16; the
+user rejected it because a young child won't understand that one die means
+ten. Don't bring back conventions that need explaining),
 `reeks-aanvullen` (typed-only: fill the gap in a 3-number sequence like
 `11-[ ]-13`), `optellen` (simple addition, sum always kept under 10, multiple
 choice — uses the everyday "erbij" framing groep-3 curricula favor over

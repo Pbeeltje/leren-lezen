@@ -21,19 +21,13 @@ export function renderDubbeleDobbelsteenNaarCijfer(
 
   const dobbelRij = document.createElement('div');
   dobbelRij.className = 'dubbele-dobbelsteen-rij';
-  // Linker dobbelsteen toont altijd 1 stip: "een volle tien". Rechter toont de eenheid.
-  dobbelRij.appendChild(maakDobbelsteen(1));
+  dobbelRij.appendChild(maakDobbelsteen(oefening.links));
   const plusTeken = document.createElement('div');
   plusTeken.className = 'dubbele-dobbelsteen-plus';
   plusTeken.textContent = '+';
   dobbelRij.appendChild(plusTeken);
-  dobbelRij.appendChild(maakDobbelsteen(oefening.eenheid));
+  dobbelRij.appendChild(maakDobbelsteen(oefening.rechts));
   kaart.appendChild(dobbelRij);
-
-  const uitleg = document.createElement('p');
-  uitleg.className = 'instructie-tekst instructie-tekst--donker';
-  uitleg.textContent = 'De volle dobbelsteen is een tien erbij';
-  kaart.appendChild(uitleg);
 
   const keuzeRij = document.createElement('div');
   keuzeRij.className = 'keuze-rij';

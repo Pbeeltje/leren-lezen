@@ -27,10 +27,10 @@ export type RekenOefeningDefinitie =
   | { type: 'cijfer-naar-hoeveelheid'; cijfer: number; object: TelObject; afleiders: number[] }
   // Subitiseren met het klassieke dobbelsteenbeeld: direct herkennen zonder te tellen.
   | { type: 'dobbelsteen-naar-cijfer'; cijfer: number; afleiders: number[] }
-  // Tienstructuur met twee dobbelstenen: linker toont altijd 1 stip ("een volle tien"),
-  // rechter toont de eenheid (1-6) — samen 11 t/m 16. Zo blijft het dobbelsteenbeeld
-  // bruikbaar voor de 11-20-kern, ook al heeft een dobbelsteen maar 6 kanten.
-  | { type: 'dubbele-dobbelsteen-naar-cijfer'; eenheid: number; cijfer: number; afleiders: number[] }
+  // Twee gewone dobbelstenen, antwoord = alle stippen samen. (Een eerdere versie liet
+  // één stip op de linker dobbelsteen "een tien" betekenen; dat is voor een jong kind
+  // onbegrijpelijk, dus bewust vervangen door gewoon optellen.)
+  | { type: 'dubbele-dobbelsteen-naar-cijfer'; links: number; rechts: number; cijfer: number; afleiders: number[] }
   // Net als dobbelsteen-naar-cijfer maar met een handplaatje (1-10 vingers) i.p.v. een
   // dobbelsteenbeeld -- bron: een echte vingertel-kaart (Engels/Nederlands) die de
   // gebruiker aanleverde.

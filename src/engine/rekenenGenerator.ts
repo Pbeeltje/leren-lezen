@@ -58,7 +58,7 @@ function toepasbareTypen(kern: RekenKern): RekenOefeningType[] {
   return ALLE_TYPEN.filter((type) => {
     if (type === 'dobbelsteen-naar-cijfer') return min <= 6;
     if (type === 'vingers-naar-cijfer') return min <= 10;
-    if (type === 'dubbele-dobbelsteen-naar-cijfer') return min <= 16 && max >= 11;
+    if (type === 'dubbele-dobbelsteen-naar-cijfer') return max <= 12;
     if (type === 'reeks-aanvullen') return max - min >= 2;
     if (type === 'bussom') return max >= 3 && max <= 10;
     return true;
@@ -91,12 +91,26 @@ function maakOefening(kern: RekenKern, type: RekenOefeningType, tracker: SessieT
       return { type, cijfer, afleiders: kiesAfleidCijfers(vingerBereik, cijfer, 2) };
     }
     case 'dubbele-dobbelsteen-naar-cijfer': {
-      // Dekt 11 t/m 16 (linker dobbelsteen is altijd de vaste "volle tien").
-      const eenheidBereik: [number, number] = [Math.max(1, min - 10), Math.min(6, max - 10)];
-      const eenheid = kiesUniekGetal(eenheidBereik, gebruikt);
-      const cijfer = 10 + eenheid;
-      const afleiders = kiesAfleidCijfers([11, 16], cijfer, 2);
-      return { type, eenheid, cijfer, afleiders };
+      // Twee gewone dobbelstenen, alle stippen samen; som hoogstens 10 (en nooit boven 12).
+      const grens = Math.min(12, Math.max(max, 10));
+      let links = 1;
+      let rechts = 1;
+      for (let poging = 0; poging < 20; poging++) {
+        links = 1 + Math.floor(Math.random() * 6);
+        rechts = 1 + Math.floor(Math.random() * 6);
+        const sleutel = `d${links}+${rechts}`;
+        if (links + rechts <= grens && (!tracker.optelCombinaties.has(sleutel) || poging === 19)) {
+          tracker.optelCombinaties.add(sleutel);
+          break;
+        }
+      }
+      if (links + rechts > grens) [links, rechts] = [1, 1];
+      const cijfer = links + rechts;
+      // Stippen van alleen de grootste dobbelsteen: de klassieke fout "maar één geteld".
+      const kandidaten = [Math.max(links, rechts), cijfer + 1, cijfer - 1, cijfer + 2].filter(
+        (n, i, lijst) => n >= 1 && n !== cijfer && lijst.indexOf(n) === i,
+      );
+      return { type, links, rechts, cijfer, afleiders: kandidaten.slice(0, 2) };
     }
     case 'reeks-aanvullen': {
       // Middelste getal van 3 opeenvolgende getallen ontbreekt, bv. 11-[ ]-13.
