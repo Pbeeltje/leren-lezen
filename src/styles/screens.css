@@ -1504,6 +1504,23 @@
 .teken-plek__weg img { width: 24px; height: 24px; }
 .teken-plek--weg { border-color: var(--kleur-fout); animation: wiebel 0.5s ease-in-out infinite; }
 .teken-plek--weg .teken-plek__weg { background: var(--kleur-fout); }
+/* Nieuw blad? Groot vinkje en kruis, geen lezen nodig. */
+.teken-vraag { width: auto; display: flex; flex-direction: column; align-items: center; gap: 8px; padding: 24px 32px; }
+.teken-vraag__plaatje { width: 72px; height: 72px; }
+.teken-vraag p { margin: 0; font-size: 1.5rem; font-weight: 800; }
+.teken-vraag__knoppen { display: flex; gap: 24px; margin-top: 8px; }
+.teken-vraag__knop {
+  width: 84px;
+  height: 84px;
+  border-radius: 50%;
+  font-size: 2.6rem;
+  font-weight: 800;
+  color: #fff;
+}
+.teken-vraag__knop--nee { background: var(--kleur-fout); box-shadow: 0 5px 0 rgba(0, 0, 0, 0.2); }
+.teken-vraag__knop--ja { background: var(--kleur-succes); box-shadow: 0 5px 0 rgba(0, 0, 0, 0.2); }
+.teken-vraag__knop:active { transform: translateY(4px); box-shadow: none; }
+
 @media (orientation: portrait) {
   .teken-lijst__rooster { grid-template-columns: repeat(3, 1fr); gap: 14px 12px; }
   .teken-lijst__doos { padding: 14px 12px 16px; }

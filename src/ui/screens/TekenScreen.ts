@@ -79,18 +79,63 @@ export function TekenScreen(manager: ScreenManager): Screen {
   dikteKnoppen[0].classList.add('teken-knop--actief');
   knop('teken-actie', '↶', 'terug', () => {
     lijnen.pop();
+    gewijzigd = true;
     tekenAlles();
   });
   knop('teken-actie', '<img src="assets/icons/nieuw-blad.svg" alt="">', 'nieuw blad', () => {
-    lijnen.length = 0;
-    plek = null;
-    tekenAlles();
+    // Niet per ongeluk een tekening kwijtraken: eerst vragen, tenzij het blad leeg is of
+    // alles al bewaard is. Met plaatjes en een groot vinkje/kruis, zodat je niet hoeft te lezen.
+    if (lijnen.length > 0 && gewijzigd) vraagNieuwBlad();
+    else nieuwBlad();
   });
   const bewaarKnop = knop('teken-actie', '<img src="assets/icons/bewaar.svg" alt="">', 'bewaar', bewaar);
   knop('teken-actie', '<img src="assets/icons/tekeningen.svg" alt="">', 'mijn tekeningen', () => toonLijst(false));
 
-  // In welk plekje deze tekening staat (null: nog niet bewaard).
+  // In welk plekje deze tekening staat (null: nog niet bewaard), en of er sinds het
+  // bewaren (of openen) nog iets is getekend.
   let plek: number | null = null;
+  let gewijzigd = false;
+
+  function nieuwBlad(): void {
+    lijnen.length = 0;
+    plek = null;
+    gewijzigd = false;
+    tekenAlles();
+  }
+
+  function vraagNieuwBlad(): void {
+    sluitLijst();
+    const venster = document.createElement('div');
+    venster.className = 'teken-lijst';
+    venster.addEventListener('click', (e) => {
+      if (e.target === venster) sluitLijst();
+    });
+    const doos = document.createElement('div');
+    doos.className = 'teken-lijst__doos teken-vraag';
+    doos.innerHTML = '<img class="teken-vraag__plaatje" src="assets/icons/nieuw-blad.svg" alt=""><p>Nieuw blad?</p>';
+    const knoppen = document.createElement('div');
+    knoppen.className = 'teken-vraag__knoppen';
+    const nee = document.createElement('button');
+    nee.type = 'button';
+    nee.className = 'teken-vraag__knop teken-vraag__knop--nee';
+    nee.textContent = '✕';
+    nee.setAttribute('aria-label', 'nee, verder tekenen');
+    nee.addEventListener('click', sluitLijst);
+    const ja = document.createElement('button');
+    ja.type = 'button';
+    ja.className = 'teken-vraag__knop teken-vraag__knop--ja';
+    ja.textContent = '✓';
+    ja.setAttribute('aria-label', 'ja, nieuw blad');
+    ja.addEventListener('click', () => {
+      sluitLijst();
+      nieuwBlad();
+    });
+    knoppen.append(nee, ja);
+    doos.appendChild(knoppen);
+    venster.appendChild(doos);
+    document.body.appendChild(venster);
+    lijst = venster;
+  }
 
   function bewaar(): void {
     if (lijnen.length === 0) return;
@@ -106,6 +151,7 @@ export function TekenScreen(manager: ScreenManager): Screen {
     const { b, h } = maat();
     if (!bewaarTekening(doel, { lijnen, verhouding: b / Math.max(1, h) })) return;
     plek = doel;
+    gewijzigd = false;
     bewaarKnop.classList.remove('teken-actie--bewaard');
     void bewaarKnop.offsetWidth; // animatie opnieuw starten
     bewaarKnop.classList.add('teken-actie--bewaard');
@@ -171,6 +217,7 @@ export function TekenScreen(manager: ScreenManager): Screen {
           lijnen.length = 0;
           lijnen.push(...t.lijnen);
           plek = i;
+          gewijzigd = false;
           tekenAlles();
         }
         sluitLijst();
@@ -269,6 +316,7 @@ export function TekenScreen(manager: ScreenManager): Screen {
     canvas.setPointerCapture(e.pointerId);
     huidige = { kleur, dikte, punten: [punt(e)] };
     lijnen.push(huidige);
+    gewijzigd = true;
     tekenLijn(huidige);
   });
   canvas.addEventListener('pointermove', (e) => {

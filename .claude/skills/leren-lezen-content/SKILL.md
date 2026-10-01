@@ -894,5 +894,6 @@ Children no longer pick an age but a group (`Groep = 'kleuter' | 'groep3'` in co
   characters, nearby points dropped), not as images; 10 drawings are a few KB. Saving a
   drawing that came from a slot overwrites that slot; when all 10 are full the list opens
   in "welke mag weg?" mode. Deleting needs two taps on the wastebasket (first tap wiggles).
+  "Nieuw blad" asks first (big ✕ / ✓, no reading needed) when the page has unsaved lines.
   The list window is appended to `document.body` so it covers the top buttons.
   Check: `node tests/tekeningen.mjs <map>`.

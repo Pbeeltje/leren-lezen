@@ -29,6 +29,16 @@ for (const [bw, bh, tag] of [[360, 640, 'kleintel'], [1024, 768, 'tablet-liggend
   };
   const knop = (label) => page.locator(`.teken-actie[aria-label="${label}"]`);
   await teken(0); await page.screenshot({ path: OUT + tag + '-tekenen.png' });
+  // Nieuw blad vraagt eerst (niet bewaard); kruis = blijven, vinkje = leeg.
+  await knop('nieuw blad').click(); await w(300);
+  await page.screenshot({ path: OUT + tag + '-nieuw-blad-vraag.png' });
+  const vraag = await page.locator('.teken-vraag').count();
+  await page.locator('.teken-vraag__knop--nee').click(); await w(200);
+  const leeg = () => page.evaluate(() => { const c = document.querySelector('.teken-canvas'); const d = c.getContext('2d').getImageData(0, 0, c.width, c.height).data; for (let i = 3; i < d.length; i += 4) if (d[i]) return false; return true; });
+  const naNee = await leeg();
+  await knop('nieuw blad').click(); await w(200); await page.locator('.teken-vraag__knop--ja').click(); await w(200);
+  console.log(tag, '| vraag:', vraag, '| na kruis leeg:', naNee, '| na vinkje leeg:', await leeg());
+  await teken(0);
   for (let n = 0; n < 10; n++) {
     if (n > 0) { await knop('nieuw blad').click(); await teken(n); }
     await knop('bewaar').click(); await w(150);
