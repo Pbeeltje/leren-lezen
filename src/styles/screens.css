@@ -1293,3 +1293,48 @@
   .zoek-voorbeeld { width: 60px; height: 60px; }
   .keuze-knop--plaatje, .koppel-plaatje { max-height: 80px; }
 }
+
+/* ---------- Schrijven: overtrekken ---------- */
+.schrijf-kaart { gap: 12px; }
+.schrijf-hint {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+.schrijf-hint img { width: 72px; height: 72px; object-fit: contain; }
+.schrijf-hint__woord { font-size: 2rem; font-weight: 700; letter-spacing: 2px; }
+.schrijf-hint__letter { color: var(--kleur-primair); text-decoration: underline; text-underline-offset: 6px; }
+.overtrek { width: 100%; display: flex; justify-content: center; }
+.overtrek__vlak {
+  width: 100%;
+  height: min(40vh, 320px);
+  /* Geen scrollen of zoomen terwijl het kind met de vinger trekt. */
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
+}
+.overtrek__hulplijn { stroke: #c9d6ee; stroke-width: 0.8; stroke-dasharray: 3 3; }
+.overtrek__schrijflijn { stroke: #8fa6d3; stroke-width: 1.2; }
+.overtrek__baan { fill: none; stroke: #e7edf8; stroke-linecap: round; stroke-linejoin: round; }
+.overtrek__baan-stip { fill: #e7edf8; }
+.overtrek__middenlijn { fill: none; stroke: #9fb1d4; stroke-dasharray: 2 3; stroke-linecap: round; }
+.overtrek__inkt { fill: none; stroke: var(--kleur-secundair); stroke-linecap: round; stroke-linejoin: round; }
+.overtrek__inkt-stip { fill: var(--kleur-secundair); }
+.overtrek__start { fill: var(--kleur-succes); opacity: 0.85; animation: overtrek-puls 1.2s ease-in-out infinite; transform-box: fill-box; transform-origin: center; }
+.overtrek__start--verder { fill: var(--kleur-munt); }
+.overtrek__pijl { fill: var(--kleur-succes); }
+.overtrek__ster { pointer-events: none; }
+.overtrek__plaatje { pointer-events: none; }
+.overtrek--klaar .overtrek__inkt, .overtrek--klaar .overtrek__inkt-stip { stroke: var(--kleur-succes); fill-opacity: 1; }
+.overtrek--klaar .overtrek__inkt-stip { fill: var(--kleur-succes); }
+.overtrek--klaar .overtrek__vlak { animation: overtrek-klaar 0.45s ease-out; }
+@keyframes overtrek-puls { 50% { transform: scale(1.25); } }
+@keyframes overtrek-klaar { 40% { transform: scale(1.05); } }
+@media (prefers-reduced-motion: reduce) {
+  .overtrek__start, .overtrek--klaar .overtrek__vlak { animation: none; }
+}
+@media (max-width: 560px) {
+  .schrijf-hint img { width: 56px; height: 56px; }
+  .schrijf-hint__woord { font-size: 1.6rem; }
+  .overtrek__vlak { height: min(42vh, 300px); }
+}
