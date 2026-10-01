@@ -788,8 +788,9 @@ Screens:
 - `BoekenkastScreen` is the shelf; age 5 sees only the first chapters, like reading.
 - `BoekjeScreen` shows one page at a time. Each word can be tapped and plays its word clip
   if one is recorded.
-- A recorded page clip (`assets/audio/boekjes/boekje-K-P.mp3`) plays when the page turns
-  and gets a replay button.
+- A recorded page clip (`assets/audio/boekjes/boekje-K-P.mp3`) **only plays when the child
+  presses the speaker button**, never automatically on a page turn. The owner's reasoning:
+  the child is supposed to read the page themselves, and the voice is help on request.
 - `engine/opnames.ts` `isOpgenomen(pad)` reads the audio manifests, so unrecorded audio
   never causes a 404.
 - The last page goes to `toonKlaarKaart`.

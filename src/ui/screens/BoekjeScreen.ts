@@ -10,9 +10,10 @@ import { isOpgenomen } from '../../engine/opnames.ts';
 import { voegMuntenToe } from '../../engine/progressStore.ts';
 import { MUNTEN_OEFENING_GOED } from '../../engine/rewards.ts';
 
-// Eén leesboekje, pagina voor pagina. Het kind leest zelf; tik op een woord en je hoort
-// het (als het is ingesproken). Is de hele bladzijde ingesproken, dan leest de app hem
-// voor bij het omslaan en kan de luidsprekerknop hem herhalen. Uitgelezen = klaar-kaart.
+// Eén leesboekje, pagina voor pagina. Het kind leest zelf: er wordt nooit vanzelf
+// voorgelezen (de eigenaar: "het kind moet het toch zelf lezen"). Tik op een woord en je
+// hoort het; de luidsprekerknop leest de hele bladzijde voor, maar alleen als het kind
+// erop drukt. Uitgelezen = klaar-kaart.
 export function BoekjeScreen(manager: ScreenManager, boekje: Boekje): Screen {
   const el = document.createElement('div');
   el.className = 'scherm boekje-scherm';
@@ -42,7 +43,6 @@ export function BoekjeScreen(manager: ScreenManager, boekje: Boekje): Screen {
       const lees = maakAudioKnop(() => speelAf(audio));
       lees.classList.add('boekje-voorlees');
       kaart.appendChild(lees);
-      if (richting >= 0) speelAf(audio);
     }
 
     const plaatjes = document.createElement('div');
