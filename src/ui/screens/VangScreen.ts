@@ -42,6 +42,7 @@ const THEMA_DINGEN: Partial<Record<ThemaId, VangThema>> = {
   kermis: { goed: [a('kermis-ijsje'), a('kermis-popcorn'), w('ballon'), w('taart'), w('koek')], gevaar: w('spook'), rood: true },
   bouw: { goed: [w('hamer'), w('touw'), w('emmer'), w('ladder'), w('schaar')], gevaar: w('vuur'), rood: false },
   trein: { goed: [w('tas'), w('pet'), w('appel'), w('boek'), w('fles')], gevaar: w('onweer'), rood: true },
+  savanne: { goed: [w('giraf'), w('zebra'), w('olifant'), w('banaan'), w('leeuw')], gevaar: w('krokodil'), rood: true },
 };
 const STER = w('ster');
 const HART = 'assets/icons/bewaar.svg';

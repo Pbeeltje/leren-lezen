@@ -8,6 +8,7 @@ import './styles/achtergrond-winter.css';
 import './styles/achtergrond-kermis.css';
 import './styles/achtergrond-bouw.css';
 import './styles/achtergrond-trein.css';
+import './styles/achtergrond-savanne.css';
 
 import { ScreenManager } from './engine/screenManager.ts';
 import { sceneManager } from './three/sceneManager.ts';

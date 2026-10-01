@@ -61,28 +61,95 @@ function plaatjesPool(): Woord[] {
   return pool;
 }
 
-function potlood(lengte: number, kleur: string): SVGSVGElement {
-  const ns = 'http://www.w3.org/2000/svg';
-  const svg = document.createElementNS(ns, 'svg');
+const NS = 'http://www.w3.org/2000/svg';
+
+// Een liggend ding van `lengte` px breed en 44 px hoog, uit losse onderdelen met een
+// donkere rand.
+function tekening(lengte: number, onderdelen: [string, Record<string, string>][], rand = true): SVGSVGElement {
+  const svg = document.createElementNS(NS, 'svg');
   svg.setAttribute('width', String(lengte));
   svg.setAttribute('height', '44');
   svg.setAttribute('viewBox', `0 0 ${lengte} 44`);
-  const onderdelen: [string, Record<string, string>][] = [
+  for (const [tag, attrs] of onderdelen) {
+    const el = document.createElementNS(NS, tag);
+    if (rand) {
+      el.setAttribute('stroke', '#263238');
+      el.setAttribute('stroke-width', '2');
+    }
+    for (const [k, v] of Object.entries(attrs)) el.setAttribute(k, v);
+    svg.appendChild(el);
+  }
+  return svg;
+}
+
+function potlood(lengte: number, kleur: string): SVGSVGElement {
+  return tekening(lengte, [
     ['rect', { x: '0', y: '6', width: '22', height: '32', rx: '6', fill: '#f48fb1' }],
     ['rect', { x: '18', y: '6', width: '10', height: '32', fill: '#b0bec5' }],
     ['rect', { x: '28', y: '6', width: String(lengte - 64), height: '32', fill: kleur }],
     ['polygon', { points: `${lengte - 36},6 ${lengte - 4},22 ${lengte - 36},38`, fill: '#ffe0b2' }],
     ['polygon', { points: `${lengte - 14},16.5 ${lengte - 4},22 ${lengte - 14},27.5`, fill: '#37474f' }],
-  ];
-  for (const [tag, attrs] of onderdelen) {
-    const el = document.createElementNS(ns, tag);
-    for (const [k, v] of Object.entries(attrs)) el.setAttribute(k, v);
-    el.setAttribute('stroke', '#263238');
-    el.setAttribute('stroke-width', '2');
-    svg.appendChild(el);
-  }
-  return svg;
+  ]);
 }
+
+// Touw: een dikke streng met schuine draaiingen en een knoopje aan beide kanten.
+function touw(lengte: number): SVGSVGElement {
+  const draaien: [string, Record<string, string>][] = [];
+  for (let x = 20; x < lengte - 20; x += 10) {
+    draaien.push(['path', { d: `M${x} 14 L${x + 8} 30`, stroke: '#a1793f', 'stroke-width': '2.5', 'stroke-linecap': 'round' }]);
+  }
+  return tekening(lengte, [
+    ['rect', { x: '12', y: '13', width: String(lengte - 24), height: '18', rx: '9', fill: '#d9b26a' }],
+    ...draaien,
+    ['circle', { cx: '12', cy: '22', r: '11', fill: '#c99c52' }],
+    ['circle', { cx: String(lengte - 12), cy: '22', r: '11', fill: '#c99c52' }],
+    ['path', { d: `M6 30 L2 40 M12 33 L12 42 M${lengte - 6} 30 L${lengte - 2} 40 M${lengte - 12} 33 L${lengte - 12} 42`, stroke: '#a1793f', 'stroke-width': '3', 'stroke-linecap': 'round', fill: 'none' }],
+  ]);
+}
+
+// Slang: een golvend lijf met een kop rechts (oogje en tongetje) en een puntige staart.
+function slang(lengte: number): SVGSVGElement {
+  const eind = lengte - 34;
+  const golven = Math.max(1, Math.round((eind - 10) / 70));
+  const stap = (eind - 10) / golven;
+  let d = 'M6 24';
+  for (let i = 0; i < golven; i++) {
+    const x = 10 + i * stap;
+    d += ` C${(x + stap * 0.25).toFixed(1)} 8 ${(x + stap * 0.25).toFixed(1)} 8 ${(x + stap * 0.5).toFixed(1)} 22 S${(x + stap * 0.75).toFixed(1)} 36 ${(x + stap).toFixed(1)} 22`;
+  }
+  return tekening(lengte, [
+    ['path', { d, fill: 'none', stroke: '#263238', 'stroke-width': '15', 'stroke-linecap': 'round' }],
+    ['path', { d, fill: 'none', stroke: '#66bb6a', 'stroke-width': '11', 'stroke-linecap': 'round' }],
+    ['path', { d, fill: 'none', stroke: '#fff176', 'stroke-width': '3', 'stroke-dasharray': '4 9', 'stroke-linecap': 'round' }],
+    ['path', { d: `M${lengte - 8} 22 L${lengte - 1} 19 M${lengte - 8} 22 L${lengte - 1} 25`, stroke: '#e53935', 'stroke-width': '2', 'stroke-linecap': 'round', fill: 'none' }],
+    ['ellipse', { cx: String(lengte - 22), cy: '22', rx: '15', ry: '11', fill: '#66bb6a', stroke: '#263238', 'stroke-width': '2' }],
+    ['circle', { cx: String(lengte - 20), cy: '18', r: '3', fill: '#263238' }],
+    ['circle', { cx: String(lengte - 19), cy: '17', r: '1', fill: '#ffffff' }],
+  ], false);
+}
+
+// Ladder (liggend): twee bomen met sporten om de 30 px.
+function ladder(lengte: number): SVGSVGElement {
+  const sporten: [string, Record<string, string>][] = [];
+  const aantal = Math.max(2, Math.round((lengte - 20) / 30));
+  for (let i = 0; i <= aantal; i++) {
+    const x = 8 + ((lengte - 22) * i) / aantal;
+    sporten.push(['rect', { x: x.toFixed(1), y: '8', width: '6', height: '28', fill: '#c98b4b' }]);
+  }
+  return tekening(lengte, [
+    ...sporten,
+    ['rect', { x: '2', y: '3', width: String(lengte - 4), height: '7', rx: '3', fill: '#a8703a' }],
+    ['rect', { x: '2', y: '34', width: String(lengte - 4), height: '7', rx: '3', fill: '#a8703a' }],
+  ]);
+}
+
+// Dingen die lang of kort kunnen zijn; [lang, kort] krijgen dezelfde soort.
+const LANGE_DINGEN: ((lengte: number) => SVGSVGElement)[] = [
+  (l) => potlood(l, kies(PENNEN)),
+  touw,
+  slang,
+  ladder,
+];
 
 interface Optie {
   inhoud: () => Node;
@@ -113,11 +180,14 @@ function maakOpties(soort: Soort): { opties: Optie[]; kolom: boolean } {
     };
     return { opties: [{ inhoud: maak(zwaar), juist: soort === 'zwaar' }, { inhoud: maak(licht), juist: soort === 'licht' }], kolom: false };
   }
+  // Zelfde ding (en bij het potlood dezelfde kleur) in lang en kort.
   const kleur = kies(PENNEN);
+  const ding = kies(LANGE_DINGEN);
+  const teken = ding === LANGE_DINGEN[0] ? (l: number) => potlood(l, kleur) : ding;
   return {
     opties: [
-      { inhoud: () => potlood(360, kleur), juist: soort === 'lang' },
-      { inhoud: () => potlood(150, kleur), juist: soort === 'kort' },
+      { inhoud: () => teken(360), juist: soort === 'lang' },
+      { inhoud: () => teken(150), juist: soort === 'kort' },
     ],
     kolom: true,
   };

@@ -1,0 +1,455 @@
+/* ---- Savanne (src/achtergrond/savanne.ts) ----
+   data-tijd = avond | nacht | dag. De lagen vloeien langzaam in elkaar over. */
+.decor-savanne {
+  background: linear-gradient(#5aa7df 0%, #8cc4ea 45%, #dce8d6 80%, #f2e2b0 100%);
+  overflow: hidden;
+}
+.savanne--begin,
+.savanne--begin * { transition: none !important; }
+
+.savanne-lucht { position: absolute; inset: 0; opacity: 0; }
+.savanne-lucht--avond {
+  background: linear-gradient(#d9542a 0%, #ec7a36 35%, #f6a050 62%, #f8c27a 82%, #f3cf8f 100%);
+  transition: opacity 6s ease;
+}
+.savanne-lucht--nacht {
+  background: linear-gradient(#070c24 0%, #141d45 45%, #2a2d5c 75%, #463a62 100%);
+  transition: opacity 9s ease-in-out;
+}
+.decor-savanne[data-tijd='avond'] .savanne-lucht--avond,
+.decor-savanne[data-tijd='nacht'] .savanne-lucht--avond,
+.decor-savanne[data-tijd='nacht'] .savanne-lucht--nacht { opacity: 1; }
+
+.savanne-sterren { position: absolute; inset: 0; opacity: 0; transition: opacity 8s ease; }
+.decor-savanne[data-tijd='nacht'] .savanne-sterren { opacity: 1; transition-delay: 3s; }
+.savanne-ster {
+  position: absolute;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: 0 0 4px rgba(255, 255, 255, 0.8);
+  animation: savanne-twinkel 3s ease-in-out infinite alternate;
+}
+@keyframes savanne-twinkel {
+  from { opacity: 0.35; }
+  to { opacity: 1; }
+}
+.savanne-maan {
+  position: absolute;
+  right: 24%;
+  top: 9%;
+  width: clamp(44px, 6vw, 80px);
+  height: auto;
+  opacity: 0;
+  transform: translateY(30px);
+  filter: drop-shadow(0 0 14px rgba(255, 244, 196, 0.6));
+  transition: opacity 5s ease, transform 6s ease;
+}
+.decor-savanne[data-tijd='nacht'] .savanne-maan { opacity: 1; transform: none; transition-delay: 3s; }
+
+.decor-savanne .savanne-wolk { opacity: 0; transition: opacity 6s ease; }
+.decor-savanne[data-tijd='dag'] .savanne-wolk { opacity: 0.85; }
+
+/* De zon staat met zijn middelpunt op een hoogte boven de onderkant (in vh). Bij de
+   zonsondergang is hij groot en oranje en zakt hij achter de bergen. */
+.savanne-zon {
+  position: absolute;
+  left: 27%;
+  bottom: 0;
+  width: clamp(70px, min(11vw, 17vh), 150px);
+  aspect-ratio: 1;
+  transform: translate(-50%, calc(50% - 38vh)) scale(1.35);
+  transition: transform 20s cubic-bezier(0.25, 0.6, 0.5, 1);
+}
+.savanne--begin .savanne-zon { transform: translate(-50%, calc(50% - 57vh)) scale(1.35); }
+.decor-savanne[data-tijd='nacht'] .savanne-zon {
+  transform: translate(-50%, calc(50% - 20vh)) scale(1.35);
+  transition: transform 7s ease-in;
+}
+.decor-savanne[data-tijd='dag'] .savanne-zon {
+  transform: translate(-50%, calc(50% - 80vh)) scale(1);
+  transition: transform 12s cubic-bezier(0.2, 0.6, 0.4, 1);
+}
+.savanne-zon__dag,
+.savanne-zon__avond {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  transition: opacity 6s ease;
+}
+.savanne-zon__dag {
+  background: radial-gradient(circle, #fffbe0 0%, #ffe76e 55%, #ffd23a 100%);
+  box-shadow: 0 0 40px 14px rgba(255, 232, 130, 0.6);
+  opacity: 0;
+}
+.savanne-zon__avond {
+  background: radial-gradient(circle, #fffbe8 0%, #ffeaa6 38%, #ffc35c 72%, #f9a242 100%);
+  box-shadow: 0 0 60px 26px rgba(255, 176, 86, 0.55), 0 0 140px 60px rgba(255, 150, 70, 0.3);
+}
+.decor-savanne[data-tijd='dag'] .savanne-zon__dag { opacity: 1; }
+.decor-savanne[data-tijd='dag'] .savanne-zon__avond { opacity: 0; }
+
+/* Tafelbergen in de verte; de kleur volgt de lucht. */
+.savanne-bergen {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 29vh;
+  width: 100%;
+  height: 14vh;
+}
+.savanne-bergen path { transition: fill 8s ease; }
+.savanne-berg--ver { fill: #a3b9c3; }
+.savanne-berg--dicht { fill: #8fa596; }
+.decor-savanne[data-tijd='avond'] .savanne-berg--ver { fill: #dc8348; }
+.decor-savanne[data-tijd='avond'] .savanne-berg--dicht { fill: #c46c3c; }
+.decor-savanne[data-tijd='nacht'] .savanne-berg--ver { fill: #262a52; }
+.decor-savanne[data-tijd='nacht'] .savanne-berg--dicht { fill: #1c1f40; }
+
+/* Warme nevel langs de horizon (valt ook over de zakkende zon). */
+.savanne-waas {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 29vh;
+  height: 20vh;
+  background: linear-gradient(rgba(255, 190, 120, 0), rgba(255, 186, 112, 0.45) 55%, rgba(255, 205, 140, 0.75) 88%, rgba(255, 205, 140, 0.4));
+  transition: opacity 7s ease;
+}
+.decor-savanne[data-tijd='dag'] .savanne-waas { opacity: 0.45; }
+.decor-savanne[data-tijd='nacht'] .savanne-waas { opacity: 0; }
+
+/* Alles op de grond krijgt per tijd een kleurfilter: warm en donkerder bij zonsondergang,
+   donker en grauw 's nachts. (Niet op het hele land: zzz en waterdruppels blijven helder.) */
+.savanne-land { position: absolute; inset: 0; }
+.savanne-f {
+  filter: brightness(1.04) sepia(0) saturate(1.05) hue-rotate(0deg);
+  transition: filter 8s ease;
+}
+.decor-savanne[data-tijd='avond'] .savanne-f { filter: brightness(0.8) sepia(0.35) saturate(1.4) hue-rotate(-12deg); }
+.decor-savanne[data-tijd='nacht'] .savanne-f { filter: brightness(0.42) sepia(0.15) saturate(0.6) hue-rotate(0deg); }
+/* De boom wordt bij zonsondergang bijna een silhouet, zoals op de foto. */
+.decor-savanne[data-tijd='avond'] .savanne-boom .savanne-f { filter: brightness(0.38) sepia(0.4) saturate(1.2) hue-rotate(-12deg); }
+
+.savanne-verreboom {
+  position: absolute;
+  bottom: 29.4vh;
+  width: clamp(26px, 3.4vw, 46px);
+  aspect-ratio: 60 / 40;
+}
+.savanne-verreboom__svg { display: block; width: 100%; height: 100%; fill: #6e6e42; transition: fill 8s ease; }
+.decor-savanne[data-tijd='avond'] .savanne-verreboom__svg { fill: #7a3b22; }
+.decor-savanne[data-tijd='nacht'] .savanne-verreboom__svg { fill: #15193a; }
+.savanne-verreboom--1 { left: 6%; }
+.savanne-verreboom--2 { left: 33%; width: clamp(18px, 2.4vw, 32px); }
+.savanne-verreboom--3 { left: 46%; }
+.savanne-verreboom--4 { left: 58%; width: clamp(20px, 2.6vw, 36px); }
+.savanne-verreboom--5 { left: 71%; width: clamp(16px, 2vw, 28px); }
+
+.savanne-vlakte {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 30vh;
+  background: linear-gradient(#c6a752 0%, #b99c47 22%, #a98d3e 55%, #8f7a34 100%);
+}
+.savanne-horizongras {
+  position: absolute;
+  left: 0;
+  bottom: 29.4vh;
+  width: 100%;
+  height: 2.4vh;
+}
+
+/* Graspollen die zacht heen en weer wuiven. */
+.savanne-midgras,
+.savanne-voorgras { position: absolute; inset: 0; }
+.savanne-pol {
+  position: absolute;
+  bottom: -1.4vh;
+  width: calc(clamp(46px, 6.6vw, 88px) * var(--maat, 1));
+  aspect-ratio: 60 / 50;
+  transform-origin: bottom center;
+  animation: savanne-wuif 4.5s ease-in-out infinite alternate;
+}
+.savanne-pol svg { display: block; width: 100%; height: 100%; overflow: visible; }
+.savanne-pol--midden { width: calc(clamp(30px, 4vw, 56px) * var(--maat, 1)); animation-duration: 5.5s; }
+@keyframes savanne-wuif {
+  from { transform: skewX(-6deg); }
+  to { transform: skewX(5deg); }
+}
+
+/* De grote acacia rechts. */
+.savanne-boom {
+  position: absolute;
+  right: 1%;
+  bottom: 12vh;
+  width: clamp(190px, min(34vw, 52vh), 500px);
+  aspect-ratio: 300 / 260;
+  transform-origin: bottom center;
+  animation: savanne-boomwiebel 10s ease-in-out infinite;
+}
+.savanne-boom__svg { display: block; width: 100%; height: 100%; }
+@keyframes savanne-boomwiebel {
+  0%, 100% { transform: rotate(-0.6deg); }
+  50% { transform: rotate(0.6deg); }
+}
+
+/* Waterpoel links vooraan. */
+.savanne-poel {
+  position: absolute;
+  left: 1%;
+  bottom: 3vh;
+  width: clamp(190px, 33vw, 470px);
+  height: auto;
+}
+
+/* ---- Olifanten ---- */
+.savanne-kudde { position: absolute; inset: 0; }
+.savanne-olifant {
+  position: absolute;
+  left: 0;
+  bottom: 8vh;
+  width: clamp(100px, min(15vw, 23vh), 215px);
+  aspect-ratio: 236 / 180;
+  z-index: 1;
+}
+.savanne-olifant--klein { width: clamp(58px, min(8.5vw, 13vh), 122px); }
+.savanne-olifant--klein .olifant__tand { display: none; }
+.savanne-olifant__svg { display: block; width: 100%; height: 100%; overflow: visible; }
+.savanne-olifant.gespiegeld .savanne-olifant__svg { transform: scaleX(-1); }
+.olifant__poot { transform-box: fill-box; transform-origin: 50% 0; }
+.savanne-olifant.loopt .olifant__poot--a { animation: olifant-stap 0.9s ease-in-out infinite alternate; }
+.savanne-olifant.loopt .olifant__poot--b { animation: olifant-stap 0.9s ease-in-out -0.9s infinite alternate-reverse; }
+@keyframes olifant-stap {
+  from { transform: rotate(-9deg); }
+  to { transform: rotate(9deg); }
+}
+.olifant__oor {
+  transform-box: view-box;
+  transform-origin: 158px 60px;
+  animation: olifant-oor 4s ease-in-out infinite;
+}
+@keyframes olifant-oor {
+  0%, 55%, 100% { transform: scaleX(1); }
+  65% { transform: scaleX(0.8) rotate(-4deg); }
+  75% { transform: scaleX(1); }
+  85% { transform: scaleX(0.84) rotate(-3deg); }
+}
+.olifant__staart {
+  transform-box: view-box;
+  transform-origin: 22px 80px;
+  animation: olifant-staart 2.2s ease-in-out infinite alternate;
+}
+@keyframes olifant-staart {
+  from { transform: rotate(-10deg); }
+  to { transform: rotate(14deg); }
+}
+.olifant__kop { transform-box: view-box; transform-origin: 160px 72px; transition: transform 0.9s ease; }
+.savanne-olifant.drinkt .olifant__kop { transform: rotate(7deg); }
+.olifant__slurf { transform-box: view-box; transform-origin: 196px 80px; }
+.savanne-olifant.drinkt .olifant__slurf { animation: olifant-drink 3.8s ease-in-out infinite; }
+@keyframes olifant-drink {
+  0%, 100% { transform: rotate(0) scaleY(1); }
+  30%, 58% { transform: rotate(-16deg) scaleY(1.22); }
+  78% { transform: rotate(32deg) scaleY(0.72); }
+}
+.savanne-olifant.spuit .olifant__kop { transform: rotate(-6deg); }
+.savanne-olifant.spuit .olifant__slurf { animation: olifant-spuit 2.6s ease-in-out; }
+@keyframes olifant-spuit {
+  0%, 100% { transform: rotate(0) scaleY(1); }
+  22%, 72% { transform: rotate(-125deg) scaleY(0.9); }
+}
+.savanne-druppel {
+  position: absolute;
+  width: 7px;
+  height: 7px;
+  margin: -3.5px 0 0 -3.5px;
+  border-radius: 50%;
+  background: #9ad8f8;
+  box-shadow: 0 0 4px rgba(200, 240, 255, 0.9);
+  z-index: 3;
+}
+
+/* ---- Leeuwen onder de boom ---- */
+.savanne-leeuwen { position: absolute; inset: 0; }
+.savanne-leeuw {
+  position: absolute;
+  aspect-ratio: 232 / 130;
+  transform-origin: bottom center;
+}
+.savanne-leeuw__svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  transform-origin: bottom center;
+  animation: adem 4.5s ease-in-out infinite;
+}
+.savanne-leeuw--leeuwin { right: 23%; bottom: 9vh; width: clamp(92px, min(13vw, 20vh), 185px); }
+.savanne-leeuw--koning { right: 4%; bottom: 5.5vh; width: clamp(112px, min(17vw, 25vh), 235px); }
+.savanne-leeuw--welp { right: 19%; bottom: 2.5vh; width: clamp(56px, min(8vw, 12vh), 112px); }
+.savanne-leeuw--leeuwin .savanne-leeuw__svg { animation-delay: -1.5s; }
+.savanne-leeuw--welp .savanne-leeuw__svg { animation-duration: 3s; animation-delay: -0.7s; }
+.savanne-leeuw.springt { animation: juich-sprong 0.65s ease-out 2; }
+
+.leeuw__staart {
+  transform-box: view-box;
+  transform-origin: 194px 104px;
+  animation: leeuw-zwiep 5s ease-in-out infinite;
+}
+.savanne-leeuw--leeuwin .leeuw__staart { animation-delay: -2s; animation-duration: 6.5s; }
+.savanne-leeuw--welp .leeuw__staart { animation-delay: -3.4s; animation-duration: 3.5s; }
+@keyframes leeuw-zwiep {
+  0%, 62%, 100% { transform: rotate(0); }
+  72% { transform: rotate(-22deg); }
+  82% { transform: rotate(8deg); }
+  92% { transform: rotate(-12deg); }
+}
+.leeuw__kop { transform-box: view-box; transform-origin: 88px 92px; }
+.leeuw__oren { transform-box: fill-box; transform-origin: 50% 100%; }
+.savanne-leeuw.oorflap .leeuw__oren { animation: leeuw-oor 0.5s ease-in-out; }
+@keyframes leeuw-oor {
+  0%, 100% { transform: none; }
+  40% { transform: translateY(-2px) scaleY(1.08); }
+}
+.leeuw__open { transform-box: fill-box; transform-origin: 50% 0; transform: scaleY(0); }
+.leeuw__ogen { transform-box: fill-box; transform-origin: center; transition: opacity 1s ease; }
+.leeuw__ogen.knipper { animation: winter-knipper 0.26s ease-in-out; }
+.leeuw__slaap { opacity: 0; transition: opacity 1s ease; }
+.decor-savanne[data-tijd='nacht'] .leeuw__ogen { opacity: 0; }
+.decor-savanne[data-tijd='nacht'] .leeuw__slaap { opacity: 1; }
+
+/* Gapen: kop iets naar achteren, ogen dicht, bek wijd open. */
+.savanne-leeuw.gaapt .leeuw__kop { animation: leeuw-gaapkop 2.4s ease-in-out; }
+.savanne-leeuw.gaapt .leeuw__open { animation: leeuw-gaapbek 2.4s ease-in-out; }
+.savanne-leeuw.gaapt .leeuw__ogen { animation: leeuw-gaapogen 2.4s ease-in-out; }
+@keyframes leeuw-gaapkop {
+  0%, 100% { transform: rotate(0); }
+  30%, 65% { transform: rotate(-9deg); }
+}
+@keyframes leeuw-gaapbek {
+  0%, 100% { transform: scaleY(0); }
+  30%, 65% { transform: scaleY(1.5); }
+}
+@keyframes leeuw-gaapogen {
+  0%, 100% { transform: scaleY(1); }
+  25%, 70% { transform: scaleY(0.12); }
+}
+
+/* Brullen bij een goed antwoord (ook 's nachts even wakker). */
+.savanne-leeuw.brult .leeuw__kop { animation: leeuw-brulkop 1.6s ease-in-out; }
+.savanne-leeuw.brult .leeuw__open { animation: leeuw-brulbek 1.6s ease-in-out; }
+.decor-savanne .savanne-leeuw.brult .leeuw__ogen { opacity: 1; }
+.decor-savanne .savanne-leeuw.brult .leeuw__slaap { opacity: 0; }
+@keyframes leeuw-brulkop {
+  0%, 100% { transform: rotate(0); }
+  20%, 70% { transform: rotate(-12deg) translateY(-4px); }
+  30%, 60% { transform: rotate(-14deg) translate(-2px, -5px); }
+}
+@keyframes leeuw-brulbek {
+  0%, 100% { transform: scaleY(0); }
+  20%, 70% { transform: scaleY(1.7); }
+}
+.savanne-brul {
+  position: absolute;
+  left: -16%;
+  top: 22%;
+  width: 44%;
+  aspect-ratio: 1;
+  opacity: 0;
+  pointer-events: none;
+}
+.savanne-brul span {
+  position: absolute;
+  inset: 0;
+  border: 5px solid transparent;
+  border-left-color: #fff;
+  border-radius: 50%;
+  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.4));
+}
+.savanne-leeuw.brult .savanne-brul { animation: savanne-brul 1.6s ease-out; }
+.savanne-leeuw.brult .savanne-brul span { animation: savanne-golf 0.55s ease-out infinite; }
+.savanne-brul span:nth-child(2) { animation-delay: 0.18s !important; }
+.savanne-brul span:nth-child(3) { animation-delay: 0.36s !important; }
+@keyframes savanne-brul {
+  0%, 15% { opacity: 0; }
+  25%, 70% { opacity: 1; }
+  100% { opacity: 0; }
+}
+@keyframes savanne-golf {
+  from { transform: translateX(10%) scale(0.4); opacity: 1; }
+  to { transform: translateX(-40%) scale(1.1); opacity: 0; }
+}
+
+/* Slapen: zzz boven de leeuw. */
+.savanne-zzz {
+  position: absolute;
+  left: 8%;
+  top: -18%;
+  opacity: 0;
+  transition: opacity 2s ease;
+  pointer-events: none;
+}
+.decor-savanne[data-tijd='nacht'] .savanne-zzz { opacity: 1; transition-delay: 4s; }
+.savanne-leeuw.brult .savanne-zzz { opacity: 0 !important; transition: none; }
+.savanne-zzz span {
+  position: absolute;
+  font-weight: 800;
+  font-size: clamp(0.9rem, 1.6vw, 1.4rem);
+  color: #e8ecff;
+  text-shadow: 0 0 6px rgba(160, 180, 255, 0.8);
+  opacity: 0;
+  animation: savanne-zzz 3.6s ease-out infinite;
+}
+.savanne-zzz span:nth-child(2) { animation-delay: 1.2s; }
+.savanne-zzz span:nth-child(3) { animation-delay: 2.4s; }
+@keyframes savanne-zzz {
+  0% { transform: translate(0, 0) scale(0.6); opacity: 0; }
+  20% { opacity: 1; }
+  100% { transform: translate(-26px, -46px) scale(1.25); opacity: 0; }
+}
+
+/* Vuurvliegjes 's nachts. */
+.savanne-vuurvliegjes { position: absolute; inset: 0; opacity: 0; transition: opacity 5s ease; pointer-events: none; }
+.decor-savanne[data-tijd='nacht'] .savanne-vuurvliegjes { opacity: 1; transition-delay: 4s; }
+.savanne-vuurvlieg {
+  position: absolute;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: #fff6a0;
+  box-shadow: 0 0 8px 3px rgba(255, 240, 120, 0.75);
+  animation: vuurvlieg-zweef 7s ease-in-out infinite alternate, vuurvlieg-gloei 2s ease-in-out infinite alternate;
+}
+@keyframes vuurvlieg-zweef {
+  0% { transform: translate(0, 0); }
+  33% { transform: translate(24px, -16px); }
+  66% { transform: translate(-12px, -30px); }
+  100% { transform: translate(18px, -6px); }
+}
+@keyframes vuurvlieg-gloei {
+  from { opacity: 0.15; }
+  to { opacity: 1; }
+}
+
+/* Een zwerm vogels langs de lucht. */
+.savanne-zwerm { position: absolute; inset: 0; pointer-events: none; }
+.savanne-zwermvogel { position: absolute; left: 0; top: 0; width: clamp(18px, 2.2vw, 30px); }
+.savanne-zwermvogel__svg { display: block; width: 100%; height: auto; overflow: visible; }
+.zwermvogel__vleugels {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: zwermvogel-flap var(--flap, 0.5s) ease-in-out infinite alternate;
+}
+@keyframes zwermvogel-flap {
+  from { transform: scaleY(1); }
+  to { transform: scaleY(-0.5); }
+}
+
+@media (max-width: 560px) {
+  .savanne-leeuw--leeuwin { right: 30%; bottom: 10vh; }
+  .savanne-leeuw--welp { right: 24%; }
+  .drijf-wolk--2.savanne-wolk { display: none; }
+  .savanne-verreboom--2, .savanne-verreboom--4 { display: none; }
+}

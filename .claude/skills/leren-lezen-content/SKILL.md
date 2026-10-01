@@ -983,3 +983,18 @@ Children no longer pick an age but a group (`Groep = 'kleuter' | 'groep3'` in co
   body, lattice sails with white cloth turning anticlockwise). Wheat = rows of a repeating
   ear image (`AAR`) that sway with `skewX`; ditches glint (`.polder-glans`). Where the long
   ditch passes under the road there is a small brick bridge with white railings.
+
+- **Savanne** (`achtergrond/savanne.ts`, `styles/achtergrond-savanne.css`, all own
+  drawings; Fluent only has a lion head): acacia right, three lions under it (king with
+  mane, lioness, cub; tail flick, blinking, yawning `gaapt`), a waterhole left where an
+  elephant family (`bezoek`: one adult, sometimes with a calf or a second adult) walks in
+  from the left, drinks from the far bank (`drinkt`) and walks back. Day cycle `DAGCYCLUS`
+  sets `data-tijd`: avond 20 s (big orange sun sinks behind the table mountains, the tree
+  turns into a silhouette, a bird flock passes), nacht 15 s (stars, moon, fireflies, lions
+  sleep with zzz), dag 25 s. Ground parts carry `.savanne-f` (colour filter per time of
+  day); zzz, roar waves and water drops stay outside it. `savanne--begin` skips the first
+  transitions so it starts mid-sunset. `juich`: the king roars, the cub jumps; `feest`: the
+  elephants spray water (or a visit starts) plus a flock. Check: `node tests/savanne.mjs <map>`
+  (~65 s, real time).
+- **Lang/kort** (`games/kleuter/vergelijken.ts`): the same object drawn at 360 and 150 px,
+  chosen from `LANGE_DINGEN` (pencil, rope, snake, ladder).
