@@ -5,7 +5,7 @@ import { maakXylofoon } from '../../games/muziek/xylofoon.ts';
 import { maakDrumstel } from '../../games/muziek/drumstel.ts';
 
 // Vrij spelen: geen opdracht, geen goed of fout. Twee knoppen bovenaan wisselen tussen de
-// xylofoon (acht staven) en het hele drumstel (grote trom, snaredrum, bekken).
+// xylofoon (acht staven) en het hele drumstel (grote trom, snaredrum, tom, bekken, crash).
 export function XylofoonScreen(manager: ScreenManager): Screen {
   const el = document.createElement('div');
   el.className = 'scherm';
@@ -19,7 +19,7 @@ export function XylofoonScreen(manager: ScreenManager): Screen {
   el.appendChild(kaart);
 
   const xylo = maakXylofoon([0, 1, 2, 3, 4, 5, 6, 7]);
-  const kit = maakDrumstel(['bas', 'snare', 'bekken']);
+  const kit = maakDrumstel(['bas', 'snare', 'tom', 'bekken', 'crash']);
 
   const knoppen = (
     [

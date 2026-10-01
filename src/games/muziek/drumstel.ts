@@ -1,10 +1,24 @@
 import { speelDrum, type DrumSoort } from '../../engine/muziek.ts';
 
-// Drumstel met zelfgetekende onderdelen: grote trom (rood), snaredrum (blauw) en bekken
-// (goud). Elke trom is een eigen knop, zodat twee vingers tegelijk kunnen trommelen.
+// Drumstel met zelfgetekende onderdelen: grote trom (rood), snaredrum (blauw, plat met
+// snaren eronder), tom (groen), bekken (goud) en crash (oranje, groter en schuin). Ritme
+// gebruikt alleen grote trom, snare en bekken; vrij spelen het hele stel. Elke trom is een
+// eigen knop, zodat twee vingers tegelijk kunnen trommelen.
 
-export const DRUM_KLEUR: Record<DrumSoort, string> = { bas: '#e53935', snare: '#1e88e5', bekken: '#f9a825' };
-export const DRUM_NAAM: Record<DrumSoort, string> = { bas: 'grote trom', snare: 'kleine trom', bekken: 'bekken' };
+export const DRUM_KLEUR: Record<DrumSoort, string> = {
+  bas: '#e53935',
+  snare: '#1e88e5',
+  bekken: '#f9a825',
+  tom: '#43a047',
+  crash: '#fb8c00',
+};
+export const DRUM_NAAM: Record<DrumSoort, string> = {
+  bas: 'grote trom',
+  snare: 'snaredrum',
+  bekken: 'bekken',
+  tom: 'tom',
+  crash: 'crash',
+};
 
 const TEKENING: Record<DrumSoort, string> = {
   bas: `<svg viewBox="0 0 100 100" aria-hidden="true">
@@ -15,11 +29,28 @@ const TEKENING: Record<DrumSoort, string> = {
     <path d="M50 30 l5 11 12 1 -9 8 3 12 -11 -6 -11 6 3 -12 -9 -8 12 -1z" fill="#e53935"/>
   </svg>`,
   snare: `<svg viewBox="0 0 100 90" aria-hidden="true">
-    <path d="M30 70 L18 88 M70 70 L82 88 M50 70 L50 88" stroke="#616161" stroke-width="4" stroke-linecap="round"/>
-    <rect x="10" y="26" width="80" height="34" fill="#1e88e5"/>
-    <ellipse cx="50" cy="60" rx="40" ry="11" fill="#1565c0"/>
-    <path d="M18 30 v28 M34 34 v28 M50 35 v28 M66 34 v28 M82 30 v28" stroke="#e0e0e0" stroke-width="3"/>
-    <ellipse cx="50" cy="26" rx="40" ry="11" fill="#f5f5f5" stroke="#bdbdbd" stroke-width="3"/>
+    <path d="M50 58 V80 M50 80 L30 90 M50 80 L70 90 M50 80 V90" stroke="#616161" stroke-width="4" stroke-linecap="round"/>
+    <rect x="8" y="36" width="84" height="16" fill="#1e88e5"/>
+    <ellipse cx="50" cy="52" rx="42" ry="11" fill="#1565c0"/>
+    <path d="M16 40 v13 M30 44 v13 M50 45 v13 M70 44 v13 M84 40 v13" stroke="#e0e0e0" stroke-width="3"/>
+    <path d="M22 57 Q50 66 78 57 M24 60 Q50 69 76 60" stroke="#bdbdbd" stroke-width="1.5" fill="none"/>
+    <ellipse cx="50" cy="36" rx="42" ry="11" fill="#f5f5f5" stroke="#bdbdbd" stroke-width="3"/>
+  </svg>`,
+  tom: `<svg viewBox="0 0 100 90" aria-hidden="true">
+    <path d="M50 70 V88" stroke="#616161" stroke-width="5" stroke-linecap="round"/>
+    <rect x="16" y="22" width="68" height="40" fill="#43a047"/>
+    <ellipse cx="50" cy="62" rx="34" ry="10" fill="#2e7d32"/>
+    <path d="M22 26 v35 M36 30 v36 M50 31 v36 M64 30 v36 M78 26 v35" stroke="#e0e0e0" stroke-width="3"/>
+    <ellipse cx="50" cy="22" rx="34" ry="10" fill="#f5f5f5" stroke="#bdbdbd" stroke-width="3"/>
+  </svg>`,
+  crash: `<svg viewBox="0 0 100 100" aria-hidden="true">
+    <path d="M50 36 V90 M50 90 L32 99 M50 90 L68 99" stroke="#616161" stroke-width="4" stroke-linecap="round"/>
+    <g transform="rotate(-14 50 30)">
+      <ellipse cx="50" cy="30" rx="49" ry="14" fill="#fb8c00" stroke="#e65100" stroke-width="2"/>
+      <ellipse cx="50" cy="28" rx="34" ry="8" fill="none" stroke="#ffcc80" stroke-width="2" opacity="0.9"/>
+      <ellipse cx="50" cy="28" rx="18" ry="4" fill="none" stroke="#ffe0b2" stroke-width="1.5" opacity="0.8"/>
+      <ellipse cx="50" cy="27" rx="8" ry="4" fill="#ef6c00"/>
+    </g>
   </svg>`,
   bekken: `<svg viewBox="0 0 100 100" aria-hidden="true">
     <path d="M50 34 V90 M50 90 L32 99 M50 90 L68 99" stroke="#616161" stroke-width="4" stroke-linecap="round"/>
@@ -40,7 +71,7 @@ export function maakDrumstel(
   const pads = new Map<DrumSoort, HTMLButtonElement>();
 
   // Vaste plek per onderdeel, ook als er nog maar één of twee zijn.
-  for (const soort of (['snare', 'bas', 'bekken'] as DrumSoort[]).filter((s) => soorten.includes(s))) {
+  for (const soort of (['crash', 'tom', 'snare', 'bas', 'bekken'] as DrumSoort[]).filter((s) => soorten.includes(s))) {
     const pad = document.createElement('button');
     pad.type = 'button';
     pad.className = `drum-pad drum-pad--${soort}`;

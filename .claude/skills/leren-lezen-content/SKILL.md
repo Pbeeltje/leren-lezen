@@ -897,3 +897,18 @@ Children no longer pick an age but a group (`Groep = 'kleuter' | 'groep3'` in co
   "Nieuw blad" asks first (big ✕ / ✓, no reading needed) when the page has unsaved lines.
   The list window is appended to `document.body` so it covers the top buttons.
   Check: `node tests/tekeningen.mjs <map>`.
+- **Leesboekjes hidden:** the topic has `groepen: []` (the owner isn't happy with the
+  booklets yet). Code and audio stay; give it groups again to bring it back.
+- **Kleuter topic order:** `topicsVoorGroep('kleuter')` puts Luisteren first.
+- **Vangspel** (`ui/screens/VangScreen.ts`, topic `vangen`, both groups; the tile shows the
+  profile's own figure): the figure stands at the bottom and follows the finger (or arrow
+  keys). Catch falling food (+1) and the odd glowing star (+5); meteors cost one of 3
+  hearts (1.2 s blinking afterwards). Speed and meteor share rise with time; kleuters
+  slower and fewer meteors. Missed food costs nothing. No coins (coins come from
+  learning); record per profile in `leren-lezen:vangspel:<profielId>`. Start and end
+  screens are pictures only (food ✓, meteor ✕, play button). Check:
+  `node tests/vangspel.mjs <map>`.
+- **Drum kit:** `DrumSoort` also has `tom` (green, pitched) and `crash` (orange, tilted,
+  long). The snare is now drawn flat with wires underneath. Free play uses all five
+  (`.drumstel--5`: cymbals and tom on top, snare and bass below; one row on low
+  landscape screens). Ritme still uses bas/snare/bekken. Check: `node tests/drumstel.mjs <map>`.

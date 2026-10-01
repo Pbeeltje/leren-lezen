@@ -1750,6 +1750,34 @@
 .muziek-kaart--drums .drum-pad--bas { width: 210px; height: 210px; }
 .muziek-kaart--drums .drum-pad--snare { width: 160px; height: 145px; }
 .muziek-kaart--drums .drum-pad--bekken { width: 170px; height: 170px; }
+.drum-pad--bekken.drum-pad--bonk, .drum-pad--crash.drum-pad--bonk { animation: bekken-zwaai 0.5s ease-out; }
+.drumstel--5 {
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  grid-template-areas:
+    'crash crash tom tom bekken bekken'
+    'snare snare snare bas bas bas';
+  align-items: end;
+  justify-items: center;
+  gap: 4px 10px;
+  max-width: 620px;
+  margin: 0 auto;
+}
+.drumstel.drumstel--5 .drum-pad--crash { grid-area: crash; width: 100%; max-width: 170px; height: auto; aspect-ratio: 1; align-self: start; }
+.drumstel.drumstel--5 .drum-pad--tom { grid-area: tom; width: 100%; max-width: 160px; height: auto; aspect-ratio: 10 / 9; }
+.drumstel.drumstel--5 .drum-pad--bekken { grid-area: bekken; width: 100%; max-width: 150px; height: auto; aspect-ratio: 1; align-self: start; }
+.drumstel.drumstel--5 .drum-pad--snare { grid-area: snare; width: 100%; max-width: 190px; height: auto; aspect-ratio: 10 / 9; }
+.drumstel.drumstel--5 .drum-pad--bas { grid-area: bas; width: 100%; max-width: 220px; height: auto; aspect-ratio: 1; }
+.muziek-kaart--drums .drumstel--5 { min-height: 0; }
+/* Laag liggend scherm (telefoon dwars): alles op één rij, zo hoog als er plaats is. */
+@media (orientation: landscape) and (max-height: 600px) {
+  .drumstel.drumstel--5 {
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    grid-template-areas: 'crash tom snare bas bekken';
+    max-width: 760px;
+  }
+  .drumstel.drumstel--5 .drum-pad { max-height: calc(100dvh - 190px); max-width: calc(100dvh - 190px); }
+}
 .muziek-stippen--ritme { gap: 22px; }
 .muziek-figuur { display: flex; gap: 5px; }
 .muziek-stippen--ritme span { background: #fff; border: 4px solid var(--drum); width: 22px; height: 22px; box-sizing: border-box; }
@@ -1901,4 +1929,128 @@
 .boekje-woord {
   font-family: var(--leeslettertype);
   font-weight: 700;
+}
+
+/* ---------- Vangspel ---------- */
+.vang-scherm { position: fixed; inset: 0; display: flex; flex-direction: column; }
+.vang-veld {
+  position: relative;
+  flex: 1;
+  overflow: hidden;
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
+}
+.vang-balk {
+  position: absolute;
+  top: 24px;
+  right: 16px;
+  display: flex;
+  gap: 14px;
+  align-items: center;
+  pointer-events: none;
+}
+.vang-score, .vang-hartjes {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(255, 255, 255, 0.92);
+  border-radius: 999px;
+  padding: 6px 14px;
+  box-shadow: 0 3px 0 rgba(0, 0, 0, 0.18);
+}
+.vang-score img { width: 34px; height: 34px; }
+.vang-score span { font-size: 1.6rem; font-weight: 800; min-width: 1.4em; text-align: center; }
+.vang-hartjes img { width: 30px; height: 30px; transition: opacity 0.3s, transform 0.3s; }
+.vang-hartjes .vang-hart--weg { opacity: 0.2; filter: grayscale(1); transform: scale(0.8); }
+.vang-speler {
+  position: absolute;
+  left: 0;
+  bottom: 16px;
+  pointer-events: none;
+  filter: drop-shadow(0 6px 4px rgba(0, 0, 0, 0.3));
+  will-change: transform;
+}
+.vang-speler--knipper { opacity: 0.55; }
+.vang-speler--au { animation: vang-au 0.45s ease; }
+@keyframes vang-au {
+  0%, 100% { margin-left: 0; }
+  25% { margin-left: -12px; }
+  75% { margin-left: 12px; }
+}
+.vang-ding { position: absolute; left: 0; top: 0; pointer-events: none; will-change: transform; }
+.vang-ding--ster { filter: drop-shadow(0 0 10px rgba(255, 220, 80, 0.95)); }
+.vang-ding--meteoor { filter: drop-shadow(0 0 8px rgba(255, 120, 60, 0.7)); }
+.vang-plop {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  font-size: 1.8rem;
+  font-weight: 800;
+  color: #fff;
+  text-shadow: 0 2px 0 rgba(0, 0, 0, 0.35);
+  pointer-events: none;
+  animation: vang-plop 0.7s ease-out forwards;
+}
+@keyframes vang-plop {
+  from { opacity: 1; margin-top: 0; }
+  to { opacity: 0; margin-top: -60px; }
+}
+.vang-venster {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  background: rgba(10, 15, 35, 0.45);
+}
+.vang-venster__doos {
+  background: var(--kleur-oppervlak);
+  border-radius: var(--radius-groot);
+  padding: 22px 28px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+  box-shadow: 0 8px 0 rgba(0, 0, 0, 0.2);
+  max-width: 100%;
+}
+.vang-venster__figuur { width: 110px; height: 110px; }
+.vang-uitleg { display: flex; gap: 14px; flex-wrap: wrap; justify-content: center; }
+.vang-uitleg__vak {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  border-radius: 18px;
+  padding: 8px 14px;
+  border: 4px solid;
+}
+.vang-uitleg__vak img { width: 48px; height: 48px; }
+.vang-uitleg__vak b { font-size: 2rem; margin-left: 4px; }
+.vang-uitleg__vak--goed { border-color: var(--kleur-succes); color: var(--kleur-succes); }
+.vang-uitleg__vak--fout { border-color: var(--kleur-fout); color: var(--kleur-fout); }
+.vang-venster__score { display: flex; align-items: center; gap: 8px; font-size: 2.6rem; font-weight: 800; }
+.vang-venster__score img { width: 52px; height: 52px; }
+.vang-venster__record { margin: 0; font-size: 1.2rem; font-weight: 700; color: var(--kleur-tekst-zacht, #5b6b7c); }
+.vang-venster__start {
+  width: 96px;
+  height: 96px;
+  border-radius: 50%;
+  background: var(--kleur-succes);
+  box-shadow: 0 5px 0 rgba(0, 0, 0, 0.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.vang-venster__start img { width: 58px; height: 58px; }
+.vang-venster__start:active { transform: translateY(4px); box-shadow: none; }
+@media (max-width: 420px) {
+  .vang-balk { gap: 8px; }
+  .vang-score, .vang-hartjes { padding: 5px 10px; }
+  .vang-hartjes img { width: 24px; height: 24px; }
+}
+@media (orientation: landscape) and (max-height: 500px) {
+  .vang-balk { top: 14px; }
+  .vang-venster__doos { flex-direction: row; flex-wrap: wrap; justify-content: center; padding: 14px 20px; }
+  .vang-venster__figuur { width: 80px; height: 80px; }
 }

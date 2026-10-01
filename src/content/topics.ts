@@ -37,8 +37,9 @@ export const TOPICS: Topic[] = [
   },
   {
     // Leesboekjes bij VLL-kern 1-6: korte verhaaltjes met alleen bekende letters.
+    // Voorlopig verborgen (geen groepen): de eigenaar is er nog niet tevreden over.
     id: 'boekjes',
-    groepen: ['kleuter', 'groep3'],
+    groepen: [],
     titel: 'Leesboekjes',
     icoonPad: 'assets/icons/boekjes.svg',
     beschikbaar: true,
@@ -68,8 +69,19 @@ export const TOPICS: Topic[] = [
     icoonPad: 'assets/icons/muziek.svg',
     beschikbaar: true,
   },
+  {
+    // Vangspel met je eigen figuurtje (de tegel toont het figuur van het profiel).
+    id: 'vangen',
+    groepen: ['kleuter', 'groep3'],
+    titel: 'Vangspel',
+    icoonPad: 'assets/icons/meteoor.svg',
+    beschikbaar: true,
+  },
 ];
 
 export function topicsVoorGroep(groep: Groep): Topic[] {
-  return TOPICS.filter((topic) => topic.groepen.includes(groep));
+  const lijst = TOPICS.filter((topic) => topic.groepen.includes(groep));
+  // Voor kleuters is Luisteren het belangrijkste onderwerp: dat staat voorop.
+  if (groep === 'kleuter') lijst.sort((a, b) => Number(b.id === 'luisteren') - Number(a.id === 'luisteren'));
+  return lijst;
 }
