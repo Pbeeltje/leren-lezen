@@ -9,13 +9,13 @@ const teen = vll('teen');
 const een = vll('een', true);
 const neus = vll('neus');
 const buik = vll('buik');
-const oog = vll('oog');
+const oog = bestaand('oog', 'svg');
 const pet = bestaand('pet', 'jpg');
 const noot = bestaand('noot', 'jpg');
 const beer = bestaand('beer', 'jpg');
 const ster = bestaand('ster', 'jpg');
 const muis = bestaand('muis', 'jpg');
-const kaas = bestaand('kaas', 'jpg');
+const kaas = bestaand('kaas', 'svg');
 const aap = bestaand('aap', 'jpg');
 const trui = bestaand('trui', 'png');
 // Extra woorden met Fluent Emoji-plaatjes (MIT), alleen met letters die al bekend zijn.

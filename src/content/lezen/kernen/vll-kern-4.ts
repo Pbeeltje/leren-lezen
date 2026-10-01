@@ -4,10 +4,10 @@ import { bestaand, vll } from './vll-hulp.ts';
 // Veilig Leren Lezen maan-versie, kern 4: huis, weg, bos, tak, hut.
 // Nieuw: h, w en de korte klinkers a (tak) en u (hut).
 const huis = vll('huis');
-const weg = vll('weg');
+const weg = bestaand('weg', 'svg');
 const bos = vll('bos');
-const tak = vll('tak');
-const hut = vll('hut');
+const tak = bestaand('tak', 'svg');
+const hut = bestaand('hut', 'svg');
 const hond = bestaand('hond', 'svg');
 const haan = bestaand('haan', 'svg');
 const wind = bestaand('wind', 'svg');

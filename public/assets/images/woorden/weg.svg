@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120">
+  <!-- Een weg die door het groen naar de horizon kronkelt, zelf getekend voor leren-lezen. -->
+  <defs><clipPath id="vak"><rect x="4" y="4" width="112" height="112" rx="22"/></clipPath></defs>
+  <g clip-path="url(#vak)">
+    <rect x="0" y="0" width="120" height="120" fill="#bfe6fb"/>
+    <path d="M0 52 C30 42 60 46 120 40 L120 120 L0 120 Z" fill="#8bd17c"/>
+    <path d="M0 64 C40 56 80 60 120 54 L120 120 L0 120 Z" fill="#6cc05c"/>
+    <path d="M58 48 C54 60 76 68 70 82 C64 96 30 104 22 120 L98 120 C96 104 104 92 92 80 C80 68 66 62 66 48 Z" fill="#7b7f8a"/>
+    <path d="M62 50 C60 60 78 68 76 82 C74 96 56 106 58 120" fill="none" stroke="#ffffff" stroke-width="3" stroke-dasharray="6 6" stroke-linecap="round"/>
+    <circle cx="96" cy="22" r="10" fill="#ffd54f"/>
+    <circle cx="24" cy="78" r="9" fill="#43a047"/><rect x="22.5" y="84" width="3" height="10" fill="#6d4c41"/>
+    <circle cx="106" cy="70" r="7" fill="#43a047"/><rect x="104.8" y="75" width="2.4" height="8" fill="#6d4c41"/>
+  </g>
+</svg>
