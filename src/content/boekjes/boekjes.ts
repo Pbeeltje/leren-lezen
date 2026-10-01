@@ -52,7 +52,7 @@ export const BOEKJES: Boekje[] = [
     paginas: [
       { plaatjes: [vll('poes')], tekst: 'de poes.' },
       { plaatjes: [vll('doos')], tekst: 'de doos.' },
-      { plaatjes: [vll('poes'), vll('doos')], tekst: 'poes zit in de doos.' },
+      { plaatjes: [vll('poes'), vll('doos')], tekst: 'de poes zit in de doos.' },
       { plaatjes: [vll('poes')], tekst: 'poes is moe.' },
       { plaatjes: [vll('koek')], tekst: 'kijk, een koek!' },
       { plaatjes: [vll('poes'), vll('koek')], tekst: 'poes eet de koek op.' },
