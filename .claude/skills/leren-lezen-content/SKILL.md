@@ -844,7 +844,7 @@ creates `audio/boekjes/` by itself.
   - **kasteel:** day 25 s / night 20 s (`data-tijd`), sometimes a rainbow by day, `.valster` shooting stars by night.
   - **ruimte** (`achtergrond/ruimte.ts`): one scheduler for shooting stars (`.valster`, random position) and the slow diagonal `.raket` (22%). Never two at once, ≥ 5 s rest between them; `juich` only fires when the sky is free. The old three.js shooting star is gone.
   - **onderwater:** light rays, rising bubbles, seaweed, own clownfish in an anemone (jumps out on `juich`), a walking crab, and one Fluent fish at a time swimming past (`.zwemmer`, `zwem-over` with `--van-x/--naar-x`). `feest`: a turtle plus a school of fish.
-  - **boerderij:** own windmill (`.molen__wieken` rotates) and barn placed with `zetOpPad` (wrapped in a div: svg has no offsetParent), CSS fence, Fluent cow/pig/sheep/rooster/chicks. Tractor every 8–22 s. `juich`: the cow jumps with a "boe!" bubble; `feest`: all animals jump in turn.
+  - **boerderij:** flat polder (`.boerderij-polder`, see the last bullet of this file), own windmill (`.molen__wieken` rotates) and barn, CSS fence, Fluent cow/pig/sheep/rooster/chicks. Tractor every 8–22 s. `juich`: the cow jumps with a "boe!" bubble; `feest`: all animals jump in turn.
   - **herfst, winter, kermis, bouw, trein:** each has its own CSS file `styles/achtergrond-<id>.css` (imported in main.ts) and pictures with the prefix `<id>-` in `public/assets/achtergrond/`.
   - **Adding a theme:** add the id to `ThemaId`, plus an entry in `THEMAS` and `MAKERS`. The shop and profile menu pick it up automatically (200 coins). Fluent animals face left: mirror them with `.gespiegeld`. If `prefers-reduced-motion` is set, don't start JS schedulers. View a theme with `node tests/achtergronden.mjs <map> <id>` (rest/juich/feest on phone, pc and landscape).
 - **Shop** (`ui/screens/WinkelScreen.ts`): owned items come first (in the fixed order), then the rest. Backgrounds use compact cards: 6 columns (3 on phones) and up to 4 rows, so everything fits on one page. Check with `tests/winkel-rij.mjs`.
@@ -963,3 +963,23 @@ Children no longer pick an age but a group (`Groep = 'kleuter' | 'groep3'` in co
   diagonal storm layer (320 elongated flakes + a white haze), sky 78% dark; flying birds
   dart into the nearest pine and a few more come racing in to shelter. Check:
   `node tests/winterweer.mjs <map>` (takes ~65 s, real time).
+- **Dino-wei T-rex and stegosaurus:** the T-rex is a new own drawing (blue, friendly, big
+  head) kept twice: `TREX` in `achtergrond/dino-tekening.ts` (inline, so `.tr-kop`, `.tr-oog`,
+  `.tr-arm`, `.tr-lach`/`.tr-brul` can animate) and `trex-eigen.svg` (shop preview); change
+  both together. It blinks, and opens its mouth on `juich`. `STEGO` (from the stegosaurus
+  avatar, leg pairs `st-poot--a/--b`) walks slowly back and forth in a rAF loop over the front
+  hill (height sampled from the path, behind the big dinos in the DOM), sniffs now and then,
+  turns at the ends (left end always past the T-rex, right end before the triceratops).
+  When it passes under the T-rex's head the T-rex hops, looks down, says "!" then "roaar!"
+  (class `verrast`, 2.8 s, once per pass and at most every 8 s); the stegosaurus wags its
+  tail. Reduced motion: it stands still. Timers and rAF are cleared in `vernietig`.
+- **Boerderij polder:** the rolling hills are replaced by a flat Dutch polder
+  (`.boerderij-polder`, height `--land: 38vh`). Fields, ditches, sand road and the road
+  bridge are one stretched SVG built in `maakPolder()` (viewBox 1000×300): every field edge
+  and the long ditch run to one vanishing point (`xOp`), so they widen towards the front.
+  Everything on top (tree row, village, windmill, barn, wheat, reeds, footbridge, tractor
+  road) is positioned in % of the polder height, matching the SVG's y/300; no `zetOpPad`
+  any more. The windmill is a classic stellingmolen (brick base, gallery, thatched octagonal
+  body, lattice sails with white cloth turning anticlockwise). Wheat = rows of a repeating
+  ear image (`AAR`) that sway with `skewX`; ditches glint (`.polder-glans`). Where the long
+  ditch passes under the road there is a small brick bridge with white railings.

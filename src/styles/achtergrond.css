@@ -125,6 +125,145 @@ body:not(.thema-ruimte) .instructie-tekst:not(.instructie-tekst--donker) {
   to { transform: translate(-50%, -80px) scale(1.3); opacity: 0; }
 }
 
+/* Losse delen van de inline T-rex (dino-tekening.ts): knipperend oog, en bij juichen een
+   open bek. transform-box: fill-box laat elk deel om zijn eigen vak draaien. */
+svg.dino__lijf {
+  height: auto;
+  overflow: visible;
+}
+
+.dino--trex .tr-kop,
+.dino--trex .tr-oog,
+.dino--trex .tr-arm {
+  transform-box: fill-box;
+}
+.dino--trex .tr-kop { transform-origin: 20% 75%; }
+.dino--trex .tr-arm { transform-origin: 0% 30%; }
+.dino--trex .tr-oog {
+  transform-origin: center;
+  animation: tr-knipper 5.5s ease-in-out infinite;
+}
+.dino--trex .tr-brul { transition: opacity 0.15s; }
+
+@keyframes tr-knipper {
+  0%, 94%, 100% { transform: scaleY(1); }
+  96.5% { transform: scaleY(0.1); }
+}
+
+.dino--trex.juicht .tr-brul { opacity: 1; }
+.dino--trex.juicht .tr-lach { opacity: 0; }
+
+/* De stegosaurus komt langs: de T-rex schrikt even (sprongetje), kijkt omlaag naar hem en
+   brult vriendelijk (bek open rond de "roaar!"-wolk). Duur = VERRAST_MS in dino.ts. */
+.dino--trex.verrast .dino__lijf { animation: tr-schrik 0.5s ease-out; }
+.dino--trex.verrast .tr-kop { animation: tr-kijk-omlaag 2.8s ease-in-out; }
+.dino--trex.verrast .tr-arm { animation: tr-zwaai 0.4s ease-in-out 0.3s 5 alternate; }
+.dino--trex.verrast .tr-brul { animation: tr-brul-open 2.8s linear; }
+.dino--trex.verrast .tr-lach { animation: tr-brul-dicht 2.8s linear; }
+
+@keyframes tr-schrik {
+  0%, 100% { transform: translateY(0); }
+  40% { transform: translateY(-14px); }
+}
+@keyframes tr-kijk-omlaag {
+  0%, 100% { transform: rotate(0); }
+  20%, 80% { transform: rotate(16deg); }
+  45% { transform: rotate(10deg); }
+}
+@keyframes tr-zwaai {
+  from { transform: rotate(0); }
+  to { transform: rotate(-30deg); }
+}
+@keyframes tr-brul-open {
+  0%, 38%, 72%, 100% { opacity: 0; }
+  42%, 68% { opacity: 1; }
+}
+@keyframes tr-brul-dicht {
+  0%, 38%, 72%, 100% { opacity: 1; }
+  42%, 68% { opacity: 0; }
+}
+
+.dino-roep {
+  position: absolute;
+  top: -14%;
+  left: 74%;
+  padding: 3px 11px;
+  border-radius: 16px;
+  background: #fff;
+  color: #1d4c80;
+  font-weight: 800;
+  font-size: clamp(0.95rem, 1.8vw, 1.4rem);
+  white-space: nowrap;
+  box-shadow: 0 2px 0 rgba(0, 0, 0, 0.2);
+  animation: roep-op 1.4s ease-out forwards;
+}
+.dino-roep--uitroep {
+  left: 84%;
+  padding: 0 10px;
+  color: #e8553a;
+  font-size: clamp(1.2rem, 2.4vw, 1.9rem);
+  animation-duration: 0.9s;
+}
+
+/* Stegosaurus die heen en weer loopt (dino.ts zet translate op .dino-steg). */
+.dino-steg {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: clamp(72px, 10vw, 140px);
+  will-change: transform;
+}
+.dino-steg:not(.geplaatst) { visibility: hidden; }
+.dino-steg--rechts .dino-steg__draai { transform: scaleX(-1); }
+
+.dino-steg__lijf {
+  display: block;
+  width: 100%;
+  height: auto;
+  overflow: visible;
+}
+
+.dino-steg .st-poot,
+.dino-steg .st-staart,
+.dino-steg .st-kop {
+  transform-box: fill-box;
+}
+.dino-steg .st-poot { transform-origin: 50% 15%; }
+.dino-steg .st-staart { transform-origin: 0% 60%; }
+.dino-steg .st-kop { transform-origin: 90% 50%; }
+
+/* Lopen: kruislingse pas (paar a en b om de beurt) en een beetje wippen. */
+.dino-steg.loopt .st-poot--a { animation: steg-stap 1.2s ease-in-out infinite; }
+.dino-steg.loopt .st-poot--b { animation: steg-stap 1.2s ease-in-out -0.6s infinite; }
+.dino-steg.loopt .st-romp,
+.dino-steg.loopt .st-kop { animation: steg-wip 0.6s ease-in-out infinite alternate; }
+
+@keyframes steg-stap {
+  0%, 100% { transform: rotate(14deg); }
+  50% { transform: rotate(-14deg); }
+}
+@keyframes steg-wip {
+  from { translate: 0 0; }
+  to { translate: 0 -1.6px; }
+}
+
+/* Even stilstaan: snuffelen aan het gras en rondkijken. */
+.dino-steg.snuffelt .st-kop { animation: steg-snuffel 2.4s ease-in-out infinite; }
+
+@keyframes steg-snuffel {
+  0%, 100% { transform: rotate(0); }
+  20%, 35% { transform: rotate(-14deg); }
+  28% { transform: rotate(-10deg); }
+  60%, 80% { transform: rotate(8deg); }
+}
+
+.dino-steg.kwispelt .st-staart { animation: steg-kwispel 0.3s ease-in-out 8 alternate; }
+
+@keyframes steg-kwispel {
+  from { transform: rotate(-12deg); }
+  to { transform: rotate(14deg); }
+}
+
 /* ---- Kasteel ---- */
 .decor-kasteel {
   background: linear-gradient(#241a52 0%, #5b3f95 45%, #c47bb5 80%, #f3b6c9 100%);
@@ -944,36 +1083,123 @@ body:not(.thema-ruimte) .instructie-tekst:not(.instructie-tekst--donker) {
   width: clamp(70px, 10vw, 130px);
   animation: draai-langzaam 60s linear infinite;
 }
-.boerderij-heuvels {
+/* De polder: alles erin staat in % van --land, net als de getekende akkers (viewBox 300 hoog). */
+.decor-boerderij { --land: 38vh; }
+.boerderij-polder {
   position: absolute;
   left: 0;
   right: 0;
   bottom: 0;
+  height: var(--land);
+}
+.boerderij-akkers {
+  position: absolute;
+  inset: 0;
   width: 100%;
-  height: 34vh;
+  height: 100%;
+}
+/* Rij bomen op de horizon (y 96 = 68% van onderen): rondjes in twee tinten groen. */
+.boerderij-bomen {
+  position: absolute;
+  bottom: 67.6%;
+  height: calc(var(--land) * 0.1);
+  background:
+    radial-gradient(circle closest-side at 50% 72%, #5d9b49 94%, transparent 100%) 0 100% / calc(var(--land) * 0.075) 75% repeat-x,
+    radial-gradient(circle closest-side at 50% 60%, #6fae52 94%, transparent 100%) calc(var(--land) * 0.05) 100% / calc(var(--land) * 0.11) 100% repeat-x,
+    linear-gradient(#5d9b49, #5d9b49) 0 100% / 100% 18% no-repeat;
+}
+.boerderij-bomen--links { left: 0; width: 30%; }
+.boerderij-bomen--rechts { left: 58%; width: 26%; }
+.boerderij-dorp {
+  position: absolute;
+  right: 7%;
+  bottom: 67.6%;
+  width: clamp(46px, 6vw, 90px);
 }
 .boerderij-molen {
   position: absolute;
-  left: 6%;
-  bottom: 22vh;
-  width: clamp(80px, 11vw, 150px);
-  aspect-ratio: 200 / 260;
+  left: 7%;
+  bottom: 59%;
+  width: clamp(100px, 14vw, 198px);
+  aspect-ratio: 240 / 324;
+}
+/* Brede schermen: de molen iets verder naar rechts, anders staat de koe voor zijn voet. */
+@media (min-aspect-ratio: 16/9) and (min-width: 1000px) {
+  .boerderij-molen { left: 14%; }
 }
 .boerderij-schuur {
   position: absolute;
-  right: 16%;
-  bottom: 22vh;
-  width: clamp(90px, 12vw, 170px);
+  right: 14%;
+  bottom: 47.3%;
+  width: clamp(84px, 11vw, 160px);
   aspect-ratio: 220 / 170;
 }
 .boerderij-molen__svg,
 .boerderij-schuur__svg { display: block; width: 100%; height: 100%; }
+/* Nederlandse molens draaien (van voren gezien) tegen de klok in. */
 .molen__wieken {
-  transform-origin: 100px 98px;
-  animation: draai-langzaam 14s linear infinite;
+  transform-origin: 120px 100px;
+  animation: molen-draai 16s linear infinite;
+}
+@keyframes molen-draai {
+  to { transform: rotate(-360deg); }
 }
 
-.boerderij-tractorbaan { position: absolute; left: 0; right: 0; bottom: 15vh; height: 0; }
+/* Slootjes: glinsteringen op het water. */
+.polder-glans {
+  opacity: 0.2;
+  animation: polder-glans 4.6s ease-in-out infinite;
+}
+@keyframes polder-glans {
+  0%, 100% { opacity: 0.1; }
+  50% { opacity: 0.9; }
+}
+.boerderij-brug {
+  position: absolute;
+  left: 19%;
+  bottom: 33.3%;
+  width: clamp(40px, 5.5vw, 76px);
+}
+.boerderij-riet {
+  position: absolute;
+  bottom: 34.6%;
+  width: clamp(34px, 4.5vw, 62px);
+  transform-origin: bottom center;
+  animation: riet-wuif 5s ease-in-out infinite alternate;
+}
+.boerderij-riet--1 { left: 26%; }
+.boerderij-riet--2 { left: 76%; animation-delay: -2.4s; }
+@keyframes riet-wuif {
+  from { transform: skewX(-4deg); }
+  to { transform: skewX(4deg); }
+}
+
+/* Tarweveld (de akker links in het midden), rijen aren die als een golf in de wind wuiven.
+   De schuine rechterrand volgt de perceelrand naar het verdwijnpunt. */
+.boerderij-tarwe {
+  position: absolute;
+  left: 0;
+  top: 40.67%;
+  width: 40%;
+  height: 17.67%;
+  clip-path: polygon(0 0, 97.1% 0, 81% 100%, 0 100%);
+}
+.boerderij-tarwe__rij {
+  position: absolute;
+  left: -20px;
+  right: -20px;
+  height: calc(var(--land) * var(--h) / 300);
+  background-repeat: repeat-x;
+  background-size: auto 100%;
+  transform-origin: bottom center;
+  animation: tarwe-wuif 3.2s ease-in-out infinite alternate;
+}
+@keyframes tarwe-wuif {
+  from { transform: skewX(-7deg); }
+  to { transform: skewX(4deg); }
+}
+
+.boerderij-tractorbaan { position: absolute; left: 0; right: 0; bottom: 38.7%; height: 0; }
 .boer-tractor {
   position: absolute;
   bottom: 0;
@@ -1013,7 +1239,7 @@ body:not(.thema-ruimte) .instructie-tekst:not(.instructie-tekst--donker) {
 .boer-dier.juicht { animation: juich-sprong 0.6s ease-out 2; }
 .boer-dier--koe { left: 2%; bottom: 4vh; width: clamp(100px, 14vw, 190px); }
 .boer-dier--varken { right: 3%; bottom: 4vh; width: clamp(80px, 11vw, 150px); animation-delay: -1.2s; }
-.boer-dier--schaap { right: 30%; width: clamp(54px, 7vw, 96px); animation-delay: -2s; }
+.boer-dier--schaap { right: 30%; bottom: calc(var(--land) * 0.26); width: clamp(54px, 7vw, 96px); animation-delay: -2s; }
 .boer-dier--haan { left: 20%; bottom: 1vh; width: clamp(54px, 7vw, 96px); animation: haan-pik 4s ease-in-out infinite; }
 .boer-dier--kuiken { bottom: 0.5vh; width: clamp(26px, 3.4vw, 46px); animation: kuiken-trippel 9s ease-in-out infinite; }
 .boer-dier--kuiken-1 { left: 28%; }
