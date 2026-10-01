@@ -1,5 +1,6 @@
 import type { RekenOefeningDefinitie } from '../content/tellen/types.ts';
 import { toonGoedFeedback, toonFoutFeedback } from '../ui/components/FeedbackOverlay.ts';
+import { koppelSchermToetsenbord } from '../ui/components/SchermToetsenbord.ts';
 
 type Oefening = Extract<RekenOefeningDefinitie, { type: 'hoeveelheid-typen' }>;
 
@@ -34,6 +35,7 @@ export function renderHoeveelheidTypen(
   invoer.autocomplete = 'off';
   invoer.placeholder = '?';
   kaart.appendChild(invoer);
+  koppelSchermToetsenbord(invoer, 'cijfers');
 
   const knop = document.createElement('button');
   knop.className = 'typen-knop';

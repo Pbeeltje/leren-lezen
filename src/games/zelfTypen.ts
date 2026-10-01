@@ -1,5 +1,6 @@
 import type { OefeningDefinitie } from '../content/types.ts';
 import { toonGoedFeedback, toonFoutFeedback } from '../ui/components/FeedbackOverlay.ts';
+import { koppelSchermToetsenbord } from '../ui/components/SchermToetsenbord.ts';
 
 type Oefening = Extract<OefeningDefinitie, { type: 'zelf-typen' }>;
 
@@ -28,6 +29,7 @@ export function renderZelfTypen(
   invoer.spellcheck = false;
   invoer.placeholder = 'typ het woord...';
   kaart.appendChild(invoer);
+  koppelSchermToetsenbord(invoer, 'letters');
 
   const knop = document.createElement('button');
   knop.className = 'typen-knop';

@@ -1338,3 +1338,39 @@
   .schrijf-hint__woord { font-size: 1.6rem; }
   .overtrek__vlak { height: min(42vh, 300px); }
 }
+
+/* ---------- Eigen toetsenbord op aanraakschermen ---------- */
+.typen-invoer--scherm { caret-color: transparent; }
+.scherm-toetsenbord {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  width: 100%;
+  max-width: 460px;
+  align-items: center;
+}
+.scherm-toetsenbord__rij { display: flex; gap: 6px; justify-content: center; width: 100%; }
+.scherm-toets {
+  flex: 0 1 52px;
+  min-width: 0;
+  height: 50px;
+  border-radius: 12px;
+  background: #eef3fb;
+  color: var(--kleur-tekst);
+  font-size: 1.5rem;
+  font-weight: 700;
+  box-shadow: 0 3px 0 #c5d2ea;
+}
+.scherm-toets:active { transform: translateY(3px); box-shadow: none; }
+.scherm-toets--wis { flex-basis: 76px; background: #ffe3d6; box-shadow: 0 3px 0 #f2b79c; }
+.scherm-toetsenbord--cijfers .scherm-toets { flex-basis: 72px; height: 56px; }
+/* Met het eigen toetsenbord moet alles op één telefoonscherm passen. */
+.oefen-kaart:has(.scherm-toetsenbord) { gap: 10px; padding-top: 16px; padding-bottom: 16px; }
+.oefen-kaart:has(.scherm-toetsenbord) .oefen-kaart__plaatje { width: 104px; height: 104px; }
+.typen-invoer--scherm { min-height: 56px; padding: 6px 16px; }
+.oefen-kaart:has(.scherm-toetsenbord) .typen-knop { min-height: 56px; }
+@media (max-width: 560px) {
+  .scherm-toets { height: 44px; font-size: 1.3rem; }
+  .scherm-toetsenbord { gap: 5px; }
+  .scherm-toetsenbord__rij { gap: 5px; }
+}

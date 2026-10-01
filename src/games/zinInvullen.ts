@@ -1,5 +1,6 @@
 import type { OefeningDefinitie } from '../content/types.ts';
 import { toonGoedFeedback, toonFoutFeedback } from '../ui/components/FeedbackOverlay.ts';
+import { koppelSchermToetsenbord } from '../ui/components/SchermToetsenbord.ts';
 import { schud } from '../engine/oefeningGenerator.ts';
 
 type Oefening = Extract<OefeningDefinitie, { type: 'zin-invullen' }>;
@@ -73,6 +74,7 @@ export function renderZinInvullen(
     invoer.spellcheck = false;
     invoer.placeholder = 'typ het woord...';
     kaart.appendChild(invoer);
+    koppelSchermToetsenbord(invoer, 'letters');
 
     const knop = document.createElement('button');
     knop.className = 'typen-knop';

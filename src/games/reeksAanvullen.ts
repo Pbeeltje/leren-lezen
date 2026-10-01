@@ -1,5 +1,6 @@
 import type { RekenOefeningDefinitie } from '../content/tellen/types.ts';
 import { toonGoedFeedback, toonFoutFeedback } from '../ui/components/FeedbackOverlay.ts';
+import { koppelSchermToetsenbord } from '../ui/components/SchermToetsenbord.ts';
 
 type Oefening = Extract<RekenOefeningDefinitie, { type: 'reeks-aanvullen' }>;
 
@@ -36,6 +37,7 @@ export function renderReeksAanvullen(
   reeksRij.appendChild(naTegel);
 
   kaart.appendChild(reeksRij);
+  koppelSchermToetsenbord(invoer, 'cijfers', reeksRij);
 
   const knop = document.createElement('button');
   knop.className = 'typen-knop';
