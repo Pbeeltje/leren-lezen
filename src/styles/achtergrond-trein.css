@@ -18,6 +18,55 @@
   animation: draai-langzaam 60s linear infinite;
 }
 
+/* De Alpen: de voet zakt achter de achterste heuvel (die ligt op 18-22vh). Op een smal scherm
+   bepaalt de hoogte de schaal (middenstuk zichtbaar), op een breed scherm de breedte. */
+.trein-alpen {
+  position: absolute;
+  left: 0;
+  bottom: 16vh;
+  width: 100%;
+  height: max(26vh, 18vw);
+}
+
+/* Heel af en toe zweeft er een arend over: langzaam opzij, zacht op en neer en een beetje
+   kantelend, met af en toe een rustige vleugelslag. */
+.trein-arend-baan { position: absolute; inset: 0; pointer-events: none; }
+.trein-arend {
+  position: absolute;
+  left: 0;
+  width: clamp(54px, 7vw, 96px);
+  aspect-ratio: 1;
+  transform: translateX(var(--van-x));
+  animation: zwem-over 30s linear forwards;
+}
+.trein-arend__spiegel { width: 100%; height: 100%; }
+.trein-arend--rechts .trein-arend__spiegel { transform: scaleX(-1); }
+.trein-arend__zweef {
+  width: 100%;
+  height: 100%;
+  animation: trein-arend-zweef 7s ease-in-out infinite;
+}
+.decor-trein .trein-arend__lijf {
+  position: static;
+  display: block;
+  width: 100%;
+  height: 100%;
+  transform-origin: 50% 55%;
+  animation: trein-arend-slag 9s ease-in-out infinite;
+  animation-delay: -5s;
+}
+@keyframes trein-arend-zweef {
+  0%, 100% { transform: translateY(0) rotate(-2deg); }
+  30% { transform: translateY(-9px) rotate(3deg); }
+  65% { transform: translateY(7px) rotate(-4deg); }
+}
+/* Twee trage slagen, daarna een hele tijd glijden. */
+@keyframes trein-arend-slag {
+  0%, 16%, 100% { transform: scaleY(1); }
+  4%, 12% { transform: scaleY(0.72); }
+  8% { transform: scaleY(1.05); }
+}
+
 .trein-landschap {
   position: absolute;
   left: 0;

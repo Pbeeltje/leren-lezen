@@ -998,3 +998,13 @@ Children no longer pick an age but a group (`Groep = 'kleuter' | 'groep3'` in co
   (~65 s, real time).
 - **Lang/kort** (`games/kleuter/vergelijken.ts`): the same object drawn at 360 and 150 px,
   chosen from `LANGE_DINGEN` (pencil, rope, snake, ladder).
+- **Treinreis Alps and eagle:** behind the hills sits an own-drawn Alpine range (`ALPEN` in
+  `trein.ts`, built by `bergketen()` from two ridge point lists `VERRE_KAM`/`NABIJE_KAM`:
+  a few broad massifs with shoulders and notches, slightly rounded corners, snow above a
+  jagged snow line clipped to the mountain, a shaded right face per summit, and a haze over
+  the far range's foot). `.trein-alpen` uses `xMidYMax slice` with `height: max(26vh, 18vw)`,
+  so phones show the middle and wide screens the whole range; its foot (16vh) hides behind
+  the back hill. Rarely a Fluent eagle (`arend.svg`) glides high across (`.trein-arend`,
+  `zwem-over` at ~45 px/s, 16-36 s, slow soar/tilt and an occasional wing beat): first after
+  20-40 s, then 60-120 s after the previous one is gone, alternating direction; not with
+  `prefers-reduced-motion`.

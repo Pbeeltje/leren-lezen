@@ -10,7 +10,9 @@ import { el, kortAan, plaatje, svgUitTekst, zetOpPad } from './hulp.ts';
 // voor het rode sein tot het groen wordt. Bij een goed antwoord toetert de trein: een grote stoomwolk en "tuut!".
 // Is er geen trein, dan piept er even een locomotief uit het station. Aan het eind van een
 // sessie rijdt er een lange trein met een open wagon per dier, met sterretjes.
-// Bomen en dieren zijn Fluent Emoji; trein, station, sein en brug zijn zelf getekend.
+// Achter de heuvels ligt een besneeuwde bergketen (de Alpen, twee lagen voor diepte). Heel
+// af en toe zweeft er hoog in de lucht rustig een arend over.
+// Bomen, dieren en de arend zijn Fluent Emoji; trein, station, sein, brug en bergen zijn zelf getekend.
 
 // De voorste strook (y = 212) ligt precies op de hoogte van het spoor (10vh van 34vh).
 const LANDSCHAP = `
@@ -24,6 +26,94 @@ const LANDSCHAP = `
     <path d="M660 276 C676 270 690 280 706 272" vector-effect="non-scaling-stroke"/>
     <path d="M728 262 C740 258 752 266 764 260" vector-effect="non-scaling-stroke"/>
   </g>
+</svg>`;
+
+// ---- De Alpen: twee bergketens, zelf getekend. ----
+// Een kam is de bovenrand van een keten als rij punten (x, y) in een viewBox van 2000 x 300:
+// een paar brede massieven met schouders, inkepingen en hier en daar een rondere of plattere
+// top, zodat het geen rij driehoekjes wordt. De hoeken worden een beetje afgerond. Sneeuw ligt
+// boven een kartelige sneeuwgrens (geknipt op de berg), dus hoge toppen krijgen veel sneeuw
+// en lage bijna niets. Elke top heeft een schaduwkant rechts.
+type Punt = [number, number];
+const VERRE_KAM: Punt[] = [
+  [0, 160], [60, 128], [110, 118], [150, 92], [185, 80], [205, 84], [240, 70], [275, 96], [300, 92], [340, 120], [380, 132],
+  [430, 112], [480, 82], [520, 64], [560, 58], [590, 62], [620, 74], [660, 70], [700, 96], [740, 118], [780, 130],
+  [820, 116], [860, 96], [900, 72], [930, 52], [955, 34], [975, 40], [1000, 58], [1030, 66], [1060, 88], [1110, 112], [1150, 128],
+  [1190, 110], [1230, 90], [1260, 92], [1300, 62], [1330, 50], [1360, 56], [1400, 80], [1440, 86], [1480, 112], [1530, 126],
+  [1580, 104], [1630, 82], [1670, 72], [1700, 76], [1740, 98], [1780, 92], [1820, 110], [1870, 96], [1920, 104], [1960, 124], [2000, 134],
+];
+const NABIJE_KAM: Punt[] = [
+  [0, 196], [50, 170], [90, 160], [130, 142], [165, 130], [190, 136], [230, 150], [270, 168], [320, 186],
+  [370, 172], [420, 150], [460, 128], [490, 112], [515, 106], [540, 114], [580, 124], [610, 120], [650, 146], [700, 178], [740, 192],
+  [790, 176], [830, 160], [870, 150], [900, 154], [940, 170], [980, 186],
+  [1030, 168], [1080, 140], [1120, 118], [1150, 100], [1170, 96], [1195, 104], [1240, 126], [1270, 124], [1310, 150], [1360, 180], [1400, 192],
+  [1450, 170], [1500, 142], [1540, 128], [1580, 132], [1620, 118], [1650, 112], [1690, 130], [1740, 158], [1790, 176],
+  [1840, 160], [1890, 146], [1940, 154], [2000, 170],
+];
+
+const pt = ([x, y]: Punt) => `${x.toFixed(1)} ${y.toFixed(1)}`;
+
+// Kam als pad met licht afgeronde hoeken (r in viewBox-eenheden), dicht tot de onderrand.
+const kamPad = (kam: Punt[], r: number): string => {
+  let d = `M0 300 L${pt(kam[0])}`;
+  for (let i = 1; i < kam.length - 1; i++) {
+    const [a, p, b] = [kam[i - 1], kam[i], kam[i + 1]];
+    const naar = (q: Punt): Punt => {
+      const lengte = Math.hypot(q[0] - p[0], q[1] - p[1]);
+      const f = Math.min(r, lengte / 2) / lengte;
+      return [p[0] + (q[0] - p[0]) * f, p[1] + (q[1] - p[1]) * f];
+    };
+    d += ` L${pt(naar(a))} Q${pt(p)} ${pt(naar(b))}`;
+  }
+  return `${d} L${pt(kam[kam.length - 1])} L2000 300 Z`;
+};
+
+const bergketen = (id: string, kam: Punt[], sneeuwgrens: number, rots: string, sneeuw: string, schaduw: string): string => {
+  const pad = kamPad(kam, 9);
+  // Kartelige sneeuwgrens die zacht golft; alles erboven is sneeuw (geknipt op de berg).
+  const rand: Punt[] = [];
+  for (let x = 0, k = 0; x <= 2000; x += 26, k++) {
+    const golf = sneeuwgrens + 9 * Math.sin(x / 150) + 5 * Math.sin(x / 47);
+    // Om en om een punt omlaag en een hapje omhoog, en af en toe een langere sneeuwtong.
+    const tong = k % 6 === 3 ? 14 : 0;
+    rand.push([x, golf + (k % 2 ? 15 + tong : -4) + 4 * Math.sin(k * 2.3)]);
+  }
+  const sneeuwVlak = `M0 0 L${rand.map(pt).join(' L')} L2000 0 Z`;
+  // Schaduw per top die boven de sneeuwgrens uitkomt.
+  let schaduwen = '';
+  for (let i = 1; i < kam.length - 1; i++) {
+    const top = kam[i];
+    if (top[1] >= kam[i - 1][1] || top[1] >= kam[i + 1][1] || top[1] > sneeuwgrens + 6) continue;
+    let j = i;
+    while (j < kam.length - 1 && kam[j + 1][1] >= kam[j][1]) j++; // omlaag tot het volgende dal
+    const helling = kam.slice(i, j + 1).map(pt).join(' L');
+    // Schuine naad van het dal terug naar de voet onder de top: een schaduwvlak, geen streep.
+    const naad = top[0] + 16 + (kam[j][0] - top[0]) * 0.3;
+    schaduwen += `<path d="M${helling} L${naad} 300 L${top[0] + 16} 300 Z"/>`;
+  }
+  return `
+    <clipPath id="${id}"><path d="${pad}"/></clipPath>
+    <path d="${pad}" fill="${rots}"/>
+    <g clip-path="url(#${id})">
+      <path d="${sneeuwVlak}" fill="${sneeuw}"/>
+      <g fill="${schaduw}" opacity="0.2">${schaduwen}</g>
+    </g>`;
+};
+
+// De verre keten is bleker en blauwer, met een nevel over zijn voet; de nabije is iets
+// voller van kleur. Het geheel wordt (xMidYMax slice) zo geschaald dat het op een telefoon
+// het middenstuk toont en op een breed scherm de hele keten.
+const ALPEN = `
+<svg viewBox="0 0 2000 300" preserveAspectRatio="xMidYMax slice" aria-hidden="true">
+  <defs>
+    <linearGradient id="trein-alpen-nevel" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#e3f4fc" stop-opacity="0"/>
+      <stop offset="1" stop-color="#e3f4fc" stop-opacity="0.85"/>
+    </linearGradient>
+  </defs>
+  <g opacity="0.9">${bergketen('trein-alpen-ver', VERRE_KAM, 84, '#a9bdd8', '#f3f8fd', '#4c6690')}</g>
+  <rect x="0" y="95" width="2000" height="205" fill="url(#trein-alpen-nevel)"/>
+  ${bergketen('trein-alpen-nabij', NABIJE_KAM, 128, '#7d95b8', '#ffffff', '#2f4670')}
 </svg>`;
 
 // Stenen boogbrug; rekt mee met de rivier (die ook uitgerekt wordt).
@@ -224,6 +314,9 @@ export function maakTreinDecor(): Decor {
   plaatje('assets/achtergrond/zon.svg', 'trein-zon', root);
   plaatje('assets/achtergrond/wolk.svg', 'drijf-wolk drijf-wolk--1', root);
   plaatje('assets/achtergrond/wolk.svg', 'drijf-wolk drijf-wolk--2', root);
+  // De Alpen achter de heuvels; de heuvels vallen over hun voet.
+  svgUitTekst(ALPEN, 'trein-alpen', root);
+  const lucht = el('div', 'trein-arend-baan', root);
 
   // Bomen vóór het landschap in de DOM: de heuvel valt over hun voet.
   const bomen = [
@@ -402,6 +495,33 @@ export function maakTreinDecor(): Decor {
     }, ms);
   }
   plan(3000 + Math.random() * 5000);
+
+  // ---- Heel af en toe zweeft er een arend hoog over de bergen. ----
+  // Eerst na 20-40 s, daarna elke 60-120 s, om en om naar links en naar rechts. Nooit twee
+  // tegelijk: de volgende wordt pas gepland als de vorige weg is.
+  let arendNaarRechts = Math.random() < 0.5;
+  function planArend(ms = 60000 + Math.random() * 60000): void {
+    if (!levend || stil) return;
+    wacht(() => {
+      const breedte = root.clientWidth || window.innerWidth;
+      // Rustig zweven: ongeveer 45 px per seconde, maar niet korter dan 16 s of langer dan 36 s.
+      const duur = Math.min(36, Math.max(16, (breedte * 1.25) / 45));
+      const a = el('div', `trein-arend${arendNaarRechts ? ' trein-arend--rechts' : ''}`, lucht);
+      a.style.setProperty('--van-x', arendNaarRechts ? '-16vw' : '104vw');
+      a.style.setProperty('--naar-x', arendNaarRechts ? '104vw' : '-16vw');
+      a.style.animationDuration = `${duur}s`;
+      a.style.top = `${7 + Math.random() * 9}vh`;
+      // De Fluent-arend kijkt naar links; naar rechts spiegelt .trein-arend--rechts hem.
+      const zweef = el('div', 'trein-arend__zweef', el('div', 'trein-arend__spiegel', a));
+      plaatje('assets/achtergrond/arend.svg', 'trein-arend__lijf', zweef);
+      arendNaarRechts = !arendNaarRechts;
+      wacht(() => {
+        a.remove();
+        planArend();
+      }, duur * 1000 + 300);
+    }, ms);
+  }
+  planArend(20000 + Math.random() * 20000);
 
   // "Tuut!": een tekstwolkje, en bij een locomotief ook een grote stoomwolk uit de schoorsteen.
   const toet = (doel: HTMLElement, stoom: boolean) => {
