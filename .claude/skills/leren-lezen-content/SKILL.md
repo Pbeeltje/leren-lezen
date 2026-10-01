@@ -829,3 +829,14 @@ The games:
 
 Process the recordings with the leren-lezen-audio skill as usual. `verwerk-opname.py`
 creates `audio/boekjes/` by itself.
+
+## Drum kit, wooden blocks, backgrounds and profile menu (latest round)
+
+- **Ritme** (`games/muziek/muziekVragen.ts`): figures `ta`/`titi` per question number (`FIGUREN`), drums via `drumsVoor` (bass → +snare from question 3 → +cymbal from 6). Gaps KORT 0.24 / LANG 0.72; `ritmeKlopt` judges relative to the child's own tempo. Hitting the wrong drum is a mistake. Free play (`XylofoonScreen`) switches between the xylophone and `maakDrumstel(['bas','snare','bekken'])`.
+- **Woord bouwen blocks** (`three/letterBlocks.ts`): wooden canvas texture (`houtVlak`), black frame, lowercase Baloo 2, lens PerspectiveCamera(28). Double letters: every letter still gets its own block, but `ongebruikteMet` lets either block of that letter count (kaas: either a works twice).
+- **Backgrounds** (`src/achtergrond/`): every theme is a DOM `Decor` (`{element, juich, feest?, vernietig?}`), CSS in `styles/achtergrond.css`.
+  - **zee:** the boat rides the higher of the two waves (`drijf` rAF loop). Rainbow (`maakRegenboog` in hulp.ts) 2.2 s after the storm. The whale (`kortAan(walvis,'duikt-op')`) appears 3.5 s after the boat is fully off screen.
+  - **kasteel:** day 25 s / night 20 s (`data-tijd`), sometimes a rainbow by day, `.valster` shooting stars by night.
+  - **ruimte** (`achtergrond/ruimte.ts`): one scheduler for shooting stars (`.valster`, random position) and the slow diagonal `.raket` (22%). Never two at once, ≥ 5 s rest between them; `juich` only fires when the sky is free. The old three.js shooting star is gone.
+- **Profile menu** (`ui/components/ProfielMenu.ts`): a header (figure + name), 4 tiles (Mijn figuur = animal + colour combined, Achtergrond, Geluid toggle, Wisselen = other profile / age) and a small "Voor ouders" button (back-up). Submenus have a back arrow; picking an option keeps the menu open and marks the selection. Test driver: drive it by `.profiel-tegel` / `.profiel-keuze` / `.profiel-menu__terug`.
+- **Android/release:** see `C:\claude\leren-lezen-android-plan.md` (all raster images in `images/` are from third-party material and must be replaced before selling).
