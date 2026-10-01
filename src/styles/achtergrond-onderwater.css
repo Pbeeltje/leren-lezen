@@ -1,0 +1,516 @@
+/* ---- Onder water (src/achtergrond/onderwater.ts, tekeningen in onderwater-tekening.ts) ----
+   Van achter naar voor: oppervlak, verre rifranden met nevel, verre dieren, lichtstralen,
+   plankton en belletjes, kwallen, zwemmers, kelp, zand met lichtnetjes, en de bodem. Alles
+   beweegt traag en zacht, zodat de tegels in het midden goed leesbaar blijven. */
+.decor-onderwater {
+  background: linear-gradient(#6fd6ec 0%, #2a9fc9 35%, #13699e 75%, #0d4f7c 100%);
+}
+.decor-onderwater .gespiegeld { transform: scaleX(-1); }
+
+/* Wateroppervlak: een lichte rand met golvende lijntjes die langzaam opzij schuiven. */
+.ow-oppervlak {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 9vh;
+  overflow: hidden;
+  background: linear-gradient(rgba(255, 255, 255, 0.4), rgba(255, 255, 255, 0));
+}
+.ow-oppervlak__lijnen {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: calc(100% + 240px);
+  height: 100%;
+  background-repeat: repeat-x;
+  background-size: 240px 40px;
+  opacity: 0.4;
+  -webkit-mask-image: linear-gradient(#000, transparent);
+  mask-image: linear-gradient(#000, transparent);
+  animation: ow-schuif-240 16s linear infinite;
+}
+@keyframes ow-schuif-240 { to { transform: translateX(-240px); } }
+
+/* Rif in de verte (wazig) en iets dichterbij, met nevel ertussen voor diepte. */
+.ow-rif {
+  position: absolute;
+  left: 0;
+  width: 100%;
+}
+.ow-rif--ver { bottom: 10vh; height: 38vh; opacity: 0.5; filter: blur(1.5px); }
+
+/* Silhouetten op de middelste rand: hun voet zit achter de rand. */
+.ow-silhouetten { position: absolute; inset: 0; opacity: 0.8; filter: blur(0.6px); }
+.ow-sil {
+  position: absolute;
+  bottom: 15vh;
+  height: clamp(60px, 13vh, 120px);
+  width: auto;
+  transform-origin: 50% 100%;
+  animation: wiebel 9s ease-in-out infinite;
+}
+.ow-sil--1 { left: 10%; }
+.ow-sil--2 { left: 24%; height: clamp(50px, 10vh, 96px); animation: none; }
+.ow-sil--3 { left: 41%; height: clamp(40px, 8vh, 76px); animation: none; }
+.ow-sil--4 { left: 63%; height: clamp(70px, 16vh, 150px); animation-delay: -4s; }
+.ow-sil--5 { left: 76%; animation: none; }
+.ow-sil--6 { left: 88%; height: clamp(36px, 7vh, 64px); animation: none; }
+.ow-rif--midden { bottom: 8vh; height: 30vh; opacity: 0.8; filter: blur(0.6px); }
+.ow-nevel {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(rgba(70, 170, 215, 0) 45%, rgba(70, 170, 215, 0.3) 85%);
+}
+
+/* Verre dieren: groot, wazig en doorzichtig, heel langzaam. */
+.ow-verte { position: absolute; inset: 0; }
+.ow-ver { opacity: 0.25; filter: blur(1.2px); }
+.zwemmer.ow-ver--walvis { width: clamp(180px, 30vw, 420px); }
+.zwemmer.ow-ver--manta { width: clamp(110px, 15vw, 210px); }
+.ow-ver .zwemmer__golf { animation-duration: 10s; }
+.ow-ver__lijf { display: block; width: 100%; height: auto; overflow: visible; }
+.ow-vleugel { transform-box: fill-box; animation: ow-manta 6s ease-in-out infinite; }
+.ow-vleugel--boven { transform-origin: 50% 100%; }
+.ow-vleugel--onder { transform-origin: 50% 0%; }
+@keyframes ow-manta {
+  0%, 100% { transform: scaleY(1); }
+  50% { transform: scaleY(0.55); }
+}
+.ow-walvis-staart {
+  transform-box: fill-box;
+  transform-origin: 0% 50%;
+  animation: ow-walvis-staart 7s ease-in-out infinite;
+}
+@keyframes ow-walvis-staart {
+  0%, 100% { transform: rotate(-8deg); }
+  50% { transform: rotate(8deg); }
+}
+
+/* Lichtstralen: zachte banen die vanaf het oppervlak traag heen en weer wuiven. */
+.onderwater-stralen { position: absolute; inset: 0 0 22% 0; overflow: hidden; }
+.onderwater-straal {
+  position: absolute;
+  top: -12%;
+  width: 9vw;
+  height: 125%;
+  background: linear-gradient(90deg, rgba(255, 255, 255, 0), rgba(255, 255, 255, 0.32) 50%, rgba(255, 255, 255, 0));
+  -webkit-mask-image: linear-gradient(#000 25%, transparent 95%);
+  mask-image: linear-gradient(#000 25%, transparent 95%);
+  transform-origin: 50% 0;
+  animation: ow-straal 15s ease-in-out infinite;
+}
+.onderwater-straal:nth-child(1) { left: 4%; }
+.onderwater-straal:nth-child(2) { left: 20%; width: 5vw; animation-duration: 12s; animation-delay: -4s; }
+.onderwater-straal:nth-child(3) { left: 36%; width: 12vw; animation-duration: 18s; animation-delay: -9s; }
+.onderwater-straal:nth-child(4) { left: 55%; width: 6vw; animation-duration: 13s; animation-delay: -2s; }
+.onderwater-straal:nth-child(5) { left: 70%; width: 11vw; animation-duration: 16s; animation-delay: -12s; }
+.onderwater-straal:nth-child(6) { left: 88%; width: 5vw; animation-duration: 14s; animation-delay: -6s; }
+@keyframes ow-straal {
+  0%, 100% { transform: rotate(16deg); opacity: 0.5; }
+  50% { transform: rotate(9deg); opacity: 1; }
+}
+
+/* Plankton: kleine lichte stipjes die heel traag heen en weer zweven. */
+.ow-plankton { position: absolute; inset: 0; }
+.ow-stip {
+  position: absolute;
+  border-radius: 50%;
+  background: #e8fbff;
+  animation: ow-zweef ease-in-out infinite alternate;
+}
+@keyframes ow-zweef {
+  from { transform: translate(0, 0); }
+  to { transform: translate(var(--dx), var(--dy)); }
+}
+
+/* Opstijgende belletjes. */
+.onderwater-belletjes { position: absolute; inset: 0; }
+.belletje {
+  position: absolute;
+  bottom: -20px;
+  border-radius: 50%;
+  border: 2px solid rgba(255, 255, 255, 0.75);
+  background: radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.7), rgba(255, 255, 255, 0.08) 60%);
+  animation: belletje-op linear infinite;
+}
+@keyframes belletje-op {
+  0% { transform: translate(0, 0); opacity: 0; }
+  10% { opacity: 1; }
+  50% { transform: translate(14px, -55vh); }
+  100% { transform: translate(-6px, -110vh); opacity: 0.6; }
+}
+.belletje--los {
+  bottom: 60%;
+  animation: belletje-los 1.6s ease-out forwards;
+}
+@keyframes belletje-los {
+  from { transform: translateY(0); opacity: 1; }
+  to { transform: translateY(-130px); opacity: 0; }
+}
+
+/* Kwallen: kloppen met hun hoedje en drijven heel langzaam van de bodem naar boven. */
+.ow-kwal {
+  position: absolute;
+  bottom: 4vh;
+  animation: ow-kwal-op linear infinite;
+}
+.ow-kwal--dichtbij { left: 4%; width: clamp(40px, 5.5vw, 72px); animation-duration: 52s; animation-delay: -34s; }
+.ow-kwal--ver { right: 14%; width: clamp(24px, 3vw, 40px); animation-duration: 75s; animation-delay: -15s; }
+.ow-kwal--ver .ow-kwal__klop { opacity: 0.5; filter: blur(0.8px); }
+@keyframes ow-kwal-op {
+  0% { transform: translate(0, 0); opacity: 0; }
+  8% { opacity: 1; }
+  50% { transform: translate(3vw, -50vh); }
+  90% { opacity: 1; }
+  100% { transform: translate(-1vw, -105vh); opacity: 0; }
+}
+.ow-kwal__klop { animation: ow-kwal-klop 3.2s ease-in-out infinite; }
+@keyframes ow-kwal-klop {
+  0%, 100% { transform: translateY(0); }
+  45% { transform: translateY(-8px); }
+}
+.ow-kwal__lijf { display: block; width: 100%; height: auto; overflow: visible; }
+.ow-hoed {
+  transform-box: fill-box;
+  transform-origin: 50% 100%;
+  animation: ow-hoed 3.2s ease-in-out infinite;
+}
+@keyframes ow-hoed {
+  0%, 100% { transform: scale(1, 1); }
+  35% { transform: scale(0.86, 1.08); }
+  70% { transform: scale(1.05, 0.95); }
+}
+.ow-kwal-armen {
+  transform-box: fill-box;
+  transform-origin: 50% 0;
+  animation: ow-kwal-armen 3.2s ease-in-out infinite;
+}
+@keyframes ow-kwal-armen {
+  0%, 100% { transform: skewX(4deg) scaleY(1); }
+  50% { transform: skewX(-5deg) scaleY(0.94); }
+}
+
+/* Zwemmers: steken het scherm over (zwem-over staat in achtergrond.css). */
+.onderwater-zwemmers { position: absolute; inset: 0; }
+.zwemmer {
+  position: absolute;
+  left: 0;
+  width: clamp(60px, 8vw, 110px);
+  animation: zwem-over linear forwards;
+  transform: translateX(var(--van-x));
+}
+.zwemmer__spiegel { width: 100%; height: 100%; }
+.zwemmer__golf { position: relative; width: 100%; height: 100%; animation: zwem-golf 3s ease-in-out infinite; }
+@keyframes zwem-golf {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-18px); }
+}
+.zwemmer__lijf { position: relative !important; display: block; width: 100%; height: auto; overflow: visible; }
+
+/* Zeeschildpad: glijdt traag, de vinnen roeien om en om. */
+.zwemmer--schildpad { width: clamp(130px, 18vw, 240px); }
+.ow-schildpad .zwemmer__golf { animation: ow-schildpad-glij 8s ease-in-out infinite; }
+@keyframes ow-schildpad-glij {
+  0%, 100% { transform: translateY(0) rotate(-2deg); }
+  50% { transform: translateY(-16px) rotate(2deg); }
+}
+.ow-vin { transform-box: fill-box; animation: ow-roei 3.6s ease-in-out infinite; }
+.ow-vin--voor { transform-origin: 100% 0%; }
+.ow-vin--ver { transform-origin: 100% 100%; animation-name: ow-roei-ver; }
+.ow-vin--achter { transform-origin: 0% 0%; animation-name: ow-roei-achter; }
+@keyframes ow-roei {
+  0%, 100% { transform: rotate(-12deg); }
+  50% { transform: rotate(30deg); }
+}
+@keyframes ow-roei-ver {
+  0%, 100% { transform: rotate(14deg); }
+  50% { transform: rotate(-16deg); }
+}
+@keyframes ow-roei-achter {
+  0%, 100% { transform: rotate(-10deg); }
+  50% { transform: rotate(12deg); }
+}
+
+/* School visjes in formatie: elk visje dobbert en kwispelt op zichzelf. */
+.zwemmer--school { width: clamp(160px, 22vw, 300px); aspect-ratio: 2 / 1; }
+.ow-school__vis {
+  position: absolute;
+  width: 17%;
+  animation: ow-dobber 2.4s ease-in-out infinite;
+}
+@keyframes ow-dobber {
+  0%, 100% { transform: translate(0, 0); }
+  50% { transform: translate(-6%, 14%); }
+}
+.ow-school__lijf { display: block; width: 100%; height: auto; overflow: visible; }
+.ow-staart {
+  transform-box: fill-box;
+  transform-origin: 0% 50%;
+  animation: ow-kwispel 0.5s ease-in-out infinite alternate;
+  animation-delay: var(--kwispel, 0s);
+}
+@keyframes ow-kwispel {
+  from { transform: rotate(-14deg); }
+  to { transform: rotate(14deg); }
+}
+
+/* Lange kelp achter het zand. */
+.ow-kelp {
+  position: absolute;
+  bottom: 10vh;
+  height: 44vh;
+  width: auto;
+  transform-origin: bottom center;
+  animation: ow-kelp 9s ease-in-out infinite;
+}
+.ow-kelp--1 { left: -1%; height: 48vh; }
+.ow-kelp--2 { left: 5.5%; height: 33vh; animation-delay: -3s; animation-duration: 8s; }
+.ow-kelp--3 { right: 0; height: 46vh; animation-delay: -5s; }
+.ow-kelp--4 { right: 6%; height: 31vh; animation-delay: -2s; animation-duration: 10s; }
+@keyframes ow-kelp {
+  0%, 100% { transform: rotate(-2.5deg) skewX(-2deg); }
+  50% { transform: rotate(2.5deg) skewX(2deg); }
+}
+
+/* Zand, met lichtnetjes die langzaam over elkaar heen schuiven. */
+.onderwater-zand {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  width: 100%;
+  height: 20vh;
+}
+.ow-kaustiek {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 12vh;
+  overflow: hidden;
+  -webkit-mask-image: linear-gradient(transparent, #000 50%);
+  mask-image: linear-gradient(transparent, #000 50%);
+}
+.ow-kaustiek__laag {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  background-repeat: repeat;
+}
+.ow-kaustiek__laag--1 {
+  width: calc(100% + 160px);
+  background-size: 160px 80px;
+  opacity: 0.45;
+  animation: ow-schuif-160 26s linear infinite;
+}
+.ow-kaustiek__laag--2 {
+  left: -224px;
+  width: calc(100% + 224px);
+  background-size: 224px 112px;
+  background-position: 60px 30px;
+  opacity: 0.3;
+  animation: ow-schuif-224 34s linear infinite;
+}
+@keyframes ow-schuif-160 { to { transform: translateX(-160px); } }
+@keyframes ow-schuif-224 { to { transform: translateX(224px); } }
+
+/* Rifjes op de bodem: een rots met koraal erop; de onderdelen staan in % van het rifje. */
+.ow-rifje {
+  position: absolute;
+  bottom: 1vh;
+  aspect-ratio: 300 / 120;
+}
+.ow-rifje > svg { position: absolute; display: block; height: auto; }
+.ow-rifje--links { left: -3%; width: clamp(160px, 28vw, 380px); }
+.ow-rifje--rechts { right: -4%; width: clamp(160px, 28vw, 380px); }
+.ow-rots { inset: auto 0 0 0; width: 100%; }
+.ow-rifje--rechts .ow-rots { transform: scaleX(-1); }
+.ow-breinkoraal { left: 17%; bottom: 50%; width: 34%; }
+.ow-takkoraal--geel { left: 49%; bottom: 58%; width: 32%; transform: rotate(6deg); }
+.ow-waaier {
+  left: 38%;
+  bottom: 58%;
+  width: 36%;
+  transform-origin: 50% 100%;
+  animation: wiebel 7s ease-in-out infinite;
+}
+.onderwater-koraal { left: 66%; bottom: 46%; width: 28%; }
+.ow-spons { left: 25%; bottom: 40%; width: 15%; }
+
+.anemoon {
+  position: absolute;
+  left: 24%;
+  bottom: 3vh;
+  width: clamp(80px, 10vw, 140px);
+  aspect-ratio: 160 / 120;
+}
+.anemoon__plant { position: absolute; inset: 0; width: 100%; height: 100%; }
+.anemoon__tentakels {
+  transform-box: fill-box;
+  transform-origin: bottom center;
+  animation: wier-wuif 4s ease-in-out infinite;
+}
+/* Het clownvisje gluurt af en toe om zich heen (anemoon__gluur) en springt bij een goed
+   antwoord (anemoon__vis.springt). */
+.anemoon__gluur { position: absolute; inset: 0; animation: ow-gluur 15s ease-in-out infinite; }
+@keyframes ow-gluur {
+  0%, 52%, 90%, 100% { transform: translate(0, 0) rotate(0); }
+  60% { transform: translate(0, -30%) rotate(0); }
+  66% { transform: translate(-6%, -30%) rotate(-6deg); }
+  74% { transform: translate(4%, -32%) rotate(5deg); }
+  80% { transform: translate(0, -30%) rotate(0); }
+}
+.anemoon__vis {
+  position: absolute;
+  left: 22%;
+  top: 8%;
+  width: 56%;
+  height: auto;
+  transform: translateY(20%);
+}
+.anemoon__vis.springt { animation: clown-spring 1.6s ease-in-out; }
+@keyframes clown-spring {
+  0% { transform: translateY(20%); }
+  30% { transform: translateY(-110%) rotate(-12deg); }
+  55% { transform: translateY(-90%) translateX(-14%) rotate(8deg); }
+  100% { transform: translateY(20%); }
+}
+
+.onderwater-wier {
+  position: absolute;
+  bottom: 4vh;
+  width: clamp(44px, 6vw, 80px);
+  height: auto;
+  transform-origin: bottom center;
+  animation: wier-wuif 5s ease-in-out infinite;
+}
+.onderwater-wier--1 { left: -1%; }
+.onderwater-wier--2 { left: 20%; width: clamp(34px, 4.5vw, 60px); animation-delay: -1.5s; }
+.onderwater-wier--3 { right: -1%; animation-delay: -3s; }
+.onderwater-wier--4 { left: 72.5%; width: clamp(30px, 4vw, 54px); animation-delay: -2.2s; }
+@keyframes wier-wuif {
+  0%, 100% { transform: rotate(-5deg) skewX(-3deg); }
+  50% { transform: rotate(5deg) skewX(3deg); }
+}
+
+/* Schatkist: het deksel gaat af en toe op een kiertje open, met een glinstering. */
+.ow-kist {
+  position: absolute;
+  left: 54%;
+  bottom: 0.5vh;
+  width: clamp(64px, 8.5vw, 116px);
+}
+.ow-kist__svg { display: block; width: 100%; height: auto; overflow: visible; }
+.ow-deksel { transform-box: fill-box; transform-origin: 100% 100%; }
+.ow-glans { transform-box: fill-box; transform-origin: 50% 50%; transform: scale(0); }
+.ow-kist__svg.kiert .ow-deksel { animation: ow-kiert 3.6s ease-in-out; }
+.ow-kist__svg.kiert .ow-glans { animation: ow-glans 3.6s ease-in-out; }
+@keyframes ow-kiert {
+  0%, 100% { transform: rotate(0); }
+  16%, 80% { transform: rotate(13deg); }
+  48% { transform: rotate(10deg); }
+}
+@keyframes ow-glans {
+  0%, 18%, 80%, 100% { transform: scale(0) rotate(0); }
+  32% { transform: scale(1) rotate(25deg); }
+  48% { transform: scale(0.45) rotate(45deg); }
+  62% { transform: scale(0.9) rotate(70deg); }
+}
+
+.ow-anker {
+  position: absolute;
+  left: 62%;
+  bottom: -1vh;
+  width: clamp(40px, 4.6vw, 64px);
+  height: auto;
+  transform: rotate(28deg);
+}
+.ow-zeester {
+  position: absolute;
+  left: 36%;
+  bottom: 1.2vh;
+  width: clamp(26px, 3.2vw, 44px);
+  height: auto;
+  transform: rotate(-14deg);
+}
+.onderwater-schelp {
+  left: 68%;
+  bottom: 2vh;
+  width: clamp(30px, 3.5vw, 48px);
+  transform: rotate(-12deg);
+}
+
+.onderwater-krab {
+  position: absolute;
+  left: 38%;
+  bottom: 1.5vh;
+  width: clamp(54px, 7vw, 96px);
+  animation: krab-loop 16s ease-in-out infinite;
+}
+@keyframes krab-loop {
+  0%, 100% { transform: translateX(0); }
+  45%, 55% { transform: translateX(clamp(40px, 9vw, 150px)); }
+}
+.onderwater-krab__lijf { position: relative !important; display: block; width: 100%; }
+.onderwater-krab__lijf.juicht { animation: juich-sprong 0.6s ease-out 2; }
+
+/* Octopus: de armen krullen los, de ogen knipperen, en bij een goed antwoord zwaait hij. */
+.onderwater-octopus {
+  position: absolute;
+  right: 19%;
+  bottom: 1.5vh;
+  width: clamp(66px, 8.5vw, 116px);
+  animation: adem 3s ease-in-out infinite;
+  transform-origin: bottom center;
+}
+.onderwater-octopus__lijf { display: block; width: 100%; height: auto; overflow: visible; }
+.ow-arm { transform-box: fill-box; animation: ow-arm 4s ease-in-out infinite; }
+.ow-arm--1 { transform-origin: 100% 0%; }
+.ow-arm--2 { transform-origin: 60% 0%; animation-delay: -1s; animation-duration: 3.4s; }
+.ow-arm--3 { transform-origin: 40% 0%; animation-delay: -2.2s; animation-duration: 3.7s; }
+.ow-arm--4 { transform-origin: 0% 0%; animation-delay: -3s; }
+@keyframes ow-arm {
+  0%, 100% { transform: rotate(-7deg); }
+  50% { transform: rotate(7deg); }
+}
+.zwaait .ow-arm--4 { animation: ow-zwaai 0.6s ease-in-out 3; }
+@keyframes ow-zwaai {
+  0%, 100% { transform: rotate(0); }
+  50% { transform: rotate(-55deg); }
+}
+.ow-ogen {
+  transform-box: fill-box;
+  transform-origin: 50% 50%;
+  animation: ow-knipper 6s ease-in-out infinite;
+}
+@keyframes ow-knipper {
+  0%, 92%, 100% { transform: scaleY(1); }
+  95% { transform: scaleY(0.1); }
+}
+
+/* Telefoon staand: minder op de bodem, zodat het niet vol wordt. */
+@media (max-width: 560px) {
+  .onderwater-schelp,
+  .ow-anker,
+  .ow-zeester,
+  .ow-kelp--2,
+  .ow-kelp--4,
+  .ow-sil--2,
+  .ow-sil--5,
+  .onderwater-wier--2,
+  .onderwater-wier--4 { display: none; }
+  .ow-kelp--1, .ow-kelp--3 { height: 34vh; }
+  .ow-sil { height: 70px; }
+  .ow-kist { left: 1%; width: 58px; }
+  .anemoon { left: 18%; }
+  .onderwater-krab { left: 40%; }
+  .onderwater-octopus { right: 19%; }
+}
+
+/* Minder beweging: alles staat stil (de JS-timers starten dan ook niet). */
+.decor-onderwater--stil *,
+.decor-onderwater--stil *::before,
+.decor-onderwater--stil *::after { animation: none !important; }
+.decor-onderwater--stil .ow-kwal { transform: translateY(-40vh); }

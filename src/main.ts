@@ -3,6 +3,7 @@ import './styles/global.css';
 import './styles/components.css';
 import './styles/screens.css';
 import './styles/achtergrond.css';
+import './styles/achtergrond-onderwater.css';
 import './styles/achtergrond-herfst.css';
 import './styles/achtergrond-winter.css';
 import './styles/achtergrond-kermis.css';

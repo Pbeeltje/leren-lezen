@@ -843,7 +843,7 @@ creates `audio/boekjes/` by itself.
   - **zee:** the boat rides the higher of the two waves (`drijf` rAF loop). Rainbow (`maakRegenboog` in hulp.ts) 2.2 s after the storm. The whale (`kortAan(walvis,'duikt-op')`) appears 3.5 s after the boat is fully off screen.
   - **kasteel:** day 25 s / night 20 s (`data-tijd`), sometimes a rainbow by day, `.valster` shooting stars by night.
   - **ruimte** (`achtergrond/ruimte.ts`): one scheduler for shooting stars (`.valster`, random position) and the slow diagonal `.raket` (22%). Never two at once, ≥ 5 s rest between them; `juich` only fires when the sky is free. The old three.js shooting star is gone.
-  - **onderwater:** light rays, rising bubbles, seaweed, own clownfish in an anemone (jumps out on `juich`), a walking crab, and one Fluent fish at a time swimming past (`.zwemmer`, `zwem-over` with `--van-x/--naar-x`). `feest`: a turtle plus a school of fish.
+  - **onderwater:** see the Onder water bullet at the end of this file (own CSS file `styles/achtergrond-onderwater.css`, drawings in `achtergrond/onderwater-tekening.ts`).
   - **boerderij:** flat polder (`.boerderij-polder`, see the last bullet of this file), own windmill (`.molen__wieken` rotates) and barn, CSS fence, Fluent cow/pig/sheep/rooster/chicks. Tractor every 8–22 s, random direction; the Fluent tractor faces left, so it gets `.gespiegeld` when driving right, except 20% of the time when it deliberately drives backwards (class `achteruit`, mirror flipped). `juich`: the cow jumps with a "boe!" bubble; `feest`: all animals jump in turn.
   - **herfst, winter, kermis, bouw, trein:** each has its own CSS file `styles/achtergrond-<id>.css` (imported in main.ts) and pictures with the prefix `<id>-` in `public/assets/achtergrond/`.
   - **Adding a theme:** add the id to `ThemaId`, plus an entry in `THEMAS` and `MAKERS`. The shop and profile menu pick it up automatically (200 coins). Fluent animals face left: mirror them with `.gespiegeld`. If `prefers-reduced-motion` is set, don't start JS schedulers. View a theme with `node tests/achtergronden.mjs <map> <id>` (rest/juich/feest on phone, pc and landscape).
@@ -1090,3 +1090,30 @@ Children no longer pick an age but a group (`Groep = 'kleuter' | 'groep3'` in co
   18-40 s (the puck gets halfway), on `juich` `slaKop('slaat')`: the mallet hits, the puck
   reaches the bell, the bell rings and a "DING!" bubble shows (`KOP_MS` 2.4 s = the CSS
   animations). Not with `prefers-reduced-motion`.
+- **Onder water** (`achtergrond/onderwater.ts`, drawings in `achtergrond/onderwater-tekening.ts`,
+  CSS in `styles/achtergrond-onderwater.css`; the shared `zwem-over` and `straal-glans`
+  keyframes stay in `achtergrond.css`). Back to front: a shimmering surface band
+  (`.ow-oppervlak`, repeating SVG lines sliding sideways), two hazy reef ridges (`RIF_VER`,
+  `RIF_MIDDEN`, `preserveAspectRatio="none"`) with a haze gradient and distant coral/kelp
+  silhouettes (`.ow-sil`, fixed aspect, feet hidden behind the middle ridge), the far-animal
+  layer `.ow-verte`, six swaying light rays (`ow-straal`, rotate around the top, 12-18 s),
+  26 plankton dots (`.ow-stip`, `--dx/--dy`), rising bubbles, two own jellyfish (`KWAL`,
+  pulsing `.ow-hoed`, drifting from the seabed to the top in 52 s / 75 s), the swimmers,
+  tall kelp (`kelp()`), sand with two sliding caustic layers (`.ow-kaustiek`), and the seabed:
+  two `.ow-rifje` groups (rock `ROTS` + corals positioned in % of the group: brain coral,
+  yellow branch coral, fan coral, pink branch coral, tube sponges), the anemone with the own
+  clownfish (peeks out every 15 s via `.anemoon__gluur`, jumps on `juich`), sea star, anchor,
+  Fluent shell, walking Fluent crab, own octopus (`OCTOPUS`: curling `.ow-arm`s, blinking,
+  waves `.ow-arm--4` on `juich` via `.zwaait`) and a treasure chest (`SCHATKIST`: `.kiert`
+  lifts the lid with a glint plus a bubble cloud, every 16-34 s and on `feest`). One
+  scheduler sends one crossing at a time with 4 s rest: a Fluent fish (45 %), an own school
+  of 18 fish in formation (`SCHOOLVIS`, wagging `.ow-staart`, 30 %) or the own sea turtle
+  (`SCHILDPAD`, rowing `.ow-vin`s like the pteranodon, 30-38 s, 25 %); no school/turtle twice
+  in a row. Separately, every 100-160 s a blurred manta or whale silhouette glides by far
+  away (60-80 s). Crossings use `--van-x: -110%` / `calc(100vw + 10%)` (percent of the
+  element itself, so big animals start fully off screen) and mirror via `.zwemmer__spiegel`.
+  `feest`: turtle + school together, chest opens, bubbles at the octopus. Phones <= 560 px hide
+  the shell, anchor, sea star, two kelps, two seaweeds and two silhouettes, and move the chest
+  to the far left. `prefers-reduced-motion`: no timers, and `.decor-onderwater--stil` stops all
+  CSS animations. The Fluent files `vis`, `vis-tropisch`, `kogelvis`, `schildpad`, `octopus`,
+  `schelp`, `kwal` stay in `public/assets/achtergrond/` (the Vangspel uses them).
