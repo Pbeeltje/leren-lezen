@@ -11,15 +11,20 @@
     if (el) el.click();
   };
   const stappen = [
-    [6000, () => tik('.icoon-tegel', 'Demo')],
-    [12000, () => tik('.icoon-tegel', 'Leren lezen')],
-    [16000, () => tik('.kern-rij--klikbaar')],
-    [20000, () => tik('.hoofdstuk-tegel', 'Oefening 1')],
-    [30000, () => tik('.terug-knop')],
-    [33000, () => tik('.terug-knop')],
-    [36000, () => tik('.terug-knop')],
-    [40000, () => tik('.icoon-tegel', 'Muziek')],
-    [44000, () => tik('.icoon-tegel', 'Vrij spelen')],
+    [0, () => tik('.icoon-tegel', 'Demo')],
+    [0, () => tik('.icoon-tegel', 'Leren lezen')],
+    [0, () => tik('.kern-rij--klikbaar')],
+    [0, () => tik('.hoofdstuk-tegel', 'Oefening 1')],
+    [0, () => { tik('.terug-knop'); setTimeout(() => tik('.terug-knop'), 1500); setTimeout(() => tik('.terug-knop'), 3000); }],
+    [0, () => tik('.icoon-tegel', 'Muziek')],
+    [0, () => tik('.icoon-tegel', 'Vrij spelen')],
   ];
-  for (const [t, f] of stappen) setTimeout(f, t);
+  // Pas beginnen als de app echt getekend is (de CI-simulator is bij een koude start traag),
+  // en dan elke stap 10 s later, zodat de schermafbeeldingen (elke 10 s) elk scherm vangen.
+  const begin = () => {
+    if (!document.querySelector('.icoon-tegel')) return setTimeout(begin, 500);
+    document.title = 'demo-klaar';
+    stappen.forEach(([, f], i) => setTimeout(f, 8000 + i * 10000));
+  };
+  begin();
 })();
