@@ -755,3 +755,321 @@ body:not(.thema-ruimte) .instructie-tekst:not(.instructie-tekst--donker) {
   from { transform: scaleY(0.8); opacity: 0.85; }
   to { transform: scaleY(1.15); opacity: 1; }
 }
+
+/* ---- Onder water ---- */
+.decor-onderwater {
+  background: linear-gradient(#6fd6ec 0%, #2a9fc9 35%, #13699e 75%, #0d4f7c 100%);
+}
+.decor-onderwater img.gespiegeld,
+.decor-boerderij img.gespiegeld { transform: scaleX(-1); }
+
+.onderwater-stralen { position: absolute; inset: 0 0 30% 0; overflow: hidden; }
+.onderwater-straal {
+  position: absolute;
+  top: -10%;
+  width: 9vw;
+  height: 110%;
+  background: linear-gradient(rgba(255, 255, 255, 0.35), rgba(255, 255, 255, 0));
+  transform: skewX(-14deg);
+  animation: straal-glans 9s ease-in-out infinite;
+}
+.onderwater-straal:nth-child(1) { left: 8%; }
+.onderwater-straal:nth-child(2) { left: 30%; width: 5vw; animation-delay: -3s; }
+.onderwater-straal:nth-child(3) { left: 58%; width: 11vw; animation-delay: -6s; }
+.onderwater-straal:nth-child(4) { left: 82%; width: 6vw; animation-delay: -1.5s; }
+@keyframes straal-glans {
+  0%, 100% { opacity: 0.35; }
+  50% { opacity: 1; }
+}
+
+.onderwater-kwal {
+  top: max(14%, 100px);
+  left: 4%;
+  width: clamp(48px, 6vw, 80px);
+  opacity: 0.85;
+  animation: kwal-dobber 7s ease-in-out infinite;
+}
+@keyframes kwal-dobber {
+  0%, 100% { transform: translateY(0) scaleY(1); }
+  25% { transform: translateY(-8px) scaleY(0.92); }
+  50% { transform: translateY(-26px) scaleY(1.04); }
+  75% { transform: translateY(-14px) scaleY(0.95); }
+}
+
+.onderwater-belletjes { position: absolute; inset: 0; }
+.belletje {
+  position: absolute;
+  bottom: -20px;
+  border-radius: 50%;
+  border: 2px solid rgba(255, 255, 255, 0.75);
+  background: radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.7), rgba(255, 255, 255, 0.08) 60%);
+  animation: belletje-op linear infinite;
+}
+@keyframes belletje-op {
+  0% { transform: translate(0, 0); opacity: 0; }
+  10% { opacity: 1; }
+  50% { transform: translate(14px, -55vh); }
+  100% { transform: translate(-6px, -110vh); opacity: 0.6; }
+}
+.belletje--los {
+  bottom: 60%;
+  animation: belletje-los 1.6s ease-out forwards;
+}
+@keyframes belletje-los {
+  from { transform: translateY(0); opacity: 1; }
+  to { transform: translateY(-130px); opacity: 0; }
+}
+
+.onderwater-zwemmers { position: absolute; inset: 0; }
+.zwemmer {
+  position: absolute;
+  left: 0;
+  width: clamp(60px, 8vw, 110px);
+  animation: zwem-over linear forwards;
+  transform: translateX(var(--van-x));
+}
+@keyframes zwem-over {
+  from { transform: translateX(var(--van-x)); }
+  to { transform: translateX(var(--naar-x)); }
+}
+.zwemmer__golf { animation: zwem-golf 3s ease-in-out infinite; }
+@keyframes zwem-golf {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-18px); }
+}
+.zwemmer__lijf { position: relative !important; display: block; width: 100%; }
+.zwemmer--schildpad { width: clamp(110px, 14vw, 190px); }
+.zwemmer--school { width: clamp(30px, 3.6vw, 50px); }
+
+.onderwater-zand {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  width: 100%;
+  height: 20vh;
+}
+.onderwater-wier {
+  position: absolute;
+  bottom: 4vh;
+  width: clamp(44px, 6vw, 80px);
+  height: auto;
+  transform-origin: bottom center;
+  animation: wier-wuif 5s ease-in-out infinite;
+}
+.onderwater-wier--1 { left: 1%; }
+.onderwater-wier--2 { left: 8%; width: clamp(34px, 4.5vw, 60px); animation-delay: -1.5s; }
+.onderwater-wier--3 { right: 13%; animation-delay: -3s; }
+.onderwater-wier--4 { right: 22%; width: clamp(30px, 4vw, 54px); animation-delay: -2.2s; }
+@keyframes wier-wuif {
+  0%, 100% { transform: rotate(-5deg) skewX(-3deg); }
+  50% { transform: rotate(5deg) skewX(3deg); }
+}
+
+.onderwater-koraal {
+  position: absolute;
+  right: 1%;
+  bottom: 3vh;
+  width: clamp(80px, 11vw, 150px);
+  height: auto;
+}
+
+.anemoon {
+  position: absolute;
+  left: 15%;
+  bottom: 3vh;
+  width: clamp(80px, 10vw, 140px);
+  aspect-ratio: 160 / 120;
+}
+.anemoon__plant { position: absolute; inset: 0; width: 100%; height: 100%; }
+.anemoon__tentakels {
+  transform-box: fill-box;
+  transform-origin: bottom center;
+  animation: wier-wuif 4s ease-in-out infinite;
+}
+.anemoon__vis {
+  position: absolute;
+  left: 22%;
+  top: 8%;
+  width: 56%;
+  height: auto;
+  transform: translateY(20%);
+}
+.anemoon__vis.springt { animation: clown-spring 1.6s ease-in-out; }
+@keyframes clown-spring {
+  0% { transform: translateY(20%); }
+  30% { transform: translateY(-110%) rotate(-12deg); }
+  55% { transform: translateY(-90%) translateX(-14%) rotate(8deg); }
+  100% { transform: translateY(20%); }
+}
+
+.onderwater-schelp {
+  right: 30%;
+  bottom: 2vh;
+  width: clamp(30px, 3.5vw, 48px);
+  transform: rotate(-12deg);
+}
+
+.onderwater-krab {
+  position: absolute;
+  left: 32%;
+  bottom: 1.5vh;
+  width: clamp(54px, 7vw, 96px);
+  animation: krab-loop 16s ease-in-out infinite;
+}
+@keyframes krab-loop {
+  0%, 100% { transform: translateX(0); }
+  45%, 55% { transform: translateX(clamp(40px, 9vw, 150px)); }
+}
+.onderwater-krab__lijf { position: relative !important; display: block; width: 100%; }
+.onderwater-krab__lijf.juicht { animation: juich-sprong 0.6s ease-out 2; }
+
+.onderwater-octopus {
+  position: absolute;
+  right: 14%;
+  bottom: 2vh;
+  width: clamp(70px, 9vw, 120px);
+  animation: adem 3s ease-in-out infinite;
+  transform-origin: bottom center;
+}
+.onderwater-octopus__lijf { position: relative !important; display: block; width: 100%; }
+
+/* ---- Boerderij ---- */
+.decor-boerderij {
+  background: linear-gradient(#58b4f2 0%, #9ad6f8 55%, #dcf3fd 100%);
+}
+.boerderij-zon {
+  top: max(11%, 96px);
+  right: 5%;
+  width: clamp(70px, 10vw, 130px);
+  animation: draai-langzaam 60s linear infinite;
+}
+.boerderij-heuvels {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  width: 100%;
+  height: 34vh;
+}
+.boerderij-molen {
+  position: absolute;
+  left: 6%;
+  bottom: 22vh;
+  width: clamp(80px, 11vw, 150px);
+  aspect-ratio: 200 / 260;
+}
+.boerderij-schuur {
+  position: absolute;
+  right: 16%;
+  bottom: 22vh;
+  width: clamp(90px, 12vw, 170px);
+  aspect-ratio: 220 / 170;
+}
+.boerderij-molen__svg,
+.boerderij-schuur__svg { display: block; width: 100%; height: 100%; }
+.molen__wieken {
+  transform-origin: 100px 98px;
+  animation: draai-langzaam 14s linear infinite;
+}
+
+.boerderij-tractorbaan { position: absolute; left: 0; right: 0; bottom: 15vh; height: 0; }
+.boer-tractor {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: clamp(54px, 6.5vw, 90px);
+  animation: zwem-over 18s linear forwards;
+  --van-x: -12vw;
+  --naar-x: 105vw;
+  transform: translateX(var(--van-x));
+}
+.boer-tractor__schok { animation: tractor-schok 0.5s ease-in-out infinite alternate; }
+@keyframes tractor-schok {
+  from { transform: translateY(0) rotate(-1deg); }
+  to { transform: translateY(-2px) rotate(1deg); }
+}
+.boer-tractor__lijf { position: relative !important; display: block; width: 100%; }
+
+.boerderij-hek {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 3vh;
+  height: clamp(36px, 6vh, 60px);
+  background:
+    linear-gradient(#f3e3c3, #f3e3c3) 0 22% / 100% 7px no-repeat,
+    linear-gradient(#f3e3c3, #f3e3c3) 0 66% / 100% 7px no-repeat,
+    repeating-linear-gradient(90deg, transparent 0 46px, #e8d2a6 46px 56px, transparent 56px 60px);
+  filter: drop-shadow(0 2px 0 #a07e4a);
+}
+
+.boer-dier {
+  position: absolute;
+  transform-origin: bottom center;
+  animation: adem 3.4s ease-in-out infinite;
+}
+.boer-dier__lijf { position: relative !important; display: block; width: 100%; }
+.boer-dier.juicht { animation: juich-sprong 0.6s ease-out 2; }
+.boer-dier--koe { left: 2%; bottom: 4vh; width: clamp(100px, 14vw, 190px); }
+.boer-dier--varken { right: 3%; bottom: 4vh; width: clamp(80px, 11vw, 150px); animation-delay: -1.2s; }
+.boer-dier--schaap { right: 30%; width: clamp(54px, 7vw, 96px); animation-delay: -2s; }
+.boer-dier--haan { left: 20%; bottom: 1vh; width: clamp(54px, 7vw, 96px); animation: haan-pik 4s ease-in-out infinite; }
+.boer-dier--kuiken { bottom: 0.5vh; width: clamp(26px, 3.4vw, 46px); animation: kuiken-trippel 9s ease-in-out infinite; }
+.boer-dier--kuiken-1 { left: 28%; }
+.boer-dier--kuiken-2 { left: 32%; animation-delay: -3s; }
+@keyframes haan-pik {
+  0%, 60%, 100% { transform: rotate(0); }
+  66% { transform: rotate(-22deg); }
+  72% { transform: rotate(0); }
+  78% { transform: rotate(-22deg); }
+  84% { transform: rotate(0); }
+}
+@keyframes kuiken-trippel {
+  0%, 100% { transform: translateX(0); }
+  20% { transform: translateX(-10px) translateY(-4px); }
+  25% { transform: translateX(-12px); }
+  50% { transform: translateX(14px); }
+  55% { transform: translateX(14px) translateY(-5px); }
+  60% { transform: translateX(14px); }
+}
+
+.boer-roep {
+  position: absolute;
+  top: -12%;
+  left: 62%;
+  padding: 4px 12px;
+  border-radius: 16px;
+  background: #fff;
+  color: #3a2a1a;
+  font-weight: 800;
+  font-size: clamp(1rem, 2vw, 1.5rem);
+  box-shadow: 0 2px 0 rgba(0, 0, 0, 0.2);
+  animation: roep-op 1.4s ease-out forwards;
+}
+@keyframes roep-op {
+  0% { transform: scale(0.4); opacity: 0; }
+  15% { transform: scale(1.1); opacity: 1; }
+  80% { transform: scale(1); opacity: 1; }
+  100% { transform: translateY(-14px); opacity: 0; }
+}
+.boer-ster {
+  position: absolute;
+  top: -10px;
+  left: 50%;
+  font-size: 2rem;
+  color: #ffd23f;
+  text-shadow: 0 2px 0 #c77d00;
+  animation: hoera-op 1.2s ease-out forwards;
+}
+
+@media (max-width: 560px) {
+  .boer-dier--schaap,
+  .boer-dier--kuiken-2,
+  .onderwater-schelp { display: none; }
+  .anemoon { left: 16%; }
+  .onderwater-krab { left: 46%; }
+  .onderwater-octopus { right: 22%; }
+  .boer-dier--haan { left: 24%; }
+  .boer-dier--kuiken-1 { left: 42%; }
+}

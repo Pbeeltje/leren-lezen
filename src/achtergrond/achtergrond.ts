@@ -5,12 +5,25 @@ import { maakRuimteDecor } from './ruimte.ts';
 import { maakDinoDecor } from './dino.ts';
 import { maakKasteelDecor } from './kasteel.ts';
 import { maakZeeDecor } from './zee.ts';
+import { maakOnderwaterDecor } from './onderwater.ts';
+import { maakBoerderijDecor } from './boerderij.ts';
+import { maakHerfstDecor } from './herfst.ts';
+import { maakWinterDecor } from './winter.ts';
+import { maakKermisDecor } from './kermis.ts';
+import { maakBouwDecor } from './bouw.ts';
+import { maakTreinDecor } from './trein.ts';
 
 // Kiesbare achtergronden (per profiel onthouden). Elk decor staat in een eigen laag
 // achter de three.js-laag en de schermen, blijft aan de randen (de vragen staan in het
 // midden op witte kaarten) en reageert even op een goed antwoord.
 
-export type ThemaId = 'ruimte' | 'dino' | 'kasteel' | 'zee';
+export type ThemaId = 'ruimte' | 'dino' | 'kasteel' | 'zee' | 'onderwater'
+  | 'boerderij'
+  | 'herfst'
+  | 'winter'
+  | 'kermis'
+  | 'bouw'
+  | 'trein';
 
 export interface Decor {
   element: HTMLElement;
@@ -28,6 +41,13 @@ export const THEMAS: { id: ThemaId; naam: string; voorbeeld: string }[] = [
   { id: 'dino', naam: 'Dino-wei', voorbeeld: 'assets/achtergrond/trex-eigen.svg' },
   { id: 'kasteel', naam: 'Kasteel', voorbeeld: 'assets/achtergrond/kasteel-eigen.svg' },
   { id: 'zee', naam: 'Zee', voorbeeld: 'assets/achtergrond/vuurtoren.svg' },
+  { id: 'onderwater', naam: 'Onder water', voorbeeld: 'assets/achtergrond/vis-tropisch.svg' },
+  { id: 'boerderij', naam: 'Boerderij', voorbeeld: 'assets/achtergrond/koe.svg' },
+  { id: 'herfst', naam: 'Herfstbos', voorbeeld: 'assets/achtergrond/esdoornblad.svg' },
+  { id: 'winter', naam: 'Winter', voorbeeld: 'assets/achtergrond/sneeuwpop.svg' },
+  { id: 'kermis', naam: 'Kermis', voorbeeld: 'assets/achtergrond/reuzenrad.svg' },
+  { id: 'bouw', naam: 'Bouwplaats', voorbeeld: 'assets/achtergrond/bouw.svg' },
+  { id: 'trein', naam: 'Treinreis', voorbeeld: 'assets/achtergrond/locomotief.svg' },
 ];
 
 // De ruimte zelf tekent three.js; het decor erbij is alleen de laag met vallende sterren
@@ -37,6 +57,13 @@ const MAKERS: Record<ThemaId, () => Decor> = {
   dino: maakDinoDecor,
   kasteel: maakKasteelDecor,
   zee: maakZeeDecor,
+  onderwater: maakOnderwaterDecor,
+  boerderij: maakBoerderijDecor,
+  herfst: maakHerfstDecor,
+  winter: maakWinterDecor,
+  kermis: maakKermisDecor,
+  bouw: maakBouwDecor,
+  trein: maakTreinDecor,
 };
 
 let laag: HTMLElement | null = null;

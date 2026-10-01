@@ -1,0 +1,312 @@
+/* ---- Herfstbos (src/achtergrond/herfst.ts) ---- */
+/* Warme, wazige boslucht; het bladerdak en de stammen liggen eroverheen. */
+.decor-herfst {
+  background: linear-gradient(#f8dca4 0%, #efbd7c 45%, #e2a265 75%, #c98a55 100%);
+}
+.decor-herfst img.gespiegeld { transform: scaleX(-1); }
+
+/* Stammen ver weg (bleek) en verderop (bruin), van boven tot aan de bosgrond. */
+.herfst-stammen {
+  position: absolute;
+  inset: 0 0 14vh 0;
+  background-repeat: repeat-x;
+  background-position: left top;
+}
+.herfst-stammen--ver { bottom: 20vh; background-size: 300px 100%; opacity: 0.8; filter: blur(1.5px); }
+.herfst-stammen--midden { bottom: 17vh; background-size: 470px 100%; background-position: 130px 0; filter: blur(0.5px); }
+.herfst-stammen--dichtbij { bottom: 13vh; background-size: 820px 100%; background-position: -60px 0; }
+
+/* Nevel tussen de rijen stammen: geeft diepte (verder weg = lichter en waziger). */
+.herfst-nevel { position: absolute; inset: 0; pointer-events: none; }
+.herfst-nevel--ver { background: linear-gradient(rgba(255, 236, 200, 0.15), rgba(255, 232, 190, 0.5) 85%); }
+.herfst-nevel--midden { background: linear-gradient(rgba(255, 236, 200, 0), rgba(255, 228, 185, 0.35) 90%); }
+
+/* Zonnestralen schuin door het bladerdak. */
+.herfst-licht { position: absolute; inset: 0; overflow: hidden; }
+.herfst-straal {
+  position: absolute;
+  top: -10%;
+  width: 8vw;
+  height: 105%;
+  background: linear-gradient(rgba(255, 246, 205, 0.55), rgba(255, 246, 205, 0) 85%);
+  transform: skewX(16deg);
+  animation: straal-glans 10s ease-in-out infinite;
+}
+.herfst-straal:nth-child(1) { left: 20%; }
+.herfst-straal:nth-child(2) { left: 38%; width: 4vw; animation-delay: -3s; }
+.herfst-straal:nth-child(3) { left: 60%; width: 10vw; animation-delay: -6s; }
+.herfst-straal:nth-child(4) { left: 77%; width: 5vw; animation-delay: -1.5s; }
+
+/* Grote stammen vlakbij, hoger dan het scherm. */
+.herfst-stam {
+  position: absolute;
+  top: -2vh;
+  bottom: 2vh;
+  width: clamp(64px, 10vw, 160px);
+}
+.herfst-stam--links { left: 1%; }
+.herfst-stam--rechts { right: 2%; }
+.herfst-stam__svg { display: block; width: 100%; height: 100%; }
+
+/* Tak aan de rechterstam, naar binnen; de eekhoorn zit erop. */
+.herfst-tak {
+  position: absolute;
+  right: calc(2% + clamp(64px, 10vw, 160px) * 0.6);
+  bottom: 38vh;
+  width: clamp(120px, 15vw, 230px);
+  aspect-ratio: 240 / 60;
+}
+.herfst-tak__svg { display: block; width: 100%; height: 100%; }
+
+.herfst-grond {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  width: 100%;
+  height: 24vh;
+}
+
+/* Varens over de rand van de bosgrond. */
+.herfst-varens {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -1vh;
+  height: clamp(48px, 10vh, 100px);
+  background-repeat: repeat-x;
+  background-position: left bottom;
+  background-size: auto 100%;
+}
+
+/* Struiken helemaal vooraan in de hoeken. */
+.herfst-struik {
+  position: absolute;
+  bottom: -5vh;
+  width: clamp(150px, 24vw, 330px);
+  height: auto;
+  transform-origin: bottom center;
+  animation: herfst-struik 7s ease-in-out infinite;
+}
+.herfst-struik--links { left: -6%; }
+.herfst-struik--rechts { right: -7%; animation-name: herfst-struik-gespiegeld; animation-delay: -3s; }
+@keyframes herfst-struik {
+  0%, 100% { transform: rotate(-1deg); }
+  50% { transform: rotate(1deg); }
+}
+@keyframes herfst-struik-gespiegeld {
+  0%, 100% { transform: scaleX(-1) rotate(-1deg); }
+  50% { transform: scaleX(-1) rotate(1deg); }
+}
+
+/* Lichtvlekken: zon die door de blaadjes valt, zacht glinsterend. */
+.herfst-vlekken { position: absolute; inset: 0; pointer-events: none; }
+.herfst-vlek {
+  position: absolute;
+  width: var(--maat);
+  aspect-ratio: 1.7 / 1;
+  border-radius: 50%;
+  background: radial-gradient(closest-side, rgba(255, 244, 196, 0.8), rgba(255, 244, 196, 0));
+  mix-blend-mode: screen;
+  transform: translate(-50%, -50%);
+  animation: herfst-vlek 7s ease-in-out infinite alternate;
+}
+@keyframes herfst-vlek {
+  from { opacity: 0.3; transform: translate(-50%, -50%) scale(0.85); }
+  to { opacity: 0.95; transform: translate(-50%, -50%) scale(1.1); }
+}
+
+/* Bladerdak bovenaan: rand over de hele breedte, dikke trossen in de hoeken. */
+.herfst-dak { position: absolute; inset: 0 0 auto 0; }
+.herfst-dak__rand {
+  position: absolute;
+  top: 0;
+  left: -20px;
+  right: -20px;
+  height: clamp(54px, 10vh, 110px);
+  background-repeat: repeat-x;
+  background-size: auto 100%;
+  animation: herfst-dak-wieg 6s ease-in-out infinite;
+}
+@keyframes herfst-dak-wieg {
+  0%, 100% { transform: translate(-6px, 0); }
+  50% { transform: translate(6px, 3px); }
+}
+.herfst-dak__hoek {
+  position: absolute;
+  top: -2vh;
+  width: clamp(170px, 30vw, 440px);
+  height: auto;
+  animation: herfst-hoek 6s ease-in-out infinite;
+}
+.herfst-dak__hoek--links { left: -2%; transform-origin: top left; }
+.herfst-dak__hoek--rechts { right: -2%; transform-origin: top right; animation-name: herfst-hoek-gespiegeld; animation-delay: -2.5s; }
+@keyframes herfst-hoek {
+  0%, 100% { transform: rotate(-1.5deg); }
+  50% { transform: rotate(1.5deg); }
+}
+@keyframes herfst-hoek-gespiegeld {
+  0%, 100% { transform: scaleX(-1) rotate(-1.5deg); }
+  50% { transform: scaleX(-1) rotate(1.5deg); }
+}
+.herfst-dak__hoek--links.waait { animation: herfst-hoek-storm 0.7s ease-in-out infinite alternate; }
+.herfst-dak__hoek--rechts.waait { animation: herfst-hoek-storm-gespiegeld 0.7s ease-in-out infinite alternate; }
+@keyframes herfst-hoek-storm {
+  from { transform: rotate(-2deg); }
+  to { transform: rotate(6deg) skewX(4deg); }
+}
+@keyframes herfst-hoek-storm-gespiegeld {
+  from { transform: scaleX(-1) rotate(2deg); }
+  to { transform: scaleX(-1) rotate(-6deg) skewX(-4deg); }
+}
+
+/* Eekhoorn op de tak (kijkt naar links, naar het puntje). */
+.herfst-eekhoorn {
+  position: absolute;
+  left: 52%;
+  bottom: 55%;
+  width: 32%;
+}
+.herfst-eekhoorn__hup {
+  transform-origin: bottom center;
+  animation: adem 3s ease-in-out infinite;
+}
+.herfst-eekhoorn__lijf { position: relative !important; display: block; width: 100%; }
+.herfst-eekhoorn.rent { animation: herfst-tak 4.6s ease-in-out; }
+.herfst-eekhoorn.rent .herfst-eekhoorn__hup,
+.herfst-renner .herfst-eekhoorn__hup { animation: herfst-hup 0.3s ease-in-out infinite alternate; }
+.herfst-eekhoorn.rent .herfst-eekhoorn__lijf { animation: herfst-keer 4.6s linear; }
+@keyframes herfst-tak {
+  0% { transform: translateX(0); }
+  40%, 55% { transform: translateX(-125%); }
+  95%, 100% { transform: translateX(0); }
+}
+@keyframes herfst-keer {
+  0%, 45% { transform: scaleX(1); }
+  48%, 96% { transform: scaleX(-1); }
+  99%, 100% { transform: scaleX(1); }
+}
+@keyframes herfst-hup {
+  from { transform: translateY(0); }
+  to { transform: translateY(-14%); }
+}
+
+/* Eekhoorn die over de bosgrond rent. */
+.herfst-loopbaan { position: absolute; left: 0; right: 0; bottom: 1.5vh; height: 0; }
+.herfst-renner {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: clamp(44px, 5vw, 70px);
+  animation: zwem-over 9s linear forwards;
+  transform: translateX(var(--van-x));
+}
+
+.herfst-paddenstoel { transform-origin: bottom center; animation: adem 4s ease-in-out infinite; }
+.herfst-paddenstoel--1 { left: 31%; bottom: 2vh; width: clamp(40px, 5vw, 68px); }
+.herfst-paddenstoel--2 { right: 19%; bottom: 3vh; width: clamp(36px, 4.4vw, 60px); animation-delay: -1.5s; }
+.herfst-paddenstoel--3 { right: 24.5%; bottom: 1.5vh; width: clamp(24px, 3vw, 40px); animation-delay: -2.6s; }
+.herfst-kastanje { left: 37%; bottom: 1.5vh; width: clamp(20px, 2.4vw, 32px); transform: rotate(-10deg); }
+
+/* Bladerhoop met een egel erachter; het gat knipt de egel af als hij wegduikt. */
+.herfst-hoop {
+  position: absolute;
+  left: 17%;
+  bottom: 2vh;
+  width: clamp(90px, 12vw, 160px);
+  aspect-ratio: 10 / 8;
+}
+.herfst-hoop__gat { position: absolute; inset: 0 0 12% 0; overflow: hidden; }
+.herfst-egel {
+  left: 18%;
+  bottom: 0;
+  width: 64%;
+  transform: translateY(105%);
+}
+.herfst-egel.kijkt { animation: herfst-egel-kijk 2.6s ease-in-out; }
+@keyframes herfst-egel-kijk {
+  0% { transform: translateY(105%); }
+  14% { transform: translateY(-4%); }
+  22% { transform: translateY(2%); }
+  34% { transform: translateY(2%) rotate(-6deg); }
+  44%, 50% { transform: translateY(2%) scaleX(-1) rotate(0); }
+  60% { transform: translateY(2%) scaleX(-1) rotate(6deg); }
+  70%, 78% { transform: translateY(2%) scaleX(1); }
+  100% { transform: translateY(105%); }
+}
+.herfst-hoop__bladeren { position: absolute; left: 0; bottom: 0; width: 100%; height: 48%; }
+.herfst-opwaai {
+  position: absolute;
+  bottom: 40%;
+  width: clamp(14px, 1.8vw, 24px);
+  opacity: 0;
+  animation: herfst-opwaai 1.5s ease-out forwards;
+}
+@keyframes herfst-opwaai {
+  0% { transform: translate(0, 0) scale(0.6); opacity: 1; }
+  45% { transform: translate(var(--dx), var(--dy)) rotate(calc(var(--draai) / 2)); opacity: 1; }
+  100% { transform: translate(calc(var(--dx) * 1.5), calc(var(--dy) + 50px)) rotate(var(--draai)); opacity: 0; }
+}
+
+.herfst-blad { display: block; width: 100%; height: auto; }
+
+/* Dwarrelende blaadjes over het hele scherm (achter de vraagkaarten). */
+.herfst-vallen { position: absolute; inset: 0; }
+.herfst-val {
+  position: absolute;
+  top: -6vh;
+  width: var(--maat);
+  opacity: 0.92;
+  animation: herfst-val linear infinite;
+}
+@keyframes herfst-val {
+  from { transform: translate(0, 0); }
+  to { transform: translate(var(--drift), 112vh); }
+}
+.herfst-val__zwaai { animation: herfst-zwaai 3s ease-in-out infinite alternate; }
+@keyframes herfst-zwaai {
+  from { transform: translateX(-22px) rotate(-40deg); }
+  to { transform: translateX(22px) rotate(40deg); }
+}
+.herfst-val .herfst-blad { animation: herfst-flip 4s ease-in-out infinite; }
+@keyframes herfst-flip {
+  0%, 100% { transform: scaleX(1); }
+  50% { transform: scaleX(0.35); }
+}
+
+/* Windvlaag aan het eind: een wervel blaadjes reist van links naar rechts. */
+.herfst-vlaag { position: absolute; inset: 0; }
+.herfst-vlaag__blad {
+  position: absolute;
+  left: 0;
+  width: clamp(22px, 2.8vw, 38px);
+  transform: translateX(-35vw);
+  animation: herfst-vlaag 7.5s cubic-bezier(0.35, 0.1, 0.65, 0.9) forwards;
+}
+.herfst-vlaag__blad--los { width: clamp(16px, 2vw, 28px); animation-duration: 5.5s; }
+@keyframes herfst-vlaag {
+  0% { transform: translate(-35vw, 0); }
+  50% { transform: translate(45vw, -4vh); }
+  100% { transform: translate(130vw, 2vh); }
+}
+.herfst-vlaag__wervel {
+  transform-origin: 50% calc(50% + var(--straal));
+  animation: draai-langzaam 1.8s linear infinite;
+}
+.herfst-vlaag__fladder { animation: herfst-fladder 0.9s ease-in-out infinite alternate; }
+@keyframes herfst-fladder {
+  from { transform: translateY(-14px) rotate(-60deg); }
+  to { transform: translateY(14px) rotate(80deg); }
+}
+
+
+@media (max-width: 560px) {
+  .herfst-paddenstoel--3,
+  .herfst-kastanje,
+  .herfst-val:nth-child(n + 10) { display: none; }
+  .herfst-hoop { left: 20%; }
+  .herfst-paddenstoel--1 { left: 50%; }
+  .herfst-struik { width: 36vw; }
+  .herfst-dak__hoek { width: 44vw; }
+  .herfst-paddenstoel--2 { right: 22%; }
+}

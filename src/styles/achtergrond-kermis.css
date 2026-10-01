@@ -1,0 +1,291 @@
+/* ---- Kermis (src/achtergrond/kermis.ts) ----
+   Avondlucht die bovenin donker genoeg is voor de witte titels; alles staat onderin en
+   aan de randen. De lampjes gaan zacht en langzaam aan en uit (geen geflits). */
+.decor-kermis {
+  background: linear-gradient(#1c1240 0%, #33205e 30%, #5a2e7c 52%, #a1437e 72%, #e0705f 88%, #f6a35c 100%);
+}
+
+.kermis-sterren { position: absolute; left: 0; right: 0; top: 0; height: 42%; }
+.kermis-ster {
+  position: absolute;
+  width: 3px;
+  height: 3px;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: 0 0 5px 1px rgba(255, 255, 255, 0.5);
+  animation: twinkel 4s ease-in-out infinite;
+}
+
+/* Warm licht van de kermis boven de grond. */
+.kermis-gloed {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 8vh;
+  height: 32vh;
+  background: radial-gradient(ellipse 65% 100% at 50% 100%, rgba(255, 186, 110, 0.38), rgba(255, 186, 110, 0) 70%);
+}
+
+.kermis-grond {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  width: 100%;
+  height: 18vh;
+}
+
+/* ---- Lampjes ---- */
+.decor-kermis .kermis-lamp { animation: kermis-lamp 2.6s ease-in-out infinite; }
+@keyframes kermis-lamp {
+  0%, 100% { opacity: 0.45; }
+  50% { opacity: 1; }
+}
+
+.kermis-slinger {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 27vh;
+  height: 6vh;
+}
+.kermis-slinger__draad { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
+.kermis-slinger__lamp {
+  position: absolute;
+  width: clamp(7px, 0.9vw, 11px);
+  height: clamp(9px, 1.15vw, 14px);
+  border-radius: 50% 50% 50% 50% / 40% 40% 60% 60%;
+  background: var(--kleur);
+  box-shadow: 0 0 8px 2px var(--kleur);
+  transform: translate(-50%, -15%);
+  animation: kermis-lamp 2.6s ease-in-out infinite;
+}
+
+.kermis-paal {
+  position: absolute;
+  bottom: 11vh;
+  height: 22.4vh;
+  width: clamp(4px, 0.5vw, 7px);
+  margin-left: clamp(-3.5px, -0.25vw, -2px);
+  border-radius: 3px 3px 0 0;
+  background: #2b1b40;
+}
+.kermis-paal--1 { left: 33.33%; }
+.kermis-paal--2 { left: 66.67%; }
+
+/* ---- Reuzenrad ---- */
+.kermis-rad {
+  position: absolute;
+  left: -1.5vw;
+  bottom: 10vh;
+  width: min(clamp(160px, 25vw, 310px), 46vh);
+  height: auto;
+  overflow: visible;
+}
+.kermis-rad__draai {
+  transform-origin: 150px 150px;
+  animation: draai-langzaam 48s linear infinite;
+}
+/* Even snel terug draaien rond het ophangpunt: het bakje blijft rechtop. */
+.kermis-bakje {
+  transform-box: fill-box;
+  transform-origin: 50% 0;
+  animation: kermis-tegendraai 48s linear infinite;
+}
+@keyframes kermis-tegendraai {
+  to { transform: rotate(-360deg); }
+}
+
+/* ---- Draaimolen ---- */
+.kermis-molen {
+  position: absolute;
+  right: 2vw;
+  bottom: 9vh;
+  width: min(clamp(140px, 21vw, 260px), 40vh);
+  aspect-ratio: 200 / 205;
+}
+.kermis-molen__dak { position: absolute; left: 0; top: 0; width: 100%; height: auto; z-index: 4; }
+.kermis-molen__vloer { position: absolute; left: 0; bottom: 0; width: 100%; height: auto; z-index: 0; }
+.kermis-molen__paal {
+  position: absolute;
+  left: 46%;
+  width: 8%;
+  top: 30%;
+  bottom: 12%;
+  z-index: 2;
+  background: repeating-linear-gradient(-35deg, #ffcc4d 0 8px, #fff3e6 8px 16px);
+  border: 2px solid #7d2a4a;
+  border-radius: 3px;
+}
+.kermis-paard {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 34%;
+  bottom: 13%;
+  animation: kermis-rond 10s linear infinite;
+}
+.kermis-paard--2 { animation-delay: -3.333s; }
+.kermis-paard--3 { animation-delay: -6.667s; }
+.kermis-paard__stang {
+  position: absolute;
+  left: 50%;
+  top: -6%;
+  bottom: 0;
+  width: max(2px, 0.3vw);
+  transform: translateX(-50%);
+  background: #e8b84a;
+}
+.decor-kermis .kermis-paard__lijf {
+  left: 29%;
+  bottom: 0;
+  width: 42%;
+  animation: kermis-paard-op 1.5s ease-in-out infinite alternate;
+}
+.kermis-paard--2 .kermis-paard__lijf { filter: hue-rotate(150deg) saturate(1.2); animation-delay: -0.5s; }
+.kermis-paard--3 .kermis-paard__lijf { filter: hue-rotate(280deg); animation-delay: -1s; }
+@keyframes kermis-paard-op {
+  from { transform: translateY(0); }
+  to { transform: translateY(-12%); }
+}
+/* Een rondje van bovenaf gezien: voor langs naar rechts (groot, vooraan), achter langs
+   terug (kleiner, iets hoger, achter de middenpaal). Het paardje kijkt waar het heen gaat. */
+@keyframes kermis-rond {
+  0% { transform: translate(-30%, -3%) scale(-0.88, 0.88); z-index: 3; }
+  8.333% { transform: translate(-26%, -1.5%) scale(-0.94, 0.94); }
+  16.667% { transform: translate(-15%, -0.4%) scale(-0.984, 0.984); }
+  25% { transform: translate(0, 0) scale(-1, 1); }
+  33.333% { transform: translate(15%, -0.4%) scale(-0.984, 0.984); }
+  41.667% { transform: translate(26%, -1.5%) scale(-0.94, 0.94); }
+  49.99% { transform: translate(30%, -3%) scale(-0.88, 0.88); z-index: 3; filter: brightness(1); }
+  50% { transform: translate(30%, -3%) scale(0.88, 0.88); z-index: 1; }
+  58.333% { transform: translate(26%, -4.5%) scale(0.82, 0.82); }
+  66.667% { transform: translate(15%, -5.6%) scale(0.776, 0.776); }
+  75% { transform: translate(0, -6%) scale(0.76, 0.76); filter: brightness(0.78); }
+  83.333% { transform: translate(-15%, -5.6%) scale(0.776, 0.776); }
+  91.667% { transform: translate(-26%, -4.5%) scale(0.82, 0.82); }
+  99.99% { transform: translate(-30%, -3%) scale(0.88, 0.88); z-index: 1; filter: brightness(1); }
+  100% { transform: translate(-30%, -3%) scale(-0.88, 0.88); z-index: 3; }
+}
+
+/* ---- Suikerspinkraam ---- */
+.kermis-kraam {
+  position: absolute;
+  left: 18vw;
+  bottom: 7vh;
+  width: min(clamp(100px, 13vw, 170px), 26vh);
+}
+.kermis-kraam__svg { display: block; width: 100%; height: auto; position: relative; }
+.decor-kermis .kermis-kraam__ijsje {
+  left: 27%;
+  bottom: 88%;
+  width: 46%;
+  transform-origin: bottom center;
+  animation: wiebel 5s ease-in-out infinite;
+}
+.decor-kermis .kermis-kraam__popcorn {
+  right: 12%;
+  bottom: 27%;
+  width: 22%;
+}
+
+/* ---- Ballonnen (goed antwoord) ---- */
+.kermis-ballonnen { position: absolute; inset: 0; }
+.kermis-ballon {
+  position: absolute;
+  width: clamp(30px, 3.4vw, 46px);
+  margin-left: clamp(-23px, -1.7vw, -15px);
+  animation: kermis-ballon-op 7s ease-in both;
+}
+@keyframes kermis-ballon-op {
+  0% { transform: translate(0, 0) scale(0.5); opacity: 0; }
+  8% { transform: translate(0, -2vh) scale(1); opacity: 1; }
+  80% { opacity: 1; }
+  100% { transform: translate(var(--drift), -105vh) scale(0.85); opacity: 0; }
+}
+.kermis-ballon__wiebel { animation: kermis-ballon-wiebel 3s ease-in-out infinite; transform-origin: 50% 100%; }
+@keyframes kermis-ballon-wiebel {
+  0%, 100% { transform: translateX(-8px) rotate(-5deg); }
+  50% { transform: translateX(8px) rotate(5deg); }
+}
+.kermis-ballon__lijf { display: block; width: 100%; height: auto; }
+
+/* ---- Vuurwerk (einde sessie) ---- */
+.kermis-lucht { position: absolute; inset: 0; }
+.kermis-pijl {
+  position: absolute;
+  width: 4px;
+  height: 20px;
+  margin-left: -2px;
+  border-radius: 2px;
+  background: linear-gradient(#fff6c8, rgba(255, 210, 120, 0));
+  animation: kermis-pijl 0.7s ease-out forwards;
+}
+@keyframes kermis-pijl {
+  from { transform: translateY(calc(var(--hoogte) * 0.55)); opacity: 0; }
+  15% { opacity: 1; }
+  to { transform: translateY(0); opacity: 1; }
+}
+.kermis-knal {
+  --straal: clamp(46px, 8vw, 100px);
+  position: absolute;
+  width: 0;
+  height: 0;
+  animation: kermis-zak 1.9s ease-in forwards;
+}
+@keyframes kermis-zak {
+  to { transform: translateY(16px); }
+}
+.kermis-knal__gloed {
+  position: absolute;
+  left: calc(var(--straal) * -1);
+  top: calc(var(--straal) * -1);
+  width: calc(var(--straal) * 2);
+  height: calc(var(--straal) * 2);
+  border-radius: 50%;
+  background: radial-gradient(circle, var(--kleur), rgba(255, 255, 255, 0) 65%);
+  animation: kermis-knal-gloed 1.5s ease-out forwards;
+}
+@keyframes kermis-knal-gloed {
+  from { transform: scale(0.2); opacity: 0.4; }
+  to { transform: scale(1); opacity: 0; }
+}
+.kermis-vonk { position: absolute; left: 0; top: 0; width: 0; height: 0; }
+.kermis-vonk__staart {
+  position: absolute;
+  left: -3px;
+  top: -11px;
+  width: 6px;
+  height: 22px;
+  border-radius: 3px;
+  background: linear-gradient(var(--kleur) 30%, rgba(255, 255, 255, 0));
+  box-shadow: 0 -4px 8px -2px var(--kleur);
+  animation: kermis-vonk 1.8s cubic-bezier(0.15, 0.7, 0.3, 1) forwards;
+}
+.kermis-vonk--binnen .kermis-vonk__staart {
+  --kleur: #fff6d6;
+  width: 4px;
+  left: -2px;
+  height: 14px;
+  animation-name: kermis-vonk-binnen;
+}
+@keyframes kermis-vonk-binnen {
+  0% { transform: translateY(0) scaleY(0.4); opacity: 1; }
+  60% { opacity: 1; }
+  100% { transform: translateY(calc(var(--straal) * -0.55)) scaleY(1); opacity: 0; }
+}
+@keyframes kermis-vonk {
+  0% { transform: translateY(0) scaleY(0.4); opacity: 1; }
+  65% { opacity: 1; }
+  100% { transform: translateY(calc(var(--straal) * -1)) scaleY(1); opacity: 0; }
+}
+
+@media (max-width: 560px) {
+  .kermis-rad { left: -6vw; width: 150px; }
+  .kermis-kraam { left: 38%; width: 92px; }
+  .decor-kermis .kermis-kraam__popcorn { display: none; }
+  .kermis-molen { right: 1vw; width: 124px; }
+  .kermis-slinger { bottom: 25vh; }
+  .kermis-paal { height: 20.4vh; }
+  .kermis-paal--1 { display: none; }
+}

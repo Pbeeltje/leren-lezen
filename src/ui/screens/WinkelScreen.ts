@@ -128,10 +128,16 @@ export function WinkelScreen(manager: ScreenManager): Screen {
   function teken(): void {
     beursAantal.textContent = String(munten());
     for (const t of tabKnoppen) t.k.classList.toggle('winkel__tab--aan', t.id === soort);
-    const artikelen = ARTIKELEN[soort];
+    // Wat je al hebt staat vooraan, dan hoef je niet te zoeken; verder de vaste volgorde.
+    const alle = ARTIKELEN[soort];
+    const artikelen = [...alle.filter((a) => heeft(a.soort, a.id)), ...alle.filter((a) => !heeft(a.soort, a.id))];
     const smal = window.innerWidth < 560;
+    const hoog = window.innerHeight;
     const opties =
-      soort === 'figuur' ? { kolommen: smal ? 3 : 5, rijen: window.innerHeight > 700 ? 3 : 2 } : { kolommen: smal ? 2 : 4, rijen: smal ? 2 : 1 };
+      soort === 'figuur'
+        ? { kolommen: smal ? 3 : 5, rijen: hoog > 700 ? 3 : 2 }
+        : // Kleine kaartjes, zodat alle achtergronden (en een paar nieuwe) op één bladzijde passen.
+          { kolommen: smal ? 3 : 6, rijen: smal ? (hoog >= 700 ? 4 : 3) : hoog >= 620 ? 2 : 1 };
     const blader = maakBladeraar(artikelen.map(kaart), { ...opties, klasse: `winkel__blader winkel__blader--${soort}` });
     vak.replaceChildren(blader.element);
     const i = artikelen.findIndex(gekozen);

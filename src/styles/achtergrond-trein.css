@@ -1,0 +1,276 @@
+/* ---- Treinreis (src/achtergrond/trein.ts) ---- */
+/* --spoor is de hoogte van de bovenkant van de rails; het landschap (34vh) heeft zijn voorste
+   strook op precies die hoogte (y = 212 van 300). --loc is de breedte van een locomotief. */
+.decor-trein {
+  --spoor: 10vh;
+  --bed: clamp(10px, 1.6vh, 14px);
+  --loc: clamp(84px, 11vw, 150px);
+  --brug-x: 63vw;
+  --brug-b: 16vw;
+  background: linear-gradient(#5db6f2 0%, #9ed8f8 55%, #def4fd 100%);
+}
+.decor-trein img.gespiegeld { transform: scaleX(-1); }
+
+.trein-zon {
+  top: max(11%, 96px);
+  right: 5%;
+  width: clamp(70px, 10vw, 130px);
+  animation: draai-langzaam 60s linear infinite;
+}
+
+.trein-landschap {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  width: 100%;
+  height: 34vh;
+}
+.trein-rivier__glans { animation: trein-glinster 3.5s ease-in-out infinite; }
+@keyframes trein-glinster {
+  0%, 100% { opacity: 0.35; }
+  50% { opacity: 1; }
+}
+
+/* Startwaarde; trein.ts zet de bomen precies op de achterste heuvel. */
+.trein-boom {
+  bottom: 22vh;
+  width: clamp(38px, 5.5vw, 76px);
+  transform-origin: bottom center;
+  animation: wiebel 6s ease-in-out infinite;
+}
+.trein-boom--1 { left: 21%; }
+.trein-boom--2 { right: 31%; width: clamp(30px, 4vw, 56px); animation-delay: -2s; }
+.trein-boom--3 { right: 13%; width: clamp(32px, 4.5vw, 62px); animation-delay: -4s; }
+
+.trein-station {
+  position: absolute;
+  left: 0.5%;
+  bottom: calc(var(--spoor) - 3px);
+  width: clamp(104px, 14vw, 200px);
+  height: auto;
+}
+
+.trein-sein {
+  position: absolute;
+  right: 2.5%;
+  bottom: calc(var(--spoor) - 4px);
+  width: clamp(22px, 2.6vw, 36px);
+  aspect-ratio: 40 / 140;
+}
+.trein-sein__svg { display: block; width: 100%; height: 100%; }
+.trein-sein .sein__rood { fill: #ff5a4f; transition: fill 0.3s; }
+.trein-sein .sein__groen { fill: #2c4a36; transition: fill 0.3s; }
+.trein-sein.groen .sein__rood,
+.trein-sein.knippert .sein__rood { fill: #5a2a2a; }
+.trein-sein.groen .sein__groen,
+.trein-sein.knippert .sein__groen { fill: #5df07a; }
+.trein-sein.groen .trein-sein__svg { filter: drop-shadow(0 0 6px rgba(93, 240, 122, 0.6)); }
+.trein-sein.knippert .trein-sein__svg { animation: trein-sein-gloed 0.45s ease-in-out 3; }
+@keyframes trein-sein-gloed {
+  0%, 100% { filter: drop-shadow(0 0 4px rgba(93, 240, 122, 0.5)); }
+  50% { filter: drop-shadow(0 0 9px rgba(93, 240, 122, 1)); }
+}
+
+/* Brug: de bovenkant sluit aan op de onderkant van het spoorbed. */
+.trein-brug {
+  position: absolute;
+  left: var(--brug-x);
+  width: var(--brug-b);
+  bottom: calc(var(--spoor) - var(--bed) - 6vh + 1px);
+  height: 6vh;
+}
+.trein-leuning {
+  position: absolute;
+  left: var(--brug-x);
+  width: var(--brug-b);
+  bottom: var(--spoor);
+  height: clamp(10px, 2.4vh, 20px);
+  background:
+    linear-gradient(#c94a3d, #c94a3d) 0 0 / 100% 3px no-repeat,
+    linear-gradient(#c94a3d, #c94a3d) 0 55% / 100% 2px no-repeat,
+    repeating-linear-gradient(90deg, #c94a3d 0 3px, transparent 3px 16px);
+}
+
+/* Spoorbed van opzij: een stalen rail, bielzen en grind. */
+.trein-spoor {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: calc(var(--spoor) - var(--bed));
+  height: var(--bed);
+  background:
+    linear-gradient(#9aa0ae, #6b7180) 0 0 / 100% 3px no-repeat,
+    repeating-linear-gradient(90deg, #8a5a3a 0 12px, transparent 12px 22px) 0 3px / 100% 40% no-repeat,
+    radial-gradient(circle at 3px 3px, #8d8478 1.5px, transparent 2px) 0 0 / 7px 6px,
+    #b8afa2;
+  box-shadow: 0 2px 0 rgba(60, 80, 40, 0.25);
+}
+
+.trein-baan {
+  position: absolute;
+  left: 0;
+  right: 0;
+  /* Iets omlaag, zodat de wielen echt op de rail staan. */
+  bottom: calc(var(--spoor) - 3px);
+  height: 0;
+}
+.trein-trein {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  display: flex;
+  align-items: flex-end;
+  will-change: transform;
+}
+
+.trein-loc {
+  position: relative;
+  flex: none;
+  width: var(--loc);
+  aspect-ratio: 160 / 104;
+}
+.trein-loc__svg,
+.trein-wagon__svg { position: relative; display: block; width: 100%; height: 100%; overflow: visible; }
+.trein-wagon {
+  position: relative;
+  flex: none;
+  width: calc(var(--loc) * 0.75);
+  aspect-ratio: 120 / 104;
+  margin-right: calc(var(--loc) * -0.03);
+}
+.trein-wagon__svg { animation: trein-schok 0.45s ease-in-out infinite alternate; }
+.trein-wagon:nth-child(even) .trein-wagon__svg { animation-delay: -0.2s; }
+@keyframes trein-schok {
+  from { transform: translateY(0); }
+  to { transform: translateY(-1px); }
+}
+.trein-wiel {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: draai-langzaam 0.7s linear infinite;
+}
+
+/* Rookpluimpjes uit de schoorsteen (bovenkant op 78% / 6% van de locomotief). */
+.trein-rook { position: absolute; left: 78%; top: 6%; width: 0; height: 0; }
+.trein-pluim {
+  position: absolute;
+  left: calc(var(--loc) * -0.06);
+  top: calc(var(--loc) * -0.08);
+  width: calc(var(--loc) * 0.12);
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.85);
+  opacity: 0;
+  animation: trein-pluim 1.8s ease-out infinite;
+}
+.trein-pluim:nth-child(2) { animation-delay: -0.6s; }
+.trein-pluim:nth-child(3) { animation-delay: -1.2s; }
+@keyframes trein-pluim {
+  0% { transform: translate(0, 0) scale(0.4); opacity: 0; }
+  15% { opacity: 0.9; }
+  100% { transform: translate(calc(var(--loc) * -0.45), calc(var(--loc) * -0.4)) scale(2.2); opacity: 0; }
+}
+
+/* Grote stoomwolk bij een goed antwoord. */
+.trein-stoom { position: absolute; left: 78%; top: 2%; width: 0; height: 0; }
+.trein-stoom__bol {
+  position: absolute;
+  left: calc(var(--loc) * -0.12);
+  top: calc(var(--loc) * -0.12);
+  width: calc(var(--loc) * 0.24);
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background: radial-gradient(circle at 40% 35%, #fff, rgba(240, 244, 250, 0.95) 60%, rgba(225, 232, 242, 0.9));
+  animation: trein-stoom 1.5s ease-out forwards;
+}
+.trein-stoom__bol:nth-child(1) { --dx: 0; --dy: -0.5; }
+.trein-stoom__bol:nth-child(2) { --dx: -0.35; --dy: -0.35; animation-delay: 0.06s; }
+.trein-stoom__bol:nth-child(3) { --dx: 0.3; --dy: -0.4; animation-delay: 0.1s; }
+.trein-stoom__bol:nth-child(4) { --dx: -0.15; --dy: -0.75; animation-delay: 0.14s; }
+.trein-stoom__bol:nth-child(5) { --dx: -0.6; --dy: -0.6; animation-delay: 0.2s; }
+@keyframes trein-stoom {
+  0% { transform: translate(0, 0) scale(0.3); opacity: 0; }
+  15% { opacity: 1; }
+  60% { opacity: 1; }
+  100% {
+    transform: translate(calc(var(--loc) * var(--dx)), calc(var(--loc) * var(--dy))) scale(1.8);
+    opacity: 0;
+  }
+}
+
+.trein-roep {
+  position: absolute;
+  bottom: 96%;
+  left: 92%;
+  padding: 4px 12px;
+  border-radius: 16px;
+  background: #fff;
+  color: #2b2f3a;
+  font-weight: 800;
+  font-size: clamp(1rem, 2vw, 1.5rem);
+  white-space: nowrap;
+  box-shadow: 0 2px 0 rgba(0, 0, 0, 0.2);
+  transform-origin: bottom left;
+  animation: roep-op 1.6s ease-out forwards;
+}
+.trein-roep::after {
+  content: '';
+  position: absolute;
+  left: 8px;
+  bottom: -7px;
+  border: 7px solid transparent;
+  border-bottom: 0;
+  border-left-width: 0;
+  border-top-color: #fff;
+}
+/* Bij het sein (rechts aan de rand) staat het wolkje links ervan. */
+.trein-sein .trein-roep { left: auto; right: 70%; bottom: 100%; transform-origin: bottom right; }
+.trein-sein .trein-roep::after { left: auto; right: 8px; border-left-width: 7px; border-right-width: 0; }
+
+/* Locomotief die bij een goed antwoord even uit het station piept. */
+.trein-loc--gluur {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  transform: translateX(-105%);
+  animation: trein-gluur 2.7s forwards;
+}
+@keyframes trein-gluur {
+  0% { transform: translateX(-105%); animation-timing-function: ease-out; }
+  17% { transform: translateX(-28%); }
+  76% { transform: translateX(-28%); animation-timing-function: ease-in; }
+  100% { transform: translateX(-105%); }
+}
+
+/* Feesttrein: dieren in open wagons. */
+.trein-dier {
+  position: absolute;
+  left: 50%;
+  bottom: 29%;
+  width: 66%;
+  margin-left: -33%;
+  transform-origin: bottom center;
+  animation: trein-hobbel 0.8s ease-in-out infinite alternate;
+}
+.trein-dier__lijf { position: relative !important; display: block; width: 100%; }
+.trein-dier--kuiken { width: 48%; margin-left: -24%; }
+.trein-dier--haan { width: 56%; margin-left: -28%; }
+@keyframes trein-hobbel {
+  from { transform: translateY(0) rotate(-3deg); }
+  to { transform: translateY(-5px) rotate(3deg); }
+}
+.trein-ster {
+  position: absolute;
+  top: -10px;
+  left: 50%;
+  font-size: clamp(1.2rem, 2.2vw, 2rem);
+  color: #ffd23f;
+  text-shadow: 0 2px 0 #c77d00;
+  animation: hoera-op 1.2s ease-out forwards;
+}
+
+@media (max-width: 560px) {
+  .trein-boom--2 { display: none; }
+  .trein-boom--1 { left: 30%; }
+}

@@ -726,7 +726,18 @@
   object-fit: contain;
 }
 
-.winkel-kaart--achtergrond > img:first-child { width: 84px; height: 84px; }
+/* Achtergronden: kleinere kaartjes (6 naast elkaar, op een telefoon 3). */
+.winkel__blader--achtergrond .bladeraar__blad { gap: 8px; }
+.winkel-kaart--achtergrond { padding: 8px 4px 8px; gap: 2px; border-radius: 16px; }
+.winkel-kaart--achtergrond > img:first-child { width: 60px; height: 60px; }
+.winkel-kaart--achtergrond .winkel-kaart__naam { font-size: 0.85rem; line-height: 1.1; }
+.winkel-kaart--achtergrond .winkel-kaart__label { min-height: 26px; font-size: 0.9rem; }
+.winkel-kaart--achtergrond .winkel-kaart__slot { top: 4px; right: 4px; width: 20px; height: 20px; }
+@media (max-width: 559px) {
+  .winkel-kaart--achtergrond { padding: 6px 4px; }
+  .winkel-kaart--achtergrond > img:first-child { width: 42px; height: 42px; }
+  .winkel-kaart--achtergrond .winkel-kaart__label { min-height: 24px; }
+}
 
 .winkel-kaart__naam { font-size: 1rem; }
 
