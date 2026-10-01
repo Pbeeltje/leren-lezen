@@ -31,8 +31,8 @@ def schrijf(pad: Path, tekst: str) -> None:
 
 
 # ---------- Fluent-onderdelen inbedden (ids voorvoegen, anders botsen de verlopen) ----------
-def inbed(naam: str, x: float, y: float, maat: float, voorvoegsel: str, extra: str = '') -> str:
-    tekst = (FLUENT / f'{naam}.svg').read_text(encoding='utf-8')
+def inbed(naam: str, x: float, y: float, maat: float, voorvoegsel: str, extra: str = '', bron: Path | None = None) -> str:
+    tekst = ((bron or FLUENT) / f'{naam}.svg').read_text(encoding='utf-8')
     vb = re.search(r'viewBox="([^"]+)"', tekst).group(1)
     binnen = tekst[tekst.index('>', tekst.index('<svg')) + 1 : tekst.rindex('</svg>')]
     binnen = re.sub(r'id="([^"]+)"', lambda m: f'id="{voorvoegsel}{m.group(1)}"', binnen)
@@ -319,8 +319,9 @@ def main() -> None:
         'flos': ('Twee tanden met flosdraad ertussen', inbed('_tand', 4, 28, 58, 'a') + inbed('_tand', 58, 28, 58, 'b')
                  + '  <path d="M14 10 C40 16 56 24 60 50 C62 70 60 90 64 112" fill="none" stroke="#4fc3f7" stroke-width="3" stroke-linecap="round"/>'
                  + '  <path d="M106 10 C80 16 64 24 60 50" fill="none" stroke="#4fc3f7" stroke-width="3" stroke-linecap="round"/>'),
-        'teen': ('Een voet met een rondje om de grote teen', inbed('voet', 6, 6, 108, 'a')
-                 + '  <circle cx="22" cy="92" r="15" fill="none" stroke="#e53935" stroke-width="5"/>'),
+        # De voet van onderen (onze eigen voet.svg, zie git-log), met een rondje om de grote teen.
+        'teen': ('Een voet met een rondje om de grote teen', inbed('voet', 36, 6, 60, 'a', bron=WOORDEN)
+                 + '  <circle cx="88" cy="15" r="12" fill="none" stroke="#e53935" stroke-width="5"/>'),
     }
     for woord, (notitie, inhoud) in samen.items():
         schrijf(WOORDEN / f'{woord}.svg', svg(inhoud, f'{notitie} (Fluent Emoji-onderdelen, MIT)'))
