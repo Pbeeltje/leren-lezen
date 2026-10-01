@@ -3,6 +3,7 @@ import { sceneManager } from './sceneManager.ts';
 
 // Rustige ruimte-achtergrond: zachte ronde sterren in een paar kleuren die langzaam
 // twinkelen, een geringde planeet en een maantje aan de randen (achter de witte kaarten),
+// en rechtsonder een stukje maanbodem met kraters op de voorgrond.
 // Bewust traag en gedempt: het mag niet afleiden. Vallende sterren en de raket staan in
 // de DOM-laag (achtergrond/ruimte.ts), zodat er nooit twee tegelijk zijn.
 
@@ -19,6 +20,54 @@ function zachteStipTextuur(): THREE.Texture {
   g.fillStyle = verloop;
   g.fillRect(0, 0, 64, 64);
   return new THREE.CanvasTexture(c);
+}
+
+// Maanbodem: een platte schijf, aan de rand lichter (zonlicht op de horizon) met een paar
+// zachte vlekken. Alleen de buitenste rand komt in beeld, dus daar zit de tekening.
+function maanSchijfTextuur(): THREE.Texture {
+  const c = document.createElement('canvas');
+  c.width = c.height = 1024;
+  const g = c.getContext('2d')!;
+  const m = 512;
+  const v = g.createRadialGradient(m, m, 0, m, m, m);
+  v.addColorStop(0, '#858a96');
+  v.addColorStop(0.75, '#8c919d');
+  v.addColorStop(0.93, '#a3a7b2');
+  v.addColorStop(0.985, '#b7bbc5');
+  v.addColorStop(1, '#d6d9e1');
+  g.fillStyle = v;
+  g.fillRect(0, 0, 1024, 1024);
+  for (let i = 0; i < 60; i++) {
+    const hoek = Math.random() * Math.PI * 2;
+    const afstand = m * (0.8 + Math.random() * 0.16);
+    const x = m + Math.cos(hoek) * afstand;
+    const y = m + Math.sin(hoek) * afstand;
+    const straal = 6 + Math.random() * 22;
+    const vlek = g.createRadialGradient(x, y, 0, x, y, straal);
+    vlek.addColorStop(0, Math.random() < 0.5 ? 'rgba(110,115,128,0.35)' : 'rgba(205,209,218,0.3)');
+    vlek.addColorStop(1, 'rgba(0,0,0,0)');
+    g.fillStyle = vlek;
+    g.fillRect(x - straal, y - straal, straal * 2, straal * 2);
+  }
+  const t = new THREE.CanvasTexture(c);
+  t.colorSpace = THREE.SRGBColorSpace;
+  return t;
+}
+
+/** Een krater van opzij gezien: lichte rand, donkere kom, iets lichtere bodem. */
+function maakKrater(): THREE.Group {
+  const krater = new THREE.Group();
+  const lagen: [number, number, number, number][] = [
+    [0xc6cad3, 1, 0, 0],
+    [0x737885, 0.84, 0, 0.02],
+    [0x969ba7, 0.6, 0.12, -0.12],
+  ];
+  lagen.forEach(([kleur, r, dx, dy], i) => {
+    const schijf = new THREE.Mesh(new THREE.CircleGeometry(r, 40), new THREE.MeshBasicMaterial({ color: kleur }));
+    schijf.position.set(dx, dy, i * 0.01);
+    krater.add(schijf);
+  });
+  return krater;
 }
 
 function streepjesTextuur(kleuren: string[]): THREE.Texture {
@@ -126,8 +175,28 @@ export function maakRuimte(): void {
   );
   scene.add(maan);
 
+  // Maanbodem op de voorgrond: de rand van een grote schijf die rechtsonder net boven de
+  // schermrand uitkomt, als een glooiende heuvel, met een paar kleine kraters erop.
+  const bodem = new THREE.Group();
+  const schijf = new THREE.Mesh(new THREE.CircleGeometry(1, 360), new THREE.MeshBasicMaterial({ map: maanSchijfTextuur() }));
+  bodem.add(schijf);
+  // Plek als [deel van de breedte vanaf rechts, deel van de hoogte onder de horizon, grootte].
+  const KRATERS: [number, number, number][] = [
+    [0.16, 0.5, 0.17],
+    [0.38, 0.32, 0.11],
+    [0.58, 0.42, 0.08],
+    [0.27, 0.12, 0.07],
+  ];
+  const kraters = KRATERS.map(() => {
+    const k = maakKrater();
+    bodem.add(k);
+    return k;
+  });
+  scene.add(bodem);
+
   const PLANEET_DIEPTE = -6;
   const MAAN_DIEPTE = -8;
+  const BODEM_DIEPTE = -4;
   function plaats(): void {
     const p = zichtveld(PLANEET_DIEPTE);
     planeet.position.set(-p.b + 0.6, -p.h + 1.0, PLANEET_DIEPTE);
@@ -136,6 +205,27 @@ export function maakRuimte(): void {
     // Staand scherm (telefoon): rechts halverwege, anders zit hij achter de titels.
     if (sceneManager.camera.aspect < 1) maan.position.set(m.b - 0.9, -m.h * 0.25, MAAN_DIEPTE);
     else maan.position.set(m.b - 1.6, m.h - 2.6, MAAN_DIEPTE);
+
+    // Bodem: hoogste punt vlak bij de rechterrand, op ~hoog van de schermhoogte, en naar
+    // links aflopend tot ~breed van de breedte. Daaruit volgt de straal van de bol.
+    const z = zichtveld(BODEM_DIEPTE);
+    const staand = sceneManager.camera.aspect < 1;
+    const breed = (staand ? 0.6 : 0.36) * z.b * 2;
+    const hoog = (staand ? 0.13 : 0.2) * z.h * 2;
+    const straal = (breed * breed + hoog * hoog) / (2 * hoog);
+    const mx = z.b - breed * 0.08;
+    const my = -z.h + hoog - straal;
+    schijf.scale.setScalar(straal);
+    schijf.position.set(mx, my, 0);
+    bodem.position.z = BODEM_DIEPTE;
+    KRATERS.forEach(([u, v, grootte], i) => {
+      const x = z.b - u * breed;
+      const top = my + Math.sqrt(Math.max(0, straal * straal - (x - mx) * (x - mx)));
+      const r = grootte * hoog;
+      // Platgedrukt: je kijkt schuin over de bodem.
+      kraters[i].scale.set(r, r * 0.42, 1);
+      kraters[i].position.set(x, -z.h + v * (top + z.h), 0.02);
+    });
   }
   plaats();
   window.addEventListener('resize', plaats);

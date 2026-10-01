@@ -1,3 +1,4 @@
+import { leesKernen } from '../../engine/leeftijdGrens.ts';
 import type { Screen, ScreenManager } from '../../engine/screenManager.ts';
 import { events } from '../../engine/events.ts';
 import type { Kern, OefeningDefinitie } from '../../content/types.ts';
@@ -32,7 +33,6 @@ import { renderDrieKoppelen } from '../../games/drieKoppelen.ts';
 import { speelSchermOvergang } from '../../three/transitions.ts';
 import { TestResultScreen } from './TestResultScreen.ts';
 import { ChapterScreen } from './ChapterScreen.ts';
-import { KERNEN } from '../../content/lezen/kernen/kernen.index.ts';
 import { maakVoortgangsbalk } from '../components/Voortgangsbalk.ts';
 import { maakAudioKnop } from '../components/AudioKnop.ts';
 import { speelAf, instructieAudioPad } from '../../engine/audioManager.ts';
@@ -208,7 +208,7 @@ export function OefeningScreen(
       }
       markeerKernVoltooid(kern.id, sterren);
       speelSchermOvergang();
-      const kernIndex = KERNEN.findIndex((k) => k.id === kern.id);
+      const kernIndex = leesKernen().findIndex((k) => k.id === kern.id);
       manager.replace((m) =>
         TestResultScreen(
           m,

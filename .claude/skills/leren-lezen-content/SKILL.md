@@ -865,3 +865,25 @@ creates `audio/boekjes/` by itself.
 ## Groups instead of ages
 
 Children no longer pick an age but a group (`Groep = 'kleuter' | 'groep3'` in content/types.ts, screen `GroepKiesScreen`, "In welke groep zit jij?"). Kleuterschool = everything that was for ages 3–5 (luisteren, ontdekken, Lijnen, plus lezen/tellen limited to 2 chapters at the easier level via leeftijdGrens.ts / `isZes()`, and a calmer music tempo); groep 3 = what age 6 had. Filters: `Topic.groepen`, `SpelKeuze.groepen`. Storage: `laatstGekozenGroep`; old `laatstGekozenLeeftijd` is migrated on read (≥6 → groep3, else kleuter). Icons `groep-kleuter.svg` (Fluent teddy bear) and `groep-groep3.svg` (keycap 3). Test fixtures that still set `laatstGekozenLeeftijd: 6` keep working through that migration.
+
+## Kleuter reading, Andika, keyboard colours and songs (1 October 2026)
+
+- **Kleuter reading has its own set.** `content/lezen/kernen/kleuter-letters.ts` builds 6
+  chapters (m s v / r k p / n t b / h d z / l w g f / all letters) with `Kern.letters` set.
+  For such a kern `genereerSessie` only makes letter-herkennen questions: the target word
+  starts with the letter, the 2 other words don't contain it. Words come from the normal
+  word banks (5 letters max). Screens get the list from `leesKernen()` in
+  `engine/leeftijdGrens.ts` (kleuter: `KLEUTER_KERNEN`, else `KERNEN`); never use `KERNEN`
+  directly in reading screens. Check: `node tests/kleuter-lezen.mjs <map>`.
+- **Reading font:** Andika (OFL, `src/assets/fonts/andika-latin-{400,700}.woff2`) via
+  `--leeslettertype` for everything the child reads or types (big letter, word buttons,
+  letter tiles, sentences, booklets, keys, the 3D letter blocks). Baloo 2 stays for the UI.
+  Reason: in heavy Baloo 2 the n and r looked alike.
+- **Screen keyboard:** vowels red (`.scherm-toets--klinker`), consonants blue. Shown in the
+  app (`isApp`), and on any device with touch (`maxTouchPoints` / `any-pointer: coarse`); a
+  physical keyboard still types into the readOnly field via a keydown handler.
+- **Music:** Speel na from 5 notes plays the start of a real song (`LIEDJES` in
+  `muziekVragen.ts`: Kortjakje, Vader Jacob, In de maneschijn, Ode an die Freude, Mary had a
+  little lamb, Jingle bells) with its note lengths. Ritme from 5 hits uses `maakGroove`: a
+  repeated motif, bass on the first and snare on the second figure, cymbal at the end.
+

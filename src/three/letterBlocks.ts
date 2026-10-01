@@ -47,7 +47,7 @@ function houtVlak(zaad: number, letter?: string, kader = true): THREE.CanvasText
   }
   if (letter) {
     g.fillStyle = '#1d1d1f';
-    g.font = `800 ${Math.round(VLAK_PX * 0.7)}px "Baloo 2", sans-serif`;
+    g.font = `700 ${Math.round(VLAK_PX * 0.7)}px "Andika", "Baloo 2", sans-serif`;
     g.textAlign = 'center';
     g.textBaseline = 'alphabetic';
     // Midden van de letter zelf in het vak, ook bij een staartje (g, j, p) of stok (b, k).
@@ -63,7 +63,7 @@ function houtVlak(zaad: number, letter?: string, kader = true): THREE.CanvasText
 
 async function laadLettertype(): Promise<void> {
   try {
-    await document.fonts.load(`800 100px "Baloo 2"`);
+    await document.fonts.load(`700 100px "Andika"`);
   } catch {
     // Geen webfont (offline): dan tekent het canvas met de reservefont.
   }

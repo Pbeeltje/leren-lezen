@@ -21,6 +21,7 @@
   --touch-target-min: 88px;
 
   --lettertype: 'Baloo 2', system-ui, sans-serif;
+  --leeslettertype: 'Andika', 'Baloo 2', system-ui, sans-serif;
 
   color-scheme: light;
 }

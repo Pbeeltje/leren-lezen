@@ -1380,6 +1380,9 @@
   box-shadow: 0 3px 0 #c5d2ea;
 }
 .scherm-toets:active { transform: translateY(3px); box-shadow: none; }
+/* Klinkers rood, medeklinkers blauw (zoals op school). */
+.scherm-toets--klinker { color: #d62f2f; }
+.scherm-toets--medeklinker { color: #1f63c6; }
 .scherm-toets--wis { flex-basis: 76px; background: #ffe3d6; box-shadow: 0 3px 0 #f2b79c; }
 .scherm-toetsenbord--cijfers .scherm-toets { flex-basis: 72px; height: 56px; }
 /* Met het eigen toetsenbord moet alles op één telefoonscherm passen. */
@@ -1782,4 +1785,23 @@
   .hoofdstuk-titel-rij { max-width: calc(100vw - 2 * 200px); min-width: 260px; gap: 8px; }
   .hoofdstuk-titel-rij .scherm-titel { font-size: 1.15rem; }
   .hoofdstuk-pijl { width: 46px; height: 46px; font-size: 1.5rem; }
+}
+
+/* ---------- Leestekst in Andika ---------- */
+/* Alles wat het kind moet lezen of typen: de grote letter/klank, woordkeuzes, letters en
+   sleuven, zinnen, boekjes en de letter- en cijfertoetsen. In Baloo 2 (zwaar) leken de n
+   en r te veel op elkaar. Vet (700), anders is witte tekst op blauw te dun. */
+.oefen-kaart__groot-teken,
+.oefen-kaart__woord,
+.keuze-knop,
+.letter-tegel,
+.doel-sleuf,
+.woordwolk-tegel,
+.koppel-woord,
+.zin-tekst,
+.typen-invoer,
+.scherm-toets,
+.boekje-woord {
+  font-family: var(--leeslettertype);
+  font-weight: 700;
 }

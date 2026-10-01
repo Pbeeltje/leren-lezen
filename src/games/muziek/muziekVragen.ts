@@ -50,6 +50,42 @@ const RITME_NIVEAUS: { min: number; max: number; drums: DrumSoort[] }[] = [
 export const niveauOmschrijving = (spel: 'speel-na' | 'ritme', niveau: number): { min: number; max: number; drums?: DrumSoort[] } =>
   spel === 'speel-na' ? SPEEL_NA_NIVEAUS[niveau - 1] : RITME_NIVEAUS[niveau - 1];
 
+// Vanaf 5 noten speelt Speel na het begin van een echt kinderliedje in plaats van losse
+// noten, met het ritme van het liedje erbij. Staven: 0=do (c) 1=re 2=mi 3=fa 4=sol 5=la
+// 6=si 7=hoge do. Per noot [staaf, tellen]. Alleen liedjes die binnen die acht staven passen.
+type Noot = [staaf: number, tellen: number];
+const LIEDJES: Noot[][] = [
+  // Altijd is Kortjakje ziek
+  [[0, 1], [0, 1], [4, 1], [4, 1], [5, 1], [5, 1], [4, 2], [3, 1], [3, 1], [2, 1], [2, 1], [1, 1], [1, 1], [0, 2]],
+  // Vader Jacob
+  [[0, 1], [1, 1], [2, 1], [0, 1], [0, 1], [1, 1], [2, 1], [0, 1], [2, 1], [3, 1], [4, 2], [2, 1], [3, 1], [4, 2]],
+  // In de maneschijn
+  [[0, 1], [0, 1], [0, 1], [1, 1], [2, 2], [1, 2], [0, 1], [2, 1], [1, 1], [1, 1], [0, 2], [0, 1], [0, 1], [0, 1], [1, 1]],
+  // Ode an die Freude (Beethoven)
+  [[2, 1], [2, 1], [3, 1], [4, 1], [4, 1], [3, 1], [2, 1], [1, 1], [0, 1], [0, 1], [1, 1], [2, 1], [2, 1.5], [1, 0.5], [1, 2]],
+  // Mary had a little lamb
+  [[2, 1], [1, 1], [0, 1], [1, 1], [2, 1], [2, 1], [2, 2], [1, 1], [1, 1], [1, 2], [2, 1], [4, 1], [4, 2]],
+  // Jingle bells (refrein)
+  [[2, 1], [2, 1], [2, 2], [2, 1], [2, 1], [2, 2], [2, 1], [4, 1], [0, 1.5], [1, 0.5], [2, 4], [3, 1], [3, 1]],
+];
+const LIEDJE_VANAF = 5;
+
+// Een melodie van `lengte` noten: het begin van een liedje (een ander dan de vorige keer),
+// of bij korte reeksen / weinig staven losse noten die op gelijke afstand klinken.
+function maakMelodie(lengte: number, staven: number[], vorigLiedje: number): { noten: Noot[]; liedje: number } {
+  if (lengte >= LIEDJE_VANAF && staven.length === 8) {
+    const passend = LIEDJES.map((_, i) => i).filter((i) => LIEDJES[i].length >= lengte && i !== vorigLiedje);
+    const liedje = passend[geheelTussen(0, passend.length - 1)];
+    return { noten: LIEDJES[liedje].slice(0, lengte), liedje };
+  }
+  const noten: Noot[] = [];
+  while (noten.length < lengte) {
+    const p = geheelTussen(0, staven.length - 1);
+    if (p !== noten[noten.length - 1]?.[0]) noten.push([p, 1]);
+  }
+  return { noten, liedje: -1 };
+}
+
 const lengteVoor = (n: { min: number; max: number }, vraag: number): number =>
   n.min + Math.round(((n.max - n.min) * Math.min(vraag, 9)) / 9);
 
@@ -58,13 +94,12 @@ export function maakSpeelNaVragen(niveau = 1): () => RondeVraag {
   const instelling = SPEEL_NA_NIVEAUS[Math.max(0, Math.min(AANTAL_NIVEAUS, niveau) - 1)];
   const staven = instelling.staven;
   let nummer = 0;
+  let vorigLiedje = -1;
   return () => {
     const lengte = lengteVoor(instelling, nummer++);
-    const melodie: number[] = [];
-    while (melodie.length < lengte) {
-      const p = geheelTussen(0, staven.length - 1);
-      if (p !== melodie[melodie.length - 1]) melodie.push(p);
-    }
+    const { noten, liedje } = maakMelodie(lengte, staven, vorigLiedje);
+    if (liedje >= 0) vorigLiedje = liedje;
+    const melodie = noten.map(([p]) => p);
     return {
       instructie: 'Luister goed en speel het na',
       audioPad: instructieAudioPad('muziek-speel-na'),
@@ -102,12 +137,17 @@ export function maakSpeelNaVragen(niveau = 1): () => RondeVraag {
           gespeeld = 0;
           for (const s of stippen.children) s.classList.remove('muziek-stip--goed');
           xylo.zetActief(false);
+          // Een tel duurt `tussen` seconden; liedjes hebben ook langere en kortere noten.
           const tussen = instelling.tussen + (jong() ? 0.1 : 0);
-          melodie.forEach((p, i) => {
-            speelNoot(TONEN[staven[p]], 0.5 + i * tussen);
-            timers.push(window.setTimeout(() => xylo.licht(p), (0.5 + i * tussen) * 1000));
+          let t = 0.5;
+          noten.forEach(([p, tellen]) => {
+            speelNoot(TONEN[staven[p]], t);
+            const nu = t;
+            timers.push(window.setTimeout(() => xylo.licht(p), nu * 1000));
+            t += tellen * tussen;
           });
-          timers.push(window.setTimeout(() => xylo.zetActief(true), (0.5 + lengte * tussen) * 1000));
+          const laatste = noten[noten.length - 1][1];
+          timers.push(window.setTimeout(() => xylo.zetActief(true), (t - (laatste - 1) * tussen) * 1000));
         }
 
         kaart.append(knopNogEens(voorspelen), stippen, xylo.element);
@@ -157,6 +197,47 @@ function maakFiguren(slagen: number, vorige?: string): Figuur[] {
   return Array.from({ length: slagen }, () => 'ta' as Figuur);
 }
 
+// Vanaf 5 slagen klinkt het als een echte beat: een kort motiefje (bv. ta ti-ti) dat
+// herhaald wordt, met de grote trom op de eerste en de snaredrum op de tweede figuur
+// ("boem tsjak"), en aan het eind een klap op het bekken.
+const GROOVE_VANAF = 5;
+const MOTIEVEN: Figuur[][] = [
+  ['ta', 'titi'],
+  ['titi', 'ta'],
+  ['ta', 'ta', 'titi'],
+  ['ta', 'titi', 'ta'],
+  ['titi', 'ta', 'ta'],
+];
+const tikken = (f: Figuur[]): number => f.reduce((n, x) => n + (x === 'titi' ? 2 : 1), 0);
+
+function maakGroove(slagen: number, drums: DrumSoort[], vorige?: string): { figuren: Figuur[]; drums: DrumSoort[] } {
+  const slot = drums.includes('bekken') ? 'bekken' : drums[drums.length - 1];
+  const tweede = drums.includes('snare') ? 'snare' : drums[0];
+  for (let poging = 0; poging < 20; poging++) {
+    const motief = MOTIEVEN[geheelTussen(0, MOTIEVEN.length - 1)];
+    const figuren: Figuur[] = [];
+    const toegewezen: DrumSoort[] = [];
+    // Herhaal het motief zolang het past, en houd 1 tik over voor het bekken.
+    while (tikken(figuren) + tikken(motief) <= slagen - 1) {
+      motief.forEach((f, i) => {
+        figuren.push(f);
+        toegewezen.push(i % 2 === 0 ? 'bas' : tweede);
+      });
+    }
+    let over = slagen - tikken(figuren);
+    while (over > 1) {
+      // Opvulling vóór het slot: losse tikken op de snaredrum.
+      figuren.push('ta');
+      toegewezen.push(tweede);
+      over--;
+    }
+    figuren.push('ta');
+    toegewezen.push(slot);
+    if (figuren.join() !== vorige || poging === 19) return { figuren, drums: toegewezen };
+  }
+  throw new Error('onbereikbaar');
+}
+
 // Elke figuur krijgt één drum. De nieuwste drum komt er altijd in voor, en als er genoeg
 // figuren zijn doen alle drums mee.
 function verdeelDrums(figuren: Figuur[], drums: DrumSoort[]): DrumSoort[] {
@@ -168,8 +249,8 @@ function verdeelDrums(figuren: Figuur[], drums: DrumSoort[]): DrumSoort[] {
   return figuren.map((_, i) => drums[(drums.length - 1 + i) % drums.length]);
 }
 
-function maakSlagen(figuren: Figuur[], drums: DrumSoort[]): Slag[] {
-  const toegewezen = verdeelDrums(figuren, drums);
+function maakSlagen(figuren: Figuur[], drums: DrumSoort[], vast?: DrumSoort[]): Slag[] {
+  const toegewezen = vast ?? verdeelDrums(figuren, drums);
   const slagen: Slag[] = [];
   figuren.forEach((f, i) => {
     for (let k = 0; k < (f === 'titi' ? 2 : 1); k++) slagen.push({ drum: toegewezen[i], figuur: i });
@@ -201,9 +282,11 @@ export function maakRitmeVragen(niveau = 1): () => RondeVraag {
   let vorige: string | undefined;
   return () => {
     const dit = nummer++;
-    const figuren = maakFiguren(lengteVoor(instelling, dit), vorige);
+    const aantal = lengteVoor(instelling, dit);
+    const groove = aantal >= GROOVE_VANAF && drums.length >= 2 ? maakGroove(aantal, drums, vorige) : null;
+    const figuren = groove?.figuren ?? maakFiguren(aantal, vorige);
     vorige = figuren.join();
-    const slagen = maakSlagen(figuren, drums);
+    const slagen = maakSlagen(figuren, drums, groove?.drums);
     const ritme = tussenpozen(slagen);
     // Eerste vraag: elke drum van dit niveau even los laten horen, zodat je weet welke welke is.
     const voorstellen: DrumSoort[] = dit === 0 && drums.length > 1 ? drums : [];

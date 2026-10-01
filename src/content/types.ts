@@ -95,4 +95,7 @@ export interface Kern {
   woordenbank: Woord[];
   // Optionele invulzinnen voor (een deel van) de woordenbank, voor de zin-invullen-oefening.
   zinnen: ZinsVoorbeeld[];
+  // Alleen bij de kleuterhoofdstukken (kleuter-letters.ts): de letters waar dit hoofdstuk
+  // om draait. Zulke hoofdstukken hebben alleen letter-herkennen-vragen.
+  letters?: string[];
 }

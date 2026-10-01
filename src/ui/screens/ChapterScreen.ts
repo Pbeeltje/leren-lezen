@@ -1,6 +1,5 @@
 import type { Screen, ScreenManager } from '../../engine/screenManager.ts';
-import { KERNEN } from '../../content/lezen/kernen/kernen.index.ts';
-import { aantalHoofdstukken } from '../../engine/leeftijdGrens.ts';
+import { leesKernen } from '../../engine/leeftijdGrens.ts';
 import { maakTerugKnop } from '../components/TerugKnop.ts';
 import { maakTopRechtsBalk } from '../components/TopRechtsBalk.ts';
 import { maakSterBalk } from '../components/ProgressStars.ts';
@@ -13,7 +12,7 @@ import { KernOverviewScreen } from './KernOverviewScreen.ts';
 // beschikbaar (niets hoeft ontgrendeld te worden). Pijltjes wisselen direct van
 // hoofdstuk; terug gaat naar het hoofdstukkenoverzicht.
 export function ChapterScreen(manager: ScreenManager, index: number): Screen {
-  const kern = KERNEN[index];
+  const kern = leesKernen()[index];
 
   const el = document.createElement('div');
   el.className = 'scherm';
@@ -41,7 +40,7 @@ export function ChapterScreen(manager: ScreenManager, index: number): Screen {
   volgendeKnop.className = 'hoofdstuk-pijl';
   volgendeKnop.textContent = '›';
   volgendeKnop.setAttribute('aria-label', 'Volgend hoofdstuk');
-  volgendeKnop.disabled = index >= aantalHoofdstukken(KERNEN.length) - 1;
+  volgendeKnop.disabled = index >= leesKernen().length - 1;
   volgendeKnop.addEventListener('click', () => {
     speelSchermOvergang();
     manager.replace((m) => ChapterScreen(m, index + 1));

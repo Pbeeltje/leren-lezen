@@ -3,13 +3,18 @@
 // feedback van de vorige vraag, dus daar bleef het toetsenbord vaak dicht (gemeld). Met
 // grote eigen toetsen werkt het altijd, bedekt het telefoon-toetsenbord de vraag niet en
 // is er geen autocorrectie. Letters op alfabet: dat vindt een kind van 6 sneller dan qwerty.
-// Met een muis en echt toetsenbord (computer) blijft het gewone invoerveld.
+// Klinkers (a e i o u) rood, medeklinkers blauw, zoals op school. In de app en op elk
+// apparaat met een aanraakscherm altijd dit bord; alleen een computer zonder aanraakscherm
+// houdt het gewone invoerveld. Een echt toetsenbord werkt er gewoon bij.
+
+import { isApp } from '../../engine/native.ts';
 
 const LETTER_RIJEN = ['abcdefg', 'hijklmn', 'opqrstu', 'vwxyz'];
 const CIJFER_RIJEN = ['123', '456', '789', '0'];
+const KLINKERS = 'aeiou';
 
 export function isAanraakscherm(): boolean {
-  return window.matchMedia('(pointer: coarse)').matches;
+  return isApp || navigator.maxTouchPoints > 0 || window.matchMedia('(any-pointer: coarse)').matches;
 }
 
 // na: het element waar het toetsenbord achter komt (standaard het invoerveld zelf; bij
@@ -41,7 +46,7 @@ export function koppelSchermToetsenbord(
     for (const teken of rij) {
       const toets = document.createElement('button');
       toets.type = 'button';
-      toets.className = 'scherm-toets';
+      toets.className = soort === 'cijfers' ? 'scherm-toets' : `scherm-toets scherm-toets--${KLINKERS.includes(teken) ? 'klinker' : 'medeklinker'}`;
       toets.textContent = teken;
       toets.addEventListener('click', () => typ(teken));
       r.appendChild(toets);
@@ -56,6 +61,16 @@ export function koppelSchermToetsenbord(
       r.appendChild(wis);
     }
     bord.appendChild(r);
+  });
+
+  // Laptop met aanraakscherm: het veld is readOnly, dus echte toetsen hier zelf afhandelen.
+  const toegestaan = soort === 'letters' ? /^[a-z]$/i : /^[0-9]$/;
+  invoer.addEventListener('keydown', (event) => {
+    if (event.ctrlKey || event.metaKey || event.altKey) return;
+    if (event.key === 'Backspace') typ(null);
+    else if (toegestaan.test(event.key)) typ(event.key.toLowerCase());
+    else return;
+    event.preventDefault();
   });
 
   na.after(bord);

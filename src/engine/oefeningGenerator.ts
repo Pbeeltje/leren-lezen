@@ -1,5 +1,6 @@
 import type { Kern, OefeningDefinitie, OefeningType, Woord } from '../content/types.ts';
 import { haalGroep } from './progressStore.ts';
+import { KLEUTER_WOORDEN } from '../content/lezen/kernen/kleuter-letters.ts';
 
 export type OefenModus = 'oefenen' | 'toets';
 export type OefeningNummer = 1 | 2 | 3;
@@ -246,7 +247,29 @@ function voegTypenToe(kern: Kern, sessie: OefeningDefinitie[], aantal: number, v
   for (const w of volgorde.slice(0, aantal)) sessie.push(maakOefening(kern, w, 'zelf-typen', 0));
 }
 
+// Kleuterhoofdstuk: alleen "welk woord heeft deze letter?". De letters van het hoofdstuk
+// om de beurt; het doelwoord begint met die letter, de andere woorden hebben hem nergens.
+const KLEUTER_OEFENEN_VRAGEN = 6;
+const KLEUTER_TOETS_VRAGEN = 8;
+function genereerLetterSessie(kern: Kern, letters: string[], modus: OefenModus): OefeningDefinitie[] {
+  const aantal = modus === 'oefenen' ? KLEUTER_OEFENEN_VRAGEN : KLEUTER_TOETS_VRAGEN;
+  const volgorde = schud(letters);
+  const gebruikt = new Set<string>();
+  const sessie: OefeningDefinitie[] = [];
+  for (let i = 0; i < aantal; i++) {
+    const letter = volgorde[i % volgorde.length];
+    const kandidaten = kern.woordenbank.filter((w) => w.woord[0] === letter);
+    const nieuw = kandidaten.filter((w) => !gebruikt.has(w.woord));
+    const doel = kiesN(nieuw.length > 0 ? nieuw : kandidaten, 1)[0];
+    gebruikt.add(doel.woord);
+    const afleiders = kiesN(KLEUTER_WOORDEN.filter((w) => !w.woord.includes(letter)), 2);
+    sessie.push({ type: 'letter-herkennen', letter, doel, afleiders });
+  }
+  return sessie;
+}
+
 export function genereerSessie(kern: Kern, modus: OefenModus, oefeningNummer: OefeningNummer = 1): OefeningDefinitie[] {
+  if (kern.letters) return genereerLetterSessie(kern, kern.letters, modus);
   const aantalAfleiders = modus === 'oefenen' ? 2 : 3;
   const vraagVoor = (doel: Woord) => maakOefening(kern, doel, kiesType(beschikbareTypen(kern, doel, [])), aantalAfleiders);
 

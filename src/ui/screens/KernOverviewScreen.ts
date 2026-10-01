@@ -2,8 +2,7 @@ import type { Screen, ScreenManager } from '../../engine/screenManager.ts';
 import { maakTerugKnop } from '../components/TerugKnop.ts';
 import { maakTopRechtsBalk } from '../components/TopRechtsBalk.ts';
 import { maakSterBalk } from '../components/ProgressStars.ts';
-import { KERNEN } from '../../content/lezen/kernen/kernen.index.ts';
-import { aantalHoofdstukken } from '../../engine/leeftijdGrens.ts';
+import { leesKernen } from '../../engine/leeftijdGrens.ts';
 import { haalKernVoortgang, haalGroep, OEFENSESSIES_VOOR_TOETS } from '../../engine/progressStore.ts';
 import { speelSchermOvergang } from '../../three/transitions.ts';
 import { ChapterScreen } from './ChapterScreen.ts';
@@ -29,7 +28,7 @@ export function KernOverviewScreen(manager: ScreenManager): Screen {
   function tekenLijst(): void {
     lijst.innerHTML = '';
 
-    KERNEN.slice(0, aantalHoofdstukken(KERNEN.length)).forEach((kern, index) => {
+    leesKernen().forEach((kern, index) => {
       const voortgang = haalKernVoortgang(kern.id);
 
       const rij = document.createElement('button');
