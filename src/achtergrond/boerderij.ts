@@ -9,8 +9,8 @@ import { el, kortAan, plaatje, svgUitTekst } from './hulp.ts';
 // en een rode schuur, een zandweg waarover af en toe een tractor rijdt, en vooraan een hek
 // met een koe, een varken, een schaap, een haan en kuikentjes. Bij een goed antwoord springt
 // de koe op met "boe!"; aan het eind van een sessie springen alle dieren na elkaar.
-// Heel langzaam wordt het avond en nacht (DAGCYCLUS zet data-tijd: dag 90 s, schemer 25 s
-// met een zakkende zon en een oranje-roze lucht, nacht 50 s met fonkelende sterren, een
+// Heel langzaam wordt het avond en nacht (DAGCYCLUS zet data-tijd: dag 50 s, schemer 25 s
+// met een zakkende zon en een oranje-roze lucht, nacht 35 s met fonkelende sterren, een
 // opkomende maan en verlichte ramen in schuur, molen en dorp, ochtend 25 s). Het schaap en
 // het varken vallen af en toe in slaap (zakken wat in, ademen traag, zzz); 's nachts slapen
 // ze bijna altijd, vaak de hele nacht. Bij juichen of feest worden ze wakker. Dieren en
@@ -256,9 +256,9 @@ const OOG_VARKEN = dichtOog(7.55, 16.5, '#fd839c');
 // in elkaar overvloeien (lucht, zon, maan, sterren, kleur van het land, lampjes).
 type Tijd = 'dag' | 'schemer' | 'nacht' | 'ochtend';
 const DAGCYCLUS: [Tijd, number][] = [
-  ['dag', 90000],
+  ['dag', 50000],
   ['schemer', 25000],
-  ['nacht', 50000],
+  ['nacht', 35000],
   ['ochtend', 25000],
 ];
 

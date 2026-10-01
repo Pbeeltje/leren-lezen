@@ -29,18 +29,21 @@ function knopNogEens(opnieuw: () => void): HTMLButtonElement {
 // Niveaus (kies je vóór het spel, zie MuziekKiesScreen): hoeveel noten of slagen, en op
 // hoeveel staven / met welke drums. Binnen een niveau groeit de lengte per vraag van min
 // naar max. De eigenaar wil tot 10-12 kunnen gaan ("misschien kan het kind het wel!").
-export const AANTAL_NIVEAUS = 6;
-const SPEEL_NA_NIVEAUS = [
-  { min: 2, max: 3, staven: VIJFTONIG, tussen: 0.75 },
-  { min: 3, max: 4, staven: VIJFTONIG, tussen: 0.7 },
+// Het eerste niveau (2-4) heeft een vaste opbouw over de 10 vragen: eerst een paar keer 2,
+// het vaakst 3 en aan het eind 4 (verhouding ongeveer 1 : 2 : 1). Kleuters zien alleen de
+// eerste twee niveaus (zie niveausVoorGroep).
+export const AANTAL_NIVEAUS = 5;
+type Niveau = { min: number; max: number; reeks?: number[] };
+const BEGIN_REEKS = [2, 2, 2, 3, 3, 3, 3, 3, 4, 4];
+const SPEEL_NA_NIVEAUS: (Niveau & { staven: number[]; tussen: number })[] = [
+  { min: 2, max: 4, reeks: BEGIN_REEKS, staven: VIJFTONIG, tussen: 0.72 },
   { min: 4, max: 6, staven: [0, 1, 2, 3, 4, 5, 6, 7], tussen: 0.62 },
   { min: 6, max: 8, staven: [0, 1, 2, 3, 4, 5, 6, 7], tussen: 0.58 },
   { min: 8, max: 10, staven: [0, 1, 2, 3, 4, 5, 6, 7], tussen: 0.54 },
   { min: 10, max: 12, staven: [0, 1, 2, 3, 4, 5, 6, 7], tussen: 0.5 },
 ];
-const RITME_NIVEAUS: { min: number; max: number; drums: DrumSoort[] }[] = [
-  { min: 2, max: 3, drums: ['bas'] },
-  { min: 3, max: 4, drums: ['bas', 'snare'] },
+const RITME_NIVEAUS: (Niveau & { drums: DrumSoort[] })[] = [
+  { min: 2, max: 4, reeks: BEGIN_REEKS, drums: ['bas', 'snare'] },
   { min: 4, max: 6, drums: ['bas', 'snare', 'bekken'] },
   { min: 6, max: 8, drums: ['bas', 'snare', 'bekken'] },
   { min: 8, max: 10, drums: ['bas', 'snare', 'bekken'] },
@@ -86,8 +89,12 @@ function maakMelodie(lengte: number, staven: number[], vorigLiedje: number): { n
   return { noten, liedje: -1 };
 }
 
-const lengteVoor = (n: { min: number; max: number }, vraag: number): number =>
-  n.min + Math.round(((n.max - n.min) * Math.min(vraag, 9)) / 9);
+const lengteVoor = (n: Niveau, vraag: number): number =>
+  n.reeks ? n.reeks[Math.min(vraag, n.reeks.length - 1)] : n.min + Math.round(((n.max - n.min) * Math.min(vraag, 9)) / 9);
+
+// Welke niveaus een kind kan kiezen: kleuters alleen 2-4 en 4-6, groep 3 alles.
+export const niveausVoorGroep = (): number[] =>
+  haalGroep() === 'kleuter' ? [1, 2] : Array.from({ length: AANTAL_NIVEAUS }, (_, i) => i + 1);
 
 // Nieuwe teller per keer dat het spel opent, zodat het weer kort begint.
 export function maakSpeelNaVragen(niveau = 1): () => RondeVraag {

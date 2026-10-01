@@ -1081,14 +1081,15 @@ svg.dino__lijf {
    Alles gaat met lange overgangen (ruim 20 s), zodat je de avond haast niet ziet vallen. */
 .boerderij-lucht { position: absolute; inset: 0; opacity: 0; transition: opacity 22s ease-in-out; }
 .boerderij-lucht--schemer { background: linear-gradient(#4a5aa0 0%, #a86a9c 32%, #ee8f78 60%, #ffc583 82%, #ffe0a6 100%); }
-.boerderij-lucht--ochtend { background: linear-gradient(#7d97d4 0%, #c6a6d6 38%, #f6b9b0 66%, #ffdcb4 100%); }
+/* Zonsopkomst: lichtblauw boven, roze in het midden en een goudoranje gloed bij de horizon. */
+.boerderij-lucht--ochtend { background: linear-gradient(#8fb4e8 0%, #c9b6e4 26%, #f4b4c4 48%, #ffb07a 72%, #ffd37a 88%, #fff0b8 100%); }
 .boerderij-lucht--nacht { background: linear-gradient(#0d1a40 0%, #1a2b5e 50%, #2c3f78 82%, #3b4f88 100%); }
 .decor-boerderij[data-tijd='schemer'] .boerderij-lucht--schemer,
 .decor-boerderij[data-tijd='nacht'] .boerderij-lucht--schemer,
 .decor-boerderij[data-tijd='nacht'] .boerderij-lucht--nacht,
 .decor-boerderij[data-tijd='ochtend'] .boerderij-lucht--ochtend { opacity: 1; }
 .decor-boerderij[data-tijd='ochtend'] .boerderij-lucht--ochtend { transition-duration: 10s; }
-.decor-boerderij[data-tijd='ochtend'] .boerderij-lucht--nacht { transition-duration: 18s; }
+.decor-boerderij[data-tijd='ochtend'] .boerderij-lucht--nacht { transition-duration: 9s; }
 
 .boerderij-sterren { position: absolute; inset: 0 0 30% 0; opacity: 0; transition: opacity 14s ease-in-out; }
 .decor-boerderij[data-tijd='nacht'] .boerderij-sterren { opacity: 1; transition-delay: 8s; }
@@ -1118,7 +1119,7 @@ svg.dino__lijf {
 .decor-boerderij[data-tijd='nacht'] .boerderij-maanbaan {
   opacity: 1;
   transform: none;
-  transition: transform 34s cubic-bezier(0.2, 0.55, 0.35, 1), opacity 10s ease-in;
+  transition: transform 20s cubic-bezier(0.2, 0.55, 0.35, 1), opacity 8s ease-in;
 }
 .decor-boerderij[data-tijd='ochtend'] .boerderij-maanbaan {
   opacity: 0;
@@ -1159,11 +1160,11 @@ svg.dino__lijf {
 .decor-boerderij[data-tijd='ochtend'] .drijf-wolk { filter: brightness(1) sepia(0.35) saturate(1.5) hue-rotate(-45deg); }
 
 /* Het land (polder, hek, dieren) krijgt per tijd een kleurfilter: warm bij de schemer,
-   donker en wat blauwig 's nachts, roze-warm in de ochtend. De lampjes en zzz niet. */
+   donker en wat blauwig 's nachts, goudwarm bij de zonsopkomst. De lampjes en zzz niet. */
 .boerderij-f { transition: filter 22s ease-in-out; }
 .decor-boerderij[data-tijd='schemer'] .boerderij-f { filter: brightness(0.9) saturate(1.1) sepia(0.25) hue-rotate(-10deg); }
 .decor-boerderij[data-tijd='nacht'] .boerderij-f { filter: brightness(0.5) saturate(0.6) sepia(0) hue-rotate(18deg); }
-.decor-boerderij[data-tijd='ochtend'] .boerderij-f { filter: brightness(0.9) saturate(1) sepia(0.18) hue-rotate(-16deg); }
+.decor-boerderij[data-tijd='ochtend'] .boerderij-f { filter: brightness(0.97) saturate(1.15) sepia(0.28) hue-rotate(-12deg); }
 
 /* Lampjes: een tweede polderlaag met alleen de ramen, die 's nachts gaat branden. */
 .boerderij-lichten { opacity: 0; pointer-events: none; transition: opacity 10s ease-in-out 5s; }

@@ -1,13 +1,13 @@
 import type { Screen, ScreenManager } from '../../engine/screenManager.ts';
 import { haalActiefProfielId } from '../../engine/profielStore.ts';
-import { AANTAL_NIVEAUS, niveauOmschrijving } from '../../games/muziek/muziekVragen.ts';
+import { AANTAL_NIVEAUS, niveauOmschrijving, niveausVoorGroep } from '../../games/muziek/muziekVragen.ts';
 import { DRUM_KLEUR } from '../../games/muziek/drumstel.ts';
 import { maakTerugKnop } from '../components/TerugKnop.ts';
 import { maakTopRechtsBalk } from '../components/TopRechtsBalk.ts';
 import { speelSchermOvergang } from '../../three/transitions.ts';
 
 // Niveau kiezen vóór Speel na of Ritme (verzoek van de eigenaar: niet altijd bij het
-// laagste beginnen). Zes tegels met sterren; op elke tegel zie je hoeveel noten of slagen
+// laagste beginnen). Vijf tegels met sterren (kleuters alleen de eerste twee); op elke tegel zie je hoeveel noten of slagen
 // het worden en welke drums meedoen. Niets is op slot; het laatst gekozen niveau van dit
 // kind is gemarkeerd.
 
@@ -18,7 +18,7 @@ const sleutel = (spel: Spel) => `leren-lezen:muziekniveau:${haalActiefProfielId(
 function leesLaatste(spel: Spel): number {
   try {
     const n = Number(localStorage.getItem(sleutel(spel)));
-    return n >= 1 && n <= AANTAL_NIVEAUS ? n : 1;
+    return n >= 1 && n <= AANTAL_NIVEAUS && niveausVoorGroep().includes(n) ? n : 1;
   } catch {
     return 1;
   }
@@ -46,7 +46,7 @@ export function NiveauKiesScreen(manager: ScreenManager, spel: Spel, titelTekst:
   el.appendChild(grid);
 
   const laatste = leesLaatste(spel);
-  for (let niveau = 1; niveau <= AANTAL_NIVEAUS; niveau++) {
+  for (const niveau of niveausVoorGroep()) {
     const info = niveauOmschrijving(spel, niveau);
     const k = document.createElement('button');
     k.type = 'button';
@@ -94,7 +94,7 @@ export function NiveauKiesScreen(manager: ScreenManager, spel: Spel, titelTekst:
       root.appendChild(topRechts.element);
       // Terug uit het spel: de markering bijwerken naar wat net gespeeld is.
       const nu = leesLaatste(spel);
-      grid.querySelectorAll('.niveau-tegel').forEach((t, i) => t.classList.toggle('niveau-tegel--laatst', i + 1 === nu));
+      grid.querySelectorAll('.niveau-tegel').forEach((t, i) => t.classList.toggle('niveau-tegel--laatst', niveausVoorGroep()[i] === nu));
     },
     unmount() {
       el.remove();

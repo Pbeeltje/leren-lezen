@@ -1014,7 +1014,7 @@ Children no longer pick an age but a group (`Groep = 'kleuter' | 'groep3'` in co
   20-40 s, then 60-120 s after the previous one is gone, alternating direction; not with
   `prefers-reduced-motion`.
 - **Boerderij day/night and sleeping animals:** `DAGCYCLUS` in `boerderij.ts` sets
-  `data-tijd` (dag 90 s, schemer 25 s, nacht 50 s, ochtend 25 s; starts at dag). Everything
+  `data-tijd` (dag 50 s, schemer 25 s, nacht 35 s, ochtend 25 s; starts at dag). Everything
   is CSS transitions of ~20-34 s: sky layers `.boerderij-lucht--schemer/--ochtend/--nacht`,
   the sun sinks behind the polder (`.boerderij-zonbaan`), stars twinkle, a moon (own SVG)
   rises on the left, and land parts with `.boerderij-f` (polder, fence, animal bodies) get a
@@ -1026,3 +1026,6 @@ Children no longer pick an age but a group (`Groep = 'kleuter' | 'groep3'` in co
   follows); at night they fall asleep within seconds and usually sleep till dawn; they wake
   with a stretch-hop (`.rekt`), and `juich`/`feest` wake them at once. Reduced motion: always
   day, no naps.
+- **Music levels:** Speel na and Ritme have 5 levels (`AANTAL_NIVEAUS`): 2-4, 4-6, 6-8, 8-10,
+  10-12. Level 1 uses a fixed `reeks` over the 10 questions (2,2,2,3,3,3,3,3,4,4; ritme with
+  bass + snare). `niveausVoorGroep()` gives kleuters only levels 1 and 2 (2-4 and 4-6).
