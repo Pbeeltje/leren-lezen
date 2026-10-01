@@ -956,3 +956,10 @@ Children no longer pick an age but a group (`Groep = 'kleuter' | 'groep3'` in co
   passenger cars stand in front of the visible part of the (wider, partly off-screen)
   station and toots; with `'sein'` it waits before the red signal, which then turns green.
   While stopped `.trein-trein--staat` pauses wheels and rocking. Check: `node tests/treinen.mjs <map>`.
+- **Winter extras:** an ice pool (`.winter-ijs`, own SVG) front right, partly off-screen;
+  robins (own SVG `VOGEL`, flapping wing via `--flap`) cross the sky in small groups; a
+  weather cycle `WEERCYCLUS` (clear 20 s, light snow 15 s with a slightly darker sky, clear
+  20 s, storm 15 s) sets `weer-licht` / `weer-storm` on the decor. Storm: only the
+  diagonal storm layer (320 elongated flakes + a white haze), sky 78% dark; flying birds
+  dart into the nearest pine and a few more come racing in to shelter. Check:
+  `node tests/winterweer.mjs <map>` (takes ~65 s, real time).
