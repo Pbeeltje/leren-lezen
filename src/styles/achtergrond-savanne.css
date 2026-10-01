@@ -204,23 +204,66 @@
   height: auto;
 }
 
-/* ---- Olifanten ---- */
+/* ---- Bezoekers bij de waterpoel: olifanten, gnoes en gazellen ---- */
 .savanne-kudde { position: absolute; inset: 0; }
-.savanne-olifant {
-  position: absolute;
-  left: 0;
-  bottom: 8vh;
-  width: clamp(100px, min(15vw, 23vh), 215px);
-  aspect-ratio: 236 / 180;
-  z-index: 1;
-}
+.savanne-dier { position: absolute; left: 0; bottom: 8vh; z-index: 1; --stap: 0.9s; }
+.savanne-olifant { width: clamp(100px, min(15vw, 23vh), 215px); aspect-ratio: 236 / 180; }
 .savanne-olifant--klein { width: clamp(58px, min(8.5vw, 13vh), 122px); }
 .savanne-olifant--klein .olifant__tand { display: none; }
-.savanne-olifant__svg { display: block; width: 100%; height: 100%; overflow: visible; }
-.savanne-olifant.gespiegeld .savanne-olifant__svg { transform: scaleX(-1); }
-.olifant__poot { transform-box: fill-box; transform-origin: 50% 0; }
-.savanne-olifant.loopt .olifant__poot--a { animation: olifant-stap 0.9s ease-in-out infinite alternate; }
-.savanne-olifant.loopt .olifant__poot--b { animation: olifant-stap 0.9s ease-in-out -0.9s infinite alternate-reverse; }
+.savanne-gnoe { width: clamp(78px, min(11vw, 17vh), 160px); aspect-ratio: 200 / 150; --stap: 0.42s; }
+.savanne-gazelle { width: clamp(56px, min(8vw, 12.5vh), 118px); aspect-ratio: 160 / 138; --stap: 0.3s; }
+.savanne-dier__svg { display: block; width: 100%; height: 100%; overflow: visible; }
+.savanne-dier.gespiegeld .savanne-dier__svg { transform: scaleX(-1); }
+.dier__poot { transform-box: fill-box; transform-origin: 50% 0; }
+.savanne-dier.loopt .dier__poot--a { animation: olifant-stap var(--stap) ease-in-out var(--stapvertraging, 0s) infinite alternate; }
+.savanne-dier.loopt .dier__poot--b { animation: olifant-stap var(--stap) ease-in-out calc(var(--stapvertraging, 0s) - var(--stap)) infinite alternate; }
+.savanne-gazelle.loopt .dier__poot { animation-name: gazelle-stap; }
+@keyframes gazelle-stap {
+  from { transform: rotate(-16deg); }
+  to { transform: rotate(16deg); }
+}
+
+/* Gnoes en gazellen buigen hun kop naar het water en kijken af en toe even op. */
+.dier__nek, .dier__kop { transform-box: view-box; }
+.savanne-gnoe .dier__nek { transform-origin: 142px 50px; --buig: 58deg; }
+.savanne-gnoe .dier__kop { transform-origin: 168px 50px; --kopbuig: -18deg; }
+.savanne-gazelle .dier__nek { transform-origin: 110px 54px; --buig: 98deg; }
+.savanne-gazelle .dier__kop { transform-origin: 128px 24px; --kopbuig: -62deg; }
+.savanne-dier.drinkt .dier__nek { animation: dier-drink 6s ease-in-out var(--drinkvertraging, 0s) infinite; }
+.savanne-dier.drinkt .dier__kop { animation: dier-drinkkop 6s ease-in-out var(--drinkvertraging, 0s) infinite; }
+@keyframes dier-drink {
+  0%, 50%, 88%, 100% { transform: rotate(var(--buig)); }
+  60%, 78% { transform: rotate(0); }
+}
+@keyframes dier-drinkkop {
+  0%, 50%, 88%, 100% { transform: rotate(var(--kopbuig)); }
+  60%, 78% { transform: rotate(0); }
+}
+.savanne-gnoe .dier__staart { transform-box: view-box; transform-origin: 36px 60px; animation: olifant-staart 1.6s ease-in-out infinite alternate; }
+.savanne-gazelle .dier__staart { transform-box: view-box; transform-origin: 30px 50px; animation: gazelle-staart 0.5s ease-in-out infinite alternate; }
+@keyframes gazelle-staart {
+  from { transform: rotate(-20deg); }
+  to { transform: rotate(25deg); }
+}
+
+/* De krokodil komt tot zijn ogen boven water; alles eronder valt weg (overflow). */
+.savanne-krokodil { position: absolute; aspect-ratio: 160 / 34; overflow: hidden; pointer-events: none; }
+.savanne-krokodil.gespiegeld { transform: scaleX(-1); }
+.savanne-krokodil__svg { display: block; width: 100%; height: 100%; transform: translateY(100%); }
+.krokodil__oog { transform-box: fill-box; transform-origin: center; }
+.savanne-krokodil.knipper .krokodil__oog { animation: winter-knipper 0.4s ease-in-out; }
+.savanne-rimpel {
+  position: absolute;
+  aspect-ratio: 4 / 1;
+  border: 2px solid rgba(225, 244, 255, 0.75);
+  border-radius: 50%;
+  pointer-events: none;
+  animation: savanne-rimpel 2.6s ease-out infinite;
+}
+@keyframes savanne-rimpel {
+  from { transform: translate(-50%, -50%) scale(0.4); opacity: 0.9; }
+  to { transform: translate(-50%, -50%) scale(1.1); opacity: 0; }
+}
 @keyframes olifant-stap {
   from { transform: rotate(-9deg); }
   to { transform: rotate(9deg); }
@@ -246,16 +289,16 @@
   to { transform: rotate(14deg); }
 }
 .olifant__kop { transform-box: view-box; transform-origin: 160px 72px; transition: transform 0.9s ease; }
-.savanne-olifant.drinkt .olifant__kop { transform: rotate(7deg); }
+.savanne-dier.savanne-olifant.drinkt .olifant__kop { transform: rotate(7deg); }
 .olifant__slurf { transform-box: view-box; transform-origin: 196px 80px; }
-.savanne-olifant.drinkt .olifant__slurf { animation: olifant-drink 3.8s ease-in-out infinite; }
+.savanne-dier.savanne-olifant.drinkt .olifant__slurf { animation: olifant-drink 3.8s ease-in-out infinite; }
 @keyframes olifant-drink {
   0%, 100% { transform: rotate(0) scaleY(1); }
   30%, 58% { transform: rotate(-16deg) scaleY(1.22); }
   78% { transform: rotate(32deg) scaleY(0.72); }
 }
-.savanne-olifant.spuit .olifant__kop { transform: rotate(-6deg); }
-.savanne-olifant.spuit .olifant__slurf { animation: olifant-spuit 2.6s ease-in-out; }
+.savanne-dier.savanne-olifant.spuit .olifant__kop { transform: rotate(-6deg); }
+.savanne-dier.savanne-olifant.spuit .olifant__slurf { animation: olifant-spuit 2.6s ease-in-out; }
 @keyframes olifant-spuit {
   0%, 100% { transform: rotate(0) scaleY(1); }
   22%, 72% { transform: rotate(-125deg) scaleY(0.9); }

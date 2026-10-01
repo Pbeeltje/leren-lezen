@@ -986,9 +986,14 @@ Children no longer pick an age but a group (`Groep = 'kleuter' | 'groep3'` in co
 
 - **Savanne** (`achtergrond/savanne.ts`, `styles/achtergrond-savanne.css`, all own
   drawings; Fluent only has a lion head): acacia right, three lions under it (king with
-  mane, lioness, cub; tail flick, blinking, yawning `gaapt`), a waterhole left where an
-  elephant family (`bezoek`: one adult, sometimes with a calf or a second adult) walks in
-  from the left, drinks from the far bank (`drinkt`) and walks back. Day cycle `DAGCYCLUS`
+  mane, lioness, cub; tail flick, blinking, yawning `gaapt`), a waterhole left. `bezoek`
+  picks a random group (elephant family 45%, 3-5 gnoes 30%, 2-4 Thomson's gazelles 25%;
+  wrapper `.savanne-dier.savanne-<soort>`, legs `.dier__poot--a/b` with per-species
+  `--stap`): they walk in from the left, drink on the far bank (`drinkt`; gnoes and gazelles
+  bend `.dier__nek` and counter-tilt `.dier__kop`, looking up now and then) and walk back;
+  only one group at a time (`bezoekBezig`). Separately a crocodile (`krokodil()`, every
+  ~20-45 s) rises to its eyes in the water (clipped by `overflow: hidden`, ripple ring),
+  blinks and sinks again. Day cycle `DAGCYCLUS`
   sets `data-tijd`: avond 20 s (big orange sun sinks behind the table mountains, the tree
   turns into a silhouette, a bird flock passes), nacht 15 s (stars, moon, fireflies, lions
   sleep with zzz), dag 25 s. Ground parts carry `.savanne-f` (colour filter per time of

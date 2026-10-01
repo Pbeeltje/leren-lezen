@@ -70,15 +70,15 @@ const OLIFANT = `
     <path d="M22 80 C12 94 10 108 12 120" stroke="#7b8691" stroke-width="4" fill="none" stroke-linecap="round"/>
     <path d="M8 118 L16 117 L15 130 L10 130 Z" fill="#4b535c"/>
   </g>
-  <g class="olifant__poot olifant__poot--b"><rect x="42" y="98" width="25" height="78" rx="11" fill="#76818c"/></g>
-  <g class="olifant__poot olifant__poot--a"><rect x="134" y="98" width="25" height="78" rx="11" fill="#76818c"/></g>
+  <g class="dier__poot dier__poot--b"><rect x="42" y="98" width="25" height="78" rx="11" fill="#76818c"/></g>
+  <g class="dier__poot dier__poot--a"><rect x="134" y="98" width="25" height="78" rx="11" fill="#76818c"/></g>
   <ellipse cx="98" cy="86" rx="80" ry="54" fill="#8d99a5"/>
   <path d="M30 104 C60 132 140 136 172 106" stroke="#7d8995" stroke-width="6" fill="none" stroke-linecap="round" opacity="0.7"/>
-  <g class="olifant__poot olifant__poot--a">
+  <g class="dier__poot dier__poot--a">
     <rect x="58" y="102" width="27" height="76" rx="12" fill="#8d99a5"/>
     <path d="M62 174 h5 M70 175 h5 M78 174 h4" stroke="#eef0f2" stroke-width="3" stroke-linecap="round"/>
   </g>
-  <g class="olifant__poot olifant__poot--b">
+  <g class="dier__poot dier__poot--b">
     <rect x="148" y="102" width="27" height="76" rx="12" fill="#8d99a5"/>
     <path d="M152 174 h5 M160 175 h5 M168 174 h4" stroke="#eef0f2" stroke-width="3" stroke-linecap="round"/>
   </g>
@@ -98,6 +98,72 @@ const OLIFANT = `
     <circle cx="191.4" cy="56.6" r="1.3" fill="#fff"/>
     <path d="M182 50 C186 47 192 47 196 50" stroke="#76818c" stroke-width="2" fill="none" stroke-linecap="round"/>
   </g>
+</svg>`;
+
+// Gnoe van opzij (kijkt naar rechts): hoge schoft, dunne poten, baard en gekrulde horens.
+const GNOE = `
+<svg viewBox="0 0 200 150" aria-hidden="true">
+  <g class="dier__staart">
+    <path d="M36 60 C28 72 26 86 28 98" stroke="#3a332e" stroke-width="3" fill="none" stroke-linecap="round"/>
+    <ellipse cx="28" cy="102" rx="3.5" ry="8" fill="#2a2420"/>
+  </g>
+  <g class="dier__poot dier__poot--b"><rect x="46" y="80" width="8" height="64" rx="3" fill="#4a443f"/><rect x="45" y="141" width="10" height="6" rx="2" fill="#1f1b18"/></g>
+  <g class="dier__poot dier__poot--a"><rect x="132" y="80" width="8" height="64" rx="3" fill="#4a443f"/><rect x="131" y="141" width="10" height="6" rx="2" fill="#1f1b18"/></g>
+  <path d="M36 64 C36 50 60 46 90 46 C112 46 128 32 146 36 C160 40 164 62 158 84 C150 96 120 98 94 96 C70 96 46 94 40 84 C36 78 36 70 36 64 Z" fill="#6b635c"/>
+  <path d="M100 52 C98 64 98 78 102 90 M112 50 C110 62 110 78 114 92 M124 46 C122 60 122 78 126 92 M88 52 C86 64 86 78 90 90" stroke="#57504a" stroke-width="3" fill="none" stroke-linecap="round"/>
+  <g class="dier__poot dier__poot--a"><rect x="56" y="82" width="9" height="64" rx="3" fill="#6b635c"/><rect x="55" y="143" width="11" height="6" rx="2" fill="#1f1b18"/></g>
+  <g class="dier__poot dier__poot--b"><rect x="144" y="82" width="9" height="64" rx="3" fill="#6b635c"/><rect x="143" y="143" width="11" height="6" rx="2" fill="#1f1b18"/></g>
+  <g class="dier__nek">
+    <path d="M138 40 C150 34 164 40 172 52 L178 78 C172 86 162 84 158 78 L144 62 Z" fill="#5d5650"/>
+    <path d="M136 36 C146 32 158 36 166 46" stroke="#2a2420" stroke-width="6" fill="none" stroke-linecap="round"/>
+    <g class="dier__kop">
+    <path d="M166 48 C174 42 184 48 188 58 L194 84 C194 92 184 95 179 89 L168 66 Z" fill="#4e4741"/>
+    <ellipse cx="188" cy="88" rx="7" ry="6" fill="#2f2a26"/>
+    <path d="M174 88 C174 98 180 104 186 100" stroke="#2a2420" stroke-width="4" fill="none" stroke-linecap="round"/>
+    <circle cx="178" cy="60" r="2.4" fill="#141110"/>
+    <ellipse cx="166" cy="52" rx="7" ry="3" fill="#5d5650" transform="rotate(-30 166 52)"/>
+    <path d="M172 50 C164 44 164 36 172 32 M180 50 C188 44 192 40 192 32" stroke="#d8cfc0" stroke-width="4" fill="none" stroke-linecap="round"/>
+    </g>
+  </g>
+</svg>`;
+
+// Thomsongazelle van opzij (kijkt naar rechts): slank, met een zwarte streep op de zij,
+// een witte buik en spitse horentjes.
+const GAZELLE = `
+<svg viewBox="0 -8 160 138" aria-hidden="true">
+  <g class="dier__staart"><path d="M30 50 L24 64" stroke="#2a2420" stroke-width="4" stroke-linecap="round"/></g>
+  <g class="dier__poot dier__poot--b"><rect x="40" y="68" width="6" height="58" rx="3" fill="#b07a40"/></g>
+  <g class="dier__poot dier__poot--a"><rect x="112" y="68" width="6" height="58" rx="3" fill="#b07a40"/></g>
+  <ellipse cx="76" cy="58" rx="48" ry="20" fill="#c98a4a"/>
+  <path d="M34 62 C50 82 100 82 120 66 C112 78 50 80 34 62 Z" fill="#fff4e4"/>
+  <path d="M40 62 C60 71 96 71 116 62" stroke="#3a2a20" stroke-width="4" fill="none" stroke-linecap="round"/>
+  <ellipse cx="32" cy="56" rx="7" ry="11" fill="#fff4e4"/>
+  <g class="dier__poot dier__poot--a"><rect x="48" y="70" width="6.5" height="58" rx="3" fill="#c98a4a"/></g>
+  <g class="dier__poot dier__poot--b"><rect x="120" y="70" width="6.5" height="58" rx="3" fill="#c98a4a"/></g>
+  <g class="dier__nek">
+    <path d="M104 46 C110 30 120 20 128 22 L134 32 C126 38 122 48 120 60 Z" fill="#c98a4a"/>
+    <g class="dier__kop">
+    <ellipse cx="137" cy="30" rx="14" ry="8" fill="#c98a4a" transform="rotate(22 137 30)"/>
+    <path d="M128 26 C136 30 142 34 148 38" stroke="#fff4e4" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+    <ellipse cx="149" cy="37" rx="3.5" ry="3" fill="#3a2a20"/>
+    <circle cx="134" cy="26" r="2.2" fill="#1b130e"/>
+    <ellipse cx="124" cy="20" rx="3" ry="7" fill="#c98a4a" transform="rotate(-35 124 20)"/>
+    <path d="M128 20 C125 10 126 2 131 -4 M132 21 C131 11 134 3 139 -2" stroke="#3a2a20" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+    </g>
+  </g>
+</svg>`;
+
+// Krokodil die tot zijn ogen boven water komt (kop naar links). Alles onder y=34 is
+// onder water en valt buiten de tekening.
+const KROKODIL = `
+<svg viewBox="0 0 160 34" aria-hidden="true">
+  <path d="M6 32 C8 26 28 24 58 24 C78 24 88 18 98 18 C110 18 118 24 126 26 L160 28 L160 40 L0 40 Z" fill="#5f7a3a"/>
+  <circle cx="12" cy="28" r="5" fill="#6d8a44"/>
+  <circle cx="11" cy="26" r="1.2" fill="#2d3a1c"/><circle cx="15" cy="26" r="1.2" fill="#2d3a1c"/>
+  <path d="M22 31 l3 3 l3 -3 l3 3 l3 -3 l3 3" stroke="#f2f0e0" stroke-width="1.6" fill="none" stroke-linejoin="round"/>
+  <circle cx="96" cy="18" r="8" fill="#6d8a44"/>
+  <g class="krokodil__oog"><ellipse cx="94" cy="16" rx="4" ry="3.6" fill="#e8d24a"/><ellipse cx="94" cy="16" rx="1.1" ry="3" fill="#1b1b10"/></g>
+  <path d="M132 27 l4 -5 l4 5 M142 28 l4 -5 l4 5 M152 28 l4 -5 l4 5" fill="#4f6830"/>
 </svg>`;
 
 // Een liggende leeuw van opzij (kop naar links, kijkt een beetje naar ons).
@@ -342,52 +408,77 @@ export function maakSavanneDecor(): Decor {
   }
   knipper();
 
-  // ---- Olifanten bij de waterpoel ----
-  // Een bezoek: een olifant (soms met een jong, soms met twee) loopt van links naar de
-  // poel, drinkt een tijdje en loopt dan weer terug, links het beeld uit.
-  let olifantTimer: number | undefined;
+  // ---- Bezoekers bij de waterpoel ----
+  // Elke keer een willekeurig groepje: een olifantenfamilie, een paar gnoes of een paar
+  // gazellen. Ze lopen van links naar de overkant van de poel, drinken een tijdje en lopen
+  // dan weer links het beeld uit. Los daarvan komt af en toe een krokodil boven.
+  type Soort = 'olifant' | 'gnoe' | 'gazelle';
+  let bezoekTimer: number | undefined;
+  let bezoekBezig = false;
   let aanHetWater: HTMLElement[] = [];
-  const staanOp = () => {
+  const maakDier = (soort: Soort, klein = false) => {
+    const o = el('div', `savanne-dier savanne-${soort}${klein ? ` savanne-${soort}--klein` : ''}`, kudde);
+    svgUitTekst(soort === 'olifant' ? OLIFANT : soort === 'gnoe' ? GNOE : GAZELLE, 'savanne-dier__svg savanne-f', o);
+    // Niet allemaal in de pas, en niet allemaal tegelijk de kop omhoog bij het drinken.
+    o.style.setProperty('--stapvertraging', `${-Math.random()}s`);
+    o.style.setProperty('--drinkvertraging', `${-Math.random() * 5}s`);
+    return o;
+  };
+  function bezoek(gekozen?: Soort): void {
+    window.clearTimeout(bezoekTimer);
+    if (!levend || stil || bezoekBezig) return;
+    bezoekBezig = true;
     const r = root.getBoundingClientRect();
     const p = poel.getBoundingClientRect();
-    return { r, p, bodem: r.bottom - (p.top + p.height * 0.2) };
-  };
-  function bezoek(): void {
-    window.clearTimeout(olifantTimer);
-    if (!levend || stil) return;
-    const { r, p, bodem } = staanOp();
-    const familie: { klein: boolean }[] = [{ klein: false }];
-    const kans = Math.random();
-    if (kans < 0.55) familie.push({ klein: true });
-    else if (kans < 0.8) familie.push({ klein: false }, { klein: true });
     const wl = p.left - r.left;
-    // Ze staan aan de overkant van de poel en steken hun slurf erin. De eerste grote staat
-    // vooraan, een tweede grote erachter (links) en het jong rechts naast zijn moeder.
-    let leider = { x: 0, b: 0 };
-    const dieren = familie.map(({ klein }, i) => {
-      const o = el('div', `savanne-olifant${klein ? ' savanne-olifant--klein' : ''}`, kudde);
-      svgUitTekst(OLIFANT, 'savanne-olifant__svg savanne-f', o);
-      const b = o.offsetWidth;
-      let x: number;
-      if (klein) {
-        x = leider.x + leider.b * 0.98;
-        o.style.bottom = `${bodem - b * 0.05}px`;
-        o.style.zIndex = '2';
-      } else if (i === 0) {
-        x = wl + p.width * 0.3 - b * 0.5;
-        leider = { x, b };
-        o.style.bottom = `${bodem}px`;
-      } else {
-        x = leider.x - b * 0.62;
-        o.style.bottom = `${bodem + 6}px`;
-        o.style.zIndex = '0';
-      }
-      return { o, x, b };
-    });
-    const snelheid = Math.max(45, r.width * 0.06); // px per seconde
+    const kans = Math.random();
+    const soort: Soort = gekozen ?? (kans < 0.45 ? 'olifant' : kans < 0.75 ? 'gnoe' : 'gazelle');
+    let dieren: { o: HTMLElement; x: number; b: number }[];
+    if (soort === 'olifant') {
+      // Ze staan aan de overkant en steken hun slurf erin. De eerste grote vooraan, een
+      // tweede grote erachter (links) en het jong rechts naast zijn moeder.
+      const bodem = r.bottom - (p.top + p.height * 0.2);
+      const familie: boolean[] = [false];
+      const k = Math.random();
+      if (k < 0.55) familie.push(true);
+      else if (k < 0.8) familie.push(false, true);
+      let leider = { x: 0, b: 0 };
+      dieren = familie.map((klein, i) => {
+        const o = maakDier('olifant', klein);
+        const b = o.offsetWidth;
+        let x: number;
+        if (klein) {
+          x = leider.x + leider.b * 0.98;
+          o.style.bottom = `${bodem - b * 0.05}px`;
+          o.style.zIndex = '2';
+        } else if (i === 0) {
+          x = wl + p.width * 0.3 - b * 0.5;
+          leider = { x, b };
+          o.style.bottom = `${bodem}px`;
+        } else {
+          x = leider.x - b * 0.62;
+          o.style.bottom = `${bodem + 6}px`;
+          o.style.zIndex = '0';
+        }
+        return { o, x, b };
+      });
+    } else {
+      // Gnoes en gazellen staan naast elkaar langs de oever, met de voeten net in het water.
+      const n = soort === 'gnoe' ? 3 + Math.floor(Math.random() * 3) : 2 + Math.floor(Math.random() * 3);
+      const bodem = r.bottom - (p.top + p.height * 0.3);
+      dieren = Array.from({ length: n }, (_, i) => {
+        const o = maakDier(soort);
+        const b = o.offsetWidth;
+        const x = wl + p.width * 0.02 + (i * (p.width * 0.66 - b)) / Math.max(1, n - 1) + (Math.random() - 0.5) * b * 0.15;
+        o.style.bottom = `${bodem + (Math.random() - 0.5) * b * 0.1}px`;
+        o.style.zIndex = String(1 + Math.floor(Math.random() * 2));
+        return { o, x, b };
+      }).reverse(); // de voorste (rechtse) loopt voorop
+    }
+    const snelheid = Math.max(45, r.width * 0.06) * (soort === 'gazelle' ? 1.5 : soort === 'gnoe' ? 1.2 : 1);
     let langste = 0;
     dieren.forEach(({ o, x, b }, i) => {
-      const start = -b - 20 - i * b * 0.5;
+      const start = -b - 20 - i * b * 0.6;
       const duur = ((x - start) / snelheid) * 1000;
       langste = Math.max(langste, duur);
       o.style.transform = `translateX(${start}px)`;
@@ -405,20 +496,71 @@ export function maakSavanneDecor(): Decor {
     const drinkDuur = 9000 + Math.random() * 6000;
     later(() => {
       aanHetWater = aanHetWater.filter((o) => !dieren.some((d) => d.o === o));
+      let laatste = 0;
       dieren.forEach(({ o, x, b }, i) => {
         o.classList.remove('drinkt', 'spuit');
         o.classList.add('loopt', 'gespiegeld');
         const eind = -b - 40;
         const duur = ((x - eind) / snelheid) * 1000;
+        const vertraging = (dieren.length - 1 - i) * 400;
+        laatste = Math.max(laatste, duur + vertraging);
         const terug = o.animate([{ transform: `translateX(${x}px)` }, { transform: `translateX(${eind}px)` }], {
-          duration: duur, delay: (dieren.length - 1 - i) * 400, easing: 'ease-in', fill: 'forwards',
+          duration: duur, delay: vertraging, easing: 'ease-in', fill: 'forwards',
         });
         terug.onfinish = () => o.remove();
       });
-      olifantTimer = window.setTimeout(bezoek, 12000 + Math.random() * 14000);
+      later(() => {
+        bezoekBezig = false;
+        bezoekTimer = window.setTimeout(() => bezoek(), 8000 + Math.random() * 12000);
+      }, laatste);
     }, langste + drinkDuur);
   }
-  olifantTimer = window.setTimeout(bezoek, 1500 + Math.random() * 1500);
+  bezoekTimer = window.setTimeout(() => bezoek(), 1500 + Math.random() * 1500);
+
+  // De krokodil: komt rustig boven tot zijn ogen, drijft even, knippert en zakt weer weg.
+  let krokTimer: number | undefined;
+  function krokodil(): void {
+    window.clearTimeout(krokTimer);
+    if (!levend || stil) return;
+    const lr = land.getBoundingClientRect();
+    const p = poel.getBoundingClientRect();
+    const breedte = p.width * 0.3;
+    const links = p.left - lr.left + p.width * (0.38 + Math.random() * 0.25);
+    const waterlijn = p.top + p.height * (0.52 + Math.random() * 0.12);
+    const k = el('div', 'savanne-krokodil');
+    land.insertBefore(k, kudde);
+    k.style.left = `${links}px`;
+    k.style.bottom = `${lr.bottom - waterlijn}px`;
+    k.style.width = `${breedte}px`;
+    if (Math.random() < 0.5) k.classList.add('gespiegeld');
+    const svg = svgUitTekst(KROKODIL, 'savanne-krokodil__svg savanne-f', k);
+    const rimpel = el('div', 'savanne-rimpel');
+    land.insertBefore(rimpel, k);
+    rimpel.style.left = `${links + breedte * 0.5}px`;
+    rimpel.style.top = `${waterlijn - lr.top}px`;
+    rimpel.style.width = `${breedte * 1.3}px`;
+    const blijf = 4000 + Math.random() * 4000;
+    const totaal = 2600 + blijf + 2600;
+    const op = 2600 / totaal;
+    const neer = (2600 + blijf) / totaal;
+    const dx = (Math.random() - 0.5) * breedte * 0.4;
+    svg.animate(
+      [
+        { transform: 'translate(0, 100%)', easing: 'ease-out' },
+        { transform: 'translate(0, 0)', offset: op },
+        { transform: `translate(${dx / 2}px, 5%)`, offset: (op + neer) / 2 },
+        { transform: `translate(${dx}px, 0)`, offset: neer, easing: 'ease-in' },
+        { transform: `translate(${dx}px, 100%)` },
+      ],
+      { duration: totaal, fill: 'forwards' },
+    ).onfinish = () => {
+      k.remove();
+      rimpel.remove();
+    };
+    later(() => kortAan(k, 'knipper', 400), 2600 + blijf * 0.45);
+    krokTimer = window.setTimeout(krokodil, totaal + 14000 + Math.random() * 22000);
+  }
+  krokTimer = window.setTimeout(krokodil, 8000 + Math.random() * 12000);
 
   // Water uit de slurf: druppels in een boog omhoog en weer naar beneden.
   const spuit = (o: HTMLElement) => {
@@ -459,15 +601,18 @@ export function maakSavanneDecor(): Decor {
     later(() => kortAan(leeuwin, 'springt', 1300), 500);
     if (stil) return;
     vliegZwerm();
-    if (aanHetWater.length) aanHetWater.forEach((o, i) => later(() => spuit(o), i * 500));
-    else bezoek();
+    // Olifanten aan het water spuiten; is er niemand, dan komt er een olifantenfamilie.
+    const olifanten = aanHetWater.filter((o) => o.classList.contains('savanne-olifant'));
+    if (olifanten.length) olifanten.forEach((o, i) => later(() => spuit(o), i * 500));
+    else bezoek('olifant');
   };
 
   const vernietig = () => {
     levend = false;
     window.clearTimeout(tijdTimer);
     window.clearTimeout(knipTimer);
-    window.clearTimeout(olifantTimer);
+    window.clearTimeout(bezoekTimer);
+    window.clearTimeout(krokTimer);
     for (const t of losseTimers) window.clearTimeout(t);
     losseTimers.clear();
   };
