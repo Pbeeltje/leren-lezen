@@ -9,12 +9,12 @@
 .herfst-stammen {
   position: absolute;
   inset: 0 0 14vh 0;
-  background-repeat: repeat-x;
-  background-position: left top;
+  overflow: hidden;
 }
-.herfst-stammen--ver { bottom: 20vh; background-size: 300px 100%; opacity: 0.8; filter: blur(1.5px); }
-.herfst-stammen--midden { bottom: 17vh; background-size: 470px 100%; background-position: 130px 0; filter: blur(0.5px); }
-.herfst-stammen--dichtbij { bottom: 13vh; background-size: 820px 100%; background-position: -60px 0; }
+.herfst-stammen > svg { position: absolute; inset: 0; display: block; }
+.herfst-stammen--ver { bottom: 20vh; opacity: 0.8; filter: blur(1.5px); }
+.herfst-stammen--midden { bottom: 17vh; filter: blur(0.5px); }
+.herfst-stammen--dichtbij { bottom: 13vh; }
 
 /* Nevel tussen de rijen stammen: geeft diepte (verder weg = lichter en waziger). */
 .herfst-nevel { position: absolute; inset: 0; pointer-events: none; }
@@ -65,6 +65,18 @@
   bottom: 0;
   width: 100%;
   height: 24vh;
+}
+
+/* Bladertapijt op de bosgrond. */
+.herfst-tapijt {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 19vh;
+  background-repeat: repeat-x;
+  background-position: left bottom;
+  background-size: auto 100%;
 }
 
 /* Varens over de rand van de bosgrond. */
@@ -120,21 +132,22 @@
 .herfst-dak { position: absolute; inset: 0 0 auto 0; }
 .herfst-dak__rand {
   position: absolute;
-  top: 0;
+  top: calc(clamp(120px, 22vh, 240px) * -0.42);
   left: -20px;
   right: -20px;
-  height: clamp(54px, 10vh, 110px);
+  height: clamp(120px, 22vh, 240px);
   background-repeat: repeat-x;
   background-size: auto 100%;
   animation: herfst-dak-wieg 6s ease-in-out infinite;
 }
+/* Alleen zijwaarts wiegen: omlaag schuiven liet bovenaan een kier zien. */
 @keyframes herfst-dak-wieg {
-  0%, 100% { transform: translate(-6px, 0); }
-  50% { transform: translate(6px, 3px); }
+  0%, 100% { transform: translateX(-6px); }
+  50% { transform: translateX(6px); }
 }
 .herfst-dak__hoek {
   position: absolute;
-  top: -2vh;
+  top: -4vh;
   width: clamp(170px, 30vw, 440px);
   height: auto;
   animation: herfst-hoek 6s ease-in-out infinite;

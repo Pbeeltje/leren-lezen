@@ -20,26 +20,84 @@ const GROND = `
 
 const svgUrl = (svg: string) => `url("data:image/svg+xml,${encodeURIComponent(svg)}")`;
 
-// Rijen stammen als herhalende tegel, in drie lagen diepte: ver weg smal, bleek en wazig,
-// dichterbij breder en donkerder. Stammen lopen taps toe naar boven en buigen een beetje
-// (zijtakken vielen weg: die rekken mee uit tot rare wiggen). De tegel wordt in de hoogte uitgerekt (preserveAspectRatio
-// none), zodat ze altijd van boven tot aan de bosgrond doorlopen.
-type Stam = [x: number, breedte: number, buig: number];
-function stammenTegel(breedte: number, stammen: Stam[], kleur: string, schaduw: string): string {
-  let paden = '';
-  for (const [x, b, buig] of stammen) {
-    const boven = b * 0.62;
-    // Linkerrand omhoog, rechterrand omlaag; onderaan iets uitlopend (wortelvoet).
-    const d = `M${x - b / 2 - b * 0.18} 100 C${x - b / 2} 92 ${x - b / 2 + buig} 50 ${x - boven / 2 + buig * 1.6} 0 L${x + boven / 2 + buig * 1.6} 0 C${x + b / 2 + buig} 50 ${x + b / 2} 92 ${x + b / 2 + b * 0.18} 100 Z`;
-    paden += `<path d="${d}" fill="${kleur}"/>`;
-    // Schaduwkant links.
-    paden += `<path d="M${x - b / 2 - b * 0.18} 100 C${x - b / 2} 92 ${x - b / 2 + buig} 50 ${x - boven / 2 + buig * 1.6} 0 L${x - boven / 2 + buig * 1.6 + boven * 0.3} 0 C${x - b / 2 + buig + b * 0.3} 50 ${x - b / 2 + b * 0.3} 92 ${x - b / 2 + b * 0.1} 100 Z" fill="${schaduw}"/>`;
-  }
-  return svgUrl(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${breedte} 100" preserveAspectRatio="none">${paden}</svg>`);
+// Achtergrondbomen in drie lagen diepte: ver weg smal, bleek en wazig, dichterbij breder
+// en donkerder. Ze worden op de echte maat van het scherm getekend (en opnieuw bij een
+// andere maat), zodat takken niet mee uitrekken. Stammen lopen taps toe en buigen een
+// beetje; een paar takken per boom, sommige kaal met twijgjes, andere met een tros blad.
+interface BoomLaag {
+  afstand: [number, number];
+  breedte: [number, number];
+  kleur: string;
+  schaduw: string;
+  blad: number;
+  bladKleuren: string[];
+  onderKleur: string;
+  zaad: number;
 }
-const STAMMEN_VER = stammenTegel(300, [[30, 16, 2], [110, 22, -3], [190, 14, 3], [255, 19, -2]], '#f3d2a2', '#e9c08e');
-const STAMMEN_MIDDEN = stammenTegel(470, [[60, 34, 4], [230, 44, -5], [380, 30, 5]], '#cf9562', '#b97e4f');
-const STAMMEN_DICHTBIJ = stammenTegel(820, [[150, 66, -6], [560, 78, 7]], '#a4673c', '#87522c');
+const LAGEN: Record<'ver' | 'midden' | 'dichtbij', BoomLaag> = {
+  ver: { afstand: [60, 110], breedte: [12, 20], kleur: '#f3d2a2', schaduw: '#e9c08e', blad: 7, bladKleuren: ['#f4c88f', '#f0b47c', '#f7d89c'], onderKleur: '#e9b583', zaad: 11 },
+  midden: { afstand: [130, 210], breedte: [26, 42], kleur: '#cf9562', schaduw: '#b97e4f', blad: 10, bladKleuren: ['#eba45c', '#e2804c', '#f1c26a', '#e8934f'], onderKleur: '#c86d3e', zaad: 23 },
+  dichtbij: { afstand: [330, 480], breedte: [58, 80], kleur: '#a4673c', schaduw: '#87522c', blad: 13, bladKleuren: ['#f28b2c', '#e4572e', '#f6c445', '#d9682a', '#f5a623', '#c8452c'], onderKleur: '#a83c22', zaad: 37 },
+};
+
+function tekenBomen(laag: BoomLaag, w: number, h: number): string {
+  let zaad = laag.zaad;
+  const rnd = () => {
+    zaad = (zaad * 16807) % 2147483647;
+    return zaad / 2147483647;
+  };
+  const tussen = ([a, b]: [number, number]) => a + rnd() * (b - a);
+  let stammen = '';
+  let takken = '';
+  let x = tussen(laag.afstand) * 0.4;
+  let n = 0;
+  while (x < w + 40) {
+    const b = tussen(laag.breedte);
+    const boven = b * 0.62;
+    const buig = (rnd() - 0.5) * b * 0.4;
+    // Midden van de stam op hoogte y (0 = boven, h = onder).
+    const midden = (y: number) => x + buig * 1.6 * (1 - y / h);
+    const dikte = (y: number) => boven + (b - boven) * (y / h);
+    stammen += `<path d="M${x - b / 2 - b * 0.18} ${h} C${x - b / 2} ${h * 0.92} ${x - b / 2 + buig} ${h * 0.5} ${x - boven / 2 + buig * 1.6} -4 L${x + boven / 2 + buig * 1.6} -4 C${x + b / 2 + buig} ${h * 0.5} ${x + b / 2} ${h * 0.92} ${x + b / 2 + b * 0.18} ${h} Z" fill="${laag.kleur}"/>`;
+    stammen += `<path d="M${x - b / 2 - b * 0.18} ${h} C${x - b / 2} ${h * 0.92} ${x - b / 2 + buig} ${h * 0.5} ${x - boven / 2 + buig * 1.6} -4 L${x - boven / 2 + buig * 1.6 + boven * 0.3} -4 C${x - b / 2 + buig + b * 0.3} ${h * 0.5} ${x - b / 2 + b * 0.3} ${h * 0.92} ${x - b / 2 + b * 0.1} ${h} Z" fill="${laag.schaduw}"/>`;
+
+    // Twee of drie takken, afwisselend links en rechts, schuin omhoog.
+    const aantal = 2 + (rnd() < 0.4 ? 1 : 0);
+    let kant = rnd() < 0.5 ? -1 : 1;
+    for (let t = 0; t < aantal; t++) {
+      const y = h * (0.14 + 0.5 * ((t + rnd() * 0.8) / aantal));
+      const d = dikte(y);
+      const sx = midden(y) + kant * d * 0.3;
+      const lengte = d * (1.6 + rnd() * 1.4) + b * 0.4;
+      const hoek = (25 + rnd() * 30) * (Math.PI / 180);
+      const ex = sx + kant * Math.cos(hoek) * lengte;
+      const ey = y - Math.sin(hoek) * lengte;
+      const cx = sx + kant * lengte * 0.55;
+      const cy = y - lengte * 0.12;
+      const t0 = Math.max(1.5, d * 0.2);
+      // Gevulde, taps toelopende tak (aan de voet dik, aan het eind dun).
+      takken += `<path d="M${sx} ${y - t0} Q${cx} ${cy - t0 * 0.6} ${ex} ${ey} Q${cx} ${cy + t0 * 0.6} ${sx} ${y + t0} Z" fill="${laag.kleur}"/>`;
+      if (rnd() < 0.5) {
+        // Kaal: een paar twijgjes aan het eind.
+        for (const [f, a] of [[0.7, -0.5], [0.85, 0.6], [1, -0.2]] as const) {
+          const tx = sx + (ex - sx) * f;
+          const ty = y + (ey - y) * f;
+          const tl = lengte * 0.28;
+          const ta = hoek + a;
+          takken += `<path d="M${tx.toFixed(1)} ${ty.toFixed(1)} l${(kant * Math.cos(ta) * tl).toFixed(1)} ${(-Math.sin(ta) * tl).toFixed(1)}" stroke="${laag.kleur}" stroke-width="${Math.max(1, t0 * 0.35).toFixed(1)}" stroke-linecap="round"/>`;
+        }
+      } else {
+        // Met blad: een tros blaadjes rond het eind van de tak.
+        const r = lengte * (0.35 + rnd() * 0.2);
+        takken += bladerMassa([[ex - kant * r * 0.3, ey, r]], laag.blad, [0], laag.bladKleuren, laag.onderKleur, laag.zaad + n * 13 + t);
+      }
+      kant = -kant;
+    }
+    x += tussen(laag.afstand);
+    n++;
+  }
+  return `<svg viewBox="0 0 ${w} ${h}" width="${w}" height="${h}" aria-hidden="true">${stammen}${takken}</svg>`;
+}
 
 // Grote stam vlakbij, met schors en wortels; hoger dan het scherm.
 const STAM = `
@@ -64,30 +122,91 @@ const TAK = `
   <ellipse cx="22" cy="46" rx="9" ry="5" fill="#f6c445" transform="rotate(-15 22 46)"/>
 </svg>`;
 
-// Bladerdak: plukken blad die van boven binnenhangen. De rand is een herhalende tegel
-// (plukken houden hun ronde vorm), in de hoeken hangen dikkere trossen.
-const DAK_KLEUREN = ['#f28b2c', '#e4572e', '#f6c445', '#d9682a', '#f5a623', '#c8452c'];
-function dakRand(): string {
-  let plukken = '';
-  for (let i = 0; i < 9; i++) {
-    const x = 20 + i * 44;
-    const r = 30 + ((i * 7) % 3) * 9;
-    const y = 18 + ((i * 5) % 4) * 9;
-    for (const dx of [0, -400, 400]) plukken += `<circle cx="${x + dx}" cy="${y}" r="${r}" fill="${DAK_KLEUREN[i % DAK_KLEUREN.length]}"/>`;
+// Bladerdak van losse blaadjes: per tros een donkere ondergrond met daarover veel kleine
+// blaadjes in herfstkleuren, dichter aan de rand zodat de omtrek rafelig is (ronde
+// bollen leken op ballonnen). Vaste "willekeur" (eigen teller), zodat de tegel naadloos
+// en elke keer hetzelfde is.
+type Tros = [cx: number, cy: number, r: number];
+const DAK_KLEUREN = ['#f28b2c', '#e4572e', '#f6c445', '#d9682a', '#f5a623', '#c8452c', '#eaa13a'];
+function bladerMassa(
+  trossen: Tros[],
+  blad: number,
+  verschuivingen: number[] = [0],
+  kleuren: string[] = DAK_KLEUREN,
+  onderKleur = '#a83c22',
+  begin = 7,
+): string {
+  let zaad = begin;
+  const rnd = () => {
+    zaad = (zaad * 16807) % 2147483647;
+    return zaad / 2147483647;
+  };
+  let onder = '';
+  let blaadjes = '';
+  for (const [cx, cy, r] of trossen) {
+    const aantal = Math.round((r * r) / (blad * blad) * 2.2);
+    let deze = '';
+    for (let i = 0; i < aantal; i++) {
+      // Meer blaadjes naar de rand toe (wortel van rnd geeft een gelijkmatige schijf; de
+      // macht kleiner dan 0.5 duwt ze naar buiten).
+      const hoek = rnd() * Math.PI * 2;
+      const afstand = r * Math.pow(rnd(), 0.35) * 1.02;
+      const x = cx + Math.cos(hoek) * afstand;
+      const y = cy + Math.sin(hoek) * afstand;
+      const maat = blad * (0.7 + rnd() * 0.6);
+      const draai = Math.round(rnd() * 360);
+      const kleur = kleuren[Math.floor(rnd() * kleuren.length)];
+      deze += `<path transform="translate(${x.toFixed(1)} ${y.toFixed(1)}) rotate(${draai}) scale(${(maat / 10).toFixed(2)})" d="M0 -10 C6 -5 6 5 0 10 C-6 5 -6 -5 0 -10 Z" fill="${kleur}"/>`;
+    }
+    for (const dx of verschuivingen) {
+      onder += `<circle cx="${cx + dx}" cy="${cy}" r="${(r * 0.86).toFixed(1)}" fill="${onderKleur}"/>`;
+      blaadjes += dx ? `<g transform="translate(${dx} 0)">${deze}</g>` : deze;
+    }
   }
-  return svgUrl(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 100"><rect width="400" height="22" fill="#d9682a"/>${plukken}</svg>`);
+  return onder + blaadjes;
+}
+function dakRand(): string {
+  // Grote blaadjes (zo groot als in de hoektrossen; kleine waren te druk). De tegel steekt
+  // voor een groot deel boven het scherm uit: je ziet alleen de onderkant van het dak.
+  const trossen: Tros[] = [];
+  for (let i = 0; i < 8; i++) trossen.push([50 + i * 100, 50 + ((i * 5) % 4) * 14, 82 + ((i * 7) % 3) * 16]);
+  const massa = bladerMassa(trossen, 22, [0, -800, 800]);
+  return svgUrl(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 200"><rect y="-10" width="800" height="90" fill="#a83c22"/>${massa}</svg>`);
 }
 const DAK_HOEK = `
 <svg viewBox="0 0 400 360" aria-hidden="true">
-  <path d="M0 0 H400 C380 30 340 40 300 60 C250 90 200 70 170 120 C140 170 110 150 80 220 C60 270 30 300 0 340 Z" fill="#c8452c"/>
-  <circle cx="60" cy="60" r="90" fill="#e4572e"/><circle cx="180" cy="30" r="80" fill="#f28b2c"/>
-  <circle cx="300" cy="20" r="70" fill="#f6c445"/><circle cx="40" cy="190" r="70" fill="#f5a623"/>
-  <circle cx="130" cy="130" r="62" fill="#f6c445"/><circle cx="230" cy="80" r="52" fill="#e4572e"/>
-  <circle cx="20" cy="290" r="48" fill="#e4572e"/><circle cx="90" cy="230" r="40" fill="#f28b2c"/>
-  <circle cx="350" cy="40" r="40" fill="#f28b2c"/><circle cx="175" cy="170" r="30" fill="#f28b2c"/>
-  <g fill="#fff" opacity="0.18"><circle cx="160" cy="18" r="26"/><circle cx="120" cy="116" r="18"/><circle cx="290" cy="8" r="20"/></g>
-  <g fill="#8f2a14" opacity="0.55"><circle cx="70" cy="110" r="7"/><circle cx="210" cy="56" r="6"/><circle cx="40" cy="236" r="6"/><circle cx="140" cy="150" r="5"/></g>
+  ${bladerMassa(
+    [
+      [60, 50, 100], [190, 24, 86], [310, 10, 72], [380, 20, 44], [40, 190, 76],
+      [135, 130, 66], [235, 82, 56], [18, 290, 52], [92, 236, 44], [178, 176, 34],
+    ],
+    9,
+  )}
 </svg>`;
+
+// Bladertapijt op de bosgrond: een herhalende tegel vol blaadjes, onderaan het dichtst.
+function bladTapijt(): string {
+  let zaad = 53;
+  const rnd = () => {
+    zaad = (zaad * 16807) % 2147483647;
+    return zaad / 2147483647;
+  };
+  const kleuren = [...DAK_KLEUREN, '#b8733b', '#8f5a2c'];
+  let blaadjes = '';
+  for (let i = 0; i < 150; i++) {
+    const x = rnd() * 600;
+    const y = 120 - Math.pow(rnd(), 1.6) * 110;
+    const maat = 7 + rnd() * 5;
+    const kleur = kleuren[Math.floor(rnd() * kleuren.length)];
+    const draai = Math.round(rnd() * 360);
+    const vorm = `<path transform="rotate(${draai}) scale(${(maat / 10).toFixed(2)}, ${(maat / 16).toFixed(2)})" d="M0 -10 C6 -5 6 5 0 10 C-6 5 -6 -5 0 -10 Z" fill="${kleur}"/>`;
+    // Blaadjes over de naad komen aan de andere kant terug.
+    for (const dx of x < 12 ? [0, 600] : x > 588 ? [0, -600] : [0]) {
+      blaadjes += `<g transform="translate(${(x + dx).toFixed(1)} ${y.toFixed(1)})">${vorm}</g>`;
+    }
+  }
+  return svgUrl(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 120">${blaadjes}</svg>`);
+}
 
 // Ondergroei vooraan: een rij varens over de hele breedte (tegel) en dikke struiken in
 // de hoeken, voor de bosgrond langs, zodat je echt in het bos staat.
@@ -110,11 +229,14 @@ function varenRand(): string {
 }
 const STRUIK = `
 <svg viewBox="0 0 300 200" aria-hidden="true">
-  <circle cx="60" cy="150" r="70" fill="#7d5a24"/><circle cx="150" cy="130" r="80" fill="#93682a"/>
-  <circle cx="240" cy="160" r="62" fill="#7d5a24"/><circle cx="110" cy="90" r="50" fill="#a87a32"/>
-  <circle cx="200" cy="96" r="44" fill="#b0843a"/><circle cx="30" cy="110" r="40" fill="#93682a"/>
-  <g fill="#c8452c"><circle cx="120" cy="80" r="6"/><circle cx="196" cy="88" r="5"/><circle cx="70" cy="118" r="5"/><circle cx="160" cy="120" r="6"/><circle cx="236" cy="128" r="5"/></g>
-  <g fill="#fff" opacity="0.14"><circle cx="100" cy="72" r="20"/><circle cx="190" cy="84" r="16"/></g>
+  ${bladerMassa(
+    [[70, 150, 66], [160, 128, 74], [240, 160, 58], [112, 92, 46], [205, 98, 40], [34, 118, 36]],
+    9,
+    [0],
+    ['#9b6a2a', '#b27a30', '#c58a35', '#8a5a24', '#d0742e', '#c8452c'],
+    '#6d4a1e',
+    91,
+  )}
 </svg>`;
 
 // Bladerhoop: een berg blaadjes in herfstkleuren, onderaan breed.
@@ -156,11 +278,21 @@ const VLAAG_MS = 7500;
 export function maakHerfstDecor(): Decor {
   const root = el('div', 'decor decor-herfst');
   // Drie rijen stammen met nevel ertussen: hoe verder weg, hoe bleker.
-  el('div', 'herfst-stammen herfst-stammen--ver', root).style.backgroundImage = STAMMEN_VER;
-  el('div', 'herfst-nevel herfst-nevel--ver', root);
-  el('div', 'herfst-stammen herfst-stammen--midden', root).style.backgroundImage = STAMMEN_MIDDEN;
-  el('div', 'herfst-nevel herfst-nevel--midden', root);
-  el('div', 'herfst-stammen herfst-stammen--dichtbij', root).style.backgroundImage = STAMMEN_DICHTBIJ;
+  const boomLagen = (['ver', 'midden', 'dichtbij'] as const).map((naam) => {
+    const laag = el('div', `herfst-stammen herfst-stammen--${naam}`, root);
+    if (naam !== 'dichtbij') el('div', `herfst-nevel herfst-nevel--${naam}`, root);
+    return { laag, instelling: LAGEN[naam], maat: '' };
+  });
+  // Tekent de bomen opnieuw als de maat van het scherm veranderd is.
+  const plaats = () => {
+    for (const b of boomLagen) {
+      const w = Math.round(b.laag.clientWidth);
+      const h = Math.round(b.laag.clientHeight);
+      if (!w || !h || b.maat === `${w}x${h}`) continue;
+      b.maat = `${w}x${h}`;
+      b.laag.innerHTML = tekenBomen(b.instelling, w, h);
+    }
+  };
 
   // Zonnestralen door het bladerdak en lichtvlekken die zacht glinsteren.
   const licht = el('div', 'herfst-licht', root);
@@ -189,6 +321,8 @@ export function maakHerfstDecor(): Decor {
   }
   strooisel.innerHTML = ellipsen;
 
+  // Blaadjes op de bosgrond, daarvoor de varens.
+  el('div', 'herfst-tapijt', root).style.backgroundImage = bladTapijt();
   // Varens over de rand van de bosgrond.
   el('div', 'herfst-varens', root).style.backgroundImage = varenRand();
   const loopbaan = el('div', 'herfst-loopbaan', root);
@@ -345,5 +479,5 @@ export function maakHerfstDecor(): Decor {
     for (const t of losseTimers) window.clearTimeout(t);
     losseTimers.clear();
   };
-  return { element: root, juich, feest, vernietig };
+  return { element: root, juich, feest, plaats, vernietig };
 }
