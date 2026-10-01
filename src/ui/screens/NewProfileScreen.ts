@@ -2,7 +2,7 @@ import type { Screen, ScreenManager } from '../../engine/screenManager.ts';
 import { pasAchtergrondVanProfielToe } from '../../achtergrond/achtergrond.ts';
 import { maakTerugKnop } from '../components/TerugKnop.ts';
 import { GRATIS_FIGUREN } from '../../engine/winkel.ts';
-import { AVATAR_KLEUREN, avatarFilter, avatarPad, maakProfiel, MAX_NAAM_LENGTE, zetActiefProfiel } from '../../engine/profielStore.ts';
+import { AVATAR_KLEUREN, avatarFilter, avatarPad, haalProfielen, maakProfiel, MAX_NAAM_LENGTE, zetActiefProfiel } from '../../engine/profielStore.ts';
 import { speelSchermOvergang } from '../../three/transitions.ts';
 import { GroepKiesScreen } from './GroepKiesScreen.ts';
 
@@ -117,12 +117,15 @@ export function NewProfileScreen(manager: ScreenManager): Screen {
     manager.replace((m) => GroepKiesScreen(m));
   });
 
+  // Allereerste profiel (de app start dan meteen hier): geen terugknop, er is nog
+  // niets om naar terug te gaan.
+  const eersteProfiel = haalProfielen().length === 0;
   const terug = maakTerugKnop(() => manager.pop());
 
   return {
     mount(root) {
       root.appendChild(el);
-      root.appendChild(terug);
+      if (!eersteProfiel) root.appendChild(terug);
     },
     unmount() {
       el.remove();

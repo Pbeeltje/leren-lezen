@@ -7,6 +7,8 @@ import './styles/achtergrond.css';
 import { ScreenManager } from './engine/screenManager.ts';
 import { sceneManager } from './three/sceneManager.ts';
 import { ProfileSelectScreen } from './ui/screens/ProfileSelectScreen.ts';
+import { NewProfileScreen } from './ui/screens/NewProfileScreen.ts';
+import { haalProfielen } from './engine/profielStore.ts';
 import { initAchtergrond } from './achtergrond/achtergrond.ts';
 import { herstelEnSpiegelOpslag, koppelAppKnoppen } from './engine/native.ts';
 
@@ -51,6 +53,8 @@ function start(): void {
   app.appendChild(schermHouder);
 
   const manager = new ScreenManager(schermHouder);
-  manager.push((m) => ProfileSelectScreen(m));
+  // Nog geen profiel? Dan meteen naar "Maak je profiel" in plaats van een scherm met
+  // alleen een plus-tegel.
+  manager.push((m) => (haalProfielen().length ? ProfileSelectScreen(m) : NewProfileScreen(m)));
   void koppelAppKnoppen();
 }
