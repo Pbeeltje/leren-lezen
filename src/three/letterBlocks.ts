@@ -147,6 +147,11 @@ export class LetterBlokkenScene {
     this.blokken = [];
   }
 
+  // Welke blokken met deze letter nog niet gebruikt zijn (voor dubbele letters, kaas).
+  ongebruikteMet(letter: string): number[] {
+    return this.blokken.flatMap((b, i) => (b.letter === letter && !b.gebruikt ? [i] : []));
+  }
+
   markeerGebruikt(blokIndex: number): void {
     const blok = this.blokken[blokIndex];
     if (!blok) return;

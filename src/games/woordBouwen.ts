@@ -49,7 +49,12 @@ export function renderWoordBouwen(
     if (afgehandeld) return;
 
     if (letter === letters[volgendeIndex]) {
-      scene.markeerGebruikt(blokIndex);
+      // Dubbele letter (kaas): er staan twee A-blokken, maar het kind mag dezelfde A twee
+      // keer aantikken. Zolang de letter verderop nog nodig is, valt daarom een ánder
+      // blok met die letter af en blijft het aangetikte blok staan.
+      const nogNodig = letters.slice(volgendeIndex + 1).includes(letter);
+      const ander = scene.ongebruikteMet(letter).find((i) => i !== blokIndex);
+      scene.markeerGebruikt(nogNodig && ander !== undefined ? ander : blokIndex);
       const sleuf = sleuven[volgendeIndex];
       sleuf.textContent = letter;
       sleuf.classList.add('gevuld');
