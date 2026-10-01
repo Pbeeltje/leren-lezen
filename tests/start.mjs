@@ -1,0 +1,13 @@
+import { chromium } from 'playwright';
+const b = await chromium.launch(); const fouten = [];
+const page = await (await b.newContext({ viewport: { width: 390, height: 844 } })).newPage();
+page.on('pageerror', (e) => fouten.push(e.message));
+await page.goto('http://localhost:5173'); await page.evaluate(() => { localStorage.clear(); sessionStorage.clear(); }); await page.reload(); await page.waitForTimeout(800);
+console.log('leeg start op:', await page.locator('.scherm-titel').textContent(), '| terugknop:', await page.locator('.terug-knop').count());
+await page.locator('.typen-invoer').fill('Lotte'); await page.locator('.avatar-keuze').first().click(); await page.locator('.typen-knop', { hasText: 'Aan de slag' }).click(); await page.waitForTimeout(800);
+console.log('daarna:', await page.locator('.scherm-titel').textContent());
+await page.reload(); await page.waitForTimeout(800);
+console.log('met profiel start op:', await page.locator('.scherm-titel').textContent());
+await page.locator('.icoon-tegel', { hasText: 'Nieuw profiel' }).click(); await page.waitForTimeout(600);
+console.log('tweede profiel, terugknop:', await page.locator('.terug-knop').count());
+console.log('fouten', fouten); await b.close();
