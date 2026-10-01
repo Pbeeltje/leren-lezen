@@ -1681,9 +1681,21 @@
 }
 .xylofoon__staaf::before { top: 12%; }
 .xylofoon__staaf::after { bottom: 12%; }
-.xylofoon__staaf--aan { animation: staaf-aan 0.4s ease-out; }
+/* Een gespeelde staaf licht kort op (korter dan de tijd tot de volgende noot): hij springt
+   iets omhoog en gloeit in zijn eigen kleur met een witte rand, zodat je de melodie goed kunt
+   volgen. */
+.xylofoon__staaf--aan { animation: staaf-aan 0.45s ease-out; z-index: 1; }
 @keyframes staaf-aan {
-  0% { transform: translateY(6px) scale(0.97); filter: brightness(1.5); }
+  0% {
+    transform: translateY(-8px) scale(1.06);
+    filter: brightness(1.55) saturate(1.2);
+    box-shadow: inset 0 -8px 0 rgba(0, 0, 0, 0.18), 0 0 0 4px #fff, 0 0 22px 8px var(--kleur);
+  }
+  60% {
+    transform: translateY(-2px) scale(1.02);
+    filter: brightness(1.2);
+    box-shadow: inset 0 -8px 0 rgba(0, 0, 0, 0.18), 0 0 0 3px rgba(255, 255, 255, 0.6), 0 0 12px 3px var(--kleur);
+  }
   100% { transform: none; filter: none; }
 }
 .xylofoon--wacht { opacity: 0.85; }
