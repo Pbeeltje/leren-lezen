@@ -501,3 +501,18 @@
   .drijf-wolk--2.savanne-wolk { display: none; }
   .savanne-verreboom--2, .savanne-verreboom--4 { display: none; }
 }
+
+/* Staande tablets: de vragen staan midden over de bergen, dus de zon gaat aan de linkerkant
+   onder (daar is hij nog te zien), en de dieren worden een maatje groter. */
+@media (orientation: portrait) and (min-width: 600px) {
+  .savanne-zon { left: 9%; width: 15vw; }
+  .savanne-boom { width: 48vw; }
+  .savanne-olifant { width: 22vw; }
+  .savanne-olifant--klein { width: 12.5vw; }
+  .savanne-gnoe { width: 16vw; }
+  .savanne-gazelle { width: 11.5vw; }
+  .savanne-leeuw--koning { width: 24vw; }
+  .savanne-leeuw--leeuwin { width: 18vw; right: 26%; }
+  .savanne-leeuw--welp { width: 11vw; right: 22%; }
+  .savanne-poel { width: 46vw; }
+}

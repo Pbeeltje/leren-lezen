@@ -118,3 +118,12 @@
 @media (prefers-reduced-motion: reduce) {
   .kasteel-boog { display: none; }
 }
+
+/* Staande tablets: veel ruimte onder de vragen, dus alles een maatje groter. */
+@media (orientation: portrait) and (min-width: 600px) {
+  .decor-kasteel .kasteel-heuvel { width: 66vw; height: 35vh; }
+  .decor-kasteel .eenhoorn { width: 22vw; }
+  .kasteel-perk { width: 44vw; }
+  .kasteel-duif { width: 6.5vw; }
+  .kasteel-vlinder { width: 4.4vw; }
+}
