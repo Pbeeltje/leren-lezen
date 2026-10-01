@@ -51,6 +51,7 @@ export function LuisterenScreen(manager: ScreenManager, hoofdstuk: LuisterHoofds
   let opruimen: (() => void) | null = null;
   let inRonde = 0;
   let rondesKlaar = 0;
+  let onderbroken = false;
   // Na "terug" mag er niets meer doorlopen: geen nieuw woord dat op het volgende scherm
   // hardop klinkt, geen munten voor een vraag die al weg is.
   let actief = true;
@@ -99,11 +100,20 @@ export function LuisterenScreen(manager: ScreenManager, hoofdstuk: LuisterHoofds
       root.appendChild(terug);
       topRechts = maakTopRechtsBalk(manager);
       root.appendChild(topRechts.element);
+      // Terug van een ander scherm (bv. de winkel): unmount heeft de vraag opgeruimd, dus
+      // verder met een nieuwe vraag (de voortgang in de ronde blijft staan).
+      if (onderbroken) {
+        onderbroken = false;
+        actief = true;
+        if (rondesKlaar < AANTAL_RONDES) volgendeVraag();
+      }
     },
     unmount() {
       actief = false;
+      onderbroken = true;
       window.clearTimeout(timer);
       opruimen?.();
+      opruimen = null;
       el.remove();
       terug.remove();
       topRechts?.element.remove();

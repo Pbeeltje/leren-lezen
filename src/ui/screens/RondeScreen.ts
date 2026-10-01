@@ -55,6 +55,7 @@ export function RondeScreen(manager: ScreenManager, titelTekst: string, maakVraa
   let opruimen: (() => void) | null = null;
   let inRonde = 0;
   let rondesKlaar = 0;
+  let onderbroken = false;
   let timer: number | undefined;
   let actief = true;
 
@@ -104,11 +105,20 @@ export function RondeScreen(manager: ScreenManager, titelTekst: string, maakVraa
       root.appendChild(terug);
       topRechts = maakTopRechtsBalk(manager);
       root.appendChild(topRechts.element);
+      // Terug van een ander scherm (bv. de winkel): unmount heeft de vraag opgeruimd, dus
+      // verder met een nieuwe vraag (de voortgang in de ronde blijft staan).
+      if (onderbroken) {
+        onderbroken = false;
+        actief = true;
+        if (rondesKlaar < AANTAL_RONDES) volgendeVraag();
+      }
     },
     unmount() {
       actief = false;
+      onderbroken = true;
       window.clearTimeout(timer);
       opruimen?.();
+      opruimen = null;
       el.remove();
       terug.remove();
       topRechts?.element.remove();

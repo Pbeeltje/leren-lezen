@@ -121,6 +121,7 @@ export function RekenOefeningScreen(
   // een sprong naar het resultaatscherm.
   let timer: number | undefined;
   let actief = true;
+  let onderbroken = false;
 
   function toonHuidige(): void {
     klaarMetDeze = false;
@@ -236,11 +237,21 @@ export function RekenOefeningScreen(
       root.appendChild(terug);
       topRechts = maakTopRechtsBalk(manager);
       root.appendChild(topRechts.element);
+      // Terug van een ander scherm (bv. de winkel): unmount heeft de vraag opgeruimd, dus
+      // dezelfde vraag opnieuw tonen, of door naar de volgende als hij al beantwoord was.
+      if (onderbroken) {
+        onderbroken = false;
+        voortgangsbalk.element.appendChild(overslaanKnop);
+        if (klaarMetDeze) timer = window.setTimeout(volgende, 0);
+        else toonHuidige();
+      }
     },
     unmount() {
       actief = false;
+      onderbroken = true;
       window.clearTimeout(timer);
       opruimen?.();
+      opruimen = null;
       el.remove();
       terug.remove();
       overslaanKnop.remove();

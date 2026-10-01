@@ -132,6 +132,7 @@ export function OefeningScreen(
   let klaarMetDeze = false; // voorkomt dubbele afhandeling als overslaan en afgerond() elkaar kruisen
   let volgendeTimer: number | undefined;
   let gemountOp = 0;
+  let onderbroken = false;
 
   function toonHuidige(): void {
     klaarMetDeze = false;
@@ -267,8 +268,17 @@ export function OefeningScreen(
       root.appendChild(terug);
       topRechts = maakTopRechtsBalk(manager);
       root.appendChild(topRechts.element);
+      // Terug van een ander scherm (bv. de winkel): unmount heeft de vraag opgeruimd, dus
+      // dezelfde vraag opnieuw tonen, of door naar de volgende als hij al beantwoord was.
+      if (onderbroken) {
+        onderbroken = false;
+        voortgangsbalk.element.appendChild(overslaanKnop);
+        if (klaarMetDeze) volgendeTimer = window.setTimeout(volgende, 0);
+        else toonHuidige();
+      }
     },
     unmount() {
+      onderbroken = true;
       // Anders loopt de sessie na "terug" onzichtbaar door (en pop't bij de laatste vraag
       // het hoofdstukscherm weg).
       clearTimeout(volgendeTimer);

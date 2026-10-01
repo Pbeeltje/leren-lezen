@@ -1003,6 +1003,13 @@ Children no longer pick an age but a group (`Groep = 'kleuter' | 'groep3'` in co
   (~65 s, real time).
 - **Lang/kort** (`games/kleuter/vergelijken.ts`): the same object drawn at 360 and 150 px,
   chosen from `LANGE_DINGEN` (pencil, rope, snake, ladder).
+- **Shop during an activity:** the coin counter `push`es the shop, which `unmount`s the
+  activity screen; `pop` mounts the same instance again. Activity screens (Oefening,
+  RekenOefening, Ronde, Luisteren) clean up the question on unmount, so on a re-mount they
+  rebuild it (`onderbroken`: same question again, or the next one if it was already
+  answered; the skip button is re-attached). Geheugen keeps its board (no 3D) and only
+  re-plans a pending step (`wacht`). Any new activity screen with the top-right bar must
+  do the same. Check: `node tests/winkel-tussendoor.mjs <map>`.
 - **Treinreis Alps and eagle:** behind the hills sits an own-drawn Alpine range (`ALPEN` in
   `trein.ts`, built by `bergketen()` from two ridge point lists `VERRE_KAM`/`NABIJE_KAM`:
   a few broad massifs with shoulders and notches, slightly rounded corners, snow above a

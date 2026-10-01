@@ -34,27 +34,38 @@ export function GeheugenScreen(manager: ScreenManager, aantalParen = 4): Screen 
   let actief = true;
   let timer: number | undefined;
   let bordenKlaar = 0;
+  // Wat er nog moest gebeuren toen het scherm (bv. voor de winkel) werd weggehaald.
+  let wacht: (() => void) | null = null;
+  let onderbroken = false;
 
   function nieuwBord(): void {
     if (!actief) return;
     opruimen?.();
     const kaarten = genereerGeheugenbord(aantalParen);
+    // Geen actief-check hier: een bord dat net klaar is terwijl het kind in de winkel zit,
+    // telt gewoon mee; de volgende stap wacht dan tot het terug is (zie `wacht`).
     opruimen = renderGeheugenSpel(oefenContainer, kaarten, () => {
-      if (!actief) return;
       voegMuntenToe(perGoed(MUNTEN_TOETS_GOED));
       bordenKlaar++;
       if (bordenKlaar >= AANTAL_BORDEN) {
-        timer = window.setTimeout(() => {
+        wacht = () => {
           if (!actief) return;
+          wacht = null;
           opruimen?.();
           opruimen = null;
           instructie.style.display = 'none';
           toonKlaarKaart(oefenContainer, () => manager.pop());
-        }, 1000);
+        };
+        timer = window.setTimeout(wacht, 1000);
         return;
       }
       confetti.vuurwerk('klein');
-      timer = window.setTimeout(nieuwBord, 1400);
+      wacht = () => {
+        if (!actief) return;
+        wacht = null;
+        nieuwBord();
+      };
+      timer = window.setTimeout(wacht, 1400);
     }).vernietig;
     if (aantalParen > 4) oefenContainer.querySelector('.geheugen-bord')?.classList.add('geheugen-bord--groot');
   }
@@ -73,11 +84,20 @@ export function GeheugenScreen(manager: ScreenManager, aantalParen = 4): Screen 
       root.appendChild(terug);
       topRechts = maakTopRechtsBalk(manager);
       root.appendChild(topRechts.element);
+      // Terug van een ander scherm (bv. de winkel): het bord is blijven staan, alleen een
+      // stap die nog moest komen (nieuw bord, klaar-kaart) alsnog doen.
+      if (onderbroken) {
+        onderbroken = false;
+        actief = true;
+        if (wacht) timer = window.setTimeout(wacht, 400);
+      }
     },
     unmount() {
+      // Het bord niet opruimen: het blijft in `el` bewaard tot het kind terugkomt. De
+      // terug-knop ruimt het zelf op.
       actief = false;
+      onderbroken = true;
       window.clearTimeout(timer);
-      opruimen?.();
       el.remove();
       terug.remove();
       topRechts?.element.remove();
