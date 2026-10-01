@@ -887,3 +887,12 @@ Children no longer pick an age but a group (`Groep = 'kleuter' | 'groep3'` in co
   little lamb, Jingle bells) with its note lengths. Ritme from 5 hits uses `maakGroove`: a
   repeated motif, bass on the first and snare on the second figure, cymbal at the end.
 
+- **Saved drawings:** Tekenen has a heart button (bewaar) and a framed-picture button (mijn
+  tekeningen). `engine/tekeningenStore.ts` keeps 10 slots per profile in localStorage key
+  `leren-lezen:tekeningen:<profielId>` (mirrored to Preferences in the app like all
+  `leren-lezen:` keys). Drawings are stored as lines (coordinates 0..4095 as two base64
+  characters, nearby points dropped), not as images; 10 drawings are a few KB. Saving a
+  drawing that came from a slot overwrites that slot; when all 10 are full the list opens
+  in "welke mag weg?" mode. Deleting needs two taps on the wastebasket (first tap wiggles).
+  The list window is appended to `document.body` so it covers the top buttons.
+  Check: `node tests/tekeningen.mjs <map>`.
