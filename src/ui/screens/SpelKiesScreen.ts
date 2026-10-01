@@ -1,6 +1,6 @@
 import type { Screen, ScreenManager } from '../../engine/screenManager.ts';
-import type { LeeftijdId } from '../../content/types.ts';
-import { haalVoortgang } from '../../engine/progressStore.ts';
+import type { Groep } from '../../content/types.ts';
+import { haalGroep } from '../../engine/progressStore.ts';
 import { maakIconTile } from '../components/IconTile.ts';
 import { maakTerugKnop } from '../components/TerugKnop.ts';
 import { maakTopRechtsBalk } from '../components/TopRechtsBalk.ts';
@@ -9,12 +9,12 @@ import { speelSchermOvergang } from '../../three/transitions.ts';
 export interface SpelKeuze {
   icoon: string; // naam in assets/icons/
   label: string;
-  leeftijden?: LeeftijdId[]; // weglaten = alle leeftijden
+  groepen?: Groep[]; // weglaten = beide groepen
   open: (manager: ScreenManager) => Screen;
 }
 
 // Keuzescherm met spel-tegels voor een onderwerp (Schrijven, Muziek). Tegels die niet bij
-// de gekozen leeftijd passen worden niet getoond.
+// de gekozen groep passen worden niet getoond.
 export function SpelKiesScreen(manager: ScreenManager, spellen: SpelKeuze[]): Screen {
   const el = document.createElement('div');
   el.className = 'scherm';
@@ -28,9 +28,9 @@ export function SpelKiesScreen(manager: ScreenManager, spellen: SpelKeuze[]): Sc
   grid.className = 'tegel-grid';
   el.appendChild(grid);
 
-  const leeftijd = haalVoortgang().laatstGekozenLeeftijd;
+  const groep = haalGroep();
   for (const spel of spellen) {
-    if (spel.leeftijden && leeftijd && !spel.leeftijden.includes(leeftijd)) continue;
+    if (spel.groepen && groep && !spel.groepen.includes(groep)) continue;
     grid.appendChild(
       maakIconTile({
         icoonPad: `assets/icons/${spel.icoon}.svg`,

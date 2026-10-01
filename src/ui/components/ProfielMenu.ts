@@ -7,14 +7,14 @@ import {
   wijzigProfielIcoon,
   wijzigProfielKleur,
 } from '../../engine/profielStore.ts';
-import { haalVoortgang } from '../../engine/progressStore.ts';
+import { haalGroep } from '../../engine/progressStore.ts';
 import { speelSchermOvergang } from '../../three/transitions.ts';
 import { isGedempt, zetGedempt } from '../../engine/audioManager.ts';
 import { THEMAS, huidigThema, kiesAchtergrond } from '../../achtergrond/achtergrond.ts';
 import { eigenAchtergronden, eigenFiguren } from '../../engine/winkel.ts';
 import { maakBladeraar } from './Bladeraar.ts';
 import { WinkelScreen } from '../screens/WinkelScreen.ts';
-import { AgeSelectScreen } from '../screens/AgeSelectScreen.ts';
+import { GroepKiesScreen, groepIcoon } from '../screens/GroepKiesScreen.ts';
 import { ProfileSelectScreen } from '../screens/ProfileSelectScreen.ts';
 
 // Profielmenu als klein kaartje: bovenaan je eigen figuur met je naam, daaronder vier
@@ -109,9 +109,8 @@ export function maakProfielMenu(manager: ScreenManager): { element: HTMLElement;
   }
   werkGeluidBij();
 
-  const leeftijd = haalVoortgang().laatstGekozenLeeftijd;
-  const leeftijdIcoon = `assets/icons/leeftijd-${leeftijd ?? 6}.svg`;
-  const wisselTegel = tegel('Wisselen', leeftijdIcoon, () => toon('wisselen'));
+  const groepIcoonPad = groepIcoon(haalGroep());
+  const wisselTegel = tegel('Wisselen', groepIcoonPad, () => toon('wisselen'));
   wisselTegel.knop.classList.add('profiel-tegel--wissel');
 
   // ---- Submenu's: elk met een kopregel (terugpijl + titel) ----
@@ -214,7 +213,7 @@ export function maakProfielMenu(manager: ScreenManager): { element: HTMLElement;
     });
   }
   groteKeuze('Ander profiel', 'assets/icons/avatar-panda.svg', () => manager.replace((m) => ProfileSelectScreen(m)));
-  groteKeuze('Leeftijd', leeftijdIcoon, () => manager.replace((m) => AgeSelectScreen(m)));
+  groteKeuze('Groep', groepIcoonPad, () => manager.replace((m) => GroepKiesScreen(m)));
 
   const weergaven: Record<Weergave, HTMLElement> = { hoofd, figuur, achtergrond, wisselen };
 

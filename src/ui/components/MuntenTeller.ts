@@ -1,7 +1,7 @@
 import { events } from '../../engine/events.ts';
 import { haalVoortgang } from '../../engine/progressStore.ts';
 
-// Blijvende muntenteller rechtsboven, zichtbaar op alle schermen na het leeftijdscherm.
+// Blijvende muntenteller rechtsboven, zichtbaar op alle schermen na het groepscherm.
 // Met `opKlik` is het een knop (naar de winkel).
 export function maakMuntenTeller(opKlik?: () => void): { element: HTMLElement; vernietig: () => void } {
   const element = document.createElement(opKlik ? 'button' : 'div');

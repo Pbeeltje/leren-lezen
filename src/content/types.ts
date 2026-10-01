@@ -1,10 +1,13 @@
 // Kerncontracten voor alle leerinhoud. Puur data-typen, geen logica.
 
-export type LeeftijdId = 3 | 4 | 5 | 6;
+// Kinderen kiezen geen leeftijd maar een groep: alles voor 3-5 jaar heet nu kleuterschool,
+// wat voor 6 jaar was is groep 3 (wens van de eigenaar).
+export type Groep = 'kleuter' | 'groep3';
+export const GROEP_NAAM: Record<Groep, string> = { kleuter: 'Kleuterschool', groep3: 'Groep 3' };
 
 export interface Topic {
   id: string; // bv. 'lezen'
-  leeftijd: LeeftijdId[];
+  groepen: Groep[];
   titel: string;
   icoonPad: string;
   beschikbaar: boolean; // false => TopicSelectScreen toont ComingSoonScreen

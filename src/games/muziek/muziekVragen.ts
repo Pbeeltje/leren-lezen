@@ -1,6 +1,6 @@
 import type { RondeVraag } from '../../ui/screens/RondeScreen.ts';
 import { instructieAudioPad } from '../../engine/audioManager.ts';
-import { haalVoortgang } from '../../engine/progressStore.ts';
+import { haalGroep } from '../../engine/progressStore.ts';
 import { TONEN, VIJFTONIG, speelDrum, speelNoot, type DrumSoort } from '../../engine/muziek.ts';
 import { DRUM_KLEUR, maakDrumstel } from './drumstel.ts';
 import { toonFoutFeedback, toonGoedFeedback } from '../../ui/components/FeedbackOverlay.ts';
@@ -11,7 +11,7 @@ import { geheelTussen } from '../kleuter/hulp.ts';
 // erg: de app speelt het gewoon nog eens voor. Elke vraag een beetje langer, met een
 // maximum dat bij de leeftijd past.
 
-const jong = (): boolean => (haalVoortgang().laatstGekozenLeeftijd ?? 6) <= 4;
+const jong = (): boolean => haalGroep() === 'kleuter'; // iets rustiger tempo
 
 function knopNogEens(opnieuw: () => void): HTMLButtonElement {
   const b = document.createElement('button');

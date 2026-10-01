@@ -1,4 +1,4 @@
-import type { LeeftijdId } from '../content/types.ts';
+import type { Groep } from '../content/types.ts';
 import { events } from './events.ts';
 import { haalActiefProfielId } from './profielStore.ts';
 
@@ -15,7 +15,9 @@ export interface KernVoortgang {
 
 export interface VoortgangData {
   versie: 1;
-  laatstGekozenLeeftijd?: LeeftijdId;
+  laatstGekozenGroep?: Groep;
+  // Oud (van vóór de groepen): 3-5 wordt kleuter, 6 wordt groep 3. Zie leesRuw().
+  laatstGekozenLeeftijd?: number;
   munten: number;
   kernen: Record<string, KernVoortgang>;
   // Hoe vaak elk woord al in een niet-typen oefening is voorgekomen. Bepaalt wanneer
@@ -55,6 +57,9 @@ function leesRuw(): VoortgangData {
     if (typeof data.munten !== 'number') data.munten = 0;
     if (!data.woordBlootstelling) data.woordBlootstelling = {};
     if (!data.kernen) data.kernen = {};
+    if (!data.laatstGekozenGroep && typeof data.laatstGekozenLeeftijd === 'number') {
+      data.laatstGekozenGroep = data.laatstGekozenLeeftijd >= 6 ? 'groep3' : 'kleuter';
+    }
     for (const kernId in data.kernen) {
       if (!data.kernen[kernId] || typeof data.kernen[kernId] !== 'object') {
         delete data.kernen[kernId];
@@ -86,9 +91,12 @@ export function haalVoortgang(): VoortgangData {
   return leesRuw();
 }
 
-export function zetLaatstGekozenLeeftijd(leeftijd: LeeftijdId): void {
+export const haalGroep = (): Groep | undefined => leesRuw().laatstGekozenGroep;
+
+export function zetGroep(groep: Groep): void {
   const data = leesRuw();
-  data.laatstGekozenLeeftijd = leeftijd;
+  data.laatstGekozenGroep = groep;
+  delete data.laatstGekozenLeeftijd;
   schrijfRuw(data);
 }
 

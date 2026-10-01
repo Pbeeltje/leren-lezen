@@ -4,7 +4,7 @@ import { maakTerugKnop } from '../components/TerugKnop.ts';
 import { GRATIS_FIGUREN } from '../../engine/winkel.ts';
 import { AVATAR_KLEUREN, avatarFilter, avatarPad, maakProfiel, MAX_NAAM_LENGTE, zetActiefProfiel } from '../../engine/profielStore.ts';
 import { speelSchermOvergang } from '../../three/transitions.ts';
-import { AgeSelectScreen } from './AgeSelectScreen.ts';
+import { GroepKiesScreen } from './GroepKiesScreen.ts';
 
 export function NewProfileScreen(manager: ScreenManager): Screen {
   const el = document.createElement('div');
@@ -114,7 +114,7 @@ export function NewProfileScreen(manager: ScreenManager): Screen {
     zetActiefProfiel(profiel.id);
     pasAchtergrondVanProfielToe();
     speelSchermOvergang();
-    manager.replace((m) => AgeSelectScreen(m));
+    manager.replace((m) => GroepKiesScreen(m));
   });
 
   const terug = maakTerugKnop(() => manager.pop());

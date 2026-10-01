@@ -2,10 +2,10 @@ import type { Screen, ScreenManager } from '../../engine/screenManager.ts';
 import { pasAchtergrondVanProfielToe } from '../../achtergrond/achtergrond.ts';
 import { maakIconTile } from '../components/IconTile.ts';
 import { haalProfielen, zetActiefProfiel, avatarPad, avatarFilter, type Profiel } from '../../engine/profielStore.ts';
-import { haalVoortgang } from '../../engine/progressStore.ts';
+import { haalGroep } from '../../engine/progressStore.ts';
 import { ontgrendelAudio } from '../../engine/audioManager.ts';
 import { speelSchermOvergang } from '../../three/transitions.ts';
-import { AgeSelectScreen } from './AgeSelectScreen.ts';
+import { GroepKiesScreen } from './GroepKiesScreen.ts';
 import { TopicSelectScreen } from './TopicSelectScreen.ts';
 import { NewProfileScreen } from './NewProfileScreen.ts';
 
@@ -15,11 +15,11 @@ function kiesProfiel(manager: ScreenManager, profiel: Profiel): void {
   pasAchtergrondVanProfielToe();
   speelSchermOvergang();
 
-  const leeftijd = haalVoortgang().laatstGekozenLeeftijd;
-  if (leeftijd) {
-    manager.replace((m) => TopicSelectScreen(m, leeftijd));
+  const groep = haalGroep();
+  if (groep) {
+    manager.replace((m) => TopicSelectScreen(m, groep));
   } else {
-    manager.replace((m) => AgeSelectScreen(m));
+    manager.replace((m) => GroepKiesScreen(m));
   }
 }
 

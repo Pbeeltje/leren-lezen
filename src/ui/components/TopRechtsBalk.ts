@@ -5,7 +5,7 @@ import { WinkelScreen } from '../screens/WinkelScreen.ts';
 import { speelSchermOvergang } from '../../three/transitions.ts';
 
 // Combineert het profielmenu en de muntenteller tot één cluster rechtsboven,
-// zodat elk scherm ná de profiel-/leeftijdkeuze deze met één aanroep kan tonen.
+// zodat elk scherm ná de profiel-/groepkeuze deze met één aanroep kan tonen.
 export function maakTopRechtsBalk(manager: ScreenManager): { element: HTMLElement; vernietig: () => void } {
   const element = document.createElement('div');
   element.className = 'top-rechts-balk';

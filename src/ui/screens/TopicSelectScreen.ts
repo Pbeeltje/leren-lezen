@@ -1,9 +1,9 @@
 import type { Screen, ScreenManager } from '../../engine/screenManager.ts';
-import type { LeeftijdId } from '../../content/types.ts';
+import type { Groep } from '../../content/types.ts';
 import { maakIconTile } from '../components/IconTile.ts';
 import { maakTopRechtsBalk } from '../components/TopRechtsBalk.ts';
 import { maakTerugKnop } from '../components/TerugKnop.ts';
-import { topicsVoorLeeftijd } from '../../content/topics.ts';
+import { topicsVoorGroep } from '../../content/topics.ts';
 import { speelSchermOvergang } from '../../three/transitions.ts';
 import { KernOverviewScreen } from './KernOverviewScreen.ts';
 import { RekenKernOverviewScreen } from './RekenKernOverviewScreen.ts';
@@ -15,7 +15,7 @@ import { SchrijvenKiesScreen } from './SchrijvenKiesScreen.ts';
 import { BoekenkastScreen } from './BoekenkastScreen.ts';
 import { MuziekKiesScreen } from './MuziekKiesScreen.ts';
 
-export function TopicSelectScreen(manager: ScreenManager, leeftijd: LeeftijdId): Screen {
+export function TopicSelectScreen(manager: ScreenManager, groep: Groep): Screen {
   const el = document.createElement('div');
   el.className = 'scherm';
 
@@ -28,7 +28,7 @@ export function TopicSelectScreen(manager: ScreenManager, leeftijd: LeeftijdId):
   grid.className = 'tegel-grid';
   el.appendChild(grid);
 
-  for (const topic of topicsVoorLeeftijd(leeftijd)) {
+  for (const topic of topicsVoorGroep(groep)) {
     const tegel = maakIconTile({
       icoonPad: topic.icoonPad,
       label: topic.titel,
@@ -59,8 +59,8 @@ export function TopicSelectScreen(manager: ScreenManager, leeftijd: LeeftijdId):
     grid.appendChild(tegel);
   }
 
-  // TopicSelectScreen wordt zowel gepusht (vanaf AgeSelectScreen) als via 'replace'
-  // bereikt (vanuit ProfileSelectScreen wanneer de leeftijd al bekend is, de gangbare
+  // TopicSelectScreen wordt zowel gepusht (vanaf GroepKiesScreen) als via 'replace'
+  // bereikt (vanuit ProfileSelectScreen wanneer de groep al bekend is, de gangbare
   // route voor een terugkerend profiel) -- dus de stack kan hier maar 1 diep zijn.
   // terugOfAnders pop't als er iets onder zit, en valt anders terug op het profielscherm.
   const terug = maakTerugKnop(() => manager.terugOfAnders((m) => ProfileSelectScreen(m)));

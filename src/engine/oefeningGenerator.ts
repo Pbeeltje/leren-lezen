@@ -1,5 +1,5 @@
 import type { Kern, OefeningDefinitie, OefeningType, Woord } from '../content/types.ts';
-import { haalVoortgang } from './progressStore.ts';
+import { haalGroep } from './progressStore.ts';
 
 export type OefenModus = 'oefenen' | 'toets';
 export type OefeningNummer = 1 | 2 | 3;
@@ -19,7 +19,7 @@ const GEWICHT_ZES: Partial<Record<OefeningType, number>> = {
   'klank-herkennen': 0.7,
   woordwolk: 0.7,
 };
-const isZes = () => haalVoortgang().laatstGekozenLeeftijd !== 5;
+const isZes = () => haalGroep() !== 'kleuter'; // groep 3 (of nog niets gekozen)
 
 function kiesType(typen: OefeningType[]): OefeningType {
   if (!isZes()) return kiesN(typen, 1)[0];
