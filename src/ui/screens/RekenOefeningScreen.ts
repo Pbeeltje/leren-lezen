@@ -212,7 +212,10 @@ export function RekenOefeningScreen(
 
   const overslaanKnop = document.createElement('button');
   overslaanKnop.className = 'overslaan-knop';
-  overslaanKnop.textContent = 'Overslaan';
+  overslaanKnop.setAttribute('aria-label', 'Overslaan');
+  const overslaanTekst = document.createElement('span');
+  overslaanTekst.textContent = 'Overslaan';
+  overslaanKnop.appendChild(overslaanTekst);
   const overslaanIcoon = document.createElement('img');
   overslaanIcoon.src = 'assets/icons/overslaan.svg';
   overslaanIcoon.alt = '';

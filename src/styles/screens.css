@@ -1128,6 +1128,24 @@
   .oefen-kaart { padding: 24px 16px; }
   /* Kaarten zijn 92vw breed; met 24px zijmarge schoof het scherm dan 8px horizontaal. */
   .scherm { padding-left: 12px; padding-right: 12px; }
+  /* Overslaan als klein pijltje rechtsonder: de brede knop in het midden viel op een
+     telefoon soms over de antwoorden heen. */
+  .overslaan-knop {
+    left: auto;
+    right: 12px;
+    bottom: 12px;
+    transform: none;
+    min-height: 0;
+    width: 48px;
+    height: 48px;
+    padding: 0;
+    justify-content: center;
+    opacity: 0.85;
+  }
+  .overslaan-knop span { display: none; }
+  .overslaan-knop img { width: 28px; height: 28px; }
+  .overslaan-knop:active { transform: translateY(3px); }
+  .scherm:has(~ .overslaan-knop) { padding-bottom: 68px; }
   /* Bus en halte naast elkaar houden (dan wijzen de pijlen ook echt naar/van de bus);
      onder elkaar werd de kaart zo hoog dat de antwoordknoppen onder "Overslaan" vielen. */
   .bus-scene { align-items: center; gap: 6px; }
