@@ -3,7 +3,7 @@
 ## Waiting on the owner
 
 - [ ] **Recording list 6** (`bronbestanden/opnamelijst-6-deel-1.txt`).
-  - Re-record "Tik het woord aan dat bij het plaatje hoort", "Knap gedaan!" and "Wat knap!".
+  - Re-record "Tik het woord aan dat bij het plaatje hoort", "Knap gedaan!", "Wat knap!", "Schrijf de j van jas" and the word "muis" (muis was re-cut from the first recording on 1 October, but a fresh take is better).
   - Once `opname6-deel1.m4a` is in `bronbestanden/`, process it with the `leren-lezen-audio` skill (`verwerk-opname.py`).
 - [ ] **Test the Android preview APK on a real phone** (`C:\claude\leren-lezen-preview\`).
   - Especially check whether a frozen strip appears under the status bar. On the emulator (old WebView, Chrome 133) it appears, but the WebView's own screenshot is clean.
