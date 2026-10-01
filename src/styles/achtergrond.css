@@ -68,10 +68,11 @@ body:not(.thema-ruimte) .instructie-tekst:not(.instructie-tekst--donker) {
   transform-origin: bottom center;
   animation: wiebel 6s ease-in-out infinite;
 }
+/* Boomvarens; 'scale' spiegelt los van het wiebelen (dat transform gebruikt). */
 .dino-boom--1 { left: 3%; }
-.dino-boom--2 { left: 13%; width: clamp(70px, 11vw, 140px); animation-delay: -2s; }
+.dino-boom--2 { left: 13%; width: clamp(70px, 11vw, 140px); animation-delay: -2s; scale: -1 1; }
 .dino-boom--3 { right: 12%; animation-delay: -4s; }
-.dino-boom--4 { right: 2%; width: clamp(50px, 7vw, 100px); animation-delay: -1s; }
+.dino-boom--4 { right: 2%; width: clamp(50px, 7vw, 100px); animation-delay: -1s; scale: -1 1; }
 
 @keyframes wiebel {
   0%, 100% { transform: rotate(-1.5deg); }

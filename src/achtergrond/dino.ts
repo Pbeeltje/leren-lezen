@@ -35,12 +35,13 @@ export function maakDinoDecor(): Decor {
   const heuvels = svgUitTekst(HEUVELS, 'dino-heuvels', root);
   const [achter, midden, voor] = [...heuvels.querySelectorAll('path')];
 
-  // [plaatje, klasse, op welke heuvel]: de kleine bomen aan de rand staan verder weg.
+  // [plaatje, klasse, op welke heuvel]: boomvarens (zelf getekend, zoals in de tijd van de
+  // dinosaurussen); de kleine aan de rand staan verder weg, twee zijn gespiegeld.
   const bomen: [HTMLImageElement, SVGPathElement][] = [
-    [plaatje('assets/achtergrond/den.svg', 'dino-boom dino-boom--1', root), achter],
-    [plaatje('assets/achtergrond/boom.svg', 'dino-boom dino-boom--2', root), midden],
-    [plaatje('assets/achtergrond/boom.svg', 'dino-boom dino-boom--3', root), midden],
-    [plaatje('assets/achtergrond/den.svg', 'dino-boom dino-boom--4', root), achter],
+    [plaatje('assets/achtergrond/boomvaren.svg', 'dino-boom dino-boom--1', root), achter],
+    [plaatje('assets/achtergrond/boomvaren.svg', 'dino-boom dino-boom--2', root), midden],
+    [plaatje('assets/achtergrond/boomvaren.svg', 'dino-boom dino-boom--3', root), midden],
+    [plaatje('assets/achtergrond/boomvaren.svg', 'dino-boom dino-boom--4', root), achter],
   ];
 
   // De stegosaurus staat vóór de T-rex en triceratops in de DOM: hij loopt achter ze langs.
