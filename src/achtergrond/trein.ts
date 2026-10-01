@@ -12,7 +12,7 @@ import { el, kortAan, plaatje, svgUitTekst, zetOpPad } from './hulp.ts';
 // sessie rijdt er een lange trein met een open wagon per dier, met sterretjes.
 // Achter de heuvels ligt een besneeuwde bergketen (de Alpen, twee lagen voor diepte). Heel
 // af en toe zweeft er hoog in de lucht rustig een arend over.
-// Bomen, dieren en de arend zijn Fluent Emoji; trein, station, sein, brug en bergen zijn zelf getekend.
+// Bomen en dieren zijn Fluent Emoji; trein, station, sein, brug, bergen en de arend zijn zelf getekend.
 
 // De voorste strook (y = 212) ligt precies op de hoogte van het spoor (10vh van 34vh).
 const LANDSCHAP = `
@@ -301,6 +301,36 @@ const WAGONKLEUREN: [string, string][] = [
 ];
 const DIEREN = ['koe', 'varken', 'schaap', 'haan', 'kuiken', 'schildpad'];
 
+// Zwevende arend (kijkt naar rechts), van onderen gezien met gespreide vleugels, net als de
+// pteranodon bij de dino's. De vleugels (ar-vleugel--l / --r) slaan af en toe traag.
+const AREND = `
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 84" aria-hidden="true">
+  <defs>
+    <linearGradient id="ar-vleugel" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#8a5a32"/>
+      <stop offset="1" stop-color="#6b4426"/>
+    </linearGradient>
+    <linearGradient id="ar-lijf" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#7d5130"/>
+      <stop offset="1" stop-color="#5a3a22"/>
+    </linearGradient>
+  </defs>
+  <g stroke="#3e2716" stroke-width="2" stroke-linejoin="round" stroke-linecap="round">
+    <g class="ar-vleugel ar-vleugel--l"><path d="M24 34 C16 31 8 24 4 26 C10 30 20 40 26 39 Z" fill="#5a3a22"/><path d="M28 40 C20 37 10 34 6 36 C12 40 24 46 30 45 Z" fill="#5a3a22"/><path d="M32 46 C24 43 14 44 10 46 C16 50 28 52 34 51 Z" fill="#5a3a22"/><path d="M38 51 C30 48 22 54 18 56 C24 60 34 57 40 56 Z" fill="#5a3a22"/><path d="M100 40 C84 30 60 26 34 30 C28 36 30 46 40 52 C54 52 70 54 92 58 Z" fill="url(#ar-vleugel)"/><path d="M98 42 C82 35 62 33 44 36 C56 42 76 46 96 50 Z" fill="#a2703f" opacity="0.85"/></g>
+    <g class="ar-vleugel ar-vleugel--r"><path d="M176 34 C184 31 192 24 196 26 C190 30 180 40 174 39 Z" fill="#5a3a22"/><path d="M172 40 C180 37 190 34 194 36 C188 40 176 46 170 45 Z" fill="#5a3a22"/><path d="M168 46 C176 43 186 44 190 46 C184 50 172 52 166 51 Z" fill="#5a3a22"/><path d="M162 51 C170 48 178 54 182 56 C176 60 166 57 160 56 Z" fill="#5a3a22"/><path d="M100 40 C116 30 140 26 166 30 C172 36 170 46 160 52 C146 52 130 54 108 58 Z" fill="url(#ar-vleugel)"/><path d="M98 42 C118 35 138 33 156 36 C144 42 124 46 104 50 Z" fill="#a2703f" opacity="0.85"/></g>
+    <!-- witte waaierstaart naar achteren (links), lijf, opgetrokken gele pootjes -->
+    <path d="M86 52 C78 50 66 50 58 54 C62 58 64 62 62 66 C70 64 80 62 88 58 Z" fill="#f4f1ea"/>
+    <path d="M94 60 L90 66 M100 61 L98 67" fill="none" stroke="#e0a21a" stroke-width="3"/>
+    <ellipse cx="100" cy="51" rx="14" ry="9" fill="url(#ar-lijf)"/>
+    <!-- witte kop met gele haaksnavel, kijkt naar rechts -->
+    <path d="M108 46 C110 38 118 34 126 36 C132 37 134 42 132 46 C126 50 116 50 108 50 Z" fill="#f7f4ec"/>
+    <path d="M131 40 C138 39 142 43 140 47 C138 45 135 45 132 46 Z" fill="#f2b632"/>
+  </g>
+  <circle cx="126" cy="40.5" r="2.4" fill="#ffffff"/>
+  <circle cx="126.6" cy="40.7" r="1.5" fill="#1b1b2f"/>
+  <circle cx="127" cy="40.1" r="0.5" fill="#ffffff"/>
+</svg>`;
+
 interface Trein {
   element: HTMLElement;
   loc: HTMLElement;
@@ -506,14 +536,14 @@ export function maakTreinDecor(): Decor {
       const breedte = root.clientWidth || window.innerWidth;
       // Rustig zweven: ongeveer 45 px per seconde, maar niet korter dan 16 s of langer dan 36 s.
       const duur = Math.min(36, Math.max(16, (breedte * 1.25) / 45));
-      const a = el('div', `trein-arend${arendNaarRechts ? ' trein-arend--rechts' : ''}`, lucht);
+      const a = el('div', `trein-arend${arendNaarRechts ? '' : ' trein-arend--links'}`, lucht);
       a.style.setProperty('--van-x', arendNaarRechts ? '-16vw' : '104vw');
       a.style.setProperty('--naar-x', arendNaarRechts ? '104vw' : '-16vw');
       a.style.animationDuration = `${duur}s`;
       a.style.top = `${7 + Math.random() * 9}vh`;
-      // De Fluent-arend kijkt naar links; naar rechts spiegelt .trein-arend--rechts hem.
+      // De arend kijkt naar rechts; naar links spiegelt .trein-arend--links hem.
       const zweef = el('div', 'trein-arend__zweef', el('div', 'trein-arend__spiegel', a));
-      plaatje('assets/achtergrond/arend.svg', 'trein-arend__lijf', zweef);
+      svgUitTekst(AREND, 'trein-arend__lijf', zweef);
       arendNaarRechts = !arendNaarRechts;
       wacht(() => {
         a.remove();

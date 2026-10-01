@@ -34,27 +34,20 @@
 .trein-arend {
   position: absolute;
   left: 0;
-  width: clamp(54px, 7vw, 96px);
-  aspect-ratio: 1;
+  width: clamp(80px, 10vw, 140px);
   transform: translateX(var(--van-x));
   animation: zwem-over 30s linear forwards;
 }
-.trein-arend__spiegel { width: 100%; height: 100%; }
-.trein-arend--rechts .trein-arend__spiegel { transform: scaleX(-1); }
-.trein-arend__zweef {
-  width: 100%;
-  height: 100%;
-  animation: trein-arend-zweef 7s ease-in-out infinite;
+.trein-arend__spiegel, .trein-arend__zweef { width: 100%; }
+.trein-arend--links .trein-arend__spiegel { transform: scaleX(-1); }
+.trein-arend__zweef { animation: trein-arend-zweef 7s ease-in-out infinite; }
+.trein-arend__lijf { display: block; width: 100%; height: auto; overflow: visible; }
+.trein-arend .ar-vleugel {
+  transform-box: fill-box;
+  animation: trein-arend-slag 9s ease-in-out -5s infinite;
 }
-.decor-trein .trein-arend__lijf {
-  position: static;
-  display: block;
-  width: 100%;
-  height: 100%;
-  transform-origin: 50% 55%;
-  animation: trein-arend-slag 9s ease-in-out infinite;
-  animation-delay: -5s;
-}
+.trein-arend .ar-vleugel--l { transform-origin: 100% 55%; }
+.trein-arend .ar-vleugel--r { transform-origin: 0% 55%; }
 @keyframes trein-arend-zweef {
   0%, 100% { transform: translateY(0) rotate(-2deg); }
   30% { transform: translateY(-9px) rotate(3deg); }
@@ -63,8 +56,8 @@
 /* Twee trage slagen, daarna een hele tijd glijden. */
 @keyframes trein-arend-slag {
   0%, 16%, 100% { transform: scaleY(1); }
-  4%, 12% { transform: scaleY(0.72); }
-  8% { transform: scaleY(1.05); }
+  4%, 12% { transform: scaleY(0.55); }
+  8% { transform: scaleY(1.1); }
 }
 
 .trein-landschap {
