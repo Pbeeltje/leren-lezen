@@ -80,10 +80,13 @@ export function haalProfielen(): Profiel[] {
   return leesProfielen();
 }
 
+// Zelfde grens als het invoerveld: past op de profieltegel en in het menu.
+export const MAX_NAAM_LENGTE = 16;
+
 export function maakProfiel(naam: string, icoonId: string, kleur = 0): Profiel {
   const profiel: Profiel = {
     id: `p${Date.now().toString(36)}${Math.random().toString(36).slice(2, 8)}`,
-    naam: naam.trim(),
+    naam: naam.trim().slice(0, MAX_NAAM_LENGTE),
     icoonId,
     kleur,
     aangemaakt: Date.now(),

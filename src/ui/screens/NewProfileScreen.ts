@@ -1,7 +1,7 @@
 import type { Screen, ScreenManager } from '../../engine/screenManager.ts';
 import { pasAchtergrondVanProfielToe } from '../../achtergrond/achtergrond.ts';
 import { maakTerugKnop } from '../components/TerugKnop.ts';
-import { AVATAR_ICONEN, AVATAR_KLEUREN, avatarFilter, avatarPad, maakProfiel, zetActiefProfiel } from '../../engine/profielStore.ts';
+import { AVATAR_ICONEN, AVATAR_KLEUREN, avatarFilter, avatarPad, maakProfiel, MAX_NAAM_LENGTE, zetActiefProfiel } from '../../engine/profielStore.ts';
 import { speelSchermOvergang } from '../../three/transitions.ts';
 import { AgeSelectScreen } from './AgeSelectScreen.ts';
 
@@ -22,7 +22,7 @@ export function NewProfileScreen(manager: ScreenManager): Screen {
   invoer.type = 'text';
   invoer.className = 'typen-invoer';
   invoer.placeholder = 'Jouw naam';
-  invoer.maxLength = 16;
+  invoer.maxLength = MAX_NAAM_LENGTE;
   invoer.autocomplete = 'off';
   kaart.appendChild(invoer);
 

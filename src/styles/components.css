@@ -39,6 +39,8 @@
   font-weight: 700;
   color: var(--kleur-tekst);
   text-align: center;
+  max-width: 100%;
+  overflow-wrap: anywhere;
 }
 
 .icoon-tegel__badge {
@@ -266,6 +268,30 @@
   padding: 8px 12px;
   border-radius: 16px;
   background: linear-gradient(135deg, #ffe9a8, #ffd0e0);
+  box-shadow: 0 3px 0 #f0c9b6;
+  width: 100%;
+  min-width: 0;
+  text-align: left;
+}
+
+.profiel-menu__kop:active {
+  transform: translateY(2px);
+  box-shadow: 0 1px 0 #f0c9b6;
+}
+
+/* Klein wissel-pijltje achter de naam: hier tik je om van profiel te wisselen. */
+.profiel-menu__kop::after {
+  content: '⇄';
+  margin-left: auto;
+  flex-shrink: 0;
+  width: 26px;
+  height: 26px;
+  line-height: 26px;
+  text-align: center;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.8);
+  color: var(--kleur-tekst);
+  font-size: 0.85rem;
 }
 
 .profiel-menu__kop-figuur {
@@ -286,6 +312,7 @@
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+  min-width: 0;
 }
 
 .profiel-menu__tegels {

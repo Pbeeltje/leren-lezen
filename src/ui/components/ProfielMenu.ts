@@ -65,7 +65,14 @@ export function maakProfielMenu(manager: ScreenManager): { element: HTMLElement;
 
   // ---- Hoofdweergave ----
   const hoofd = maak('div', 'profiel-menu__weergave', paneel);
-  const kop = maak('div', 'profiel-menu__kop', hoofd);
+  // Tik op je naam: naar het profielenscherm (net als Wisselen → Ander profiel).
+  const kop = maak('button', 'profiel-menu__kop', hoofd);
+  kop.setAttribute('aria-label', 'Ander profiel kiezen');
+  kop.addEventListener('click', () => {
+    sluitPaneel();
+    speelSchermOvergang();
+    manager.replace((m) => ProfileSelectScreen(m));
+  });
   figuurPlaatjes.push(plaatje(avatarPad(icoonId()), 'profiel-menu__kop-figuur', kop));
   const naam = maak('p', 'profiel-menu__naam', kop);
   naam.textContent = profiel?.naam ?? '';
