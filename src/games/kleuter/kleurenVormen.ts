@@ -7,12 +7,30 @@ import { geheelTussen, kies, schud } from './hulp.ts';
 // om gaat, zodat het ook zonder voorlezen werkt: bij kleuren een verfvlek (geen vorm),
 // bij vormen een witte omtrek (geen kleur). Tik alle passende dingen in het rooster aan.
 
-type Kleur = 'rood' | 'blauw' | 'geel' | 'groen';
+type Kleur = 'rood' | 'blauw' | 'geel' | 'groen' | 'paars' | 'roze' | 'zwart' | 'bruin';
 type Vorm = 'rondje' | 'vierkant' | 'driehoek' | 'ster';
 
-const KLEUREN: Record<Kleur, string> = { rood: '#e53935', blauw: '#1e88e5', geel: '#fdd835', groen: '#43a047' };
+const KLEUREN: Record<Kleur, string> = {
+  rood: '#e53935',
+  blauw: '#1e88e5',
+  geel: '#fdd835',
+  groen: '#43a047',
+  paars: '#8e24aa',
+  roze: '#f48fb1',
+  zwart: '#212121',
+  bruin: '#8d5524',
+};
 const VORM_TEKST: Record<Vorm, string> = { rondje: 'rondjes', vierkant: 'vierkanten', driehoek: 'driehoeken', ster: 'sterren' };
-const KLEUR_TEKST: Record<Kleur, string> = { rood: 'rode', blauw: 'blauwe', geel: 'gele', groen: 'groene' };
+const KLEUR_TEKST: Record<Kleur, string> = {
+  rood: 'rode',
+  blauw: 'blauwe',
+  geel: 'gele',
+  groen: 'groene',
+  paars: 'paarse',
+  roze: 'roze',
+  zwart: 'zwarte',
+  bruin: 'bruine',
+};
 
 const NS = 'http://www.w3.org/2000/svg';
 

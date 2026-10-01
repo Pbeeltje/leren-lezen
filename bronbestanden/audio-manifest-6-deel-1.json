@@ -1,0 +1,32 @@
+[
+  {
+    "n": 1,
+    "slug": "woordwolk",
+    "text": "Tik het woord aan dat bij het plaatje hoort.",
+    "path": "public/assets/audio/instructies/woordwolk.mp3"
+  },
+  {
+    "n": 2,
+    "slug": "feedback-goed-2",
+    "text": "Knap gedaan!",
+    "path": "public/assets/audio/instructies/feedback-goed-2.mp3"
+  },
+  {
+    "n": 3,
+    "slug": "feedback-goed-13",
+    "text": "Wat knap!",
+    "path": "public/assets/audio/instructies/feedback-goed-13.mp3"
+  },
+  {
+    "n": 4,
+    "slug": "schrijf-letter-j",
+    "text": "Schrijf de j van jas.",
+    "path": "public/assets/audio/instructies/schrijf-letter-j.mp3"
+  },
+  {
+    "n": 5,
+    "slug": "muis",
+    "text": "muis",
+    "path": "public/assets/audio/woorden/muis.mp3"
+  }
+]

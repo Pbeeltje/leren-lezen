@@ -35,7 +35,7 @@ const LIJKT_OP: Partial<Record<Vorm, Vorm[]>> = {
   driehoek: ['ruit', 'ster'],
 };
 
-const KLEUREN = ['#e53935', '#1e88e5', '#fdd835', '#43a047', '#fb8c00', '#8e24aa'];
+const KLEUREN = ['#e53935', '#1e88e5', '#fdd835', '#43a047', '#fb8c00', '#8e24aa', '#f48fb1', '#8d5524'];
 const NS = 'http://www.w3.org/2000/svg';
 
 const VORMEN: Record<Vorm, [string, Record<string, string>]> = {
@@ -47,7 +47,7 @@ const VORMEN: Record<Vorm, [string, Record<string, string>]> = {
   rechthoek: ['rect', { x: '4', y: '28', width: '92', height: '44', rx: '4' }],
   ovaal: ['ellipse', { cx: '50', cy: '50', rx: '46', ry: '26' }],
   ruit: ['polygon', { points: '50,4 86,50 50,96 14,50' }],
-  maan: ['path', { d: 'M64 8 A42 42 0 1 0 64 92 A34 34 0 1 1 64 8 Z' }],
+  maan: ['path', { d: 'M79 14 A40 40 0 1 0 79 86 A42 42 0 0 1 79 14 Z' }],
   kruis: ['polygon', { points: '37,8 63,8 63,37 92,37 92,63 63,63 63,92 37,92 37,63 8,63 8,37 37,37' }],
 };
 

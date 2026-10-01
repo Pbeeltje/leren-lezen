@@ -158,16 +158,28 @@ export function VangScreen(manager: ScreenManager): Screen {
   veld.addEventListener('pointermove', (e) => {
     if (e.pointerType === 'mouse' || e.buttons) naarVinger(e);
   });
-  const toetsen = new Set<string>();
+  // Toetsenbord (laptop): pijltjes of A/D schuiven, spatie of Enter start een spel. Een
+  // tikje schuift een stukje; ingedrukt houden versnelt, zodat je ook precies kunt mikken.
+  const toetsen = new Set<'links' | 'rechts'>();
+  let toetsTijd = 0;
+  const richting = (e: KeyboardEvent): 'links' | 'rechts' | null =>
+    e.key === 'ArrowLeft' || e.key.toLowerCase() === 'a' ? 'links' : e.key === 'ArrowRight' || e.key.toLowerCase() === 'd' ? 'rechts' : null;
   const toetsNeer = (e: KeyboardEvent): void => {
-    if (e.key === 'ArrowLeft' || e.key === 'ArrowRight') {
-      toetsen.add(e.key);
+    const r = richting(e);
+    if (r) {
+      if (!toetsen.has(r)) toetsTijd = 0;
+      toetsen.add(r);
       e.preventDefault();
+    } else if ((e.key === ' ' || e.key === 'Enter') && overlay && !e.repeat) {
+      e.preventDefault();
+      start();
     }
   };
   const toetsOp = (e: KeyboardEvent): void => {
-    toetsen.delete(e.key);
+    const r = richting(e);
+    if (r) toetsen.delete(r);
   };
+  const losAlles = (): void => toetsen.clear();
 
   function laatVallen(): void {
     // Het gevaar groeit mee met de tijd: na drie kwartier is het 1,8 keer zo groot.
@@ -236,8 +248,12 @@ export function VangScreen(manager: ScreenManager): Screen {
     vorigeT = t;
     tijd += dt;
 
-    if (toetsen.has('ArrowLeft')) doelX -= breedte() * 1.2 * dt;
-    if (toetsen.has('ArrowRight')) doelX += breedte() * 1.2 * dt;
+    if (toetsen.size) {
+      toetsTijd += dt;
+      const v = Math.min(breedte(), 1100) * (0.55 + Math.min(0.55, toetsTijd * 1.4)) * dt;
+      if (toetsen.has('links')) doelX -= v;
+      if (toetsen.has('rechts')) doelX += v;
+    }
     const m = spelerMaat();
     doelX = Math.min(breedte() - m / 2, Math.max(m / 2, doelX));
     const oud = spelerX;
@@ -328,6 +344,13 @@ export function VangScreen(manager: ScreenManager): Screen {
           <span class="vang-uitleg__vak vang-uitleg__vak--goed"><img src="${LEKKERS[0]}" alt=""><img src="${LEKKERS[1]}" alt=""><b>✓</b></span>
           <span class="vang-uitleg__vak vang-uitleg__vak--fout"><img src="${thema.gevaar}" alt=""${thema.rood ? ' class="vang-ding--rood"' : ''}><b>✕</b></span>
         </div>`;
+      if (matchMedia('(hover: hover) and (pointer: fine)').matches) {
+        const hint = document.createElement('p');
+        hint.className = 'vang-venster__toetsen';
+        hint.innerHTML = '<kbd>←</kbd><kbd>→</kbd>';
+        hint.setAttribute('aria-label', 'pijltjestoetsen');
+        doos.appendChild(hint);
+      }
     }
     doos.appendChild(knop('vang-venster__start', '<img src="assets/icons/vangspel-start.svg" alt="">', eind ? 'nog een keer' : 'start', start));
     v.appendChild(doos);
@@ -363,6 +386,7 @@ export function VangScreen(manager: ScreenManager): Screen {
       opGrootte.observe(veld);
       window.addEventListener('keydown', toetsNeer);
       window.addEventListener('keyup', toetsOp);
+      window.addEventListener('blur', losAlles);
       toonVenster(false);
     },
     unmount() {
@@ -371,6 +395,7 @@ export function VangScreen(manager: ScreenManager): Screen {
       opGrootte.disconnect();
       window.removeEventListener('keydown', toetsNeer);
       window.removeEventListener('keyup', toetsOp);
+      window.removeEventListener('blur', losAlles);
       el.remove();
       terug.remove();
     },

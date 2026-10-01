@@ -2061,6 +2061,22 @@
 }
 .vang-venster__start img { width: 58px; height: 58px; }
 .vang-venster__start:active { transform: translateY(4px); box-shadow: none; }
+.vang-venster__toetsen { margin: 0; display: flex; gap: 8px; }
+.vang-venster__toetsen kbd {
+  min-width: 46px;
+  height: 42px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 9px;
+  background: #fff;
+  border: 2px solid #b0bec5;
+  box-shadow: 0 4px 0 #b0bec5;
+  font-size: 1.6rem;
+  font-weight: 800;
+  line-height: 1;
+  color: #37474f;
+}
 @media (max-width: 420px) {
   .vang-balk { gap: 8px; }
   .vang-score, .vang-hartjes { padding: 5px 10px; }
