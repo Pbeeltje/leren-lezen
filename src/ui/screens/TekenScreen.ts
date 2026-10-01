@@ -1,6 +1,4 @@
 import type { Screen, ScreenManager } from '../../engine/screenManager.ts';
-import { maakTerugKnop } from '../components/TerugKnop.ts';
-import { maakTopRechtsBalk } from '../components/TopRechtsBalk.ts';
 import {
   AANTAL_PLEKKEN,
   bewaarTekening,
@@ -10,7 +8,9 @@ import {
   type Lijn,
 } from '../../engine/tekeningenStore.ts';
 
-// Vrij tekenen met de vinger (onder Schrijven). Grote kleurvlakken, twee diktes, gum,
+// Vrij tekenen met de vinger (onder Schrijven). Zo groot mogelijk blad en alleen
+// tekenknoppen plus terug (in de balk): geen profielmenu of munten, want daar tikten de
+// kinderen per ongeluk op. Grote kleurvlakken, twee diktes, gum,
 // "terug" (laatste lijn weg) en een nieuw blad. Het hartje bewaart de tekening in een van
 // de 10 plekjes van dit profiel (engine/tekeningenStore.ts); het lijstje opent ze weer.
 // De lijnen worden bewaard als punten, zodat terug en draaien/vergroten van het scherm de
@@ -35,6 +35,15 @@ export function TekenScreen(manager: ScreenManager): Screen {
   const balk = document.createElement('div');
   balk.className = 'teken-balk';
   el.appendChild(balk);
+
+  // Terug als eerste knop in de balk, met wat ruimte erna.
+  const terug = document.createElement('button');
+  terug.type = 'button';
+  terug.className = 'teken-actie teken-terug';
+  terug.innerHTML = '<img src="assets/icons/terug.svg" alt="">';
+  terug.setAttribute('aria-label', 'Terug');
+  terug.addEventListener('click', () => manager.pop());
+  balk.appendChild(terug);
 
   const lijnen: Lijn[] = [];
   let kleur = KLEUREN[1];
@@ -332,25 +341,15 @@ export function TekenScreen(manager: ScreenManager): Screen {
 
   const opGrootte = new ResizeObserver(pasGrootteAan);
 
-  const terug = maakTerugKnop(() => manager.pop());
-  let topRechts: ReturnType<typeof maakTopRechtsBalk> | null = null;
-
   return {
     mount(root) {
       root.appendChild(el);
-      root.appendChild(terug);
-      topRechts = maakTopRechtsBalk(manager);
-      root.appendChild(topRechts.element);
       opGrootte.observe(canvas);
     },
     unmount() {
       opGrootte.disconnect();
       sluitLijst();
       el.remove();
-      terug.remove();
-      topRechts?.element.remove();
-      topRechts?.vernietig();
-      topRechts = null;
     },
   };
 }

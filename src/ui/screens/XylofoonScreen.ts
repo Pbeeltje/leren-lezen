@@ -1,14 +1,15 @@
 import type { Screen, ScreenManager } from '../../engine/screenManager.ts';
 import { maakTerugKnop } from '../components/TerugKnop.ts';
-import { maakTopRechtsBalk } from '../components/TopRechtsBalk.ts';
 import { maakXylofoon } from '../../games/muziek/xylofoon.ts';
 import { maakDrumstel } from '../../games/muziek/drumstel.ts';
 
 // Vrij spelen: geen opdracht, geen goed of fout. Twee knoppen bovenaan wisselen tussen de
 // xylofoon (acht staven) en het hele drumstel (grote trom, snaredrum, tom, bekken, crash).
+// Alleen terug en die twee knoppen; geen profielmenu of munten (kinderen tikten er per
+// ongeluk op), en het instrument vult de rest van het scherm.
 export function XylofoonScreen(manager: ScreenManager): Screen {
   const el = document.createElement('div');
-  el.className = 'scherm';
+  el.className = 'scherm muziek-vrij-scherm';
 
   const wissel = document.createElement('div');
   wissel.className = 'muziek-wissel';
@@ -43,22 +44,16 @@ export function XylofoonScreen(manager: ScreenManager): Screen {
   knoppen[0].click();
 
   const terug = maakTerugKnop(() => manager.pop());
-  let topRechts: ReturnType<typeof maakTopRechtsBalk> | null = null;
 
   return {
     mount(root) {
       root.appendChild(el);
       root.appendChild(terug);
-      topRechts = maakTopRechtsBalk(manager);
-      root.appendChild(topRechts.element);
     },
     unmount() {
       xylo.opruimen();
       el.remove();
       terug.remove();
-      topRechts?.element.remove();
-      topRechts?.vernietig();
-      topRechts = null;
     },
   };
 }

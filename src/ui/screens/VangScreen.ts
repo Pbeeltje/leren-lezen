@@ -7,7 +7,8 @@ import { confetti } from '../../three/particles.ts';
 
 // Vangspel: je eigen figuurtje staat onderaan en schuift mee met je vinger (of de
 // pijltjestoetsen). Vang het lekkers dat naar beneden valt, ontwijk de meteoren. Drie
-// hartjes; elke meteoor kost er één. Het gaat langzaam steeds sneller. Missen van lekkers
+// hartjes; elke meteoor kost er één. Het wordt langzaam moeilijker: alles valt sneller en
+// vaker, er komen meer meteoren en die worden ook steeds groter. Missen van lekkers
 // kost niets. Geen munten: munten verdien je met leren. Wel een record per profiel.
 
 const LEKKERS = ['aardbei', 'appel', 'banaan', 'kers', 'peer', 'taart', 'ijs', 'koek', 'sinaasappel'].map(
@@ -23,6 +24,7 @@ interface Ding {
   x: number; // midden, px
   y: number; // midden, px
   snelheid: number; // px per seconde
+  maat: number; // px
   draai: number;
   soort: 'lekker' | 'ster' | 'meteoor';
 }
@@ -136,7 +138,9 @@ export function VangScreen(manager: ScreenManager): Screen {
   };
 
   function laatVallen(): void {
-    const m = dingMaat();
+    // Meteoren groeien mee met de tijd: na anderhalve minuut zijn ze 1,8 keer zo groot.
+    const groei = 1 + Math.min(0.8, tijd / 110);
+    const m0 = dingMaat();
     // Meteoren: eerst weinig, later meer (kleuters altijd minder).
     const kansMeteoor = Math.min(kleuter ? 0.22 : 0.35, 0.12 + tijd * 0.004);
     const lot = Math.random();
@@ -145,6 +149,7 @@ export function VangScreen(manager: ScreenManager): Screen {
     img.className = `vang-ding vang-ding--${soort}`;
     img.src = soort === 'meteoor' ? METEOOR : soort === 'ster' ? STER : LEKKERS[Math.floor(Math.random() * LEKKERS.length)];
     img.alt = '';
+    const m = soort === 'meteoor' ? m0 * groei : m0;
     img.style.width = `${m}px`;
     img.style.height = `${m}px`;
     veld.appendChild(img);
@@ -155,6 +160,7 @@ export function VangScreen(manager: ScreenManager): Screen {
       x: m / 2 + Math.random() * (breedte() - m),
       y: -m,
       snelheid: soort === 'ster' ? snelheid * 1.25 : snelheid,
+      maat: m,
       draai: Math.random() * 360,
       soort,
     });
@@ -214,8 +220,8 @@ export function VangScreen(manager: ScreenManager): Screen {
     // Vangzone: het bovenste deel van het figuurtje.
     const bodem = hoogte() - 16;
     const spelerBoven = bodem - m;
-    const dm = dingMaat();
     dingen = dingen.filter((d) => {
+      const dm = d.maat;
       d.y += d.snelheid * dt;
       d.draai += dt * (d.soort === 'meteoor' ? 0 : 40);
       d.el.style.transform = `translate(${d.x - dm / 2}px, ${d.y - dm / 2}px) rotate(${d.draai}deg)`;

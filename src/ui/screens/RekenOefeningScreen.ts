@@ -1,3 +1,4 @@
+import { rekenKernen } from '../../engine/leeftijdGrens.ts';
 import type { Screen, ScreenManager } from '../../engine/screenManager.ts';
 import { events } from '../../engine/events.ts';
 import type { RekenKern, RekenOefeningDefinitie } from '../../content/tellen/types.ts';
@@ -30,7 +31,6 @@ import { renderBussom } from '../../games/bussom.ts';
 import { speelSchermOvergang } from '../../three/transitions.ts';
 import { TestResultScreen } from './TestResultScreen.ts';
 import { RekenChapterScreen } from './RekenChapterScreen.ts';
-import { REKEN_KERNEN } from '../../content/tellen/kernen/kernen.index.ts';
 import { maakVoortgangsbalk } from '../components/Voortgangsbalk.ts';
 import { maakAudioKnop } from '../components/AudioKnop.ts';
 import { speelAf, instructieAudioPad } from '../../engine/audioManager.ts';
@@ -185,7 +185,7 @@ export function RekenOefeningScreen(
       }
       markeerKernVoltooid(kern.id, sterren);
       speelSchermOvergang();
-      const kernIndex = REKEN_KERNEN.findIndex((k) => k.id === kern.id);
+      const kernIndex = rekenKernen().findIndex((k) => k.id === kern.id);
       manager.replace((m) =>
         TestResultScreen(
           m,

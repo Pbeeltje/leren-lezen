@@ -1,6 +1,5 @@
 import type { Screen, ScreenManager } from '../../engine/screenManager.ts';
-import { REKEN_KERNEN } from '../../content/tellen/kernen/kernen.index.ts';
-import { aantalHoofdstukken } from '../../engine/leeftijdGrens.ts';
+import { rekenKernen } from '../../engine/leeftijdGrens.ts';
 import { maakTerugKnop } from '../components/TerugKnop.ts';
 import { maakTopRechtsBalk } from '../components/TopRechtsBalk.ts';
 import { maakSterBalk } from '../components/ProgressStars.ts';
@@ -10,7 +9,7 @@ import { RekenOefeningScreen } from './RekenOefeningScreen.ts';
 import { RekenKernOverviewScreen } from './RekenKernOverviewScreen.ts';
 
 export function RekenChapterScreen(manager: ScreenManager, index: number): Screen {
-  const kern = REKEN_KERNEN[index];
+  const kern = rekenKernen()[index];
 
   const el = document.createElement('div');
   el.className = 'scherm';
@@ -38,7 +37,7 @@ export function RekenChapterScreen(manager: ScreenManager, index: number): Scree
   volgendeKnop.className = 'hoofdstuk-pijl';
   volgendeKnop.textContent = '›';
   volgendeKnop.setAttribute('aria-label', 'Volgend hoofdstuk');
-  volgendeKnop.disabled = index >= aantalHoofdstukken(REKEN_KERNEN.length) - 1;
+  volgendeKnop.disabled = index >= rekenKernen().length - 1;
   volgendeKnop.addEventListener('click', () => {
     speelSchermOvergang();
     manager.replace((m) => RekenChapterScreen(m, index + 1));

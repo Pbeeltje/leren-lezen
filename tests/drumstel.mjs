@@ -18,6 +18,7 @@ for (const [bw, bh, tag] of [[390, 844, 'tel'], [844, 390, 'liggend'], [1024, 13
   if (tag === 'tel') console.log('kleuter onderwerpen:', (await page.locator('.icoon-tegel__label').allTextContents()).join(', '));
   await page.locator('.icoon-tegel', { hasText: 'Muziek' }).click(); await w(500);
   await page.locator('.icoon-tegel', { hasText: 'Vrij spelen' }).click(); await w(500);
+  await page.screenshot({ path: OUT + tag + '-xylofoon.png' });
   await page.locator('.muziek-wissel__knop', { hasText: 'Drumstel' }).click(); await w(400);
   const pads = await page.locator('.drum-pad').evaluateAll((p) => p.map((x) => { const r = x.getBoundingClientRect(); return `${x.getAttribute('aria-label')} ${Math.round(r.width)}x${Math.round(r.height)}@${Math.round(r.left)},${Math.round(r.top)}`; }));
   for (const p of await page.locator('.drum-pad').all()) { await p.dispatchEvent('pointerdown'); await w(80); }

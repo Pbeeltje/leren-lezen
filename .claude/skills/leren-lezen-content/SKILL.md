@@ -912,3 +912,19 @@ Children no longer pick an age but a group (`Groep = 'kleuter' | 'groep3'` in co
   long). The snare is now drawn flat with wires underneath. Free play uses all five
   (`.drumstel--5`: cymbals and tom on top, snare and bass below; one row on low
   landscape screens). Ritme still uses bas/snare/bekken. Check: `node tests/drumstel.mjs <map>`.
+- **Kleuter counting has its own set:** `content/tellen/kernen/kleuter-tellen.ts`, 4 chapters
+  "Tellen tot 4/6/8/10" with only hoeveelheid-naar-cijfer and cijfer-naar-hoeveelheid.
+  Math screens get the list from `rekenKernen()` in `engine/leeftijdGrens.ts`; never use
+  `REKEN_KERNEN` directly there. `aantalHoofdstukken` is now only used by the (hidden)
+  booklets. Check: `node tests/kleuter-tellen.mjs <map>`.
+- **Kleuter topic order:** Luisteren, then Ontdekken, then the rest.
+- **Tekenen and Vrij spelen have no profile menu or coin counter** (kids tapped them by
+  accident). Tekenen: the back button is the first button in the tool bar
+  (`.teken-terug`), the sheet fills the screen; on low landscape screens the tools sit in
+  3 columns to the right. Vrij spelen: back button plus the two instrument buttons
+  (right-aligned on narrow screens), the instrument fills the rest
+  (`.muziek-vrij-scherm`).
+- **Vangspel difficulty:** besides speed, frequency and meteor share, meteors grow
+  (up to 1.8x after about 90 s); each falling thing keeps its own size for collisions.
+- **voet.svg** is now a skin-coloured footprint (Fluent "Footprints", one foot, recoloured);
+  the old side-view Fluent foot looked like a blob. teen.svg still uses the old foot.

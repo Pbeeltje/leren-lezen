@@ -3,7 +3,7 @@ import { chromium } from 'playwright';
 // Gebruik: node tests/tekeningen.mjs <map>
 const OUT = process.argv[2] + '/';
 const b = await chromium.launch(); const fouten = [];
-for (const [bw, bh, tag] of [[360, 640, 'kleintel'], [1024, 768, 'tablet-liggend']]) {
+for (const [bw, bh, tag] of [[360, 640, 'kleintel'], [844, 390, 'liggend'], [1024, 768, 'tablet-liggend']]) {
   const page = await (await b.newContext({ viewport: { width: bw, height: bh }, hasTouch: true })).newPage();
   page.on('pageerror', (e) => fouten.push(e.message));
   const w = (ms) => page.waitForTimeout(ms);

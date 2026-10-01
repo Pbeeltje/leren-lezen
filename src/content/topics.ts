@@ -81,7 +81,11 @@ export const TOPICS: Topic[] = [
 
 export function topicsVoorGroep(groep: Groep): Topic[] {
   const lijst = TOPICS.filter((topic) => topic.groepen.includes(groep));
-  // Voor kleuters is Luisteren het belangrijkste onderwerp: dat staat voorop.
-  if (groep === 'kleuter') lijst.sort((a, b) => Number(b.id === 'luisteren') - Number(a.id === 'luisteren'));
+  // Voor kleuters zijn Luisteren en Ontdekken de belangrijkste onderwerpen: die staan voorop.
+  if (groep === 'kleuter') {
+    const voorop = ['luisteren', 'ontdekken'];
+    const plek = (t: Topic): number => (voorop.includes(t.id) ? voorop.indexOf(t.id) : voorop.length);
+    lijst.sort((a, b) => plek(a) - plek(b));
+  }
   return lijst;
 }

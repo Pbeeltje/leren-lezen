@@ -2054,3 +2054,66 @@
   .vang-venster__doos { flex-direction: row; flex-wrap: wrap; justify-content: center; padding: 14px 20px; }
   .vang-venster__figuur { width: 80px; height: 80px; }
 }
+
+/* ---------- Tekenen en vrij spelen: zo groot mogelijk, zo min mogelijk knoppen ---------- */
+.scherm.teken-scherm {
+  justify-content: flex-start;
+  padding: calc(12px + var(--veilig-boven)) calc(12px + var(--veilig-rechts)) calc(12px + var(--veilig-onder)) calc(12px + var(--veilig-links));
+  gap: 10px;
+  overflow: hidden;
+}
+.teken-scherm .teken-blad { width: 100%; max-width: none; height: auto; flex: 1 1 0; min-height: 0; }
+.teken-scherm .teken-balk { max-width: none; flex: 0 0 auto; }
+.teken-terug { margin-right: 14px; background: #eef3fb; }
+.teken-terug img { width: 30px; height: 30px; }
+/* Telefoon dwars: de knoppen in twee kolommen rechts naast het blad. */
+@media (orientation: landscape) and (max-height: 520px) {
+  .scherm.teken-scherm { flex-direction: row; align-items: stretch; }
+  .teken-scherm .teken-blad { height: auto; }
+  .teken-scherm .teken-balk {
+    display: grid;
+    grid-template-columns: repeat(3, 40px);
+    grid-auto-rows: 40px;
+    align-content: center;
+    gap: 4px 6px;
+    order: 2;
+  }
+  .teken-scherm .teken-kleur, .teken-scherm .teken-dikte, .teken-scherm .teken-actie { width: 40px; height: 40px; border-width: 3px; }
+  .teken-scherm .teken-kleur img, .teken-scherm .teken-actie img { width: 24px; height: 24px; }
+  .teken-terug { margin: 0 0 0 0; grid-column: 1 / -1; justify-self: center; }
+}
+
+.scherm.muziek-vrij-scherm {
+  justify-content: flex-start;
+  padding: calc(16px + var(--veilig-boven)) calc(12px + var(--veilig-rechts)) calc(12px + var(--veilig-onder)) calc(12px + var(--veilig-links));
+  gap: 12px;
+  overflow: hidden;
+}
+/* De wisselknoppen op dezelfde hoogte als de terugknop, en rechts op smalle schermen
+   zodat ze er niet onder vallen. */
+.muziek-vrij-scherm .muziek-wissel { min-height: var(--touch-target-min); align-items: center; margin: 0; }
+@media (max-width: 640px) {
+  .muziek-vrij-scherm .muziek-wissel { align-self: flex-end; }
+}
+.muziek-vrij-scherm .muziek-kaart--vrij {
+  flex: 1 1 0;
+  min-height: 0;
+  width: 100%;
+  max-width: 1400px;
+  justify-content: center;
+  padding: 16px;
+}
+.muziek-vrij-scherm .muziek-kaart--vrij .xylofoon { height: 100%; max-height: 640px; gap: 10px; }
+.muziek-vrij-scherm .muziek-kaart--vrij .xylofoon__staaf { max-width: 120px; }
+.muziek-vrij-scherm .drumstel.drumstel--5 {
+  max-width: min(100%, calc((100dvh - 150px) * 1.25));
+  width: 100%;
+  min-height: 0;
+}
+.muziek-vrij-scherm .drumstel.drumstel--5 .drum-pad { max-width: 100%; }
+@media (orientation: landscape) and (max-height: 600px) {
+  .scherm.muziek-vrij-scherm { padding-top: calc(8px + var(--veilig-boven)); gap: 8px; }
+  .muziek-vrij-scherm .muziek-wissel { min-height: 60px; }
+  .muziek-vrij-scherm .drumstel.drumstel--5 { max-width: min(100%, calc((100dvh - 110px) * 5)); }
+  .muziek-vrij-scherm .drumstel.drumstel--5 .drum-pad { max-height: calc(100dvh - 130px); max-width: calc(100dvh - 130px); }
+}
