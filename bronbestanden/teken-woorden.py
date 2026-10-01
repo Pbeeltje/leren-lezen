@@ -319,6 +319,11 @@ def main() -> None:
         'flos': ('Twee tanden met flosdraad ertussen', inbed('_tand', 4, 28, 58, 'a') + inbed('_tand', 58, 28, 58, 'b')
                  + '  <path d="M14 10 C40 16 56 24 60 50 C62 70 60 90 64 112" fill="none" stroke="#4fc3f7" stroke-width="3" stroke-linecap="round"/>'
                  + '  <path d="M106 10 C80 16 64 24 60 50" fill="none" stroke="#4fc3f7" stroke-width="3" stroke-linecap="round"/>'),
+        # Heet: niet meer het vuur-plaatje (dat is 'vuur'), maar een rode thermometer met hittegolfjes.
+        'heet': ('Heet: een thermometer met hittegolfjes en een felle zon', ''.join(
+            f'<path d="M{x} 104 C{x-8} 92 {x+8} 82 {x} 70 C{x-8} 58 {x+8} 48 {x} 36" fill="none" stroke="#ff5a2a" stroke-width="5" stroke-linecap="round" opacity="0.85"/>' for x in (14, 28))
+                 + inbed('thermometer', 26, 16, 90, 't')
+                 + '  <circle cx="99" cy="21" r="10" fill="#ffcc33"/><g stroke="#ffb020" stroke-width="3" stroke-linecap="round"><path d="M99 4 V7 M99 35 V38 M82 21 H85 M113 21 H116 M87 9 L90 12 M108 30 L111 33 M111 9 L108 12 M87 33 L90 30"/></g>'),
         # De voet van onderen (onze eigen voet.svg, zie git-log), met een rondje om de grote teen.
         'teen': ('Een voet met een rondje om de grote teen', inbed('voet', 36, 6, 60, 'a', bron=WOORDEN)
                  + '  <circle cx="88" cy="15" r="12" fill="none" stroke="#e53935" stroke-width="5"/>'),
