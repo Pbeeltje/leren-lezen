@@ -59,13 +59,6 @@ export const TOPICS: Topic[] = [
     icoonPad: 'assets/icons/muziek.svg',
     beschikbaar: true,
   },
-  {
-    id: 'natuur',
-    leeftijd: [3, 4, 5, 6],
-    titel: 'Natuur',
-    icoonPad: 'assets/icons/natuur.svg',
-    beschikbaar: false,
-  },
 ];
 
 export function topicsVoorLeeftijd(leeftijd: number): Topic[] {

@@ -41,34 +41,74 @@ export function speelNoot(toon: number, wanneer = 0): void {
   }
 }
 
-export function speelTrom(wanneer = 0): void {
+export type DrumSoort = 'bas' | 'snare' | 'bekken';
+
+function ruis(c: AudioContext, seconden: number): AudioBufferSourceNode {
+  const lengte = Math.floor(c.sampleRate * seconden);
+  const buffer = c.createBuffer(1, lengte, c.sampleRate);
+  const data = buffer.getChannelData(0);
+  for (let i = 0; i < lengte; i++) data[i] = Math.random() * 2 - 1;
+  const bron = c.createBufferSource();
+  bron.buffer = buffer;
+  return bron;
+}
+
+function omhulling(c: AudioContext, t: number, piek: number, duur: number): GainNode {
+  const g = c.createGain();
+  g.gain.setValueAtTime(piek, t);
+  g.gain.exponentialRampToValueAtTime(0.0001, t + duur);
+  g.connect(c.destination);
+  return g;
+}
+
+// Drumstel: grote trom (lage plof), snaredrum (knal met ruis) en bekken (lang sissen).
+export function speelDrum(soort: DrumSoort, wanneer = 0): void {
   const c = context();
   if (!c) return;
   const t = c.currentTime + wanneer;
-  // Plof: een sinus die snel van 150 naar 55 Hz zakt.
-  const osc = c.createOscillator();
-  const g = c.createGain();
-  osc.frequency.setValueAtTime(150, t);
-  osc.frequency.exponentialRampToValueAtTime(55, t + 0.18);
-  g.gain.setValueAtTime(0.9, t);
-  g.gain.exponentialRampToValueAtTime(0.0001, t + 0.35);
-  osc.connect(g).connect(c.destination);
-  osc.start(t);
-  osc.stop(t + 0.4);
-  // Vel: kort ruisje door een bandfilter.
-  const lengte = Math.floor(c.sampleRate * 0.12);
-  const buffer = c.createBuffer(1, lengte, c.sampleRate);
-  const data = buffer.getChannelData(0);
-  for (let i = 0; i < lengte; i++) data[i] = (Math.random() * 2 - 1) * (1 - i / lengte);
-  const ruis = c.createBufferSource();
-  ruis.buffer = buffer;
-  const filter = c.createBiquadFilter();
-  filter.type = 'bandpass';
-  filter.frequency.value = 1800;
-  const rg = c.createGain();
-  rg.gain.value = 0.25;
-  ruis.connect(filter).connect(rg).connect(c.destination);
-  ruis.start(t);
+  if (soort === 'bas') {
+    const osc = c.createOscillator();
+    osc.frequency.setValueAtTime(150, t);
+    osc.frequency.exponentialRampToValueAtTime(50, t + 0.18);
+    osc.connect(omhulling(c, t, 1, 0.38));
+    osc.start(t);
+    osc.stop(t + 0.42);
+    const tik = ruis(c, 0.03);
+    const f = c.createBiquadFilter();
+    f.type = 'lowpass';
+    f.frequency.value = 1500;
+    tik.connect(f).connect(omhulling(c, t, 0.25, 0.03));
+    tik.start(t);
+  } else if (soort === 'snare') {
+    const toon = c.createOscillator();
+    toon.type = 'triangle';
+    toon.frequency.setValueAtTime(230, t);
+    toon.frequency.exponentialRampToValueAtTime(160, t + 0.08);
+    toon.connect(omhulling(c, t, 0.5, 0.12));
+    toon.start(t);
+    toon.stop(t + 0.15);
+    const r = ruis(c, 0.25);
+    const f = c.createBiquadFilter();
+    f.type = 'highpass';
+    f.frequency.value = 1200;
+    r.connect(f).connect(omhulling(c, t, 0.55, 0.2));
+    r.start(t);
+  } else {
+    const r = ruis(c, 1.4);
+    const hoog = c.createBiquadFilter();
+    hoog.type = 'highpass';
+    hoog.frequency.value = 5000;
+    const glans = c.createBiquadFilter();
+    glans.type = 'peaking';
+    glans.frequency.value = 9000;
+    glans.gain.value = 8;
+    r.connect(hoog).connect(glans).connect(omhulling(c, t, 0.4, 1.2));
+    r.start(t);
+  }
+}
+
+export function speelTrom(wanneer = 0): void {
+  speelDrum('bas', wanneer);
 }
 
 export const STAAF_KLEUREN = ['#e53935', '#fb8c00', '#fdd835', '#43a047', '#00acc1', '#1e88e5', '#5e35b1', '#d81b60'];

@@ -1594,3 +1594,73 @@
   .muziek-trom { width: 170px; height: 170px; }
   .muziek-trom img { width: 124px; height: 124px; }
 }
+
+/* ---------- Drumstel ---------- */
+.drumstel {
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  gap: 14px;
+  width: 100%;
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
+}
+.drum-pad {
+  background: transparent;
+  box-shadow: none;
+  padding: 0;
+  min-height: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  touch-action: none;
+}
+.drum-pad svg { width: 100%; height: 100%; pointer-events: none; overflow: visible; }
+.drum-pad--bas { width: 170px; height: 170px; }
+.drum-pad--snare { width: 130px; height: 118px; }
+.drum-pad--bekken { width: 140px; height: 140px; align-self: flex-start; }
+.drum-pad--bonk { animation: drum-bonk 0.22s ease-out; }
+.drum-pad--bekken.drum-pad--bonk { animation: bekken-zwaai 0.5s ease-out; }
+.drum-pad--nieuw { animation: drum-nieuw 0.7s cubic-bezier(0.3, 1.6, 0.5, 1); }
+@keyframes drum-bonk { 40% { transform: scale(0.9); } }
+@keyframes bekken-zwaai { 25% { transform: rotate(-8deg); } 60% { transform: rotate(5deg); } }
+@keyframes drum-nieuw { from { transform: scale(0); opacity: 0; } }
+.drumstel--voor .drum-pad { opacity: 0.92; }
+.drumstel--1 .drum-pad--bas { width: 200px; height: 200px; }
+.muziek-kaart--drums .drumstel { min-height: min(56vh, 400px); align-items: center; }
+.muziek-kaart--drums .drum-pad--bas { width: 210px; height: 210px; }
+.muziek-kaart--drums .drum-pad--snare { width: 160px; height: 145px; }
+.muziek-kaart--drums .drum-pad--bekken { width: 170px; height: 170px; }
+.muziek-stippen--ritme { gap: 22px; }
+.muziek-figuur { display: flex; gap: 5px; }
+.muziek-stippen--ritme span { background: #fff; border: 4px solid var(--drum); width: 22px; height: 22px; box-sizing: border-box; }
+.muziek-stippen--ritme .muziek-stip--voor, .muziek-stippen--ritme .muziek-stip--goed { background: var(--drum); }
+.muziek-stippen--ritme .muziek-stip--voor { transform: scale(1.25); }
+.muziek-wissel { display: flex; gap: 12px; margin-bottom: 14px; }
+.muziek-wissel__knop {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 18px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.85);
+  font-weight: 800;
+  color: var(--kleur-tekst);
+}
+.muziek-wissel__knop img { width: 32px; height: 32px; }
+.muziek-wissel__knop--aan { background: #fff; outline: 4px solid var(--kleur-munt); }
+@media (prefers-reduced-motion: reduce) {
+  .drum-pad--bonk, .drum-pad--nieuw, .drum-pad--bekken.drum-pad--bonk { animation: none; }
+}
+@media (max-width: 560px) {
+  .drumstel { gap: 6px; }
+  .drum-pad--bas { width: 128px; height: 128px; }
+  .drum-pad--snare { width: 96px; height: 88px; }
+  .drum-pad--bekken { width: 100px; height: 100px; }
+  .drumstel--1 .drum-pad--bas { width: 170px; height: 170px; }
+  .muziek-kaart--drums .drum-pad--bas { width: 140px; height: 140px; }
+  .muziek-kaart--drums .drum-pad--snare { width: 104px; height: 95px; }
+  .muziek-kaart--drums .drum-pad--bekken { width: 108px; height: 108px; }
+  .muziek-stippen--ritme { gap: 14px; }
+}
