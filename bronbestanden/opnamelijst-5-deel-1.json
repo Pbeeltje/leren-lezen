@@ -1,0 +1,326 @@
+[
+  {
+    "n": 1,
+    "slug": "schrijf-lijn",
+    "text": "Trek de lijn over met je vinger",
+    "path": "public/assets/audio/instructies/schrijf-lijn.mp3"
+  },
+  {
+    "n": 2,
+    "slug": "schrijf-woord",
+    "text": "Schrijf het woord na",
+    "path": "public/assets/audio/instructies/schrijf-woord.mp3"
+  },
+  {
+    "n": 3,
+    "slug": "muziek-speel-na",
+    "text": "Luister goed en speel het na",
+    "path": "public/assets/audio/instructies/muziek-speel-na.mp3"
+  },
+  {
+    "n": 4,
+    "slug": "muziek-ritme",
+    "text": "Luister en trommel het na",
+    "path": "public/assets/audio/instructies/muziek-ritme.mp3"
+  },
+  {
+    "n": 5,
+    "slug": "schrijf-letter-m",
+    "text": "Schrijf de m van maan",
+    "path": "public/assets/audio/instructies/schrijf-letter-m.mp3"
+  },
+  {
+    "n": 6,
+    "slug": "schrijf-letter-r",
+    "text": "Schrijf de r van roos",
+    "path": "public/assets/audio/instructies/schrijf-letter-r.mp3"
+  },
+  {
+    "n": 7,
+    "slug": "schrijf-letter-s",
+    "text": "Schrijf de s van sok",
+    "path": "public/assets/audio/instructies/schrijf-letter-s.mp3"
+  },
+  {
+    "n": 8,
+    "slug": "schrijf-letter-v",
+    "text": "Schrijf de v van vis",
+    "path": "public/assets/audio/instructies/schrijf-letter-v.mp3"
+  },
+  {
+    "n": 9,
+    "slug": "schrijf-letter-i",
+    "text": "Schrijf de i van ik",
+    "path": "public/assets/audio/instructies/schrijf-letter-i.mp3"
+  },
+  {
+    "n": 10,
+    "slug": "schrijf-letter-k",
+    "text": "Schrijf de k van koek",
+    "path": "public/assets/audio/instructies/schrijf-letter-k.mp3"
+  },
+  {
+    "n": 11,
+    "slug": "schrijf-letter-o",
+    "text": "Schrijf de o van oog",
+    "path": "public/assets/audio/instructies/schrijf-letter-o.mp3"
+  },
+  {
+    "n": 12,
+    "slug": "schrijf-letter-p",
+    "text": "Schrijf de p van poes",
+    "path": "public/assets/audio/instructies/schrijf-letter-p.mp3"
+  },
+  {
+    "n": 13,
+    "slug": "schrijf-letter-e",
+    "text": "Schrijf de e van pen",
+    "path": "public/assets/audio/instructies/schrijf-letter-e.mp3"
+  },
+  {
+    "n": 14,
+    "slug": "schrijf-letter-n",
+    "text": "Schrijf de n van neus",
+    "path": "public/assets/audio/instructies/schrijf-letter-n.mp3"
+  },
+  {
+    "n": 15,
+    "slug": "schrijf-letter-t",
+    "text": "Schrijf de t van teen",
+    "path": "public/assets/audio/instructies/schrijf-letter-t.mp3"
+  },
+  {
+    "n": 16,
+    "slug": "schrijf-letter-b",
+    "text": "Schrijf de b van buik",
+    "path": "public/assets/audio/instructies/schrijf-letter-b.mp3"
+  },
+  {
+    "n": 17,
+    "slug": "schrijf-letter-g",
+    "text": "Schrijf de g van geit",
+    "path": "public/assets/audio/instructies/schrijf-letter-g.mp3"
+  },
+  {
+    "n": 18,
+    "slug": "schrijf-letter-d",
+    "text": "Schrijf de d van doos",
+    "path": "public/assets/audio/instructies/schrijf-letter-d.mp3"
+  },
+  {
+    "n": 19,
+    "slug": "schrijf-letter-z",
+    "text": "Schrijf de z van zeep",
+    "path": "public/assets/audio/instructies/schrijf-letter-z.mp3"
+  },
+  {
+    "n": 20,
+    "slug": "schrijf-letter-h",
+    "text": "Schrijf de h van huis",
+    "path": "public/assets/audio/instructies/schrijf-letter-h.mp3"
+  },
+  {
+    "n": 21,
+    "slug": "schrijf-letter-w",
+    "text": "Schrijf de w van weg",
+    "path": "public/assets/audio/instructies/schrijf-letter-w.mp3"
+  },
+  {
+    "n": 22,
+    "slug": "schrijf-letter-a",
+    "text": "Schrijf de a van tak",
+    "path": "public/assets/audio/instructies/schrijf-letter-a.mp3"
+  },
+  {
+    "n": 23,
+    "slug": "schrijf-letter-u",
+    "text": "Schrijf de u van hut",
+    "path": "public/assets/audio/instructies/schrijf-letter-u.mp3"
+  },
+  {
+    "n": 24,
+    "slug": "schrijf-letter-j",
+    "text": "Schrijf de j van jas",
+    "path": "public/assets/audio/instructies/schrijf-letter-j.mp3"
+  },
+  {
+    "n": 25,
+    "slug": "schrijf-letter-l",
+    "text": "Schrijf de l van uil",
+    "path": "public/assets/audio/instructies/schrijf-letter-l.mp3"
+  },
+  {
+    "n": 26,
+    "slug": "schrijf-letter-f",
+    "text": "Schrijf de f van duif",
+    "path": "public/assets/audio/instructies/schrijf-letter-f.mp3"
+  },
+  {
+    "n": 27,
+    "slug": "in",
+    "text": "in",
+    "path": "public/assets/audio/woorden/in.mp3"
+  },
+  {
+    "n": 28,
+    "slug": "ook",
+    "text": "ook",
+    "path": "public/assets/audio/woorden/ook.mp3"
+  },
+  {
+    "n": 29,
+    "slug": "is",
+    "text": "is",
+    "path": "public/assets/audio/woorden/is.mp3"
+  },
+  {
+    "n": 30,
+    "slug": "nog",
+    "text": "nog",
+    "path": "public/assets/audio/woorden/nog.mp3"
+  },
+  {
+    "n": 31,
+    "slug": "ben",
+    "text": "ben",
+    "path": "public/assets/audio/woorden/ben.mp3"
+  },
+  {
+    "n": 32,
+    "slug": "de",
+    "text": "de",
+    "path": "public/assets/audio/woorden/de.mp3"
+  },
+  {
+    "n": 33,
+    "slug": "zit",
+    "text": "zit",
+    "path": "public/assets/audio/woorden/zit.mp3"
+  },
+  {
+    "n": 34,
+    "slug": "moe",
+    "text": "moe",
+    "path": "public/assets/audio/woorden/moe.mp3"
+  },
+  {
+    "n": 35,
+    "slug": "kijk",
+    "text": "kijk",
+    "path": "public/assets/audio/woorden/kijk.mp3"
+  },
+  {
+    "n": 36,
+    "slug": "op",
+    "text": "op",
+    "path": "public/assets/audio/woorden/op.mp3"
+  },
+  {
+    "n": 37,
+    "slug": "dit",
+    "text": "dit",
+    "path": "public/assets/audio/woorden/dit.mp3"
+  },
+  {
+    "n": 38,
+    "slug": "het",
+    "text": "het",
+    "path": "public/assets/audio/woorden/het.mp3"
+  },
+  {
+    "n": 39,
+    "slug": "wat",
+    "text": "wat",
+    "path": "public/assets/audio/woorden/wat.mp3"
+  },
+  {
+    "n": 40,
+    "slug": "dat",
+    "text": "dat",
+    "path": "public/assets/audio/woorden/dat.mp3"
+  },
+  {
+    "n": 41,
+    "slug": "gaan",
+    "text": "gaan",
+    "path": "public/assets/audio/woorden/gaan.mp3"
+  },
+  {
+    "n": 42,
+    "slug": "naar",
+    "text": "naar",
+    "path": "public/assets/audio/woorden/naar.mp3"
+  },
+  {
+    "n": 43,
+    "slug": "wil",
+    "text": "wil",
+    "path": "public/assets/audio/woorden/wil.mp3"
+  },
+  {
+    "n": 44,
+    "slug": "hij",
+    "text": "hij",
+    "path": "public/assets/audio/woorden/hij.mp3"
+  },
+  {
+    "n": 45,
+    "slug": "pakt",
+    "text": "pakt",
+    "path": "public/assets/audio/woorden/pakt.mp3"
+  },
+  {
+    "n": 46,
+    "slug": "hak",
+    "text": "hak",
+    "path": "public/assets/audio/woorden/hak.mp3"
+  },
+  {
+    "n": 47,
+    "slug": "nu",
+    "text": "nu",
+    "path": "public/assets/audio/woorden/nu.mp3"
+  },
+  {
+    "n": 48,
+    "slug": "lekker",
+    "text": "lekker",
+    "path": "public/assets/audio/woorden/lekker.mp3"
+  },
+  {
+    "n": 49,
+    "slug": "warm",
+    "text": "warm",
+    "path": "public/assets/audio/woorden/warm.mp3"
+  },
+  {
+    "n": 50,
+    "slug": "daar",
+    "text": "daar",
+    "path": "public/assets/audio/woorden/daar.mp3"
+  },
+  {
+    "n": 51,
+    "slug": "dak",
+    "text": "dak",
+    "path": "public/assets/audio/woorden/dak.mp3"
+  },
+  {
+    "n": 52,
+    "slug": "wie",
+    "text": "wie",
+    "path": "public/assets/audio/woorden/wie.mp3"
+  },
+  {
+    "n": 53,
+    "slug": "legt",
+    "text": "legt",
+    "path": "public/assets/audio/woorden/legt.mp3"
+  },
+  {
+    "n": 54,
+    "slug": "dag",
+    "text": "dag",
+    "path": "public/assets/audio/woorden/dag.mp3"
+  }
+]

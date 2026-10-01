@@ -137,7 +137,8 @@ export function maakLetterVraag(): RondeVraag {
   const figuur = LETTERS[item.letter];
   return {
     instructie: `Schrijf de ${item.letter} van ${item.woord}`,
-    audioPad: instructieAudioPad('schrijf-letter'),
+    // Per letter een eigen zinnetje ("Schrijf de m van maan"), met de klank van de letter.
+    audioPad: instructieAudioPad(`schrijf-letter-${item.letter}`),
     render(container, afgerond) {
       const t = maakOvertrekker(
         { halen: figuur.halen, viewBox: letterViewBox(figuur, 26, 96), tolerantie: 10, baanDikte: 11, schrijflijnen: true },

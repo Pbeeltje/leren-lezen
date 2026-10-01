@@ -717,3 +717,114 @@ kern-02..kern-10 kept for saved stars). `KLANKEN` in oefeningGenerator lists the
 groups first ('aai' before 'aa', 'sch' before 'ch'). Words longer than 8 letters skip
 woord-bouwen, longer than 10 skip hakken-en-plakken. Their audio is on
 `opnamelijst-3-deel-1`.
+
+## On-screen keyboard for typing questions (touch screens)
+
+A phone only opens its own keyboard when an input gets focus directly from a tap. Our
+typing questions appear after the previous question's feedback, so `focus()` runs with no
+tap behind it and the keyboard often stayed closed. The owner got reports about this.
+`ui/components/SchermToetsenbord.ts` `koppelSchermToetsenbord(invoer, 'letters' | 'cijfers', na?)`
+fixes it:
+- On `(pointer: coarse)` devices it makes the input `readOnly` with `inputMode='none'` and
+  adds big alphabetical letter keys, or a number pad, plus a backspace key.
+- With a mouse (computer) nothing changes.
+
+All four typing games (zelf-typen, zin-invullen typed, hoeveelheid-typen, reeks-aanvullen)
+use it. Any new typing input must call it as well. A CSS block shrinks the picture and the
+input when the keyboard is present, so everything fits on one phone screen.
+
+## "Schrijven" topic: tracing and drawing (ages 3-6)
+
+`SchrijvenKiesScreen` uses the generic `SpelKiesScreen` (tiles with an optional
+`leeftijden` filter). The games:
+- Lijnen (all ages)
+- Letters (5-6)
+- Woordjes (6)
+- Tekenen (all ages)
+
+**Letter shapes** live in `content/schrijven/letters.ts`:
+- Each letter is a list of strokes in writing order, built from `lijn()`/`boog()` and
+  sampled roughly every 2 units.
+- Strokes have the usual school direction: o starts at the top and goes anticlockwise; b
+  is the stem first, then the belly.
+- A stroke with a single point is a dot to tap (i, j).
+- Coordinates: ascenders start at y=10, x-height is y=40, the baseline is y=80, and
+  descenders reach about y=105.
+- `woordFiguur()` places letters side by side to make a word.
+- `LIJNEN` are toddler paths in a 200x120 box. A picture travels along each path, e.g. a
+  bee to a flower.
+
+**Tracing** is in `games/schrijven/overtrekken.ts`:
+- Progress only moves forward, to path points at most `VOORUIT_KIJKEN` points ahead and
+  within `tolerantie`. That enforces direction and order without being strict.
+- Lifting the finger keeps the progress made so far.
+- Going too far off the path just pauses; the child picks it up again at the star.
+- The ink is drawn along the guide path, not along the raw finger trail, so it always
+  looks neat.
+
+**Letters game:**
+- It uses VLL letter order with a key word for each letter ("de m van maan"), showing that
+  word's picture with the letter highlighted.
+- Each letter has its own instruction clip `schrijf-letter-<letter>`.
+- The voice says the letter's sound, not its name, as VLL does.
+
+**Tekenen** (`TekenScreen.ts`) is a canvas for free drawing:
+- 9 colours, 2 thicknesses, an eraser (`destination-out`), undo and "nieuw blad".
+- Lines are stored as normalised points, so undo and resizing simply redraw everything.
+- Nothing is saved, by the owner's choice.
+
+## "Leesboekjes" topic: VLL reading booklets (ages 5-6)
+
+`content/boekjes/boekjes.ts` holds one booklet per VLL kern 1-6:
+- Each has 6-7 pages of `{ plaatjes, tekst }`, all in lowercase, like the first VLL
+  booklets.
+- **A page may only use sounds known up to its kern.**
+- `npx tsx bronbestanden/check-boekjes.mts` checks this. It always reads vowel pairs and
+  other sound groups as one sound ("een" is ee-n, so it is not allowed in kern 1). It also
+  checks that every picture exists.
+- Run it after any change to a booklet.
+
+Screens:
+- `BoekenkastScreen` is the shelf; age 5 sees only the first chapters, like reading.
+- `BoekjeScreen` shows one page at a time. Each word can be tapped and plays its word clip
+  if one is recorded.
+- A recorded page clip (`assets/audio/boekjes/boekje-K-P.mp3`) plays when the page turns
+  and gets a replay button.
+- `engine/opnames.ts` `isOpgenomen(pad)` reads the audio manifests, so unrecorded audio
+  never causes a 404.
+- The last page goes to `toonKlaarKaart`.
+
+## "Muziek" topic: xylophone, speel na, ritme (ages 3-6)
+
+The sounds are synthesised in `engine/muziek.ts` with Web Audio, so nothing is recorded:
+- The xylophone tone is three decaying sine partials; the drum is a falling sine thump
+  plus a short burst of noise.
+- It respects mute (`isGedempt`).
+- The AudioContext starts lazily on the first tap.
+
+`games/muziek/xylofoon.ts` has the coloured bars:
+- Tapping plays a bar, and gliding a finger across plays each bar once.
+- Highlight and bounce classes are removed on `animationend`, so a later class change
+  can't look like a new hit.
+
+The games:
+- **Xylofoon** (`XylofoonScreen`): free play on 8 bars.
+- **Speel na:** uses only the five-note scale (`VIJFTONIG`) so any random tune sounds
+  pleasant. Tunes go from 2 notes up to 5 (3 for ages 3-4).
+- **Ritme:** 2 hits up to 5 (4 for ages 3-4). From age 5 the beats mix short and long
+  gaps. `ritmeKlopt()` always checks the number of hits and, for mixed beats, classifies
+  each of the child's gaps against their own shortest and longest gaps, so overall tempo
+  doesn't matter.
+- A wrong answer just replays the tune or beat.
+- The maker functions (`maakSpeelNaVragen()`) hold their own counter, so every time the
+  game opens it starts short again.
+
+## Recording list 5
+
+`bronbestanden/maak-opnamelijst-5.mts` generates `opnamelijst-5-deel-1/2`:
+- Part 1: the Schrijven and Muziek instructions, the per-letter sentences, and the booklet
+  words that have no recording yet.
+- Part 2: the 37 booklet pages.
+
+Process the recordings with the leren-lezen-audio skill as usual. `verwerk-opname.py`
+creates `audio/boekjes/` by itself.

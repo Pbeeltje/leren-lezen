@@ -1,0 +1,224 @@
+[
+  {
+    "n": 1,
+    "slug": "boekje-1-1",
+    "text": "vos.",
+    "path": "public/assets/audio/boekjes/boekje-1-1.mp3"
+  },
+  {
+    "n": 2,
+    "slug": "boekje-1-2",
+    "text": "kip.",
+    "path": "public/assets/audio/boekjes/boekje-1-2.mp3"
+  },
+  {
+    "n": 3,
+    "slug": "boekje-1-3",
+    "text": "vos en kip.",
+    "path": "public/assets/audio/boekjes/boekje-1-3.mp3"
+  },
+  {
+    "n": 4,
+    "slug": "boekje-1-4",
+    "text": "kip in sok!",
+    "path": "public/assets/audio/boekjes/boekje-1-4.mp3"
+  },
+  {
+    "n": 5,
+    "slug": "boekje-1-5",
+    "text": "vos ook in sok!",
+    "path": "public/assets/audio/boekjes/boekje-1-5.mp3"
+  },
+  {
+    "n": 6,
+    "slug": "boekje-1-6",
+    "text": "vos en kip en maan.",
+    "path": "public/assets/audio/boekjes/boekje-1-6.mp3"
+  },
+  {
+    "n": 7,
+    "slug": "boekje-2-1",
+    "text": "een beer.",
+    "path": "public/assets/audio/boekjes/boekje-2-1.mp3"
+  },
+  {
+    "n": 8,
+    "slug": "boekje-2-2",
+    "text": "beer is in een boot.",
+    "path": "public/assets/audio/boekjes/boekje-2-2.mp3"
+  },
+  {
+    "n": 9,
+    "slug": "boekje-2-3",
+    "text": "beer eet een peer.",
+    "path": "public/assets/audio/boekjes/boekje-2-3.mp3"
+  },
+  {
+    "n": 10,
+    "slug": "boekje-2-4",
+    "text": "nog een peer!",
+    "path": "public/assets/audio/boekjes/boekje-2-4.mp3"
+  },
+  {
+    "n": 11,
+    "slug": "boekje-2-5",
+    "text": "beer eet ook een kers.",
+    "path": "public/assets/audio/boekjes/boekje-2-5.mp3"
+  },
+  {
+    "n": 12,
+    "slug": "boekje-2-6",
+    "text": "ik ben beer!",
+    "path": "public/assets/audio/boekjes/boekje-2-6.mp3"
+  },
+  {
+    "n": 13,
+    "slug": "boekje-3-1",
+    "text": "de poes.",
+    "path": "public/assets/audio/boekjes/boekje-3-1.mp3"
+  },
+  {
+    "n": 14,
+    "slug": "boekje-3-2",
+    "text": "de doos.",
+    "path": "public/assets/audio/boekjes/boekje-3-2.mp3"
+  },
+  {
+    "n": 15,
+    "slug": "boekje-3-3",
+    "text": "poes zit in de doos.",
+    "path": "public/assets/audio/boekjes/boekje-3-3.mp3"
+  },
+  {
+    "n": 16,
+    "slug": "boekje-3-4",
+    "text": "poes is moe.",
+    "path": "public/assets/audio/boekjes/boekje-3-4.mp3"
+  },
+  {
+    "n": 17,
+    "slug": "boekje-3-5",
+    "text": "kijk, een koek!",
+    "path": "public/assets/audio/boekjes/boekje-3-5.mp3"
+  },
+  {
+    "n": 18,
+    "slug": "boekje-3-6",
+    "text": "poes eet de koek op.",
+    "path": "public/assets/audio/boekjes/boekje-3-6.mp3"
+  },
+  {
+    "n": 19,
+    "slug": "boekje-4-1",
+    "text": "dit is een hut.",
+    "path": "public/assets/audio/boekjes/boekje-4-1.mp3"
+  },
+  {
+    "n": 20,
+    "slug": "boekje-4-2",
+    "text": "de hut is in het bos.",
+    "path": "public/assets/audio/boekjes/boekje-4-2.mp3"
+  },
+  {
+    "n": 21,
+    "slug": "boekje-4-3",
+    "text": "een tak op de weg.",
+    "path": "public/assets/audio/boekjes/boekje-4-3.mp3"
+  },
+  {
+    "n": 22,
+    "slug": "boekje-4-4",
+    "text": "wat is dat?",
+    "path": "public/assets/audio/boekjes/boekje-4-4.mp3"
+  },
+  {
+    "n": 23,
+    "slug": "boekje-4-5",
+    "text": "het is een hond!",
+    "path": "public/assets/audio/boekjes/boekje-4-5.mp3"
+  },
+  {
+    "n": 24,
+    "slug": "boekje-4-6",
+    "text": "hond en ik gaan naar huis.",
+    "path": "public/assets/audio/boekjes/boekje-4-6.mp3"
+  },
+  {
+    "n": 25,
+    "slug": "boekje-5-1",
+    "text": "dit is een reus.",
+    "path": "public/assets/audio/boekjes/boekje-5-1.mp3"
+  },
+  {
+    "n": 26,
+    "slug": "boekje-5-2",
+    "text": "de reus wil hout.",
+    "path": "public/assets/audio/boekjes/boekje-5-2.mp3"
+  },
+  {
+    "n": 27,
+    "slug": "boekje-5-3",
+    "text": "hij pakt de bijl.",
+    "path": "public/assets/audio/boekjes/boekje-5-3.mp3"
+  },
+  {
+    "n": 28,
+    "slug": "boekje-5-4",
+    "text": "hak, hak, hak!",
+    "path": "public/assets/audio/boekjes/boekje-5-4.mp3"
+  },
+  {
+    "n": 29,
+    "slug": "boekje-5-5",
+    "text": "nu is het vuur aan.",
+    "path": "public/assets/audio/boekjes/boekje-5-5.mp3"
+  },
+  {
+    "n": 30,
+    "slug": "boekje-5-6",
+    "text": "de reus is lekker warm.",
+    "path": "public/assets/audio/boekjes/boekje-5-6.mp3"
+  },
+  {
+    "n": 31,
+    "slug": "boekje-6-1",
+    "text": "dit is de geit.",
+    "path": "public/assets/audio/boekjes/boekje-6-1.mp3"
+  },
+  {
+    "n": 32,
+    "slug": "boekje-6-2",
+    "text": "de geit eet gras.",
+    "path": "public/assets/audio/boekjes/boekje-6-2.mp3"
+  },
+  {
+    "n": 33,
+    "slug": "boekje-6-3",
+    "text": "daar is de pauw.",
+    "path": "public/assets/audio/boekjes/boekje-6-3.mp3"
+  },
+  {
+    "n": 34,
+    "slug": "boekje-6-4",
+    "text": "de duif zit op het dak.",
+    "path": "public/assets/audio/boekjes/boekje-6-4.mp3"
+  },
+  {
+    "n": 35,
+    "slug": "boekje-6-5",
+    "text": "en wie is dat? de uil!",
+    "path": "public/assets/audio/boekjes/boekje-6-5.mp3"
+  },
+  {
+    "n": 36,
+    "slug": "boekje-6-6",
+    "text": "de kip legt een ei.",
+    "path": "public/assets/audio/boekjes/boekje-6-6.mp3"
+  },
+  {
+    "n": 37,
+    "slug": "boekje-6-7",
+    "text": "dag geit, dag pauw, dag uil!",
+    "path": "public/assets/audio/boekjes/boekje-6-7.mp3"
+  }
+]
