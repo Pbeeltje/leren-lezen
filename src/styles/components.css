@@ -522,3 +522,296 @@
 .kleur-keuze:active {
   transform: scale(0.9);
 }
+
+/* ---- Muntenteller als knop naar de winkel ---- */
+.munten-teller--knop {
+  font: inherit;
+  font-weight: 800;
+  font-size: 1.2rem;
+  border: none;
+}
+
+.munten-teller--knop:active {
+  transform: translateY(2px);
+  box-shadow: 0 2px 0 rgba(0, 0, 0, 0.15);
+}
+
+/* ---- Bladeraar: zijwaarts bladeren door bladzijden met knoppen ---- */
+.bladeraar {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+}
+
+.bladeraar__rij {
+  display: flex;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  scrollbar-width: none;
+  overscroll-behavior-x: contain;
+}
+
+.bladeraar__rij::-webkit-scrollbar {
+  display: none;
+}
+
+.bladeraar__blad {
+  flex: 0 0 100%;
+  scroll-snap-align: start;
+  display: grid;
+  grid-template-columns: repeat(var(--kolommen), 1fr);
+  align-content: start;
+  justify-items: center;
+  gap: 8px;
+  padding: 4px 2px;
+}
+
+.bladeraar__stippen {
+  display: flex;
+  justify-content: center;
+  gap: 4px;
+}
+
+/* Grote tikvlakken, klein zichtbaar stipje. */
+.bladeraar__stip {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: none;
+  position: relative;
+}
+
+.bladeraar__stip::after {
+  content: '';
+  position: absolute;
+  inset: 8px;
+  border-radius: 50%;
+  background: #cfd3de;
+  transition: background 0.2s, transform 0.2s;
+}
+
+.bladeraar__stip--aan::after {
+  background: var(--kleur-secundair);
+  transform: scale(1.35);
+}
+
+.bladeraar__pijl {
+  position: absolute;
+  top: calc(50% - 30px);
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+  color: var(--kleur-tekst);
+  font-size: 1.6rem;
+  font-weight: 800;
+  line-height: 30px;
+  z-index: 1;
+}
+
+.bladeraar__pijl--links { left: -12px; }
+.bladeraar__pijl--rechts { right: -12px; }
+.bladeraar__pijl:disabled { opacity: 0; pointer-events: none; }
+
+/* Op een aanraakscherm veeg je; de pijltjes zijn dan alleen in de weg. */
+@media (pointer: coarse) {
+  .bladeraar__pijl { display: none; }
+}
+
+.profiel-menu__winkel {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 46px;
+  border-radius: 14px;
+  background: #fff4cc;
+  box-shadow: 0 3px 0 #f0d98a;
+  color: var(--kleur-tekst);
+  font-weight: 800;
+  font-size: 0.9rem;
+}
+
+.profiel-menu__winkel img { width: 24px; height: 24px; }
+.profiel-menu__winkel:active { transform: translateY(2px); box-shadow: 0 1px 0 #f0d98a; }
+
+/* ---- Winkel ---- */
+.winkel {
+  gap: 14px;
+}
+
+.winkel__kop {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.winkel__kop .scherm-titel { margin: 0; }
+
+.winkel__beurs {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 18px 6px 8px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.95);
+  box-shadow: 0 4px 0 rgba(0, 0, 0, 0.15);
+  font-weight: 800;
+  font-size: 1.5rem;
+  color: var(--kleur-tekst);
+}
+
+.winkel__beurs img { width: 40px; height: 40px; }
+
+.winkel__tabs {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+}
+
+.winkel__tab {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 56px;
+  padding: 6px 18px 6px 10px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.6);
+  color: var(--kleur-tekst);
+  font-weight: 800;
+  font-size: 1rem;
+}
+
+.winkel__tab img { width: 36px; height: 36px; }
+.winkel__tab--aan { background: #fff; box-shadow: 0 4px 0 rgba(0, 0, 0, 0.15); }
+
+.winkel__vak {
+  width: min(760px, 100%);
+  padding: 14px;
+  border-radius: var(--radius-groot);
+  background: rgba(255, 255, 255, 0.95);
+  box-shadow: 0 8px 0 rgba(0, 0, 0, 0.12);
+}
+
+.winkel__blader .bladeraar__blad { gap: 12px; }
+
+.winkel-kaart {
+  position: relative;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 12px 6px 10px;
+  border-radius: 20px;
+  background: #f1f2f6;
+  box-shadow: 0 4px 0 #dcdfe8;
+  border: 4px solid transparent;
+  color: var(--kleur-tekst);
+  font-weight: 800;
+}
+
+.winkel-kaart:active { transform: translateY(2px); box-shadow: 0 2px 0 #dcdfe8; }
+
+.winkel-kaart > img:first-child {
+  width: 72px;
+  height: 72px;
+  object-fit: contain;
+}
+
+.winkel-kaart--achtergrond > img:first-child { width: 84px; height: 84px; }
+
+.winkel-kaart__naam { font-size: 1rem; }
+
+.winkel-kaart__label {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  min-height: 30px;
+  padding: 0 12px;
+  border-radius: 999px;
+  background: #fff;
+  font-size: 1rem;
+}
+
+.winkel-kaart__label img { width: 22px; height: 22px; }
+
+.winkel-kaart--gekozen {
+  border-color: var(--kleur-succes);
+  background: #e6f9ec;
+}
+
+.winkel-kaart--gekozen .winkel-kaart__label { background: var(--kleur-succes); color: #fff; }
+
+/* Nog niet gekocht: plaatje een beetje grijs, met een slotje in de hoek. */
+.winkel-kaart--slot > img:first-child { filter: grayscale(0.55) opacity(0.75) !important; }
+.winkel-kaart__slot {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  width: 26px;
+  height: 26px;
+}
+.winkel-kaart--slot .winkel-kaart__label { background: #fff4cc; }
+.winkel-kaart--te-duur .winkel-kaart__label { opacity: 0.7; }
+
+.winkel-venster {
+  position: fixed;
+  inset: 0;
+  z-index: 20;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  background: rgba(10, 14, 40, 0.55);
+  animation: menu-open 0.18s ease-out;
+}
+
+.winkel-venster__doos {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  width: min(340px, 100%);
+  padding: 22px;
+  border-radius: var(--radius-groot);
+  background: #fff;
+  box-shadow: 0 10px 0 rgba(0, 0, 0, 0.15);
+}
+
+.winkel-venster__plaatje { width: 130px; height: 130px; object-fit: contain; }
+
+.winkel-venster__prijs,
+.winkel-venster__sparen {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin: 0;
+  font-weight: 800;
+  font-size: 1.6rem;
+  color: var(--kleur-tekst);
+}
+
+.winkel-venster__sparen { font-size: 1.15rem; }
+.winkel-venster__prijs img { width: 40px; height: 40px; }
+.winkel-venster__sparen img { width: 26px; height: 26px; }
+
+.winkel-venster__knoppen { display: flex; gap: 12px; width: 100%; }
+
+.winkel-venster__knop {
+  flex: 1;
+  min-height: 64px;
+  border-radius: 20px;
+  font-weight: 800;
+  font-size: 1.3rem;
+  color: #fff;
+}
+
+.winkel-venster__knop--ja { background: var(--kleur-succes); box-shadow: 0 5px 0 #2a9e52; }
+.winkel-venster__knop--nee { background: #9aa3b8; box-shadow: 0 5px 0 #747d92; }
+.winkel-venster__knop:active { transform: translateY(3px); box-shadow: none; }

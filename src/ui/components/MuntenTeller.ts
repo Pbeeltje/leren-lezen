@@ -2,9 +2,16 @@ import { events } from '../../engine/events.ts';
 import { haalVoortgang } from '../../engine/progressStore.ts';
 
 // Blijvende muntenteller rechtsboven, zichtbaar op alle schermen na het leeftijdscherm.
-export function maakMuntenTeller(): { element: HTMLElement; vernietig: () => void } {
-  const element = document.createElement('div');
+// Met `opKlik` is het een knop (naar de winkel).
+export function maakMuntenTeller(opKlik?: () => void): { element: HTMLElement; vernietig: () => void } {
+  const element = document.createElement(opKlik ? 'button' : 'div');
   element.className = 'munten-teller';
+  if (opKlik) {
+    (element as HTMLButtonElement).type = 'button';
+    element.setAttribute('aria-label', 'Winkel');
+    element.classList.add('munten-teller--knop');
+    element.addEventListener('click', opKlik);
+  }
 
   const icoon = document.createElement('img');
   icoon.className = 'munten-teller__icoon';

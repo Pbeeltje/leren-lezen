@@ -12,7 +12,7 @@ export interface Profiel {
   aangemaakt: number;
 }
 
-// Kleurtinten (hue-rotate) waarmee dezelfde 13 avatars extra variatie krijgen —
+// Kleurtinten (hue-rotate) waarmee dezelfde avatars extra variatie krijgen —
 // vooral handig als twee kinderen dezelfde favoriet (bv. de eenhoorn) willen.
 export const AVATAR_KLEUREN = [0, 45, 90, 150, 200, 260, 320] as const;
 
@@ -21,14 +21,17 @@ export function avatarFilter(kleur: number | undefined): string {
   return waarde === 0 ? '' : `hue-rotate(${waarde}deg) saturate(1.15)`;
 }
 
+// De eerste vijf zijn gratis (zie engine/winkel.ts), de rest koop je met munten.
 export const AVATAR_ICONEN = [
-  'vos',
+  'jongen',
+  'meisje',
+  'robot',
   'kat',
   'hond',
+  'vos',
   'leeuw',
   'panda',
   'eenhoorn',
-  'robot',
   'spook',
   'tijger',
   'koala',

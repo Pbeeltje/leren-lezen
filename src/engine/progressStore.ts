@@ -21,6 +21,9 @@ export interface VoortgangData {
   // Hoe vaak elk woord al in een niet-typen oefening is voorgekomen. Bepaalt wanneer
   // de "zelf-typen"-oefening voor dat woord mag verschijnen, zie engine/oefeningGenerator.ts.
   woordBlootstelling: Record<string, number>;
+  // Wat dit kind in de winkel heeft (sleutels als 'figuur:vos' en 'achtergrond:zee').
+  // Ontbreekt bij oude opslag; engine/winkel.ts vult het dan één keer met wat het kind al gebruikte.
+  gekocht?: string[];
 }
 
 // Elk profiel heeft zijn eigen sleutel, zodat munten/voortgang niet tussen kinderen
@@ -95,6 +98,25 @@ export function voegMuntenToe(aantal: number): number {
   schrijfRuw(data);
   events.emit('munten-veranderd', { totaal: data.munten, verschil: aantal });
   return data.munten;
+}
+
+export function zetGekocht(gekocht: string[]): void {
+  const data = leesRuw();
+  data.gekocht = gekocht;
+  schrijfRuw(data);
+}
+
+/** Koopt iets als er genoeg munten zijn; geeft false (en verandert niets) als dat niet zo is. */
+export function koopMetMunten(sleutel: string, prijs: number): boolean {
+  const data = leesRuw();
+  const gekocht = data.gekocht ?? [];
+  if (gekocht.includes(sleutel)) return true;
+  if (data.munten < prijs) return false;
+  data.munten -= prijs;
+  data.gekocht = [...gekocht, sleutel];
+  schrijfRuw(data);
+  events.emit('munten-veranderd', { totaal: data.munten, verschil: -prijs });
+  return true;
 }
 
 function legeKernVoortgang(): KernVoortgang {

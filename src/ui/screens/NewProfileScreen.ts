@@ -1,7 +1,8 @@
 import type { Screen, ScreenManager } from '../../engine/screenManager.ts';
 import { pasAchtergrondVanProfielToe } from '../../achtergrond/achtergrond.ts';
 import { maakTerugKnop } from '../components/TerugKnop.ts';
-import { AVATAR_ICONEN, AVATAR_KLEUREN, avatarFilter, avatarPad, maakProfiel, MAX_NAAM_LENGTE, zetActiefProfiel } from '../../engine/profielStore.ts';
+import { GRATIS_FIGUREN } from '../../engine/winkel.ts';
+import { AVATAR_KLEUREN, avatarFilter, avatarPad, maakProfiel, MAX_NAAM_LENGTE, zetActiefProfiel } from '../../engine/profielStore.ts';
 import { speelSchermOvergang } from '../../three/transitions.ts';
 import { AgeSelectScreen } from './AgeSelectScreen.ts';
 
@@ -42,7 +43,8 @@ export function NewProfileScreen(manager: ScreenManager): Screen {
   let gekozenKleur = 0;
   const iconKnoppen: HTMLButtonElement[] = [];
 
-  for (const icoonId of AVATAR_ICONEN) {
+  // Een nieuw profiel kiest uit de gratis figuren; de rest is te koop in de winkel.
+  for (const icoonId of GRATIS_FIGUREN) {
     const knop = document.createElement('button');
     knop.className = 'avatar-keuze';
     const img = document.createElement('img');

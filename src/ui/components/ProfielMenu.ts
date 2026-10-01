@@ -1,6 +1,5 @@
 import type { ScreenManager } from '../../engine/screenManager.ts';
 import {
-  AVATAR_ICONEN,
   AVATAR_KLEUREN,
   avatarFilter,
   avatarPad,
@@ -12,6 +11,9 @@ import { haalVoortgang } from '../../engine/progressStore.ts';
 import { speelSchermOvergang } from '../../three/transitions.ts';
 import { isGedempt, zetGedempt } from '../../engine/audioManager.ts';
 import { THEMAS, huidigThema, kiesAchtergrond } from '../../achtergrond/achtergrond.ts';
+import { eigenAchtergronden, eigenFiguren } from '../../engine/winkel.ts';
+import { maakBladeraar } from './Bladeraar.ts';
+import { WinkelScreen } from '../screens/WinkelScreen.ts';
 import { AgeSelectScreen } from '../screens/AgeSelectScreen.ts';
 import { ProfileSelectScreen } from '../screens/ProfileSelectScreen.ts';
 
@@ -125,12 +127,25 @@ export function maakProfielMenu(manager: ScreenManager): { element: HTMLElement;
     return w;
   }
 
+  // Onderaan de figuren en achtergronden: naar de winkel voor meer.
+  function winkelKnop(ouder: HTMLElement): void {
+    const k = maak('button', 'profiel-menu__winkel', ouder);
+    plaatje('assets/icons/munt.svg', '', k);
+    k.append('Meer in de winkel');
+    k.addEventListener('click', () => {
+      sluitPaneel();
+      speelSchermOvergang();
+      manager.push((m) => WinkelScreen(m));
+    });
+  }
+
   // Mijn figuur: dier en kleur samen, zodat je meteen ziet hoe het eruitziet.
   const figuur = submenu('Mijn figuur');
-  const avatarRooster = maak('div', 'avatar-grid avatar-grid--klein', figuur);
+  // Alleen wat je hebt (gratis of gekocht); de rest staat in de winkel. Veel figuren? Dan
+  // per bladzijde zijwaarts bladeren.
   const avatarKnoppen: HTMLButtonElement[] = [];
-  for (const id of AVATAR_ICONEN) {
-    const optie = maak('button', 'avatar-keuze', avatarRooster);
+  for (const id of eigenFiguren()) {
+    const optie = maak('button', 'avatar-keuze');
     optie.dataset.icoon = id;
     // Bewust géén avatarFilter hier: dit rooster laat kiezen tússen dieren, dus moet
     // hun ware kleuren tonen. Kleurtinten horen alleen bij het kleur-rooster hieronder.
@@ -144,6 +159,8 @@ export function maakProfielMenu(manager: ScreenManager): { element: HTMLElement;
     });
     avatarKnoppen.push(optie);
   }
+  const avatarBlader = maakBladeraar(avatarKnoppen, { kolommen: 4, rijen: 2, klasse: 'avatar-grid--klein' });
+  figuur.appendChild(avatarBlader.element);
   const kleurLabel = maak('p', 'profiel-menu__label', figuur);
   kleurLabel.textContent = 'Kleur';
   const kleurRij = maak('div', 'kleur-rij', figuur);
@@ -164,10 +181,12 @@ export function maakProfielMenu(manager: ScreenManager): { element: HTMLElement;
     kleurKnoppen.push(optie);
   }
 
+  winkelKnop(figuur);
+
   const achtergrond = submenu('Achtergrond');
   const achtergrondRij = maak('div', 'achtergrond-rij', achtergrond);
   const achtergrondKnoppen: HTMLButtonElement[] = [];
-  for (const thema of THEMAS) {
+  for (const thema of eigenAchtergronden()) {
     const optie = maak('button', 'achtergrond-keuze', achtergrondRij);
     plaatje(thema.voorbeeld, '', optie);
     optie.append(thema.naam);
@@ -179,6 +198,8 @@ export function maakProfielMenu(manager: ScreenManager): { element: HTMLElement;
     });
     achtergrondKnoppen.push(optie);
   }
+
+  winkelKnop(achtergrond);
 
   const wisselen = submenu('Wisselen');
   const wisselRij = maak('div', 'profiel-menu__keuzes', wisselen);
@@ -207,6 +228,7 @@ export function maakProfielMenu(manager: ScreenManager): { element: HTMLElement;
     for (const [id, w] of Object.entries(weergaven)) w.hidden = id !== doel;
     paneel.dataset.weergave = doel;
     markeer();
+    if (doel === 'figuur') avatarBlader.naarItem(Math.max(0, avatarKnoppen.findIndex((k) => k.dataset.icoon === icoonId())));
   }
 
   function sluitPaneel(): void {
