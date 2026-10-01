@@ -1072,3 +1072,21 @@ Children no longer pick an age but a group (`Groep = 'kleuter' | 'groep3'` in co
   16-34 s, gentle bob, two slow wing beats every 10 s) glides high across: first after
   10-25 s, then 45-90 s after the previous one has gone, alternating direction; not with
   `prefers-reduced-motion`. The T-rex's roar bubble says "RAWR!".
+- **Kermis scenery:** own drawings in `achtergrond/kermis-tekening.ts`. `VERTE`
+  (`.kermis-verte`, viewBox 2000x300 `xMidYMax slice`, bottom 11vh, height
+  `max(26vh, 15vw)`): a hazy far fair with a circus tent and a drop tower left (`.kv-valbak`
+  rises slowly and drops, 18 s CSS loop) and a wooden rollercoaster right (`BAAN` points ->
+  Catmull-Rom path `#kv-baan`). The coaster train is SMIL `animateMotion` (9 s,
+  `begin="indefinite"`); `rijTrein()` calls `beginElement()` and sets `.rijdt` for
+  `TREIN_MS` (8.8 s, so it is already off the right edge when it disappears; without `.rijdt`
+  it is hidden, since it would otherwise sit at the drawing's origin). It rides every
+  14-30 s and on `feest`. Sky: crescent moon (`MAAN`), three clouds lit pink from below
+  (`WOLK`), two faint searchlights (`.kermis-zoeklicht`, `mix-blend-mode: screen`, 26 s
+  sweep) and rarely a hot-air balloon (`LUCHTBALLON`, `zwem-over` ~30 px/s, first after
+  15-30 s, then 50-100 s after the previous one, alternating direction). Ground (`grond()`):
+  grass edge, a lit square with light pools under the attractions and seeded confetti.
+  A Kop van Jut stands at the right edge (`.kermis-kop`, width `--kop-b`; the carousel's
+  `right` is computed from it; hidden on phones <= 560 px): `slaKop('probeert')` every
+  18-40 s (the puck gets halfway), on `juich` `slaKop('slaat')`: the mallet hits, the puck
+  reaches the bell, the bell rings and a "DING!" bubble shows (`KOP_MS` 2.4 s = the CSS
+  animations). Not with `prefers-reduced-motion`.

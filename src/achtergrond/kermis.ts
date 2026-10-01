@@ -1,20 +1,19 @@
 import type { Decor } from './achtergrond.ts';
-import { el, plaatje, svgUitTekst } from './hulp.ts';
+import { el, kortAan, plaatje, svgUitTekst } from './hulp.ts';
+import { LUCHTBALLON, MAAN, VERTE, WOLK, grond, kopVanJut } from './kermis-tekening.ts';
 
-// Kermis in de schemering: een paarse avondlucht met sterretjes, een reuzenrad aan de
+// Kermis in de schemering: een paarse avondlucht met sterretjes, een wassende maan, wolken
+// die van onderen roze oplichten en twee zoeklichten die langzaam heen en weer zwaaien. In de
+// verte (wazig) een circustent, een valtoren waarvan de gondel omhoog gaat en valt, en een
+// achtbaan waar af en toe een treintje overheen rijdt. Vooraan een reuzenrad aan de
 // linkerrand dat langzaam draait (de bakjes blijven rechtop hangen), een draaimolen met
-// paardjes die rondgaan, een suikerspinkraam met een ijsje op het dak en slingers met
-// lampjes die zacht om de beurt aangaan. Af en toe ontsnapt er een ballon. Bij een goed
-// antwoord stijgen er een paar gekleurde ballonnen op uit het kraam; aan het eind van een
-// sessie is er vuurwerk boven de kermis. Paardjes, ijsje en popcorn zijn Fluent
-// Emoji, de rest is zelf getekend.
-
-const GROND = `
-<svg viewBox="0 0 1000 200" preserveAspectRatio="none">
-  <path d="M0 62 C250 56 750 56 1000 62 L1000 200 L0 200 Z" fill="#3c6f55"/>
-  <path d="M0 118 C300 106 700 106 1000 118 L1000 200 L0 200 Z" fill="#8a5a6c"/>
-  <path d="M0 160 C300 152 700 152 1000 160 L1000 200 L0 200 Z" fill="#7a4d60"/>
-</svg>`;
+// paardjes die rondgaan, een suikerspinkraam met een ijsje op het dak, een Kop van Jut en
+// slingers met lampjes die zacht om de beurt aangaan, op een verlicht plein met confetti.
+// Af en toe ontsnapt er een ballon, probeert de hamer de Kop van Jut (komt niet bovenaan)
+// of drijft er hoog een heteluchtballon voorbij. Bij een goed antwoord stijgen er
+// ballonnen op uit het kraam en slaat de hamer de bel: DING!; aan het eind van een sessie
+// is er vuurwerk en rijdt de achtbaan. Paardjes, ijsje en popcorn zijn Fluent Emoji, de
+// rest is zelf getekend (kermis-tekening.ts).
 
 const LAMP_KLEUREN = ['#ffe27a', '#ff9db0', '#8fd6ff', '#b8f08c', '#ffbf73'];
 const BAKJE_KLEUREN = ['#ff6b8b', '#ffb03a', '#4fc3f7', '#8bd66b', '#b48cff', '#ff8a4c', '#4dd0c4', '#ffd23f'];
@@ -190,6 +189,10 @@ const BALLON_KLEUREN: [string, string][] = [
 
 const VUURWERK_KLEUREN = ['#ffd23f', '#ff7eb6', '#7fd4ff', '#a8f07a', '#ffffff', '#c9a4ff'];
 const FEEST_MS = 6500;
+/** Duur van een slag op de Kop van Jut; gelijk aan de animaties in achtergrond-kermis.css. */
+const KOP_MS = 2400;
+/** Een rit over de achtbaan (iets korter dan de dur van de animateMotion in kermis-tekening.ts: het treintje rijdt dan al rechts buiten beeld). */
+const TREIN_MS = 8800;
 
 export function maakKermisDecor(): Decor {
   const root = el('div', 'decor decor-kermis');
@@ -201,10 +204,17 @@ export function maakKermisDecor(): Decor {
     s.style.top = `${Math.random() * 100}%`;
     s.style.animationDelay = `${(-Math.random() * 4).toFixed(2)}s`;
   }
+  svgUitTekst(MAAN, 'kermis-maan', root);
+  for (let i = 0; i < 3; i++) svgUitTekst(WOLK, `kermis-wolk kermis-wolk--${i + 1}`, root);
   el('div', 'kermis-gloed', root);
+  el('div', 'kermis-zoeklicht kermis-zoeklicht--1', root);
+  el('div', 'kermis-zoeklicht kermis-zoeklicht--2', root);
+  const hemel = el('div', 'kermis-hemel', root);
+  const verte = svgUitTekst(VERTE, 'kermis-verte', root);
+  const trein = verte.querySelector('animateMotion') as SVGAnimationElement | null;
   const lucht = el('div', 'kermis-lucht', root);
 
-  svgUitTekst(GROND, 'kermis-grond', root);
+  svgUitTekst(grond(), 'kermis-grond', root);
   maakSlinger(root);
   el('div', 'kermis-paal kermis-paal--1', root);
   el('div', 'kermis-paal kermis-paal--2', root);
@@ -226,6 +236,10 @@ export function maakKermisDecor(): Decor {
   plaatje('assets/achtergrond/kermis-ijsje.svg', 'kermis-kraam__ijsje', kraamVak);
   svgUitTekst(kraam(), 'kermis-kraam__svg', kraamVak);
   plaatje('assets/achtergrond/kermis-popcorn.svg', 'kermis-kraam__popcorn', kraamVak);
+
+  const kop = el('div', 'kermis-kop', root);
+  svgUitTekst(kopVanJut(), 'kermis-kop__svg', kop);
+  el('div', 'kermis-ding', kop).textContent = 'DING!';
 
   const ballonnen = el('div', 'kermis-ballonnen', root);
 
@@ -272,7 +286,62 @@ export function maakKermisDecor(): Decor {
   }
   plan();
 
+  // ---- Kop van Jut: de hamer slaat; alleen bij een goed antwoord gaat de bel. ----
+  // Een goed antwoord mag een poging onderbreken, maar niet een slag die al bezig is.
+  const slaKop = (klasse: 'slaat' | 'probeert') => {
+    if (stil || kop.classList.contains('slaat') || kop.classList.contains(klasse)) return;
+    kop.classList.remove('probeert');
+    kortAan(kop, klasse, KOP_MS);
+  };
+  const planKop = () => {
+    if (stil) return;
+    later(() => {
+      if (!bezig) slaKop('probeert');
+      planKop();
+    }, 18000 + Math.random() * 22000);
+  };
+  planKop();
+
+  // ---- Achtbaan in de verte: af en toe rijdt het treintje er een rondje over. ----
+  const rijTrein = () => {
+    if (stil || !trein || verte.classList.contains('rijdt')) return;
+    kortAan(verte, 'rijdt', TREIN_MS);
+    trein.beginElement();
+  };
+  const planTrein = () => {
+    if (stil) return;
+    later(() => {
+      rijTrein();
+      planTrein();
+    }, 14000 + Math.random() * 16000);
+  };
+  planTrein();
+
+  // ---- Heel af en toe drijft er hoog een heteluchtballon voorbij (nooit twee tegelijk). ----
+  let ballonNaarRechts = Math.random() < 0.5;
+  const planLuchtballon = (ms: number) => {
+    if (stil) return;
+    later(() => {
+      const b = root.clientWidth || window.innerWidth;
+      // Heel rustig: ongeveer 30 px per seconde, tussen 24 en 50 s.
+      const duur = Math.min(50, Math.max(24, (b * 1.2) / 30));
+      const l = el('div', 'kermis-luchtballon', hemel);
+      l.style.setProperty('--van-x', ballonNaarRechts ? '-10vw' : '104vw');
+      l.style.setProperty('--naar-x', ballonNaarRechts ? '104vw' : '-10vw');
+      l.style.animationDuration = `${duur}s`;
+      l.style.top = `${7 + Math.random() * 12}vh`;
+      svgUitTekst(LUCHTBALLON, 'kermis-luchtballon__lijf', el('div', 'kermis-luchtballon__zweef', l));
+      ballonNaarRechts = !ballonNaarRechts;
+      later(() => {
+        l.remove();
+        planLuchtballon(50000 + Math.random() * 50000);
+      }, duur * 1000 + 300);
+    }, ms);
+  };
+  planLuchtballon(15000 + Math.random() * 15000);
+
   const juich = () => {
+    slaKop('slaat');
     // Niet eindeloos opstapelen als er snel achter elkaar goed geantwoord wordt.
     if (ballonnen.childElementCount > 8) return;
     const start = Math.floor(Math.random() * BALLON_KLEUREN.length);
@@ -309,6 +378,7 @@ export function maakKermisDecor(): Decor {
     if (stil || bezig) return;
     bezig = true;
     window.clearTimeout(timer);
+    rijTrein();
     const plekken = [
       [26, 22], [70, 16], [46, 10], [82, 32], [18, 36], [58, 28], [36, 18],
     ];
