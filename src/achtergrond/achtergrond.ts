@@ -1,6 +1,7 @@
 import { events } from '../engine/events.ts';
 import { haalActiefProfielId } from '../engine/profielStore.ts';
-import { maakRuimte, schietVallendeSter, zetRuimteZichtbaar } from '../three/ruimte.ts';
+import { maakRuimte, zetRuimteZichtbaar } from '../three/ruimte.ts';
+import { maakRuimteDecor } from './ruimte.ts';
 import { maakDinoDecor } from './dino.ts';
 import { maakKasteelDecor } from './kasteel.ts';
 import { maakZeeDecor } from './zee.ts';
@@ -29,7 +30,10 @@ export const THEMAS: { id: ThemaId; naam: string; voorbeeld: string }[] = [
   { id: 'zee', naam: 'Zee', voorbeeld: 'assets/achtergrond/vuurtoren.svg' },
 ];
 
-const MAKERS: Record<Exclude<ThemaId, 'ruimte'>, () => Decor> = {
+// De ruimte zelf tekent three.js; het decor erbij is alleen de laag met vallende sterren
+// en de raket.
+const MAKERS: Record<ThemaId, () => Decor> = {
+  ruimte: maakRuimteDecor,
   dino: maakDinoDecor,
   kasteel: maakKasteelDecor,
   zee: maakZeeDecor,
@@ -59,17 +63,15 @@ export function initAchtergrond(app: HTMLElement): void {
   window.addEventListener('resize', () => huidig?.decor?.plaats?.());
   events.on('sessie-klaar', () => {
     const decor = huidig?.decor;
-    if (!decor) {
-      [0, 500, 1000].forEach((ms) => window.setTimeout(schietVallendeSter, ms));
-    } else if (decor.feest) decor.feest();
+    if (!decor) return;
+    if (decor.feest) decor.feest();
     else {
       decor.juich();
       window.setTimeout(decor.juich, 1300);
     }
   });
   events.on('antwoord-goed', () => {
-    if (huidig?.decor) huidig.decor.juich();
-    else schietVallendeSter();
+    huidig?.decor?.juich();
   });
   pasAchtergrondVanProfielToe();
 }
@@ -82,7 +84,7 @@ function toon(id: ThemaId): void {
   if (!laag || huidig?.id === id) return;
   huidig?.decor?.vernietig?.();
   laag.replaceChildren();
-  const decor = id === 'ruimte' ? null : MAKERS[id]();
+  const decor = MAKERS[id]();
   if (decor) {
     laag.appendChild(decor.element);
     requestAnimationFrame(() => decor.plaats?.());

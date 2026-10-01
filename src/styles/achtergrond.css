@@ -689,8 +689,9 @@ body:not(.thema-ruimte) .instructie-tekst:not(.instructie-tekst--donker) {
 @media (prefers-reduced-motion: reduce) {
   .regenboog.verschijnt { animation-duration: 0.01s; }
 }
-/* Klein vallend sterretje: een kopje met een staartje, schuin omlaag, en weer weg. */
-.kasteel-valster {
+/* Klein vallend sterretje (kasteel 's nachts, ruimte): een kopje met een staartje, schuin
+   omlaag, en weer weg. */
+.valster {
   position: absolute;
   width: 70px;
   height: 2px;
@@ -700,7 +701,7 @@ body:not(.thema-ruimte) .instructie-tekst:not(.instructie-tekst--donker) {
   opacity: 0;
   animation: valster 1.3s ease-out forwards;
 }
-.kasteel-valster::after {
+.valster::after {
   content: '';
   position: absolute;
   left: -2px;
@@ -717,7 +718,7 @@ body:not(.thema-ruimte) .instructie-tekst:not(.instructie-tekst--donker) {
   100% { opacity: 0; transform: rotate(-28deg) translateX(-160px); }
 }
 @media (prefers-reduced-motion: reduce) {
-  .kasteel-valster { display: none; }
+  .valster, .raket { display: none; }
 }
 
 .zee-boot__kantel { transform-origin: 50% 80%; }
@@ -767,4 +768,24 @@ body:not(.thema-ruimte) .instructie-tekst:not(.instructie-tekst--donker) {
 @media (max-width: 560px) {
   /* Op een telefoon zijn de golven lager: walvis iets groter en hoger, zodat zijn oog boven komt. */
   .zee-walvis { width: 130px; bottom: 20%; }
+}
+
+/* ---- Ruimte: raket die langzaam schuin voorbijvliegt ---- */
+.decor-ruimte { pointer-events: none; overflow: hidden; }
+.raket {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: clamp(34px, 4vw, 54px);
+  height: auto;
+  animation: raket-vlucht 16s linear forwards;
+}
+.raket .raket__vlam { transform-origin: 30px 92px; animation: raket-vlam 0.18s ease-in-out infinite alternate; }
+@keyframes raket-vlucht {
+  from { transform: translate(var(--van-x), var(--van-y)) rotate(var(--hoek)); }
+  to { transform: translate(var(--naar-x), var(--naar-y)) rotate(var(--hoek)); }
+}
+@keyframes raket-vlam {
+  from { transform: scaleY(0.8); opacity: 0.85; }
+  to { transform: scaleY(1.15); opacity: 1; }
 }

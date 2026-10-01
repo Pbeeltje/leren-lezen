@@ -128,7 +128,7 @@ export function maakKasteelDecor(): Decor {
   // Klein vallend sterretje: een kort lichtstreepje schuin omlaag, elke paar seconden.
   const valsterren = () => {
     if (root.dataset.tijd !== 'nacht') return;
-    const v = el('div', 'kasteel-valster', nacht);
+    const v = el('div', 'valster', nacht);
     v.style.left = `${10 + Math.random() * 70}%`;
     v.style.top = `${4 + Math.random() * 30}%`;
     window.setTimeout(() => v.remove(), 1400);

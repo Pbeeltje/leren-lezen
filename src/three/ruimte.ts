@@ -3,7 +3,8 @@ import { sceneManager } from './sceneManager.ts';
 
 // Rustige ruimte-achtergrond: zachte ronde sterren in een paar kleuren die langzaam
 // twinkelen, een geringde planeet en een maantje aan de randen (achter de witte kaarten),
-// en af en toe een vallende ster. Bewust traag en gedempt: het mag niet afleiden.
+// Bewust traag en gedempt: het mag niet afleiden. Vallende sterren en de raket staan in
+// de DOM-laag (achtergrond/ruimte.ts), zodat er nooit twee tegelijk zijn.
 
 const rustigeBeweging = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
@@ -43,16 +44,10 @@ function zichtveld(diepte: number): { b: number; h: number } {
 }
 
 const groep = new THREE.Group();
-let vraagVallendeSter = false;
 
 /** Laat de ruimte zien of verbergt hem (andere achtergronden tekenen hun eigen decor). */
 export function zetRuimteZichtbaar(zichtbaar: boolean): void {
   groep.visible = zichtbaar;
-}
-
-/** Een vallende ster als beloning voor een goed antwoord. */
-export function schietVallendeSter(): void {
-  vraagVallendeSter = true;
 }
 
 export function maakRuimte(): void {
@@ -145,15 +140,6 @@ export function maakRuimte(): void {
   plaats();
   window.addEventListener('resize', plaats);
 
-  // Vallende ster: een korte, lichte streep die af en toe diagonaal door beeld schiet.
-  const staartMat = new THREE.LineBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0 });
-  const staartGeo = new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(), new THREE.Vector3(1.2, 0.45, 0)]);
-  const vallend = new THREE.Line(staartGeo, staartMat);
-  scene.add(vallend);
-  let volgendeVal = 6 + Math.random() * 8;
-  let valTijd = -1;
-  const valStart = new THREE.Vector3();
-
   sceneManager.opAnimatie((delta, verlopen) => {
     bol.rotation.y += delta * 0.05;
     maan.rotation.y += delta * 0.03;
@@ -165,25 +151,5 @@ export function maakRuimte(): void {
       laag.punten.rotation.y = verlopen * (0.004 + i * 0.002);
     });
     planeet.position.y += Math.sin(verlopen * 0.4) * delta * 0.03;
-
-    volgendeVal -= delta;
-    if ((volgendeVal <= 0 || vraagVallendeSter) && valTijd < 0) {
-      vraagVallendeSter = false;
-      const v = zichtveld(-12);
-      valStart.set((Math.random() * 1.2 - 0.2) * v.b, v.h * (0.3 + Math.random() * 0.6), -12);
-      valTijd = 0;
-    }
-    if (valTijd >= 0) {
-      valTijd += delta;
-      const duur = 1.1;
-      const t = valTijd / duur;
-      vallend.position.set(valStart.x - t * 7, valStart.y - t * 2.6, valStart.z);
-      staartMat.opacity = Math.sin(Math.PI * Math.min(t, 1)) * 0.7;
-      if (t >= 1) {
-        valTijd = -1;
-        staartMat.opacity = 0;
-        volgendeVal = 12 + Math.random() * 14;
-      }
-    }
   });
 }
