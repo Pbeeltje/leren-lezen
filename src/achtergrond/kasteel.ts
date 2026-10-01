@@ -1,9 +1,10 @@
 import type { Decor } from './achtergrond.ts';
-import { el, kortAan, plaatje, svgUitTekst, zetOpPad } from './hulp.ts';
+import { el, kortAan, maakRegenboog, plaatje, svgUitTekst, zetOpPad } from './hulp.ts';
 
 // Prinsessenkasteel op een heuvel rechtsonder (buiten het midden, waar de vragen staan),
-// in een avondlucht met sterretjes en zwevende lichtjes, heuvels in de verte en roze gras
-// vooraan met een eenhoorn. Bij een goed antwoord gaat het kasteel stralen, spatten er
+// heuvels in de verte en roze gras vooraan met een eenhoorn. Dag en nacht wisselen zacht
+// (dag 20 s, nacht 15 s, overgang 5 s): overdag een zon en soms een regenboog, 's nachts
+// de maan, sterretjes en zwevende lichtjes. Bij een goed antwoord gaat het kasteel stralen, spatten er
 // vonkjes omhoog en springt de eenhoorn.
 const HEUVEL_PAD = 'M0 300 L0 250 C120 230 200 150 330 120 C450 95 540 130 600 150 L600 300 Z';
 const HEUVEL = `
@@ -60,14 +61,28 @@ function grasSvg(): string {
 </svg>`;
 }
 
+const MAAN = `
+<svg viewBox="0 0 100 100" aria-hidden="true">
+  <path d="M62 8 A44 44 0 1 0 92 70 A36 36 0 1 1 62 8 Z" fill="#fff4c4"/>
+</svg>`;
+
+const DAG_DUUR = 20000;
+const NACHT_DUUR = 15000;
+
 export function maakKasteelDecor(): Decor {
   const root = el('div', 'decor decor-kasteel');
+  el('div', 'kasteel-lucht kasteel-lucht--dag', root);
+  plaatje('assets/achtergrond/zon.svg', 'kasteel-zon', root);
+  svgUitTekst(MAAN, 'kasteel-maan', root);
+  const nacht = el('div', 'kasteel-nachtlaag', root);
   for (let i = 0; i < 28; i++) {
-    const s = el('div', 'kasteel-ster', root);
+    const s = el('div', 'kasteel-ster', nacht);
     s.style.left = `${Math.random() * 100}%`;
     s.style.top = `${Math.random() * 55}%`;
     s.style.animationDelay = `${(Math.random() * 4).toFixed(2)}s`;
   }
+  // Voor de verre heuvels, zodat de voeten van de regenboog erachter verdwijnen.
+  const regenboog = maakRegenboog('kasteel-regenboog', root);
   svgUitTekst(VERRE_HEUVELS, 'kasteel-verte', root);
 
   const heuvel = el('div', 'kasteel-heuvel', root);
@@ -75,8 +90,9 @@ export function maakKasteelDecor(): Decor {
   const kasteel = el('div', 'kasteel', heuvel);
   plaatje('assets/achtergrond/kasteel-eigen.svg', 'kasteel__plaatje', kasteel);
   svgUitTekst(HEUVEL_VOOR, 'kasteel-heuvel__svg', heuvel);
+  const lichtjes = el('div', 'kasteel-lichtjes', heuvel);
   for (let i = 0; i < 9; i++) {
-    const l = el('div', 'kasteel-lichtje', heuvel);
+    const l = el('div', 'kasteel-lichtje', lichtjes);
     l.style.left = `${40 + Math.random() * 55}%`;
     l.style.top = `${20 + Math.random() * 50}%`;
     l.style.animationDelay = `${(Math.random() * 6).toFixed(2)}s`;
@@ -106,6 +122,23 @@ export function maakKasteelDecor(): Decor {
       window.setTimeout(() => h.remove(), 1300);
     }
   };
+  let tijdTimer: number | undefined;
+  let regenboogTimer: number | undefined;
+  const zetTijd = (tijd: 'dag' | 'nacht') => {
+    root.dataset.tijd = tijd;
+    window.clearTimeout(regenboogTimer);
+    // Af en toe (ongeveer de helft van de dagen) een regenboog, midden op de dag.
+    if (tijd === 'dag' && Math.random() < 0.5) {
+      regenboogTimer = window.setTimeout(() => kortAan(regenboog, 'verschijnt', 7000), 5000 + Math.random() * 5000);
+    }
+    tijdTimer = window.setTimeout(() => zetTijd(tijd === 'dag' ? 'nacht' : 'dag'), tijd === 'dag' ? DAG_DUUR : NACHT_DUUR);
+  };
+  zetTijd('dag');
+
+  const vernietig = () => {
+    window.clearTimeout(tijdTimer);
+    window.clearTimeout(regenboogTimer);
+  };
   const top = heuvelSvg.querySelector('path')!;
-  return { element: root, juich, plaats: () => zetOpPad(kasteel, top, 4, true) };
+  return { element: root, juich, vernietig, plaats: () => zetOpPad(kasteel, top, 4, true) };
 }

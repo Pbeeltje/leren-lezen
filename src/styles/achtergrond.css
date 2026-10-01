@@ -631,3 +631,60 @@ body:not(.thema-ruimte) .instructie-tekst:not(.instructie-tekst--donker) {
   word-break: break-all;
   user-select: text;
 }
+
+/* ---- Regenboog (zee na onweer, kasteel overdag) ---- */
+.regenboog {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+  filter: blur(0.5px);
+}
+.regenboog.verschijnt { animation: regenboog-kort var(--duur, 5s) ease-in-out forwards; }
+.zee-regenboog { --duur: 5s; left: 8%; top: 16%; width: min(62vw, 680px); }
+.kasteel-regenboog { --duur: 7s; left: 4%; bottom: 18vh; width: min(58vw, 640px); }
+@keyframes regenboog-kort {
+  0% { opacity: 0; transform: translateY(10px); }
+  30% { opacity: 0.5; transform: none; }
+  70% { opacity: 0.5; }
+  100% { opacity: 0; }
+}
+
+/* ---- Kasteel: dag en nacht (data-tijd = dag | nacht), zacht overvloeiend ---- */
+.kasteel-lucht {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  transition: opacity 5s ease;
+}
+.kasteel-lucht--dag { background: linear-gradient(#86ccf5 0%, #b9e2fb 45%, #ffd7ea 85%, #ffe7f1 100%); }
+.decor-kasteel[data-tijd='dag'] .kasteel-lucht--dag { opacity: 1; }
+.kasteel-nachtlaag, .kasteel-lichtjes {
+  position: absolute;
+  inset: 0;
+  transition: opacity 5s ease;
+}
+.decor-kasteel[data-tijd='dag'] .kasteel-nachtlaag,
+.decor-kasteel[data-tijd='dag'] .kasteel-lichtjes { opacity: 0; }
+.kasteel-zon, .kasteel-maan {
+  position: absolute;
+  top: max(12%, 100px);
+  left: 16%;
+  width: clamp(64px, 9vw, 120px);
+  height: auto;
+  transition: opacity 5s ease, transform 5s ease;
+}
+.kasteel-zon { animation: draai-langzaam 60s linear infinite; }
+.kasteel-maan { opacity: 0; transform: translateY(30px); filter: drop-shadow(0 0 14px rgba(255, 244, 196, 0.6)); }
+.decor-kasteel[data-tijd='nacht'] .kasteel-maan { opacity: 1; transform: none; }
+.decor-kasteel[data-tijd='nacht'] .kasteel-zon { opacity: 0; }
+.decor-kasteel .kasteel-verte,
+.decor-kasteel .kasteel-heuvel,
+.decor-kasteel .kasteel-gras,
+.decor-kasteel .eenhoorn { transition: filter 5s ease; }
+.decor-kasteel[data-tijd='dag'] .kasteel-verte,
+.decor-kasteel[data-tijd='dag'] .kasteel-heuvel,
+.decor-kasteel[data-tijd='dag'] .kasteel-gras { filter: brightness(1.18) saturate(1.05); }
+.decor-kasteel[data-tijd='nacht'] .eenhoorn { filter: brightness(0.85); }
+@media (prefers-reduced-motion: reduce) {
+  .regenboog.verschijnt { animation-duration: 0.01s; }
+}

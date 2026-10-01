@@ -1,7 +1,8 @@
 import type { Decor } from './achtergrond.ts';
-import { el, kortAan, plaatje, svgUitTekst } from './hulp.ts';
+import { el, kortAan, maakRegenboog, plaatje, svgUitTekst } from './hulp.ts';
 
-// Zee met wisselend weer: zon (20 s) -> regen (15 s) -> onweer (15 s) -> weer zon. Golven,
+// Zee met wisselend weer: zon (20 s) -> regen (15 s) -> onweer (15 s) -> weer zon, en als
+// de zon na het onweer terugkomt verschijnt er zo'n 5 seconden een rustige regenboog. Golven,
 // een bootje dat langzaam voorbij drijft en een vuurtoren linksonder waarvan het licht
 // aangaat bij een goed antwoord. Overgangen zijn zacht (CSS-transities van een paar seconden).
 const golf = (kleur: string) => `
@@ -23,6 +24,8 @@ export function maakZeeDecor(): Decor {
   el('div', 'zee-lucht zee-lucht--zon', root);
   el('div', 'zee-lucht zee-lucht--regen', root);
   el('div', 'zee-lucht zee-lucht--onweer', root);
+  // Achter de zon en de wolken, zodat de wolken er een beetje voor schuiven.
+  const regenboog = maakRegenboog('zee-regenboog', root);
   plaatje('assets/achtergrond/zon.svg', 'zee-zon', root);
   plaatje('assets/achtergrond/wolk.svg', 'drijf-wolk drijf-wolk--1 zee-wolk', root);
   plaatje('assets/achtergrond/wolk.svg', 'drijf-wolk drijf-wolk--2 zee-wolk', root);
@@ -47,6 +50,7 @@ export function maakZeeDecor(): Decor {
   let weer: Weer = 'zon';
   let weerTimer: number | undefined;
   let bliksemTimer: number | undefined;
+  let regenboogTimer: number | undefined;
 
   const bliksemInslag = () => {
     if (weer !== 'onweer') return;
@@ -58,6 +62,8 @@ export function maakZeeDecor(): Decor {
   };
 
   const zetWeer = (nieuw: Weer) => {
+    // Na het onweer: eerst de lucht laten opklaren, dan de regenboog.
+    if (weer === 'onweer' && nieuw === 'zon') regenboogTimer = window.setTimeout(() => kortAan(regenboog, 'verschijnt', 5000), 2200);
     weer = nieuw;
     root.dataset.weer = nieuw;
     window.clearTimeout(bliksemTimer);
@@ -73,6 +79,7 @@ export function maakZeeDecor(): Decor {
   const vernietig = () => {
     window.clearTimeout(weerTimer);
     window.clearTimeout(bliksemTimer);
+    window.clearTimeout(regenboogTimer);
   };
   return { element: root, juich, vernietig };
 }

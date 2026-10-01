@@ -61,3 +61,30 @@ export function svgUitTekst(markup: string, klasse: string, ouder: HTMLElement):
   ouder.appendChild(svg);
   return svg;
 }
+
+let regenboogTeller = 0;
+/**
+ * Een zachte regenboog: zes bogen, een beetje doorzichtig, met uitlopende voeten (masker),
+ * zodat hij rustig in de lucht hangt en niet hard afsnijdt. Verschijnen gaat met
+ * kortAan(element, 'verschijnt', ms) en de CSS-variabele --duur.
+ */
+export function maakRegenboog(klasse: string, ouder: HTMLElement): SVGSVGElement {
+  const id = `regenboog-masker-${regenboogTeller++}`;
+  const kleuren = ['#ff8787', '#ffb070', '#ffe27a', '#9be3a6', '#8cc8ff', '#b9a4ff'];
+  const bogen = kleuren
+    .map((k, i) => {
+      const r = 94 - i * 7;
+      return `<path d="M${100 - r} 104 A${r} ${r} 0 0 1 ${100 + r} 104" stroke="${k}"/>`;
+    })
+    .join('');
+  return svgUitTekst(
+    `<svg viewBox="0 0 200 106" aria-hidden="true">
+      <defs><linearGradient id="${id}-v" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0.45" stop-color="#fff"/><stop offset="1" stop-color="#fff" stop-opacity="0"/>
+      </linearGradient><mask id="${id}"><rect width="200" height="106" fill="url(#${id}-v)"/></mask></defs>
+      <g mask="url(#${id})" fill="none" stroke-width="7.4">${bogen}</g>
+    </svg>`,
+    `regenboog ${klasse}`,
+    ouder,
+  );
+}
