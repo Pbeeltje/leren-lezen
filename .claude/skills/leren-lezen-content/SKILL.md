@@ -970,7 +970,7 @@ Children no longer pick an age but a group (`Groep = 'kleuter' | 'groep3'` in co
   avatar, leg pairs `st-poot--a/--b`) walks slowly back and forth in a rAF loop over the front
   hill (height sampled from the path, behind the big dinos in the DOM), sniffs now and then,
   turns at the ends (left end always past the T-rex, right end before the triceratops).
-  When it passes under the T-rex's head the T-rex hops, looks down, says "!" then "roaar!"
+  When it passes under the T-rex's head the T-rex hops, looks down, says "!" then "RAWR!"
   (class `verrast`, 2.8 s, once per pass and at most every 8 s); the stegosaurus wags its
   tail. Reduced motion: it stands still. Timers and rAF are cleared in `vernietig`.
 - **Boerderij polder:** the rolling hills are replaced by a flat Dutch polder
@@ -1055,3 +1055,20 @@ Children no longer pick an age but a group (`Groep = 'kleuter' | 'groep3'` in co
 - **Music levels:** Speel na and Ritme have 5 levels (`AANTAL_NIVEAUS`): 2-4, 4-6, 6-8, 8-10,
   10-12. Level 1 uses a fixed `reeks` over the 10 questions (2,2,2,3,3,3,3,3,4,4; ritme with
   bass + snare). `niveausVoorGroep()` gives kleuters only levels 1 and 2 (2-4 and 4-6).
+- **Dino-wei scenery:** all own drawings. `achtergrond/dino-landschap.ts` holds `VERTE`
+  (`.dino-verte`, viewBox 2000x300 `xMidYMax slice`, bottom 13vh: hazy far mountains with an
+  extinct flat-topped volcano, two seeded jungle rows with tree-fern and araucaria
+  silhouettes, warm haze layers), `HEUVELS` (gradient hills with grass tufts and a pond with
+  a slow `dn-glinster` shimmer; the paths the volcano, trees and stegosaurus stand on are
+  found by class `.dn-heuvel--achter/--midden/--voor`, not by order), `varenPol(seed)`,
+  `paardenstaarten(seed)` and `STEEN`. `dino-tekening.ts` adds `PTERO`, `BRACHIO` and `NEST`.
+  Sky is a warm gradient with a soft golden glow round the sun (`.dino-zonlicht`). A pale
+  brachiosaurus stands far left behind the tree ferns; its `.br-nek` looks around and dips
+  to graze (CSS, 26 s loop). Volcano smoke is 4 soft puffs (7.6 s). Ferns sit in the bottom
+  corners and in front of the stegosaurus, horsetails at the pond banks, a nest with eggs
+  left of the triceratops (in front of the stegosaurus): eggs wobble now and then, all
+  wobble on `juich` (`wiebelt`), and on `feest` a baby dino peeks out of the middle egg
+  (`komt-uit`, 5.2 s). A pteranodon (`.dino-ptero` in `.dino-lucht`, `zwem-over`, ~50 px/s,
+  16-34 s, gentle bob, two slow wing beats every 10 s) glides high across: first after
+  10-25 s, then 45-90 s after the previous one has gone, alternating direction; not with
+  `prefers-reduced-motion`. The T-rex's roar bubble says "RAWR!".

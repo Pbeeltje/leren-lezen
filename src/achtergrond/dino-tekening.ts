@@ -154,3 +154,96 @@ export const STEGO = `
     <circle cx="20" cy="75" r="2.2" fill="#ff9aa2" opacity="0.7"/>
   </g>
 </svg>`;
+
+/**
+ * Pteranodon die zweeft (kijkt naar rechts), van onderen gezien met gespreide vleugels.
+ * Klassen: pt-vleugel--l / --r (draaien om de schouder voor een trage slag), pt-oog.
+ */
+export const PTERO = `
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 84">
+  <defs>
+    <linearGradient id="dpt-vleugel" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#f7b977"/>
+      <stop offset="1" stop-color="#e98a4f"/>
+    </linearGradient>
+    <linearGradient id="dpt-lijf" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#f6a965"/>
+      <stop offset="1" stop-color="#d9733a"/>
+    </linearGradient>
+  </defs>
+  <g stroke="#8a4520" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round">
+    <g class="pt-vleugel pt-vleugel--l">
+      <path d="M100 44 C80 34 48 24 8 28 C16 33 22 38 26 44 C36 44 44 47 50 54 C62 52 76 54 92 60 Z" fill="url(#dpt-vleugel)"/>
+      <path d="M98 45 C78 36 50 28 12 30" fill="none" stroke="#b5622d" stroke-width="2"/>
+    </g>
+    <g class="pt-vleugel pt-vleugel--r">
+      <path d="M100 44 C120 34 152 24 192 28 C184 33 178 38 174 44 C164 44 156 47 150 54 C138 52 124 54 108 60 Z" fill="url(#dpt-vleugel)"/>
+      <path d="M102 45 C122 36 150 28 188 30" fill="none" stroke="#b5622d" stroke-width="2"/>
+    </g>
+    <!-- pootjes en lijf -->
+    <path d="M94 62 L86 72 M101 63 L96 74" fill="none" stroke-width="2.2"/>
+    <ellipse cx="100" cy="54" rx="11" ry="10" fill="url(#dpt-lijf)"/>
+    <!-- kop met kam naar achteren en lange snavel -->
+    <path d="M110 30 C100 22 88 16 74 14 C86 24 96 32 106 38 Z" fill="#f06a4a"/>
+    <path d="M100 46 C100 34 108 26 118 28 L160 36 C152 41 132 43 116 44 C110 46 104 48 100 46 Z" fill="url(#dpt-lijf)"/>
+    <path d="M122 39 L156 37" fill="none" stroke-width="1.6"/>
+  </g>
+  <circle class="pt-oog" cx="114" cy="34" r="3.2" fill="#ffffff"/>
+  <circle cx="114.6" cy="34.2" r="1.9" fill="#1b1b2f"/>
+  <circle cx="115.2" cy="33.4" r="0.7" fill="#ffffff"/>
+  <circle cx="110" cy="40" r="2.2" fill="#ff9aa2" opacity="0.6"/>
+</svg>`;
+
+/**
+ * Brachiosaurus in de verte (kijkt naar rechts), in wazige kleuren. De nek (br-nek) draait
+ * langzaam om zijn voet: rondkijken en af en toe naar beneden om te eten.
+ */
+export const BRACHIO = `
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 170 150">
+  <g fill="#8fb7b4" stroke="#6f9a98" stroke-width="2" stroke-linejoin="round">
+    <path d="M72 106 C52 108 32 118 4 134 C30 130 54 126 76 124 Z"/>
+    <path d="M76 116 L74 150 L88 150 L88 118 Z M114 112 L112 150 L126 150 L126 112 Z" fill="#7fa9a6"/>
+    <path d="M64 116 C62 96 84 86 104 88 C124 90 134 100 132 118 C130 130 112 134 98 134 C80 134 66 128 64 116 Z"/>
+    <g class="br-nek">
+      <path d="M110 98 C112 70 120 42 134 22 C137 17 144 15 148 19 C141 34 133 62 130 102 Z"/>
+      <path d="M133 22 C133 13 142 8 152 10 C160 12 163 18 157 22 C151 26 141 27 133 22 Z"/>
+      <circle cx="148" cy="15" r="1.6" fill="#4f6f70" stroke="none"/>
+    </g>
+  </g>
+  <path d="M74 104 C84 94 104 92 120 98" stroke="#b6d6d2" stroke-width="3" fill="none" stroke-linecap="round"/>
+</svg>`;
+
+/**
+ * Nest met drie gespikkelde eieren. Elk ei (ei) wiebelt los; bij het middelste kan de
+ * bovenkant (ei__dop) omhoog en kijkt er een babydino (ei__baby) uit.
+ */
+export const NEST = `
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 130 80">
+  <ellipse cx="65" cy="62" rx="56" ry="13" fill="#7a5233"/>
+  <g class="ei ei--1">
+    <ellipse cx="38" cy="48" rx="15" ry="19" fill="#fff4dc" stroke="#b08850" stroke-width="2.2"/>
+    <g fill="#e2b77a"><circle cx="33" cy="42" r="2.4"/><circle cx="43" cy="50" r="2"/><circle cx="36" cy="56" r="1.6"/></g>
+  </g>
+  <g class="ei ei--3">
+    <ellipse cx="92" cy="48" rx="15" ry="19" fill="#dff3e8" stroke="#6fa58a" stroke-width="2.2"/>
+    <g fill="#9fd1b4"><circle cx="88" cy="42" r="2.4"/><circle cx="97" cy="51" r="2"/><circle cx="90" cy="56" r="1.6"/></g>
+  </g>
+  <g class="ei ei--2">
+    <g class="ei__baby">
+      <path d="M54 34 C54 20 62 14 70 15 C78 16 82 24 80 34 Z" fill="#7fd6a4" stroke="#1d6b4c" stroke-width="2"/>
+      <circle cx="64" cy="24" r="2.8" fill="#fff"/><circle cx="64.4" cy="24.4" r="1.6" fill="#1b1b2f"/>
+      <circle cx="73" cy="24" r="2.8" fill="#fff"/><circle cx="73.4" cy="24.4" r="1.6" fill="#1b1b2f"/>
+      <path d="M64 30 C67 32 71 32 74 30" stroke="#1d6b4c" stroke-width="1.6" fill="none" stroke-linecap="round"/>
+    </g>
+    <path d="M50 40 C50 60 56 66 65 66 C74 66 80 60 80 40 L74 44 L69 38 L63 44 L57 38 Z" fill="#fff8e8" stroke="#b08850" stroke-width="2.2" stroke-linejoin="round"/>
+    <g fill="#f2a98a"><circle cx="58" cy="52" r="2.2"/><circle cx="70" cy="56" r="2.4"/><circle cx="74" cy="47" r="1.6"/></g>
+    <g class="ei__dop">
+      <path d="M50 40 C50 26 57 16 65 16 C73 16 80 26 80 40 L74 44 L69 38 L63 44 L57 38 Z" fill="#fff8e8" stroke="#b08850" stroke-width="2.2" stroke-linejoin="round"/>
+      <g fill="#f2a98a"><circle cx="60" cy="28" r="2.4"/><circle cx="71" cy="32" r="1.8"/></g>
+    </g>
+  </g>
+  <!-- takjes van het nest voor de eieren -->
+  <path d="M10 60 C30 74 100 74 120 60 C116 72 98 78 65 78 C32 78 14 72 10 60 Z" fill="#9a6a3f" stroke="#5c3d25" stroke-width="2"/>
+  <path d="M18 64 L40 70 M34 72 L60 68 M56 74 L84 70 M80 72 L104 66 M98 70 L116 62 M22 70 L46 74" stroke="#5c3d25" stroke-width="2" stroke-linecap="round"/>
+  <path d="M14 62 L30 66 M90 66 L112 64" stroke="#c49466" stroke-width="2" stroke-linecap="round"/>
+</svg>`;

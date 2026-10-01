@@ -1,20 +1,21 @@
 import type { Decor } from './achtergrond.ts';
-import { STEGO, TREX } from './dino-tekening.ts';
+import { HEUVELS, paardenstaarten, STEEN, varenPol, VERTE } from './dino-landschap.ts';
+import { BRACHIO, NEST, PTERO, STEGO, TREX } from './dino-tekening.ts';
 import { el, kortAan, plaatje, svgUitTekst, zetOpPad } from './hulp.ts';
 
-// Groene wei met heuvels, bomen en een vulkaan; een T-rex links en een triceratops rechts
-// die bij een goed antwoord opspringen. Aan het eind van een hele sessie barst de vulkaan uit.
+// Oerwei in warm goudachtig licht: in de verte wazige bergen en een oerwoudrand met
+// boomvarens en apenbomen, waar een brachiosaurus langzaam haar lange nek beweegt
+// (rondkijken, af en toe eten). Daarvoor groene heuvels met een glinsterend meertje,
+// boomvarens en een vulkaan die zacht rookt; voorop varens, paardenstaarten, stenen en een
+// nest met eieren. Een T-rex links en een triceratops rechts springen op bij een goed
+// antwoord (de eieren wiebelen mee). Aan het eind van een hele sessie barst de vulkaan uit
+// en kijkt er een babydino uit het middelste ei.
 // Een stegosaurus loopt langzaam heen en weer over de voorste heuvel (achter de grote dino's
 // langs), blijft soms even staan om te snuffelen en draait aan het eind van zijn rondje om.
 // Loopt hij langs de T-rex, dan kijkt die verrast omlaag en brult vriendelijk (één keer per
-// keer dat hij langskomt); de stegosaurus kwispelt terug. Bij prefers-reduced-motion staat
-// hij stil.
-const HEUVELS = `
-<svg viewBox="0 0 1000 300" preserveAspectRatio="none">
-  <path d="M0 150 C160 60 320 70 480 130 C640 190 820 80 1000 120 L1000 300 L0 300 Z" fill="#7ccf5d"/>
-  <path d="M0 210 C200 150 380 170 560 210 C740 250 880 180 1000 200 L1000 300 L0 300 Z" fill="#5db847"/>
-  <path d="M0 260 C250 235 500 250 750 262 C860 267 940 255 1000 250 L1000 300 L0 300 Z" fill="#4aa63a"/>
-</svg>`;
+// keer dat hij langskomt); de stegosaurus kwispelt terug. Heel af en toe zweeft er hoog een
+// pteranodon over (eerst na 10-25 s, daarna elke 45-90 s, om en om naar links en rechts).
+// Bij prefers-reduced-motion staat alles stil en komt er geen pteranodon.
 
 /** Hoe diep de stegosaurus in de voorste heuvel staat (deel van de heuvelhoogte daar). */
 const STEG_ZAK = 0.4;
@@ -23,17 +24,23 @@ const VERRAST_MS = 2800;
 
 export function maakDinoDecor(): Decor {
   const root = el('div', 'decor decor-dino');
+  el('div', 'dino-zonlicht', root);
   plaatje('assets/achtergrond/zon.svg', 'dino-zon', root);
   plaatje('assets/achtergrond/wolk.svg', 'drijf-wolk drijf-wolk--1', root);
   plaatje('assets/achtergrond/wolk.svg', 'drijf-wolk drijf-wolk--2', root);
+  svgUitTekst(VERTE, 'dino-verte', root);
+  // Brachiosaurus ver weg; haar poten vallen achter de achterste heuvel.
+  svgUitTekst(BRACHIO, 'dino-brachio', root);
+  const lucht = el('div', 'dino-lucht', root);
   // Vóór de heuvels in de DOM, zodat de achterste heuvel over de voet van de vulkaan valt.
   const vulkaan = el('div', 'vulkaan', root);
   const rook = el('div', 'vulkaan__rook', vulkaan);
-  for (let i = 0; i < 3; i++) el('div', 'vulkaan__pluim', rook).style.animationDelay = `${i * 1.3}s`;
+  for (let i = 0; i < 4; i++) el('div', 'vulkaan__pluim', rook).style.animationDelay = `${i * 1.9}s`;
   el('div', 'vulkaan__gloed', vulkaan);
   plaatje('assets/achtergrond/vulkaan.svg', 'vulkaan__berg', vulkaan);
   const heuvels = svgUitTekst(HEUVELS, 'dino-heuvels', root);
-  const [achter, midden, voor] = [...heuvels.querySelectorAll('path')];
+  const pad = (naam: string) => heuvels.querySelector(`.dn-heuvel--${naam}`) as SVGPathElement;
+  const [achter, midden, voor] = [pad('achter'), pad('midden'), pad('voor')];
 
   // [plaatje, klasse, op welke heuvel]: boomvarens (zelf getekend, zoals in de tijd van de
   // dinosaurussen); de kleine aan de rand staan verder weg, twee zijn gespiegeld.
@@ -44,11 +51,24 @@ export function maakDinoDecor(): Decor {
     [plaatje('assets/achtergrond/boomvaren.svg', 'dino-boom dino-boom--4', root), achter],
   ];
 
+  // Planten aan de randen, achter de grote dino's.
+  svgUitTekst(paardenstaarten(5), 'dino-plant dino-paardenstaart dino-paardenstaart--1', root);
+  svgUitTekst(varenPol(3), 'dino-plant dino-varen dino-varen--1', root);
+  svgUitTekst(varenPol(9), 'dino-plant dino-varen dino-varen--2', root);
+  svgUitTekst(paardenstaarten(12), 'dino-plant dino-paardenstaart dino-paardenstaart--2', root);
+  svgUitTekst(STEEN, 'dino-steen dino-steen--1', root);
+
   // De stegosaurus staat vóór de T-rex en triceratops in de DOM: hij loopt achter ze langs.
   // Buitenste div verschuift (transform), de binnenste spiegelt als hij naar rechts loopt.
   const steg = el('div', 'dino-steg', root);
   const stegDraai = el('div', 'dino-steg__draai', steg);
   svgUitTekst(STEGO, 'dino-steg__lijf', stegDraai);
+
+  // Voor de stegosaurus langs: een nest met eieren naast de triceratops, een steen en een
+  // kleine varen, zodat hij er af en toe half achter verdwijnt.
+  const nest = svgUitTekst(NEST, 'dino-nest', root);
+  svgUitTekst(STEEN, 'dino-steen dino-steen--2', root);
+  svgUitTekst(varenPol(17), 'dino-plant dino-varen dino-varen--3', root);
 
   const trex = el('div', 'dino dino--trex', root);
   svgUitTekst(TREX, 'dino__lijf', trex);
@@ -160,7 +180,7 @@ export function maakDinoDecor(): Decor {
     kortAan(trex, 'verrast', VERRAST_MS);
     kortAan(steg, 'kwispelt', 2400);
     roep('!', 'dino-roep dino-roep--uitroep', 0, 900);
-    roep('roaar!', 'dino-roep', 1100, 1400);
+    roep('RAWR!', 'dino-roep', 1100, 1400);
   };
   const roep = (tekst: string, klasse: string, na: number, duur: number) =>
     later(() => {
@@ -220,6 +240,32 @@ export function maakDinoDecor(): Decor {
     frame = requestAnimationFrame(stap);
   }
 
+  // ---- Heel af en toe zweeft er een pteranodon hoog door de lucht. ----
+  // Nooit twee tegelijk: de volgende wordt pas gepland als de vorige weg is.
+  let pteroNaarRechts = Math.random() < 0.5;
+  const planPtero = (ms: number) => {
+    if (stil) return;
+    later(() => {
+      if (!levend) return;
+      const b = root.clientWidth || window.innerWidth;
+      // Rustig: ongeveer 50 px per seconde, maar niet korter dan 16 s of langer dan 34 s.
+      const duur = Math.min(34, Math.max(16, (b * 1.3) / 50));
+      const p = el('div', `dino-ptero${pteroNaarRechts ? '' : ' dino-ptero--links'}`, lucht);
+      p.style.setProperty('--van-x', pteroNaarRechts ? '-18vw' : '104vw');
+      p.style.setProperty('--naar-x', pteroNaarRechts ? '104vw' : '-18vw');
+      p.style.animationDuration = `${duur}s`;
+      p.style.top = `${8 + Math.random() * 10}vh`;
+      // De tekening kijkt naar rechts; naar links spiegelt .dino-ptero--links hem.
+      svgUitTekst(PTERO, 'dino-ptero__lijf', el('div', 'dino-ptero__zweef', el('div', 'dino-ptero__spiegel', p)));
+      pteroNaarRechts = !pteroNaarRechts;
+      later(() => {
+        p.remove();
+        planPtero(45000 + Math.random() * 45000);
+      }, duur * 1000 + 300);
+    }, ms);
+  };
+  planPtero(10000 + Math.random() * 15000);
+
   const feest = () => {
     kortAan(vulkaan, 'barst-uit', 3000);
     for (let i = 0; i < 26; i++) {
@@ -233,6 +279,8 @@ export function maakDinoDecor(): Decor {
       brok.style.width = brok.style.height = `${maat}px`;
       later(() => brok.remove(), 2600);
     }
+    // Er kijkt een babydino uit het middelste ei (dop omhoog, even rondkijken, weer dicht).
+    later(() => kortAan(nest, 'komt-uit', 5200), 900);
     juich();
   };
 
@@ -244,6 +292,7 @@ export function maakDinoDecor(): Decor {
       later(() => hoera.remove(), 1200);
     }
     kortAan(steg, 'kwispelt', 1200);
+    kortAan(nest, 'wiebelt', 1300);
   };
 
   const vernietig = () => {

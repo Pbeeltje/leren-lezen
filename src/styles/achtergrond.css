@@ -38,8 +38,53 @@ body:not(.thema-ruimte) .instructie-tekst:not(.instructie-tekst--donker) {
 }
 
 /* ---- Dino-wei ---- */
+/* Warme oerlucht: blauw boven, goudachtig aan de horizon. */
 .decor-dino {
-  background: linear-gradient(#4aa7f0 0%, #8fcdf7 55%, #cdeefc 100%);
+  background: linear-gradient(#3f9ce9 0%, #74bff2 34%, #b5def4 58%, #f6e7c2 80%, #fbe2b0 100%);
+}
+
+/* Zacht goudlicht rond de zon (de zon zelf staat op max(11%, 96px), rechts 5%). */
+.dino-zonlicht {
+  position: absolute;
+  top: calc(max(11%, 96px) + clamp(70px, 10vw, 130px) / 2);
+  right: calc(5% + clamp(70px, 10vw, 130px) / 2);
+  width: clamp(320px, 52vw, 760px);
+  aspect-ratio: 1;
+  transform: translate(50%, -50%);
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(255, 236, 170, 0.55) 0%, rgba(255, 224, 150, 0.22) 35%, rgba(255, 220, 140, 0) 70%);
+}
+
+/* De verte (dino-landschap.ts): wazige bergen en oerwoud; de voet zakt achter de heuvels. */
+.dino-verte {
+  position: absolute;
+  left: 0;
+  bottom: 13vh;
+  width: 100%;
+  height: max(25vh, 17vw);
+}
+
+/* Brachiosaurus in de verte, links achter de boomvarens; de nek kijkt langzaam rond en zakt soms om te eten. */
+.dino-brachio {
+  position: absolute;
+  left: 0.5%;
+  bottom: 19.5vh;
+  width: clamp(110px, 15vw, 220px);
+  height: auto;
+  overflow: visible;
+}
+.dino-brachio .br-nek {
+  transform-box: fill-box;
+  transform-origin: 30% 95%;
+  animation: br-nek 26s ease-in-out infinite;
+}
+@keyframes br-nek {
+  0%, 100% { transform: rotate(0); }
+  18%, 30% { transform: rotate(-7deg); }
+  48% { transform: rotate(2deg); }
+  58%, 74% { transform: rotate(24deg); }
+  66% { transform: rotate(21deg); }
+  86% { transform: rotate(3deg); }
 }
 
 .dino-zon {
@@ -60,6 +105,99 @@ body:not(.thema-ruimte) .instructie-tekst:not(.instructie-tekst--donker) {
   bottom: 0;
   width: 100%;
   height: 34vh;
+}
+
+.dino-heuvels .dn-glinster path { animation: dn-glinster 6s ease-in-out infinite; opacity: 0.2; }
+.dino-heuvels .dn-glinster path:nth-child(2) { animation-delay: -1.5s; }
+.dino-heuvels .dn-glinster path:nth-child(3) { animation-delay: -3s; }
+.dino-heuvels .dn-glinster path:nth-child(4) { animation-delay: -4.5s; }
+@keyframes dn-glinster {
+  0%, 100% { opacity: 0.15; }
+  50% { opacity: 0.85; }
+}
+
+/* Planten en stenen aan de randen (dino-landschap.ts); wiebelen heel zacht. */
+.dino-plant,
+.dino-steen,
+.dino-nest {
+  position: absolute;
+  height: auto;
+  overflow: visible;
+}
+.dino-plant {
+  transform-origin: bottom center;
+  animation: wiebel 7s ease-in-out infinite;
+}
+.dino-varen--1 { left: -4%; bottom: -0.5vh; width: clamp(120px, 17vw, 250px); }
+.dino-varen--2 { right: -4%; bottom: -0.5vh; width: clamp(110px, 15vw, 230px); animation-delay: -3s; }
+.dino-varen--3 { left: calc(4% + clamp(110px, 17vw, 230px)); bottom: -0.5vh; width: clamp(70px, 9vw, 130px); animation-delay: -5s; }
+/* Paardenstaarten aan de oevers van het meertje (dat ligt op 41-71% van de breedte). */
+.dino-paardenstaart--1 { left: 37%; bottom: 4.6vh; width: clamp(30px, 4vw, 56px); animation-delay: -2s; }
+.dino-paardenstaart--2 { left: 68.5%; bottom: 3.8vh; width: clamp(26px, 3.4vw, 48px); animation-delay: -4s; }
+.dino-steen--1 { left: 33%; bottom: 5.5vh; width: clamp(28px, 3.5vw, 50px); }
+.dino-steen--2 { right: calc(2% + clamp(110px, 17vw, 230px) * 1.45); bottom: 0.5vh; width: clamp(40px, 5vw, 72px); }
+.dino-nest { right: calc(2% + clamp(110px, 17vw, 230px) * 0.9); bottom: 0.5vh; width: clamp(56px, 7vw, 104px); }
+
+/* Eieren: af en toe wiebelt er eentje zacht, bij juichen allemaal. */
+.dino-nest .ei { transform-box: fill-box; transform-origin: 50% 100%; }
+.dino-nest .ei--1 { animation: ei-wiebel 11s ease-in-out infinite; }
+.dino-nest .ei--3 { animation: ei-wiebel 13s ease-in-out -6s infinite; }
+.dino-nest.wiebelt .ei { animation: ei-juich 0.3s ease-in-out 4 alternate; }
+@keyframes ei-wiebel {
+  0%, 88%, 100% { transform: rotate(0); }
+  91% { transform: rotate(-7deg); }
+  94% { transform: rotate(6deg); }
+  97% { transform: rotate(-3deg); }
+}
+@keyframes ei-juich {
+  from { transform: rotate(-9deg); }
+  to { transform: rotate(9deg); }
+}
+.dino-nest .ei__baby { transform: translateY(18px); }
+.dino-nest .ei__dop { transform-box: fill-box; transform-origin: 20% 100%; }
+.dino-nest.komt-uit .ei__dop { animation: ei-dop 5.2s ease-in-out; }
+.dino-nest.komt-uit .ei__baby { animation: ei-baby 5.2s ease-in-out; }
+@keyframes ei-dop {
+  0%, 100% { transform: none; }
+  12%, 84% { transform: translate(-6px, -16px) rotate(-28deg); }
+}
+@keyframes ei-baby {
+  0%, 100% { transform: translateY(18px); }
+  18%, 80% { transform: translateY(0); }
+  40% { transform: translateY(0) rotate(-6deg); }
+  60% { transform: translateY(0) rotate(6deg); }
+}
+
+/* Pteranodon die hoog overzweeft (dino.ts): langzaam opzij, zacht op en neer, en heel af en
+   toe twee trage vleugelslagen. */
+.dino-lucht { position: absolute; inset: 0; }
+.dino-ptero {
+  position: absolute;
+  left: 0;
+  width: clamp(80px, 10vw, 140px);
+  transform: translateX(var(--van-x));
+  animation: zwem-over 30s linear forwards;
+}
+.dino-ptero__spiegel,
+.dino-ptero__zweef { width: 100%; }
+.dino-ptero--links .dino-ptero__spiegel { transform: scaleX(-1); }
+.dino-ptero__zweef { animation: ptero-zweef 8s ease-in-out infinite; }
+.dino-ptero__lijf { display: block; width: 100%; height: auto; overflow: visible; }
+.dino-ptero .pt-vleugel {
+  transform-box: fill-box;
+  animation: ptero-slag 10s ease-in-out -6s infinite;
+}
+.dino-ptero .pt-vleugel--l { transform-origin: 100% 60%; }
+.dino-ptero .pt-vleugel--r { transform-origin: 0% 60%; }
+@keyframes ptero-zweef {
+  0%, 100% { transform: translateY(0) rotate(-2deg); }
+  35% { transform: translateY(-10px) rotate(2deg); }
+  70% { transform: translateY(8px) rotate(-3deg); }
+}
+@keyframes ptero-slag {
+  0%, 16%, 100% { transform: scaleY(1); }
+  4%, 12% { transform: scaleY(0.55); }
+  8% { transform: scaleY(1.1); }
 }
 
 .dino-boom {
@@ -155,7 +293,7 @@ svg.dino__lijf {
 .dino--trex.juicht .tr-lach { opacity: 0; }
 
 /* De stegosaurus komt langs: de T-rex schrikt even (sprongetje), kijkt omlaag naar hem en
-   brult vriendelijk (bek open rond de "roaar!"-wolk). Duur = VERRAST_MS in dino.ts. */
+   brult vriendelijk (bek open rond de "RAWR!"-wolk). Duur = VERRAST_MS in dino.ts. */
 .dino--trex.verrast .dino__lijf { animation: tr-schrik 0.5s ease-out; }
 .dino--trex.verrast .tr-kop { animation: tr-kijk-omlaag 2.8s ease-in-out; }
 .dino--trex.verrast .tr-arm { animation: tr-zwaai 0.4s ease-in-out 0.3s 5 alternate; }
@@ -664,7 +802,7 @@ svg.dino__lijf {
   transform: translate(-50%, -50%);
   border-radius: 50%;
   background: radial-gradient(ellipse, rgba(255, 170, 60, 0.8), rgba(255, 120, 40, 0) 70%);
-  animation: gloei 3s ease-in-out infinite;
+  animation: gloei 5s ease-in-out infinite;
 }
 
 @keyframes gloei {
@@ -682,19 +820,21 @@ svg.dino__lijf {
 
 .vulkaan__pluim {
   position: absolute;
-  left: -14px;
-  top: -14px;
-  width: 28px;
-  height: 28px;
+  left: -16px;
+  top: -16px;
+  width: 32px;
+  height: 32px;
   border-radius: 50%;
-  background: rgba(230, 230, 235, 0.75);
-  animation: pluim 3.9s ease-out infinite;
+  background: radial-gradient(circle, rgba(240, 236, 232, 0.8) 40%, rgba(240, 236, 232, 0) 72%);
+  opacity: 0;
+  animation: pluim 7.6s ease-out infinite;
 }
 
+/* Zachte rookpluim die langzaam opstijgt en met de wind wat naar rechts waait. */
 @keyframes pluim {
-  0% { transform: translate(0, 0) scale(0.4); opacity: 0; }
-  20% { opacity: 0.8; }
-  100% { transform: translate(24px, -90px) scale(1.8); opacity: 0; }
+  0% { transform: translate(0, 0) scale(0.5); opacity: 0; }
+  20% { opacity: 0.85; }
+  100% { transform: translate(46px, -120px) scale(2.6); opacity: 0; }
 }
 
 .vulkaan.barst-uit {
