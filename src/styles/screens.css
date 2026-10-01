@@ -1374,3 +1374,44 @@
   .scherm-toetsenbord { gap: 5px; }
   .scherm-toetsenbord__rij { gap: 5px; }
 }
+
+/* ---------- Tekenen ---------- */
+.teken-scherm { justify-content: flex-start; padding-top: 112px; gap: 12px; }
+.teken-blad {
+  width: min(100%, 960px);
+  height: max(260px, calc(100dvh - 250px));
+  background: var(--kleur-oppervlak);
+  border-radius: var(--radius-groot);
+  overflow: hidden;
+  box-shadow: 0 6px 0 rgba(0, 0, 0, 0.15);
+}
+.teken-canvas { display: block; width: 100%; height: 100%; touch-action: none; }
+.teken-balk {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+  max-width: 960px;
+}
+.teken-kleur, .teken-dikte, .teken-actie {
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  border: 4px solid #fff;
+  box-shadow: 0 3px 0 rgba(0, 0, 0, 0.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.teken-gum, .teken-dikte, .teken-actie { background: #fff; }
+.teken-actie { font-size: 1.8rem; font-weight: 800; color: var(--kleur-tekst); }
+.teken-kleur img, .teken-actie img { width: 30px; height: 30px; }
+.teken-dikte span { display: block; border-radius: 50%; background: var(--kleur-tekst); }
+.teken-knop--actief { transform: scale(1.15); border-color: var(--kleur-munt); }
+@media (max-width: 560px) {
+  .teken-scherm { padding-top: 104px; gap: 8px; }
+  .teken-blad { height: max(240px, calc(100dvh - 290px)); }
+  .teken-kleur, .teken-dikte, .teken-actie { width: 42px; height: 42px; border-width: 3px; }
+  .teken-balk { gap: 6px; }
+}
