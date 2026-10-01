@@ -604,7 +604,7 @@ body:not(.thema-ruimte) .instructie-tekst:not(.instructie-tekst--donker) {
   display: flex;
   flex-direction: column;
   gap: 8px;
-  width: 240px;
+  width: auto;
 }
 
 .backup-weergave[hidden] {

@@ -8,6 +8,7 @@ import {
   wijzigProfielIcoon,
   wijzigProfielKleur,
 } from '../../engine/profielStore.ts';
+import { haalVoortgang } from '../../engine/progressStore.ts';
 import { speelSchermOvergang } from '../../three/transitions.ts';
 import { isGedempt, zetGedempt } from '../../engine/audioManager.ts';
 import { THEMAS, huidigThema, kiesAchtergrond } from '../../achtergrond/achtergrond.ts';
@@ -15,196 +16,199 @@ import { leesBackupCode, maakBackupCode, zetBackupTerug } from '../../engine/bac
 import { AgeSelectScreen } from '../screens/AgeSelectScreen.ts';
 import { ProfileSelectScreen } from '../screens/ProfileSelectScreen.ts';
 
+// Profielmenu als klein kaartje: bovenaan je eigen figuur met je naam, daaronder vier
+// plaatjestegels (Mijn figuur, Achtergrond, Geluid, Wisselen) en onderaan een klein
+// "Voor ouders"-knopje voor de back-up. Elke tegel behalve Geluid opent een eigen
+// submenu met een terugpijl; Geluid schakelt meteen om. Zo blijft het hoofdmenu kort
+// en kan een kind het zonder te lezen gebruiken (verzoek van de eigenaar: "te groot").
+
+type Weergave = 'hoofd' | 'figuur' | 'achtergrond' | 'wisselen' | 'ouders';
+
+function maak<K extends keyof HTMLElementTagNameMap>(tag: K, klasse: string, ouder?: HTMLElement): HTMLElementTagNameMap[K] {
+  const e = document.createElement(tag);
+  e.className = klasse;
+  if (e instanceof HTMLButtonElement) e.type = 'button';
+  ouder?.appendChild(e);
+  return e;
+}
+
+function plaatje(src: string, klasse: string, ouder: HTMLElement): HTMLImageElement {
+  const img = maak('img', klasse, ouder);
+  img.src = src;
+  img.alt = '';
+  return img;
+}
+
 export function maakProfielMenu(manager: ScreenManager): { element: HTMLElement; vernietig: () => void } {
   const profiel = haalActiefProfiel();
   let huidigeKleur = profiel?.kleur ?? 0;
+  const icoonId = () => profiel?.icoonId ?? 'vos';
 
-  const element = document.createElement('div');
-  element.className = 'profiel-menu';
+  const element = maak('div', 'profiel-menu');
 
-  const knop = document.createElement('button');
-  knop.className = 'profiel-knop';
+  const knop = maak('button', 'profiel-knop', element);
   knop.setAttribute('aria-label', 'Profielmenu');
-  const icoon = document.createElement('img');
-  icoon.src = avatarPad(profiel?.icoonId ?? 'vos');
-  icoon.style.filter = avatarFilter(huidigeKleur);
-  icoon.alt = '';
-  knop.appendChild(icoon);
-  element.appendChild(knop);
+  knop.setAttribute('aria-expanded', 'false');
+  const icoon = plaatje(avatarPad(icoonId()), '', knop);
 
-  const paneel = document.createElement('div');
-  paneel.className = 'profiel-menu__paneel';
+  const paneel = maak('div', 'profiel-menu__paneel', element);
   paneel.hidden = true;
 
-  const hoofdWeergave = document.createElement('div');
-  hoofdWeergave.className = 'profiel-menu__weergave';
+  // Alle plekken waar het eigen figuur te zien is, zodat een nieuwe keuze overal meteen klopt.
+  const figuurPlaatjes: HTMLImageElement[] = [icoon];
+  const kleurVoorbeelden: HTMLImageElement[] = [];
+  const werkFiguurBij = () => {
+    for (const img of figuurPlaatjes) {
+      img.src = avatarPad(icoonId());
+      img.style.filter = avatarFilter(huidigeKleur);
+    }
+    for (const img of kleurVoorbeelden) img.src = avatarPad(icoonId());
+  };
 
-  const naam = document.createElement('p');
-  naam.className = 'profiel-menu__naam';
+  // ---- Hoofdweergave ----
+  const hoofd = maak('div', 'profiel-menu__weergave', paneel);
+  const kop = maak('div', 'profiel-menu__kop', hoofd);
+  figuurPlaatjes.push(plaatje(avatarPad(icoonId()), 'profiel-menu__kop-figuur', kop));
+  const naam = maak('p', 'profiel-menu__naam', kop);
   naam.textContent = profiel?.naam ?? '';
-  hoofdWeergave.appendChild(naam);
 
-  const avatarKnop = document.createElement('button');
-  avatarKnop.className = 'profiel-menu__optie';
-  avatarKnop.textContent = 'Avatar wijzigen';
-  avatarKnop.addEventListener('click', () => wisselWeergave(avatarWeergave));
-  hoofdWeergave.appendChild(avatarKnop);
-
-  const kleurKnop = document.createElement('button');
-  kleurKnop.className = 'profiel-menu__optie';
-  kleurKnop.textContent = 'Kleur wijzigen';
-  kleurKnop.addEventListener('click', () => wisselWeergave(kleurWeergave));
-  hoofdWeergave.appendChild(kleurKnop);
-
-  const achtergrondKnop = document.createElement('button');
-  achtergrondKnop.className = 'profiel-menu__optie';
-  achtergrondKnop.textContent = 'Achtergrond kiezen';
-  achtergrondKnop.addEventListener('click', () => wisselWeergave(achtergrondWeergave));
-  hoofdWeergave.appendChild(achtergrondKnop);
-
-  const geluidKnop = document.createElement('button');
-  geluidKnop.className = 'profiel-menu__optie';
-  const geluidIcoon = document.createElement('img');
-  geluidIcoon.className = 'profiel-menu__optie-icoon';
-  geluidIcoon.alt = '';
-  geluidKnop.appendChild(geluidIcoon);
-  const geluidTekst = document.createElement('span');
-  geluidKnop.appendChild(geluidTekst);
-  function werkGeluidKnopBij(): void {
-    const gedempt = isGedempt();
-    geluidIcoon.src = gedempt ? 'assets/icons/geluid-uit.svg' : 'assets/icons/geluid.svg';
-    geluidTekst.textContent = gedempt ? 'Geluid aanzetten' : 'Geluid uitzetten';
+  const tegels = maak('div', 'profiel-menu__tegels', hoofd);
+  function tegel(label: string, src: string, opKlik: () => void): { knop: HTMLButtonElement; img: HTMLImageElement; tekst: HTMLSpanElement } {
+    const t = maak('button', 'profiel-tegel', tegels);
+    t.setAttribute('aria-label', label);
+    const img = plaatje(src, 'profiel-tegel__icoon', t);
+    const tekst = maak('span', 'profiel-tegel__tekst', t);
+    tekst.textContent = label;
+    t.addEventListener('click', opKlik);
+    return { knop: t, img, tekst };
   }
-  werkGeluidKnopBij();
-  geluidKnop.addEventListener('click', () => {
+
+  const figuurTegel = tegel('Mijn figuur', avatarPad(icoonId()), () => toon('figuur'));
+  figuurPlaatjes.push(figuurTegel.img);
+  const themaVoorbeeld = () => THEMAS.find((t) => t.id === huidigThema())?.voorbeeld ?? THEMAS[0].voorbeeld;
+  const achtergrondTegel = tegel('Achtergrond', themaVoorbeeld(), () => toon('achtergrond'));
+
+  // Geluid opent geen submenu: het is een schakelaar en het menu blijft gewoon open.
+  const geluidTegel = tegel('Geluid', 'assets/icons/geluid.svg', () => {
     zetGedempt(!isGedempt());
-    werkGeluidKnopBij();
-    // Blijft expres open (i.t.t. de andere opties) -- dit is een aan/uit-schakelaar,
-    // geen navigatie, dus geen reden om het paneel te sluiten na een klik.
+    werkGeluidBij();
   });
-  hoofdWeergave.appendChild(geluidKnop);
+  function werkGeluidBij(): void {
+    const gedempt = isGedempt();
+    geluidTegel.img.src = gedempt ? 'assets/icons/geluid-uit.svg' : 'assets/icons/geluid.svg';
+    geluidTegel.tekst.textContent = gedempt ? 'Geluid uit' : 'Geluid aan';
+    geluidTegel.knop.setAttribute('aria-label', gedempt ? 'Geluid aanzetten' : 'Geluid uitzetten');
+    geluidTegel.knop.classList.toggle('profiel-tegel--uit', gedempt);
+  }
+  werkGeluidBij();
 
-  const leeftijdKnop = document.createElement('button');
-  leeftijdKnop.className = 'profiel-menu__optie';
-  leeftijdKnop.textContent = 'Andere leeftijd kiezen';
-  leeftijdKnop.addEventListener('click', () => {
-    sluitPaneel();
-    speelSchermOvergang();
-    manager.replace((m) => AgeSelectScreen(m));
-  });
-  hoofdWeergave.appendChild(leeftijdKnop);
+  const leeftijd = haalVoortgang().laatstGekozenLeeftijd;
+  const leeftijdIcoon = `assets/icons/leeftijd-${leeftijd ?? 6}.svg`;
+  const wisselTegel = tegel('Wisselen', leeftijdIcoon, () => toon('wisselen'));
+  wisselTegel.knop.classList.add('profiel-tegel--wissel');
 
-  const backupKnop = document.createElement('button');
-  backupKnop.className = 'profiel-menu__optie';
-  backupKnop.textContent = 'Back-up';
-  backupKnop.addEventListener('click', () => wisselWeergave(backupWeergave));
-  hoofdWeergave.appendChild(backupKnop);
+  const oudersKnop = maak('button', 'profiel-menu__ouders', hoofd);
+  plaatje('assets/icons/slot.svg', '', oudersKnop);
+  oudersKnop.append('Voor ouders');
+  oudersKnop.addEventListener('click', () => toon('ouders'));
 
-  const profielKnop = document.createElement('button');
-  profielKnop.className = 'profiel-menu__optie';
-  profielKnop.textContent = 'Ander profiel';
-  profielKnop.addEventListener('click', () => {
-    sluitPaneel();
-    speelSchermOvergang();
-    manager.replace((m) => ProfileSelectScreen(m));
-  });
-  hoofdWeergave.appendChild(profielKnop);
+  // ---- Submenu's: elk met een kopregel (terugpijl + titel) ----
+  function submenu(titel: string): HTMLElement {
+    const w = maak('div', 'profiel-menu__weergave profiel-menu__sub', paneel);
+    const regel = maak('div', 'profiel-menu__subkop', w);
+    const terug = maak('button', 'profiel-menu__terug', regel);
+    terug.setAttribute('aria-label', 'Terug');
+    plaatje('assets/icons/terug.svg', '', terug);
+    terug.addEventListener('click', () => toon('hoofd'));
+    const h = maak('p', 'profiel-menu__subtitel', regel);
+    h.textContent = titel;
+    return w;
+  }
 
-  paneel.appendChild(hoofdWeergave);
-
-  const avatarWeergave = document.createElement('div');
-  avatarWeergave.className = 'avatar-grid avatar-grid--klein';
-  avatarWeergave.hidden = true;
-  for (const icoonId of AVATAR_ICONEN) {
-    const optie = document.createElement('button');
-    optie.className = 'avatar-keuze';
-    const optieIcoon = document.createElement('img');
-    optieIcoon.src = avatarPad(icoonId);
+  // Mijn figuur: dier en kleur samen, zodat je meteen ziet hoe het eruitziet.
+  const figuur = submenu('Mijn figuur');
+  const avatarRooster = maak('div', 'avatar-grid avatar-grid--klein', figuur);
+  const avatarKnoppen: HTMLButtonElement[] = [];
+  for (const id of AVATAR_ICONEN) {
+    const optie = maak('button', 'avatar-keuze', avatarRooster);
+    optie.dataset.icoon = id;
     // Bewust géén avatarFilter hier: dit rooster laat kiezen tússen dieren, dus moet
-    // hun ware kleuren tonen. Kleurtinten horen alleen bij het aparte kleur-rooster
-    // hieronder (zie "de kleuren-avatar-koppeling is stuk" in de sessienotities).
-    optieIcoon.alt = '';
-    optie.appendChild(optieIcoon);
+    // hun ware kleuren tonen. Kleurtinten horen alleen bij het kleur-rooster hieronder.
+    plaatje(avatarPad(id), '', optie);
     optie.addEventListener('click', () => {
       if (!profiel) return;
-      wijzigProfielIcoon(profiel.id, icoonId);
-      profiel.icoonId = icoonId;
-      icoon.src = avatarPad(icoonId);
-      for (const img of kleurVoorbeelden) img.src = avatarPad(icoonId);
-      sluitPaneel();
+      wijzigProfielIcoon(profiel.id, id);
+      profiel.icoonId = id;
+      werkFiguurBij();
+      markeer();
     });
-    avatarWeergave.appendChild(optie);
+    avatarKnoppen.push(optie);
   }
-  paneel.appendChild(avatarWeergave);
-
-  const kleurVoorbeelden: HTMLImageElement[] = [];
-  const kleurWeergave = document.createElement('div');
-  kleurWeergave.className = 'kleur-rij';
-  kleurWeergave.hidden = true;
+  const kleurLabel = maak('p', 'profiel-menu__label', figuur);
+  kleurLabel.textContent = 'Kleur';
+  const kleurRij = maak('div', 'kleur-rij', figuur);
+  const kleurKnoppen: HTMLButtonElement[] = [];
   for (const kleur of AVATAR_KLEUREN) {
-    const optie = document.createElement('button');
-    optie.className = 'kleur-keuze';
-    if (kleur === huidigeKleur) optie.classList.add('geselecteerd');
-    const voorbeeld = document.createElement('img');
-    voorbeeld.src = avatarPad(profiel?.icoonId ?? 'vos');
+    const optie = maak('button', 'kleur-keuze', kleurRij);
+    optie.dataset.kleur = String(kleur);
+    const voorbeeld = plaatje(avatarPad(icoonId()), '', optie);
     voorbeeld.style.filter = avatarFilter(kleur);
-    voorbeeld.alt = '';
-    optie.appendChild(voorbeeld);
     kleurVoorbeelden.push(voorbeeld);
     optie.addEventListener('click', () => {
       if (!profiel) return;
       wijzigProfielKleur(profiel.id, kleur);
       huidigeKleur = kleur;
-      icoon.style.filter = avatarFilter(kleur);
-      sluitPaneel();
+      werkFiguurBij();
+      markeer();
     });
-    kleurWeergave.appendChild(optie);
+    kleurKnoppen.push(optie);
   }
-  paneel.appendChild(kleurWeergave);
 
-  const achtergrondWeergave = document.createElement('div');
-  achtergrondWeergave.className = 'achtergrond-rij';
-  achtergrondWeergave.hidden = true;
+  const achtergrond = submenu('Achtergrond');
+  const achtergrondRij = maak('div', 'achtergrond-rij', achtergrond);
   const achtergrondKnoppen: HTMLButtonElement[] = [];
   for (const thema of THEMAS) {
-    const optie = document.createElement('button');
-    optie.className = 'achtergrond-keuze';
-    const voorbeeld = document.createElement('img');
-    voorbeeld.src = thema.voorbeeld;
-    voorbeeld.alt = '';
-    optie.append(voorbeeld, thema.naam);
+    const optie = maak('button', 'achtergrond-keuze', achtergrondRij);
+    plaatje(thema.voorbeeld, '', optie);
+    optie.append(thema.naam);
     optie.dataset.thema = thema.id;
     optie.addEventListener('click', () => {
       kiesAchtergrond(thema.id);
-      sluitPaneel();
+      achtergrondTegel.img.src = themaVoorbeeld();
+      markeer();
     });
     achtergrondKnoppen.push(optie);
-    achtergrondWeergave.appendChild(optie);
   }
-  paneel.appendChild(achtergrondWeergave);
 
-  // Back-up: voortgang overzetten naar een ander apparaat (voor ouders).
-  const backupWeergave = document.createElement('div');
-  backupWeergave.className = 'backup-weergave';
-  backupWeergave.hidden = true;
-  const uitleg = document.createElement('p');
-  uitleg.className = 'backup-uitleg';
-  uitleg.textContent = 'Zet alle profielen en voortgang over naar een ander apparaat.';
-  const maakKnop = document.createElement('button');
-  maakKnop.className = 'profiel-menu__optie';
+  const wisselen = submenu('Wisselen');
+  const wisselRij = maak('div', 'profiel-menu__keuzes', wisselen);
+  function groteKeuze(label: string, src: string, opKlik: () => void): void {
+    const k = maak('button', 'profiel-keuze', wisselRij);
+    plaatje(src, '', k);
+    k.append(label);
+    k.addEventListener('click', () => {
+      sluitPaneel();
+      speelSchermOvergang();
+      opKlik();
+    });
+  }
+  groteKeuze('Ander profiel', 'assets/icons/avatar-panda.svg', () => manager.replace((m) => ProfileSelectScreen(m)));
+  groteKeuze('Leeftijd', leeftijdIcoon, () => manager.replace((m) => AgeSelectScreen(m)));
+
+  // Voor ouders: voortgang overzetten naar een ander apparaat.
+  const ouders = submenu('Voor ouders');
+  ouders.classList.add('backup-weergave');
+  const uitleg = maak('p', 'backup-uitleg', ouders);
+  uitleg.textContent = 'Back-up: zet alle profielen en voortgang over naar een ander apparaat.';
   const kanDelen = typeof navigator.share === 'function';
+  const maakKnop = maak('button', 'profiel-menu__optie', ouders);
   maakKnop.textContent = kanDelen ? 'Back-up delen' : 'Back-up kopiëren';
-  const codeVak = document.createElement('textarea');
-  codeVak.className = 'backup-code';
+  const codeVak = maak('textarea', 'backup-code', ouders);
   codeVak.placeholder = 'Plak hier een back-up-code';
   codeVak.rows = 3;
-  const terugKnop = document.createElement('button');
-  terugKnop.className = 'profiel-menu__optie';
-  terugKnop.textContent = 'Terugzetten';
-  const melding = document.createElement('p');
-  melding.className = 'backup-melding';
-  backupWeergave.append(uitleg, maakKnop, codeVak, terugKnop, melding);
-  paneel.appendChild(backupWeergave);
+  const terugzetKnop = maak('button', 'profiel-menu__optie', ouders);
+  terugzetKnop.textContent = 'Terugzetten';
+  const melding = maak('p', 'backup-melding', ouders);
 
   maakKnop.addEventListener('click', async () => {
     try {
@@ -222,7 +226,7 @@ export function maakProfielMenu(manager: ScreenManager): { element: HTMLElement;
       melding.textContent = 'Back-up maken lukte niet.';
     }
   });
-  terugKnop.addEventListener('click', async () => {
+  terugzetKnop.addEventListener('click', async () => {
     try {
       const { backup, namen } = await leesBackupCode(codeVak.value);
       const lijst = namen.length ? namen.join(', ') : 'geen profielen';
@@ -235,24 +239,24 @@ Bestaande profielen met dezelfde naam worden overschreven.`)) return;
     }
   });
 
-  function wisselWeergave(doel: HTMLElement): void {
-    hoofdWeergave.hidden = true;
-    avatarWeergave.hidden = doel !== avatarWeergave;
-    kleurWeergave.hidden = doel !== kleurWeergave;
-    achtergrondWeergave.hidden = doel !== achtergrondWeergave;
-    backupWeergave.hidden = doel !== backupWeergave;
+  const weergaven: Record<Weergave, HTMLElement> = { hoofd, figuur, achtergrond, wisselen, ouders };
+
+  function markeer(): void {
+    for (const k of avatarKnoppen) k.classList.toggle('geselecteerd', k.dataset.icoon === icoonId());
+    for (const k of kleurKnoppen) k.classList.toggle('geselecteerd', Number(k.dataset.kleur) === huidigeKleur);
     for (const k of achtergrondKnoppen) k.classList.toggle('geselecteerd', k.dataset.thema === huidigThema());
   }
 
-  element.appendChild(paneel);
+  function toon(doel: Weergave): void {
+    for (const [id, w] of Object.entries(weergaven)) w.hidden = id !== doel;
+    paneel.dataset.weergave = doel;
+    markeer();
+  }
 
   function sluitPaneel(): void {
     paneel.hidden = true;
-    hoofdWeergave.hidden = false;
-    avatarWeergave.hidden = true;
-    kleurWeergave.hidden = true;
-    achtergrondWeergave.hidden = true;
-    backupWeergave.hidden = true;
+    knop.setAttribute('aria-expanded', 'false');
+    toon('hoofd');
     codeVak.value = '';
     melding.textContent = '';
     document.removeEventListener('pointerdown', opBuitenKlik);
@@ -263,12 +267,19 @@ Bestaande profielen met dezelfde naam worden overschreven.`)) return;
   }
 
   knop.addEventListener('click', () => {
-    paneel.hidden = !paneel.hidden;
     if (!paneel.hidden) {
-      // volgende tick, anders vangt dezelfde klik het paneel meteen weer dicht
-      setTimeout(() => document.addEventListener('pointerdown', opBuitenKlik), 0);
+      sluitPaneel();
+      return;
     }
+    toon('hoofd');
+    paneel.hidden = false;
+    knop.setAttribute('aria-expanded', 'true');
+    // volgende tick, anders vangt dezelfde klik het paneel meteen weer dicht
+    setTimeout(() => document.addEventListener('pointerdown', opBuitenKlik), 0);
   });
+
+  werkFiguurBij();
+  toon('hoofd');
 
   return {
     element,
