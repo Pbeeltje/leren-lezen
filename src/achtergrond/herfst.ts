@@ -47,8 +47,8 @@ function tekenBomen(laag: BoomLaag, w: number, h: number): string {
     return zaad / 2147483647;
   };
   const tussen = ([a, b]: [number, number]) => a + rnd() * (b - a);
-  let stammen = '';
-  let takken = '';
+  // Per boom eerst de takken en dan de stam, zodat de stam de voet van zijn takken bedekt.
+  let bomen = '';
   let x = tussen(laag.afstand) * 0.4;
   let n = 0;
   while (x < w + 40) {
@@ -58,10 +58,11 @@ function tekenBomen(laag: BoomLaag, w: number, h: number): string {
     // Midden van de stam op hoogte y (0 = boven, h = onder).
     const midden = (y: number) => x + buig * 1.6 * (1 - y / h);
     const dikte = (y: number) => boven + (b - boven) * (y / h);
-    stammen += `<path d="M${x - b / 2 - b * 0.18} ${h} C${x - b / 2} ${h * 0.92} ${x - b / 2 + buig} ${h * 0.5} ${x - boven / 2 + buig * 1.6} -4 L${x + boven / 2 + buig * 1.6} -4 C${x + b / 2 + buig} ${h * 0.5} ${x + b / 2} ${h * 0.92} ${x + b / 2 + b * 0.18} ${h} Z" fill="${laag.kleur}"/>`;
-    stammen += `<path d="M${x - b / 2 - b * 0.18} ${h} C${x - b / 2} ${h * 0.92} ${x - b / 2 + buig} ${h * 0.5} ${x - boven / 2 + buig * 1.6} -4 L${x - boven / 2 + buig * 1.6 + boven * 0.3} -4 C${x - b / 2 + buig + b * 0.3} ${h * 0.5} ${x - b / 2 + b * 0.3} ${h * 0.92} ${x - b / 2 + b * 0.1} ${h} Z" fill="${laag.schaduw}"/>`;
+    let stam = `<path d="M${x - b / 2 - b * 0.18} ${h} C${x - b / 2} ${h * 0.92} ${x - b / 2 + buig} ${h * 0.5} ${x - boven / 2 + buig * 1.6} -4 L${x + boven / 2 + buig * 1.6} -4 C${x + b / 2 + buig} ${h * 0.5} ${x + b / 2} ${h * 0.92} ${x + b / 2 + b * 0.18} ${h} Z" fill="${laag.kleur}"/>`;
+    stam += `<path d="M${x - b / 2 - b * 0.18} ${h} C${x - b / 2} ${h * 0.92} ${x - b / 2 + buig} ${h * 0.5} ${x - boven / 2 + buig * 1.6} -4 L${x - boven / 2 + buig * 1.6 + boven * 0.3} -4 C${x - b / 2 + buig + b * 0.3} ${h * 0.5} ${x - b / 2 + b * 0.3} ${h * 0.92} ${x - b / 2 + b * 0.1} ${h} Z" fill="${laag.schaduw}"/>`;
 
     // Twee of drie takken, afwisselend links en rechts, schuin omhoog.
+    let takken = '';
     const aantal = 2 + (rnd() < 0.4 ? 1 : 0);
     let kant = rnd() < 0.5 ? -1 : 1;
     for (let t = 0; t < aantal; t++) {
@@ -78,13 +79,18 @@ function tekenBomen(laag: BoomLaag, w: number, h: number): string {
       // Gevulde, taps toelopende tak (aan de voet dik, aan het eind dun).
       takken += `<path d="M${sx} ${y - t0} Q${cx} ${cy - t0 * 0.6} ${ex} ${ey} Q${cx} ${cy + t0 * 0.6} ${sx} ${y + t0} Z" fill="${laag.kleur}"/>`;
       if (rnd() < 0.5) {
-        // Kaal: een paar twijgjes aan het eind.
-        for (const [f, a] of [[0.7, -0.5], [0.85, 0.6], [1, -0.2]] as const) {
-          const tx = sx + (ex - sx) * f;
-          const ty = y + (ey - y) * f;
-          const tl = lengte * 0.28;
-          const ta = hoek + a;
-          takken += `<path d="M${tx.toFixed(1)} ${ty.toFixed(1)} l${(kant * Math.cos(ta) * tl).toFixed(1)} ${(-Math.sin(ta) * tl).toFixed(1)}" stroke="${laag.kleur}" stroke-width="${Math.max(1, t0 * 0.35).toFixed(1)}" stroke-linecap="round"/>`;
+        // Kaal: een paar dunne twijgjes, precies op de (gebogen) tak en in de richting
+        // waarin de tak daar loopt, een beetje opzij gedraaid.
+        for (const [f, a] of [[0.55, -0.55], [0.75, 0.5], [0.92, -0.35]] as const) {
+          const g = 1 - f;
+          const tx = g * g * sx + 2 * g * f * cx + f * f * ex;
+          const ty = g * g * y + 2 * g * f * cy + f * f * ey;
+          const rx = 2 * g * (cx - sx) + 2 * f * (ex - cx);
+          const ry = 2 * g * (cy - y) + 2 * f * (ey - cy);
+          const ta = Math.atan2(ry, rx) + a * kant;
+          const tl = lengte * (0.32 - f * 0.12);
+          const tw = Math.max(0.8, t0 * (1 - f) * 0.6);
+          takken += `<path d="M${tx.toFixed(1)} ${ty.toFixed(1)} l${(Math.cos(ta) * tl).toFixed(1)} ${(Math.sin(ta) * tl).toFixed(1)}" stroke="${laag.kleur}" stroke-width="${tw.toFixed(1)}" stroke-linecap="round"/>`;
         }
       } else {
         // Met blad: een tros blaadjes rond het eind van de tak.
@@ -93,10 +99,11 @@ function tekenBomen(laag: BoomLaag, w: number, h: number): string {
       }
       kant = -kant;
     }
+    bomen += takken + stam;
     x += tussen(laag.afstand);
     n++;
   }
-  return `<svg viewBox="0 0 ${w} ${h}" width="${w}" height="${h}" aria-hidden="true">${stammen}${takken}</svg>`;
+  return `<svg viewBox="0 0 ${w} ${h}" width="${w}" height="${h}" aria-hidden="true">${bomen}</svg>`;
 }
 
 // Grote stam vlakbij, met schors en wortels; hoger dan het scherm.
