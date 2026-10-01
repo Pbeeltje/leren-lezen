@@ -11,6 +11,7 @@ import { ComingSoonScreen } from './ComingSoonScreen.ts';
 import { ProfileSelectScreen } from './ProfileSelectScreen.ts';
 import { LuisterenKiesScreen } from './LuisterenKiesScreen.ts';
 import { OntdekkenKiesScreen } from './OntdekkenKiesScreen.ts';
+import { GeheugenScreen } from './GeheugenScreen.ts';
 import { SchrijvenKiesScreen } from './SchrijvenKiesScreen.ts';
 import { BoekenkastScreen } from './BoekenkastScreen.ts';
 import { MuziekKiesScreen } from './MuziekKiesScreen.ts';
@@ -51,6 +52,8 @@ export function TopicSelectScreen(manager: ScreenManager, groep: Groep): Screen 
           manager.push((m) => BoekenkastScreen(m));
         } else if (topic.id === 'schrijven') {
           manager.push((m) => SchrijvenKiesScreen(m));
+        } else if (topic.id === 'geheugen') {
+          manager.push((m) => GeheugenScreen(m, 8));
         } else {
           manager.push((m) => ComingSoonScreen(m, topic.titel));
         }

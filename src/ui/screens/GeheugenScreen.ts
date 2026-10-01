@@ -8,12 +8,12 @@ import { renderGeheugenSpel } from '../../games/geheugenSpel.ts';
 import { confetti } from '../../three/particles.ts';
 import { toonKlaarKaart } from '../components/KlaarKaart.ts';
 
-const AANTAL_PAREN = 4;
 const AANTAL_BORDEN = 3;
 
 // Klassiek geheugenspel met dezelfde plaatjes/geluiden als "Luisteren". Elk voltooid
 // bord eindigt met een vuurwerkje; na 3 borden volgt de klaar-kaart met groot feest.
-export function GeheugenScreen(manager: ScreenManager): Screen {
+// Kleuters spelen met 4 paren, groep 3 met 8 (een groter bord, zie .geheugen-bord--groot).
+export function GeheugenScreen(manager: ScreenManager, aantalParen = 4): Screen {
   const el = document.createElement('div');
   el.className = 'scherm';
 
@@ -38,7 +38,7 @@ export function GeheugenScreen(manager: ScreenManager): Screen {
   function nieuwBord(): void {
     if (!actief) return;
     opruimen?.();
-    const kaarten = genereerGeheugenbord(AANTAL_PAREN);
+    const kaarten = genereerGeheugenbord(aantalParen);
     opruimen = renderGeheugenSpel(oefenContainer, kaarten, () => {
       if (!actief) return;
       voegMuntenToe(MUNTEN_TOETS_GOED);
@@ -56,6 +56,7 @@ export function GeheugenScreen(manager: ScreenManager): Screen {
       confetti.vuurwerk('klein');
       timer = window.setTimeout(nieuwBord, 1400);
     }).vernietig;
+    if (aantalParen > 4) oefenContainer.querySelector('.geheugen-bord')?.classList.add('geheugen-bord--groot');
   }
 
   nieuwBord();

@@ -657,6 +657,11 @@ correct pair locks green, a mismatch flips both back after ~900ms with no
 penalty or fout-feedback at all (deliberately gentler than a wrong guess
 elsewhere in the app — this is unstructured toddler play, not a quiz). A
 cleared board also fires `vuurwerk('klein')` and starts a fresh board.
+Groep 3 gets the same game as its own topic tile (`id: 'geheugen'` in
+`topics.ts`, groep3 only) via `GeheugenScreen(m, 8)`: 8 pairs = 16 cards.
+Boards with more than 4 pairs get `.geheugen-bord--groot` (4x4 portrait, 8x2
+landscape, cards shrink with the viewport so the board never scrolls). Check:
+`node tests/geheugen-groep3.mjs <map>`.
 
 Picture-ish touch targets in both games (`.luister-plaatje` 160px,
 `.geheugen-kaart` 100px) are sized differently from every picture-choice

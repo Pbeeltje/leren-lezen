@@ -370,6 +370,24 @@
   opacity: 0.75;
 }
 
+/* Groep 3: 16 kaarten. Staand 4x4, liggend 8x2; de kaarten krimpen mee zodat het hele
+   bord zonder scrollen in beeld past. */
+.geheugen-bord.geheugen-bord--groot {
+  max-width: none;
+  gap: 10px;
+  --kaart: min(100px, calc((100vw - 64px) / 4), calc((100dvh - 290px) / 4));
+}
+.geheugen-bord--groot .geheugen-kaart {
+  width: var(--kaart);
+  height: var(--kaart);
+}
+@media (orientation: landscape) {
+  .geheugen-bord.geheugen-bord--groot {
+    grid-template-columns: repeat(8, 1fr);
+    --kaart: min(110px, calc((100vw - 200px) / 8), calc((100dvh - 230px) / 2));
+  }
+}
+
 .letter-rij {
   display: flex;
   gap: 12px;
