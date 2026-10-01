@@ -929,3 +929,17 @@ Children no longer pick an age but a group (`Groep = 'kleuter' | 'groep3'` in co
 - **voet.svg** is now a skin-coloured footprint (Fluent "Footprints", one foot, recoloured);
   the old side-view Fluent foot looked like a blob. teen.svg embeds this new voet.svg
   (`inbed(..., bron=WOORDEN)` in teken-woorden.py) with a red circle round the big toe.
+- **Vangspel themes:** what falls depends on `huidigThema()`: `THEMA_DINGEN` in
+  VangScreen.ts lists per background the good things and one hazard (onder water:
+  pufferfish, herfst: wolf, boerderij: fox, zee: jellyfish, kasteel: dragon, winter: polar
+  bear, kermis: ghost, trein: thunderstorm, bouw: fire; ruimte and dino keep the meteor).
+  Hazards with `rood: true` get `.vang-ding--rood` (grayscale, then sepia + hue-rotate to
+  one strong red, plus a red glow). Don't use red things as good items (that's why herfst
+  has no maple leaf). Difficulty ramps quickly: speed doubles in ~20 s (max 2.6x), the
+  interval drops by 0.025 s per second, hazard share rises 0.008/s (cap 0.42, kleuter 0.28),
+  hazards grow to 1.8x in 45 s. Check: `node tests/vangspel-thema.mjs <map>`.
+- **Android navigation bar is hidden** (MainActivity `verbergNavigatieknoppen()`,
+  immersive with BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE, re-applied on focus): kids kept
+  tapping back/home/recents. A swipe up from the bottom edge shows it briefly.
+- **Stegosaurus avatar:** `avatar-stegosaurus.svg` is our own drawing (Fluent has none),
+  listed after 'dino' in AVATAR_ICONEN (so it costs coins like the others).

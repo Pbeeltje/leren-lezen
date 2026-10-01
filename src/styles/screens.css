@@ -1980,7 +1980,12 @@
 }
 .vang-ding { position: absolute; left: 0; top: 0; pointer-events: none; will-change: transform; }
 .vang-ding--ster { filter: drop-shadow(0 0 10px rgba(255, 220, 80, 0.95)); }
-.vang-ding--meteoor { filter: drop-shadow(0 0 8px rgba(255, 120, 60, 0.7)); }
+.vang-ding--gevaar { filter: drop-shadow(0 0 8px rgba(255, 120, 60, 0.7)); }
+/* Gevaar in een thema: rood gekleurd met een rode gloed. */
+.vang-ding--rood, .vang-ding--gevaar.vang-ding--rood {
+  /* Eerst grijs, dan helemaal rood: zo wordt elk gevaar even rood, ook al was het oranje. */
+  filter: grayscale(1) brightness(0.8) sepia(1) hue-rotate(-50deg) saturate(9) drop-shadow(0 0 6px rgba(255, 20, 20, 0.9));
+}
 .vang-plop {
   position: absolute;
   transform: translate(-50%, -50%);

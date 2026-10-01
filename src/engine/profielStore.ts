@@ -54,6 +54,7 @@ export const AVATAR_ICONEN = [
   'schildpad',
   'trex',
   'dino',
+  'stegosaurus',
   'paard',
   'zebra',
   'giraf',

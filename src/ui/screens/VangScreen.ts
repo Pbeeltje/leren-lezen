@@ -4,6 +4,7 @@ import { avatarPad, haalActiefProfiel, haalActiefProfielId } from '../../engine/
 import { haalGroep } from '../../engine/progressStore.ts';
 import { TONEN, speelDrum, speelNoot } from '../../engine/muziek.ts';
 import { confetti } from '../../three/particles.ts';
+import { huidigThema, type ThemaId } from '../../achtergrond/achtergrond.ts';
 
 // Vangspel: je eigen figuurtje staat onderaan en schuift mee met je vinger (of de
 // pijltjestoetsen). Vang het lekkers dat naar beneden valt, ontwijk de meteoren. Drie
@@ -11,11 +12,38 @@ import { confetti } from '../../three/particles.ts';
 // vaker, er komen meer meteoren en die worden ook steeds groter. Missen van lekkers
 // kost niets. Geen munten: munten verdien je met leren. Wel een record per profiel.
 
-const LEKKERS = ['aardbei', 'appel', 'banaan', 'kers', 'peer', 'taart', 'ijs', 'koek', 'sinaasappel'].map(
-  (w) => `assets/images/woorden/${w}.svg`,
-);
-const STER = 'assets/images/woorden/ster.svg';
-const METEOOR = 'assets/icons/meteoor.svg';
+// Wat er valt hangt af van de gekozen achtergrond: goede dingen om te vangen en één ding
+// om te ontwijken. Dat gevaar is rood gekleurd (behalve de meteoor, die is al gevaarlijk
+// genoeg om te zien), zodat ook een kleuter meteen ziet wat je niet moet hebben.
+const w = (n: string): string => `assets/images/woorden/${n}.svg`;
+const a = (n: string): string => `assets/achtergrond/${n}.svg`;
+const i = (n: string): string => `assets/icons/${n}.svg`;
+const METEOOR = i('meteoor');
+interface VangThema {
+  goed: string[];
+  gevaar: string;
+  rood: boolean;
+}
+const STANDAARD: VangThema = {
+  goed: ['aardbei', 'appel', 'banaan', 'kers', 'peer', 'taart', 'ijs', 'koek', 'sinaasappel'].map(w),
+  gevaar: METEOOR,
+  rood: false,
+};
+const THEMA_DINGEN: Partial<Record<ThemaId, VangThema>> = {
+  ruimte: { goed: [w('maan'), w('raket'), i('avatar-alien'), w('ster')], gevaar: METEOOR, rood: false },
+  dino: { goed: [w('blad'), w('ei'), w('boom'), a('triceratops'), w('banaan')], gevaar: METEOOR, rood: false },
+  zee: { goed: [a('schelp'), w('ijs'), w('emmer'), a('krab'), w('vis')], gevaar: a('kwal'), rood: true },
+  onderwater: { goed: [a('vis'), a('vis-tropisch'), a('schildpad'), a('octopus'), a('schelp')], gevaar: a('kogelvis'), rood: true },
+  boerderij: { goed: [a('kuiken'), w('ei'), w('appel'), w('mais'), w('wortel')], gevaar: w('vos'), rood: true },
+  // Geen rode esdoornbladeren: rood betekent hier gevaar.
+  herfst: { goed: [w('blad'), a('herfst-kastanje'), a('herfst-paddenstoel'), w('noot'), a('herfst-eekhoorn')], gevaar: w('wolf'), rood: true },
+  winter: { goed: [a('winter-sneeuwvlok'), a('sneeuwpop'), w('muts'), w('ster'), w('slee')], gevaar: w('ijsbeer'), rood: true },
+  kasteel: { goed: [w('kroon'), w('sleutel'), a('eenhoorn'), w('ster'), w('koningin')], gevaar: i('avatar-draak'), rood: true },
+  kermis: { goed: [a('kermis-ijsje'), a('kermis-popcorn'), w('ballon'), w('taart'), w('koek')], gevaar: w('spook'), rood: true },
+  bouw: { goed: [w('hamer'), w('touw'), w('emmer'), w('ladder'), w('schaar')], gevaar: w('vuur'), rood: false },
+  trein: { goed: [w('tas'), w('pet'), w('appel'), w('boek'), w('fles')], gevaar: w('onweer'), rood: true },
+};
+const STER = w('ster');
 const HART = 'assets/icons/bewaar.svg';
 const LEVENS = 3;
 
@@ -26,7 +54,7 @@ interface Ding {
   snelheid: number; // px per seconde
   maat: number; // px
   draai: number;
-  soort: 'lekker' | 'ster' | 'meteoor';
+  soort: 'lekker' | 'ster' | 'gevaar';
 }
 
 const recordSleutel = (): string => `leren-lezen:vangspel:${haalActiefProfielId() ?? 'gast'}`;
@@ -47,6 +75,8 @@ function zetRecord(n: number): void {
 
 export function VangScreen(manager: ScreenManager): Screen {
   const kleuter = haalGroep() === 'kleuter';
+  const thema = THEMA_DINGEN[huidigThema()] ?? STANDAARD;
+  const LEKKERS = thema.goed;
   const el = document.createElement('div');
   el.className = 'vang-scherm';
 
@@ -138,23 +168,23 @@ export function VangScreen(manager: ScreenManager): Screen {
   };
 
   function laatVallen(): void {
-    // Meteoren groeien mee met de tijd: na anderhalve minuut zijn ze 1,8 keer zo groot.
-    const groei = 1 + Math.min(0.8, tijd / 110);
+    // Het gevaar groeit mee met de tijd: na drie kwartier is het 1,8 keer zo groot.
+    const groei = 1 + Math.min(0.8, tijd / 45);
     const m0 = dingMaat();
     // Meteoren: eerst weinig, later meer (kleuters altijd minder).
-    const kansMeteoor = Math.min(kleuter ? 0.22 : 0.35, 0.12 + tijd * 0.004);
+    const kansMeteoor = Math.min(kleuter ? 0.28 : 0.42, 0.14 + tijd * 0.008);
     const lot = Math.random();
-    const soort: Ding['soort'] = lot < kansMeteoor ? 'meteoor' : lot > 0.95 ? 'ster' : 'lekker';
+    const soort: Ding['soort'] = lot < kansMeteoor ? 'gevaar' : lot > 0.95 ? 'ster' : 'lekker';
     const img = document.createElement('img');
-    img.className = `vang-ding vang-ding--${soort}`;
-    img.src = soort === 'meteoor' ? METEOOR : soort === 'ster' ? STER : LEKKERS[Math.floor(Math.random() * LEKKERS.length)];
+    img.className = `vang-ding vang-ding--${soort}${soort === 'gevaar' && thema.rood ? ' vang-ding--rood' : ''}`;
+    img.src = soort === 'gevaar' ? thema.gevaar : soort === 'ster' ? STER : LEKKERS[Math.floor(Math.random() * LEKKERS.length)];
     img.alt = '';
-    const m = soort === 'meteoor' ? m0 * groei : m0;
+    const m = soort === 'gevaar' ? m0 * groei : m0;
     img.style.width = `${m}px`;
     img.style.height = `${m}px`;
     veld.appendChild(img);
     const basis = (kleuter ? 0.2 : 0.26) * hoogte();
-    const snelheid = basis * (1 + Math.min(1.4, tijd / 45)) * (0.85 + Math.random() * 0.3);
+    const snelheid = basis * (1 + Math.min(1.6, tijd / 22)) * (0.85 + Math.random() * 0.3);
     dingen.push({
       el: img,
       x: m / 2 + Math.random() * (breedte() - m),
@@ -168,7 +198,7 @@ export function VangScreen(manager: ScreenManager): Screen {
 
   function vang(d: Ding): void {
     d.el.remove();
-    if (d.soort === 'meteoor') {
+    if (d.soort === 'gevaar') {
       if (tijd < geraakt) return;
       levens--;
       geraakt = tijd + 1.2;
@@ -213,7 +243,7 @@ export function VangScreen(manager: ScreenManager): Screen {
 
     if (tijd >= volgende) {
       laatVallen();
-      const tussen = Math.max(kleuter ? 0.7 : 0.45, (kleuter ? 1.3 : 1.0) - tijd * 0.012);
+      const tussen = Math.max(kleuter ? 0.6 : 0.38, (kleuter ? 1.2 : 0.95) - tijd * 0.025);
       volgende = tijd + tussen * (0.8 + Math.random() * 0.4);
     }
 
@@ -223,7 +253,7 @@ export function VangScreen(manager: ScreenManager): Screen {
     dingen = dingen.filter((d) => {
       const dm = d.maat;
       d.y += d.snelheid * dt;
-      d.draai += dt * (d.soort === 'meteoor' ? 0 : 40);
+      d.draai += dt * (d.soort === 'gevaar' ? 0 : 40);
       d.el.style.transform = `translate(${d.x - dm / 2}px, ${d.y - dm / 2}px) rotate(${d.draai}deg)`;
       const raakt = d.y > spelerBoven + m * 0.1 && d.y < spelerBoven + m * 0.8 && Math.abs(d.x - spelerX) < (m + dm) * 0.38;
       if (raakt) {
@@ -288,8 +318,8 @@ export function VangScreen(manager: ScreenManager): Screen {
       doos.innerHTML = `
         <img class="vang-venster__figuur" src="${speler.src}" alt="">
         <div class="vang-uitleg">
-          <span class="vang-uitleg__vak vang-uitleg__vak--goed"><img src="${LEKKERS[0]}" alt=""><img src="${LEKKERS[2]}" alt=""><b>✓</b></span>
-          <span class="vang-uitleg__vak vang-uitleg__vak--fout"><img src="${METEOOR}" alt=""><b>✕</b></span>
+          <span class="vang-uitleg__vak vang-uitleg__vak--goed"><img src="${LEKKERS[0]}" alt=""><img src="${LEKKERS[1]}" alt=""><b>✓</b></span>
+          <span class="vang-uitleg__vak vang-uitleg__vak--fout"><img src="${thema.gevaar}" alt=""${thema.rood ? ' class="vang-ding--rood"' : ''}><b>✕</b></span>
         </div>`;
     }
     doos.appendChild(knop('vang-venster__start', '<img src="assets/icons/vangspel-start.svg" alt="">', eind ? 'nog een keer' : 'start', start));
