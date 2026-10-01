@@ -1077,12 +1077,98 @@ svg.dino__lijf {
 .decor-boerderij {
   background: linear-gradient(#58b4f2 0%, #9ad6f8 55%, #dcf3fd 100%);
 }
-.boerderij-zon {
+/* Dag en nacht: data-tijd = dag | schemer | nacht | ochtend (boerderij.ts, DAGCYCLUS).
+   Alles gaat met lange overgangen (ruim 20 s), zodat je de avond haast niet ziet vallen. */
+.boerderij-lucht { position: absolute; inset: 0; opacity: 0; transition: opacity 22s ease-in-out; }
+.boerderij-lucht--schemer { background: linear-gradient(#4a5aa0 0%, #a86a9c 32%, #ee8f78 60%, #ffc583 82%, #ffe0a6 100%); }
+.boerderij-lucht--ochtend { background: linear-gradient(#7d97d4 0%, #c6a6d6 38%, #f6b9b0 66%, #ffdcb4 100%); }
+.boerderij-lucht--nacht { background: linear-gradient(#0d1a40 0%, #1a2b5e 50%, #2c3f78 82%, #3b4f88 100%); }
+.decor-boerderij[data-tijd='schemer'] .boerderij-lucht--schemer,
+.decor-boerderij[data-tijd='nacht'] .boerderij-lucht--schemer,
+.decor-boerderij[data-tijd='nacht'] .boerderij-lucht--nacht,
+.decor-boerderij[data-tijd='ochtend'] .boerderij-lucht--ochtend { opacity: 1; }
+.decor-boerderij[data-tijd='ochtend'] .boerderij-lucht--ochtend { transition-duration: 10s; }
+.decor-boerderij[data-tijd='ochtend'] .boerderij-lucht--nacht { transition-duration: 18s; }
+
+.boerderij-sterren { position: absolute; inset: 0 0 30% 0; opacity: 0; transition: opacity 14s ease-in-out; }
+.decor-boerderij[data-tijd='nacht'] .boerderij-sterren { opacity: 1; transition-delay: 8s; }
+.boerderij-ster {
+  position: absolute;
+  border-radius: 50%;
+  background: #fffbe8;
+  box-shadow: 0 0 4px rgba(255, 250, 220, 0.8);
+  animation: boerderij-twinkel 3.4s ease-in-out infinite alternate;
+}
+@keyframes boerderij-twinkel {
+  from { opacity: 0.3; }
+  to { opacity: 1; }
+}
+
+/* De maan komt 's nachts links langzaam boven de horizon uit en zakt in de ochtend weer. */
+.boerderij-maanbaan {
+  position: absolute;
+  top: max(9%, 88px);
+  left: 9%;
+  width: clamp(42px, 5.5vw, 76px);
+  opacity: 0;
+  transform: translateY(72vh);
+  transition: transform 0s 2s, opacity 2s;
+}
+.boerderij-maan { display: block; width: 100%; height: auto; filter: drop-shadow(0 0 14px rgba(255, 246, 205, 0.65)); }
+.decor-boerderij[data-tijd='nacht'] .boerderij-maanbaan {
+  opacity: 1;
+  transform: none;
+  transition: transform 34s cubic-bezier(0.2, 0.55, 0.35, 1), opacity 10s ease-in;
+}
+.decor-boerderij[data-tijd='ochtend'] .boerderij-maanbaan {
+  opacity: 0;
+  transform: translateY(30vh);
+  transition: transform 25s ease-in, opacity 18s ease-in-out;
+}
+
+/* De zon zakt bij de schemer achter de horizon (en wordt oranje) en komt 's ochtends op. */
+.boerderij-zonbaan {
+  position: absolute;
   top: max(11%, 96px);
   right: 5%;
   width: clamp(70px, 10vw, 130px);
-  animation: draai-langzaam 60s linear infinite;
+  transition: transform 24s cubic-bezier(0.3, 0.1, 0.35, 1) 2s;
 }
+.boerderij-zonbaan .boerderij-zon {
+  position: relative;
+  display: block;
+  width: 100%;
+  animation: draai-langzaam 60s linear infinite;
+  transition: filter 20s ease-in-out;
+}
+.decor-boerderij[data-tijd='schemer'] .boerderij-zonbaan,
+.decor-boerderij[data-tijd='nacht'] .boerderij-zonbaan {
+  transform: translate(-5vw, 72vh);
+  transition: transform 25s cubic-bezier(0.45, 0.05, 0.7, 1);
+}
+/* 's Ochtends komt de zon pas op als de nachtlucht al wat is weggetrokken. */
+.decor-boerderij[data-tijd='ochtend'] .boerderij-zonbaan { transition: transform 24s cubic-bezier(0.3, 0.1, 0.35, 1) 6s; }
+.decor-boerderij[data-tijd='schemer'] .boerderij-zon,
+.decor-boerderij[data-tijd='nacht'] .boerderij-zon { filter: saturate(1.5) hue-rotate(-22deg); }
+.decor-boerderij[data-tijd='ochtend'] .boerderij-zon { filter: saturate(1.3) hue-rotate(-14deg); }
+
+/* Wolken kleuren mee en worden 's nachts donker en doorzichtig. */
+.decor-boerderij .drijf-wolk { transition: filter 22s ease-in-out, opacity 22s ease-in-out; }
+.decor-boerderij[data-tijd='schemer'] .drijf-wolk { filter: brightness(1) sepia(0.5) saturate(1.8) hue-rotate(-28deg); }
+.decor-boerderij[data-tijd='nacht'] .drijf-wolk { filter: brightness(0.5) sepia(0.1) saturate(0.6) hue-rotate(0deg); opacity: 0.45; }
+.decor-boerderij[data-tijd='ochtend'] .drijf-wolk { filter: brightness(1) sepia(0.35) saturate(1.5) hue-rotate(-45deg); }
+
+/* Het land (polder, hek, dieren) krijgt per tijd een kleurfilter: warm bij de schemer,
+   donker en wat blauwig 's nachts, roze-warm in de ochtend. De lampjes en zzz niet. */
+.boerderij-f { transition: filter 22s ease-in-out; }
+.decor-boerderij[data-tijd='schemer'] .boerderij-f { filter: brightness(0.9) saturate(1.1) sepia(0.25) hue-rotate(-10deg); }
+.decor-boerderij[data-tijd='nacht'] .boerderij-f { filter: brightness(0.5) saturate(0.6) sepia(0) hue-rotate(18deg); }
+.decor-boerderij[data-tijd='ochtend'] .boerderij-f { filter: brightness(0.9) saturate(1) sepia(0.18) hue-rotate(-16deg); }
+
+/* Lampjes: een tweede polderlaag met alleen de ramen, die 's nachts gaat branden. */
+.boerderij-lichten { opacity: 0; pointer-events: none; transition: opacity 10s ease-in-out 5s; }
+.boerderij-lichten svg { filter: drop-shadow(0 0 4px rgba(255, 196, 90, 0.95)); }
+.decor-boerderij[data-tijd='nacht'] .boerderij-lichten { opacity: 1; transition-delay: 4s; }
 /* De polder: alles erin staat in % van --land, net als de getekende akkers (viewBox 300 hoog). */
 .decor-boerderij { --land: 38vh; }
 .boerderij-polder {
@@ -1236,6 +1322,73 @@ svg.dino__lijf {
   animation: adem 3.4s ease-in-out infinite;
 }
 .boer-dier__lijf { position: relative !important; display: block; width: 100%; }
+/* Slapen (schaap en varken): het lijf zakt wat in en de kop hangt (naar de kant waar het
+   dier naar kijkt: het schaap links, het gespiegelde varken rechts), traag ademen en zzz. */
+.boer-dier--slaper .boer-dier__lijf {
+  transform-origin: 50% 90%;
+  transform: translateY(0) rotate(0deg) scale(1, 1);
+  transition: filter 22s ease-in-out, transform 0.8s ease-out;
+}
+.boer-dier--slaper .boer-dier__lijf.gespiegeld { transform: translateY(0) rotate(0deg) scale(-1, 1); }
+.boer-dier--slaper .boer-dier__beeld { position: relative; display: block; width: 100%; }
+/* Dichte oogjes (zelfde viewBox als het plaatje), alleen zichtbaar tijdens het slapen. */
+.boer-oog {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+.boer-dier.slaapt .boer-oog { opacity: 1; transition: opacity 1.2s ease 0.6s; }
+.boer-dier--schaap { --kantel: -7deg; --zzz-x: -24px; }
+.boer-dier--varken { --kantel: 7deg; --zzz-x: -16px; }
+.boer-dier.slaapt { animation: boer-slaapadem 4.6s ease-in-out infinite; }
+.boer-dier.slaapt .boer-dier__lijf {
+  transform: translateY(6%) rotate(var(--kantel)) scale(1.04, 0.9);
+  transition: filter 22s ease-in-out, transform 2.2s ease-in-out;
+}
+.boer-dier.slaapt .boer-dier__lijf.gespiegeld { transform: translateY(6%) rotate(var(--kantel)) scale(-1.04, 0.9); }
+@keyframes boer-slaapadem {
+  0%, 100% { transform: scale(1, 1); }
+  50% { transform: scale(1.025, 1.045); }
+}
+/* Wakker worden: even uitrekken en een klein hupje. */
+.boer-dier.rekt { animation: boer-rek 1.1s ease-out; }
+@keyframes boer-rek {
+  0% { transform: none; }
+  25% { transform: scale(0.97, 1.1); }
+  45% { transform: translateY(-12px) scale(1, 1); }
+  65% { transform: translateY(0) scale(1.05, 0.94); }
+  82% { transform: scale(0.99, 1.02); }
+  100% { transform: none; }
+}
+.boer-zzz {
+  position: absolute;
+  top: 4%;
+  left: 14%;
+  opacity: 0;
+  transition: opacity 1s ease;
+  pointer-events: none;
+}
+.boer-dier--varken .boer-zzz { left: auto; right: 22%; }
+.boer-dier.slaapt .boer-zzz { opacity: 1; transition: opacity 1.5s ease 1.6s; }
+.boer-zzz span {
+  position: absolute;
+  font-weight: 800;
+  font-size: clamp(0.9rem, 1.6vw, 1.35rem);
+  color: #fff;
+  text-shadow: 0 0 1px #3b4a85, 0 0 1px #3b4a85, 0 0 2px #3b4a85, 0 1px 4px rgba(30, 40, 90, 0.6);
+  opacity: 0;
+  animation: boer-zzz 3.9s ease-out infinite;
+}
+.boer-zzz span:nth-child(2) { animation-delay: 1.3s; }
+.boer-zzz span:nth-child(3) { animation-delay: 2.6s; }
+@keyframes boer-zzz {
+  0% { transform: translate(0, 0) scale(0.55); opacity: 0; }
+  20% { opacity: 1; }
+  100% { transform: translate(var(--zzz-x), -48px) scale(1.25); opacity: 0; }
+}
 .boer-dier.juicht { animation: juich-sprong 0.6s ease-out 2; }
 .boer-dier--koe { left: 2%; bottom: 4vh; width: clamp(100px, 14vw, 190px); }
 .boer-dier--varken { right: 3%; bottom: 4vh; width: clamp(80px, 11vw, 150px); animation-delay: -1.2s; }

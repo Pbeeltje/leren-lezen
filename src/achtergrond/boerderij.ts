@@ -8,9 +8,14 @@ import { el, kortAan, plaatje, svgUitTekst } from './hulp.ts';
 // glinsteringen, een houten bruggetje en riet), een wuivend tarweveld, een geploegde akker
 // en een rode schuur, een zandweg waarover af en toe een tractor rijdt, en vooraan een hek
 // met een koe, een varken, een schaap, een haan en kuikentjes. Bij een goed antwoord springt
-// de koe op met "boe!"; aan het eind van een sessie springen alle dieren na elkaar. Dieren
-// en tractor zijn Fluent Emoji; polder, molen, schuur, brug, riet, tarwe en hek zijn zelf
-// getekend.
+// de koe op met "boe!"; aan het eind van een sessie springen alle dieren na elkaar.
+// Heel langzaam wordt het avond en nacht (DAGCYCLUS zet data-tijd: dag 90 s, schemer 25 s
+// met een zakkende zon en een oranje-roze lucht, nacht 50 s met fonkelende sterren, een
+// opkomende maan en verlichte ramen in schuur, molen en dorp, ochtend 25 s). Het schaap en
+// het varken vallen af en toe in slaap (zakken wat in, ademen traag, zzz); 's nachts slapen
+// ze bijna altijd, vaak de hele nacht. Bij juichen of feest worden ze wakker. Dieren en
+// tractor zijn Fluent Emoji; polder, molen, schuur, brug, riet, tarwe, hek, maan en sterren
+// zijn zelf getekend.
 
 // ---- Polder (viewBox 1000 x 300, rekt mee met het scherm) ----
 // Alle perceelranden en slootjes lopen naar één verdwijnpunt boven de horizon, zodat ze
@@ -206,6 +211,57 @@ const DORP = `
   <circle cx="48" cy="15" r="2" fill="#c9e3d3"/>
 </svg>`;
 
+// 's Nachts branden er lampjes. Elke tekening heeft een eigen laagje met alleen de ramen
+// (zelfde viewBox als de tekening), zodat het donker-filter van de polder ze niet dooft.
+const RAAM = 'fill="#ffd77a" stroke="#7a4e30" stroke-width="1.6"';
+const LICHT_MOLEN = `
+<svg viewBox="0 0 240 324" aria-hidden="true"><g transform="translate(20 22)">
+  <rect x="94" y="140" width="12" height="16" rx="1.5" ${RAAM}/>
+  <path d="M100 140 V156 M94 148 H106" stroke="#7a4e30" stroke-width="1.4"/>
+  <rect x="117" y="232" width="11" height="14" rx="1.5" ${RAAM}/>
+</g></svg>`;
+const LICHT_SCHUUR = `
+<svg viewBox="0 0 220 170" aria-hidden="true">
+  <rect x="88" y="44" width="44" height="30" rx="3" ${RAAM}/>
+  <path d="M110 44 V74 M88 59 H132" stroke="#7a4e30" stroke-width="3"/>
+</svg>`;
+const LICHT_DORP = `
+<svg viewBox="0 0 120 50" aria-hidden="true"><g fill="#ffd77a">
+  <rect x="4.5" y="41" width="3" height="3.5"/><rect x="18" y="37" width="3" height="3.5"/>
+  <rect x="27" y="42" width="3" height="3.5"/><rect x="58" y="29" width="3" height="4"/>
+  <rect x="66" y="36" width="3" height="4"/><rect x="94.5" y="41" width="3" height="3.5"/>
+  <rect x="111.5" y="40" width="3" height="3.5"/>
+</g></svg>`;
+
+// Een volle maan met een paar kratertjes.
+const MAAN = `
+<svg viewBox="0 0 100 100" aria-hidden="true">
+  <circle cx="50" cy="50" r="44" fill="#f7f1d2"/>
+  <circle cx="36" cy="38" r="9" fill="#e8dfb6"/><circle cx="62" cy="62" r="12" fill="#ebe3bd"/>
+  <circle cx="64" cy="30" r="5" fill="#e8dfb6"/><circle cx="34" cy="68" r="4" fill="#e8dfb6"/>
+</svg>`;
+
+// Dichte oogjes voor een slapend dier: een vlekje in de kleur van de kop over het open oog,
+// met een gebogen streepje erop. Zelfde viewBox als de Fluent-tekening (32 x 32), zodat de
+// plek precies klopt (het oog van het schaap staat op 5.45, 8.8; van het varken op 7.55, 16.5).
+const dichtOog = (x: number, y: number, kleur: string): string => `
+<svg viewBox="0 0 32 32" aria-hidden="true">
+  <ellipse cx="${x}" cy="${y}" rx="0.85" ry="1.4" fill="${kleur}"/>
+  <path d="M${x - 0.75} ${y - 0.15} Q${x} ${y + 0.75} ${x + 0.75} ${y - 0.15}" fill="none" stroke="#40333a" stroke-width="0.42" stroke-linecap="round"/>
+</svg>`;
+const OOG_SCHAAP = dichtOog(5.43, 8.83, '#cd8b49');
+const OOG_VARKEN = dichtOog(7.55, 16.5, '#fd839c');
+
+// Dag en nacht: de tijd staat in data-tijd op de decor; de CSS laat alles heel langzaam
+// in elkaar overvloeien (lucht, zon, maan, sterren, kleur van het land, lampjes).
+type Tijd = 'dag' | 'schemer' | 'nacht' | 'ochtend';
+const DAGCYCLUS: [Tijd, number][] = [
+  ['dag', 90000],
+  ['schemer', 25000],
+  ['nacht', 50000],
+  ['ochtend', 25000],
+];
+
 // Tarwe: één aar (met een tweede iets lager) als herhalend achtergrondplaatje per rij.
 const AAR = `data:image/svg+xml,${encodeURIComponent(
   `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 22">
@@ -230,7 +286,21 @@ const TRACTOR_MS = 18000;
 
 export function maakBoerderijDecor(): Decor {
   const root = el('div', 'decor decor-boerderij');
-  plaatje('assets/achtergrond/zon.svg', 'boerderij-zon', root);
+  root.dataset.tijd = 'dag';
+  // Lucht voor schemer, ochtend en nacht (over de daglucht van de decor heen).
+  for (const tijd of ['schemer', 'ochtend', 'nacht']) el('div', `boerderij-lucht boerderij-lucht--${tijd}`, root);
+  const sterren = el('div', 'boerderij-sterren', root);
+  for (let i = 0; i < 46; i++) {
+    const ster = el('div', 'boerderij-ster', sterren);
+    const maat = 1.5 + Math.random() * (i % 7 === 0 ? 3 : 1.8);
+    ster.style.left = `${Math.random() * 100}%`;
+    ster.style.top = `${Math.random() * 100}%`;
+    ster.style.width = ster.style.height = `${maat.toFixed(1)}px`;
+    ster.style.animationDuration = `${(2.4 + Math.random() * 3).toFixed(1)}s`;
+    ster.style.animationDelay = `${(-Math.random() * 5).toFixed(1)}s`;
+  }
+  svgUitTekst(MAAN, 'boerderij-maan', el('div', 'boerderij-maanbaan', root));
+  plaatje('assets/achtergrond/zon.svg', 'boerderij-zon', el('div', 'boerderij-zonbaan', root));
   plaatje('assets/achtergrond/wolk.svg', 'drijf-wolk drijf-wolk--1', root);
   plaatje('assets/achtergrond/wolk.svg', 'drijf-wolk drijf-wolk--2', root);
 
@@ -257,19 +327,33 @@ export function maakBoerderijDecor(): Decor {
   svgUitTekst(RIET, 'boerderij-riet boerderij-riet--1', polder);
   svgUitTekst(RIET, 'boerderij-riet boerderij-riet--2', polder);
   svgUitTekst(BRUG, 'boerderij-brug', polder);
+  polder.classList.add('boerderij-f');
 
-  const schaap = el('div', 'boer-dier boer-dier--schaap', root);
-  plaatje('assets/achtergrond/schaap.svg', 'boer-dier__lijf', schaap);
+  // De lampjes: een tweede, onzichtbare polder met alleen de ramen op dezelfde plekken.
+  const lichten = el('div', 'boerderij-polder boerderij-lichten', root);
+  svgUitTekst(LICHT_DORP, 'boerderij-dorp', lichten);
+  svgUitTekst(LICHT_MOLEN, 'boerderij-molen__svg', el('div', 'boerderij-molen', lichten));
+  svgUitTekst(LICHT_SCHUUR, 'boerderij-schuur__svg', el('div', 'boerderij-schuur', lichten));
+
+  // Het schaap en het varken kunnen slapen: hun plaatje zit samen met de dichte oogjes in
+  // één lijf, zodat inzakken, spiegelen en het nachtfilter voor allebei gelden.
+  const slaperLijf = (dier: HTMLElement, src: string, oog: string, gespiegeld = false): void => {
+    const lijf = el('div', `boer-dier__lijf boerderij-f${gespiegeld ? ' gespiegeld' : ''}`, dier);
+    plaatje(src, 'boer-dier__beeld', lijf);
+    svgUitTekst(oog, 'boer-oog', lijf);
+  };
+  const schaap = el('div', 'boer-dier boer-dier--slaper boer-dier--schaap', root);
+  slaperLijf(schaap, 'assets/achtergrond/schaap.svg', OOG_SCHAAP);
   const koe = el('div', 'boer-dier boer-dier--koe', root);
-  plaatje('assets/achtergrond/koe.svg', 'boer-dier__lijf', koe);
-  const varken = el('div', 'boer-dier boer-dier--varken', root);
-  plaatje('assets/achtergrond/varken.svg', 'boer-dier__lijf gespiegeld', varken);
-  el('div', 'boerderij-hek', root);
+  plaatje('assets/achtergrond/koe.svg', 'boer-dier__lijf boerderij-f', koe);
+  const varken = el('div', 'boer-dier boer-dier--slaper boer-dier--varken', root);
+  slaperLijf(varken, 'assets/achtergrond/varken.svg', OOG_VARKEN, true);
+  el('div', 'boerderij-hek boerderij-f', root);
   const haan = el('div', 'boer-dier boer-dier--haan', root);
-  plaatje('assets/achtergrond/haan.svg', 'boer-dier__lijf', haan);
+  plaatje('assets/achtergrond/haan.svg', 'boer-dier__lijf boerderij-f', haan);
   const kuikens = [1, 2].map((n) => {
     const k = el('div', `boer-dier boer-dier--kuiken boer-dier--kuiken-${n}`, root);
-    plaatje('assets/achtergrond/kuiken.svg', 'boer-dier__lijf', k);
+    plaatje('assets/achtergrond/kuiken.svg', 'boer-dier__lijf boerderij-f', k);
     return k;
   });
 
@@ -298,6 +382,79 @@ export function maakBoerderijDecor(): Decor {
   }
   plan();
 
+  // ---- Slapen: het schaap en het varken doen af en toe een dutje ----
+  // Ze zakken wat in en laten hun kop hangen (CSS .slaapt), ademen traag en er zweven
+  // zzz'tjes op. Overdag na 25-60 s, voor 10-18 s; 's nachts vallen ze snel in slaap en
+  // slapen ze meestal tot de ochtend. Wakker worden gaat met een rekje en een hupje.
+  interface Slaper {
+    dier: HTMLElement;
+    slaapt: boolean;
+    heleNacht: boolean;
+    timer?: number;
+  }
+  const slapers: Slaper[] = [schaap, varken].map((dier) => {
+    const zzz = el('div', 'boer-zzz', dier);
+    for (const letter of ['Z', 'z', 'z']) el('span', '', zzz).textContent = letter;
+    return { dier, slaapt: false, heleNacht: false };
+  });
+  const isNacht = (): boolean => root.dataset.tijd === 'nacht';
+  const wachtSlaper = (s: Slaper, fn: () => void, ms: number): void => {
+    window.clearTimeout(s.timer);
+    s.timer = window.setTimeout(fn, ms);
+  };
+  function planSlaap(s: Slaper, ms?: number): void {
+    if (!levend || stil) return;
+    const wacht = ms ?? (isNacht() ? 3000 + Math.random() * 9000 : 25000 + Math.random() * 35000);
+    wachtSlaper(s, () => valInSlaap(s), wacht);
+  }
+  function valInSlaap(s: Slaper): void {
+    if (!levend || s.slaapt) return;
+    s.slaapt = true;
+    s.dier.classList.add('slaapt');
+    s.heleNacht = isNacht() && Math.random() < 0.75;
+    if (s.heleNacht) window.clearTimeout(s.timer);
+    else wachtSlaper(s, () => wordWakker(s, true), 10000 + Math.random() * 8000);
+  }
+  function wordWakker(s: Slaper, rekken: boolean): void {
+    window.clearTimeout(s.timer);
+    if (s.slaapt) {
+      s.slaapt = false;
+      s.heleNacht = false;
+      s.dier.classList.remove('slaapt');
+      if (rekken) kortAan(s.dier, 'rekt', 1100);
+    }
+    planSlaap(s);
+  }
+  function tijdVoorSlaper(s: Slaper, tijd: Tijd): void {
+    if (tijd === 'nacht') {
+      // Wie wakker is, wordt nu snel slaperig; wie al een dutje doet, slaapt vaak door.
+      if (!s.slaapt) planSlaap(s, 2000 + Math.random() * 10000);
+      else if (Math.random() < 0.6) {
+        s.heleNacht = true;
+        window.clearTimeout(s.timer);
+      }
+    } else if (tijd === 'ochtend') {
+      if (s.heleNacht) wachtSlaper(s, () => wordWakker(s, true), 3000 + Math.random() * 14000);
+      else if (!s.slaapt) planSlaap(s);
+    }
+  }
+
+  // ---- Dag en nacht ----
+  let tijdStap = 0;
+  let tijdTimer: number | undefined;
+  function volgendeTijd(): void {
+    if (!levend || stil) return;
+    tijdStap = (tijdStap + 1) % DAGCYCLUS.length;
+    const [tijd, duur] = DAGCYCLUS[tijdStap];
+    root.dataset.tijd = tijd;
+    slapers.forEach((s) => tijdVoorSlaper(s, tijd));
+    tijdTimer = window.setTimeout(volgendeTijd, duur);
+  }
+  if (!stil) {
+    slapers.forEach((s) => planSlaap(s));
+    tijdTimer = window.setTimeout(volgendeTijd, DAGCYCLUS[0][1]);
+  }
+
   const roep = (dier: HTMLElement, tekst: string) => {
     const wolkje = el('div', 'boer-roep', dier);
     wolkje.textContent = tekst;
@@ -305,12 +462,14 @@ export function maakBoerderijDecor(): Decor {
   };
 
   const juich = () => {
+    slapers.forEach((s) => wordWakker(s, false));
     kortAan(koe, 'juicht', 1200);
     roep(koe, 'boe!');
   };
 
   // Einde van een sessie: alle dieren springen na elkaar, met sterretjes.
   const feest = () => {
+    slapers.forEach((s) => wordWakker(s, false));
     const rij = [koe, haan, ...kuikens, schaap, varken];
     rij.forEach((dier, i) => {
       later(() => {
@@ -326,6 +485,8 @@ export function maakBoerderijDecor(): Decor {
   const vernietig = () => {
     levend = false;
     window.clearTimeout(timer);
+    window.clearTimeout(tijdTimer);
+    slapers.forEach((s) => window.clearTimeout(s.timer));
     losseTimers.forEach((id) => window.clearTimeout(id));
     losseTimers.clear();
   };
