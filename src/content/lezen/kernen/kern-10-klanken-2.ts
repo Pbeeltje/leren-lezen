@@ -1,18 +1,18 @@
 import type { Kern } from '../../types.ts';
 
-// Themahoofdstuk (na VLL kern 6). Bron: juf-milou.nl werkblad 'Woord bij plaatje' (bronbestanden/plaatje_zin_woord_zwart_wit_g3_1.jpg), uitgesneden met bronbestanden/crop-woordbijplaatje.py, met de lijkt-erop-woorden van het blad.
-const pijl = { woord: 'pijl', afbeeldingPad: 'assets/images/woorden/milou/pijl.png', lijktOp: ['bijl', 'pijp'] };
-const gras = { woord: 'gras', afbeeldingPad: 'assets/images/woorden/milou/gras.png', lijktOp: ['gas', 'glas'] };
-const voet = { woord: 'voet', afbeeldingPad: 'assets/images/woorden/milou/voet.png', lijktOp: ['vier', 'boer'] };
-const kooi = { woord: 'kooi', afbeeldingPad: 'assets/images/woorden/milou/kooi.png', lijktOp: ['dooi', 'mooi'] };
-const taart = { woord: 'taart', afbeeldingPad: 'assets/images/woorden/milou/taart.png', lijktOp: ['staart', 'traan'] };
-const riet = { woord: 'riet', afbeeldingPad: 'assets/images/woorden/milou/riet.png', lijktOp: ['niet', 'riem'] };
-const tuin = { woord: 'tuin', afbeeldingPad: 'assets/images/woorden/milou/tuin.png', lijktOp: ['puin', 'tuit'] };
-const zing = { woord: 'zing', afbeeldingPad: 'assets/images/woorden/milou/zing.png', lijktOp: ['zin', 'hing'], vereistTekst: true };
-const gier = { woord: 'gier', afbeeldingPad: 'assets/images/woorden/milou/gier.png', lijktOp: ['gaar', 'giet'] };
-const kar = { woord: 'kar', afbeeldingPad: 'assets/images/woorden/milou/kar.png', lijktOp: ['kaas', 'kat'] };
-const weeg = { woord: 'weeg', afbeeldingPad: 'assets/images/woorden/milou/weeg.png', lijktOp: ['weer', 'web'], vereistTekst: true };
-const flos = { woord: 'flos', afbeeldingPad: 'assets/images/woorden/milou/flos.png', lijktOp: ['vlok', 'los'], vereistTekst: true };
+// Themahoofdstuk (na VLL kern 6). Woorden en lijkt-erop-woorden naar een juf-milou-werkblad 'Woord bij plaatje'; plaatjes zijn Fluent Emoji of eigen tekeningen (bronbestanden/teken-woorden.py).
+const pijl = { woord: 'pijl', afbeeldingPad: 'assets/images/woorden/pijl.svg', lijktOp: ['bijl', 'pijp'] };
+const gras = { woord: 'gras', afbeeldingPad: 'assets/images/woorden/gras.svg', lijktOp: ['gas', 'glas'] };
+const voet = { woord: 'voet', afbeeldingPad: 'assets/images/woorden/voet.svg', lijktOp: ['vier', 'boer'] };
+const kooi = { woord: 'kooi', afbeeldingPad: 'assets/images/woorden/kooi.svg', lijktOp: ['dooi', 'mooi'] };
+const taart = { woord: 'taart', afbeeldingPad: 'assets/images/woorden/taart.svg', lijktOp: ['staart', 'traan'] };
+const riet = { woord: 'riet', afbeeldingPad: 'assets/images/woorden/riet.svg', lijktOp: ['niet', 'riem'] };
+const tuin = { woord: 'tuin', afbeeldingPad: 'assets/images/woorden/tuin.svg', lijktOp: ['puin', 'tuit'] };
+const zing = { woord: 'zing', afbeeldingPad: 'assets/images/woorden/zing.svg', lijktOp: ['zin', 'hing'], vereistTekst: true };
+const gier = { woord: 'gier', afbeeldingPad: 'assets/images/woorden/gier.svg', lijktOp: ['gaar', 'giet'] };
+const kar = { woord: 'kar', afbeeldingPad: 'assets/images/woorden/kar.svg', lijktOp: ['kaas', 'kat'] };
+const weeg = { woord: 'weeg', afbeeldingPad: 'assets/images/woorden/weeg.svg', lijktOp: ['weer', 'web'], vereistTekst: true };
+const flos = { woord: 'flos', afbeeldingPad: 'assets/images/woorden/flos.svg', lijktOp: ['vlok', 'los'], vereistTekst: true };
 
 export const kern10Klanken2: Kern = {
   id: 'kern-10',

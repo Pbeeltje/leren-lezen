@@ -5,7 +5,7 @@ import { bestaand } from './vll-hulp.ts';
 const koe = bestaand('koe', 'svg');
 const kip = bestaand('kip', 'svg');
 const haan = bestaand('haan', 'svg');
-const eend = bestaand('eend', 'jpg');
+const eend = bestaand('eend', 'svg');
 const varken = bestaand('varken', 'svg');
 const ezel = bestaand('ezel', 'svg');
 const paard = bestaand('paard', 'svg');

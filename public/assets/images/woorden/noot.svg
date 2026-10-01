@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120">
+  <!-- Een hazelnoot, zelf getekend voor leren-lezen. -->
+  <path d="M60 30 C88 30 104 56 100 82 C96 104 80 116 60 116 C40 116 24 104 20 82 C16 56 32 30 60 30 Z" fill="#a0522d" stroke="#6d3416" stroke-width="3"/>
+  <path d="M36 62 C32 74 34 90 42 100" fill="none" stroke="#c67a4a" stroke-width="6" stroke-linecap="round"/>
+  <path d="M60 50 C56 66 56 92 60 110 M74 50 C80 66 82 90 76 108" fill="none" stroke="#7b3f1d" stroke-width="2" opacity="0.6"/>
+  <path d="M22 44 C30 22 46 10 60 10 C74 10 90 22 98 44 C92 50 84 46 80 40 C76 48 66 50 60 42 C54 50 44 48 40 40 C36 46 28 50 22 44 Z" fill="#c8a165" stroke="#8a6a35" stroke-width="3" stroke-linejoin="round"/>
+  <path d="M60 10 V2" stroke="#6d4c41" stroke-width="5" stroke-linecap="round"/>
+  <path d="M40 24 C48 18 54 16 60 16" fill="none" stroke="#e6c88f" stroke-width="4" stroke-linecap="round"/>
+</svg>

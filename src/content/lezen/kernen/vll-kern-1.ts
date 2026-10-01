@@ -16,7 +16,7 @@ const pen = vll('pen');
 const en = vll('en', true);
 const raam = bestaand('raam', 'svg');
 const vaas = bestaand('vaas', 'svg');
-const oor = bestaand('oor', 'jpg');
+const oor = bestaand('oor', 'svg');
 const kip = bestaand('kip', 'svg');
 const vos = bestaand('vos', 'svg');
 // Extra woorden met Fluent Emoji-plaatjes (MIT), alleen met letters die al bekend zijn.

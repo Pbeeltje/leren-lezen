@@ -235,7 +235,7 @@ export class LetterBlokkenScene {
   private tik(tijd: number): void {
     const nu = performance.now();
     for (const blok of this.blokken) {
-      blok.groep.rotation.y = (blok.groep.userData.draai as number) + Math.sin(tijd * 0.0006 + blok.basisX) * 0.08;
+      blok.groep.rotation.y = (blok.groep.userData.draai as number) + Math.sin(tijd * 0.0002 + blok.basisX) * 0.08; // rustig wiegen (3x trager op verzoek)
       // Schudden rond de vaste plek, zodat een blokje na een fout niet langzaam wegdrijft.
       const schudTot = blok.groep.userData.schudTot as number | undefined;
       blok.groep.position.x = schudTot && nu < schudTot ? blok.basisX + Math.sin(nu * 0.08) * 0.08 : blok.basisX;

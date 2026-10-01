@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120">
+  <!-- Een dikke buik, zelf getekend voor leren-lezen. -->
+  <path d="M14 104 C38 118 82 118 106 104 L108 120 H12 Z" fill="#5d7fa8"/>
+  <path d="M22 40 C40 32 80 32 98 40 C114 60 112 92 94 106 C78 117 42 117 26 106 C8 92 6 60 22 40 Z" fill="#f6c39a" stroke="#c98b5e" stroke-width="3"/>
+  <path d="M30 56 C26 68 28 82 34 92" fill="none" stroke="#fde0c8" stroke-width="7" stroke-linecap="round"/>
+  <path d="M56 80 C58 86 64 86 66 80" fill="none" stroke="#a86b42" stroke-width="3.5" stroke-linecap="round"/>
+  <path d="M18 6 H102 L104 40 C82 32 38 32 16 40 Z" fill="#42a5f5" stroke="#1565c0" stroke-width="3" stroke-linejoin="round"/>
+  <path d="M16 36 C38 28 82 28 104 36 L104 44 C82 36 38 36 16 44 Z" fill="#1e88e5" stroke="#1565c0" stroke-width="2"/>
+</svg>

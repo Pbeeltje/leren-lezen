@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120">
+  <!-- Een gier op een tak, zelf getekend voor leren-lezen. -->
+  <path d="M6 112 C40 108 80 108 114 112" fill="none" stroke="#795548" stroke-width="7" stroke-linecap="round"/>
+  <path d="M42 102 L32 118 H64 L60 102 Z" fill="#4e342e" stroke="#3e2723" stroke-width="2.5" stroke-linejoin="round"/>
+  <path d="M30 104 C22 84 28 62 48 54 C70 46 92 60 96 82 C98 96 92 104 86 108 Z" fill="#6d4c41" stroke="#3e2723" stroke-width="3" stroke-linejoin="round"/>
+  <path d="M60 64 C74 66 84 76 86 94 M56 74 C68 76 76 84 78 98 M50 84 C60 86 66 92 68 102" fill="none" stroke="#4e342e" stroke-width="3" stroke-linecap="round"/>
+  <path d="M38 110 h6 M44 110 l-2 4 M70 110 h6 M76 110 l-2 4" stroke="#fbc02d" stroke-width="3.5" stroke-linecap="round"/>
+  <path d="M34 58 C38 48 50 46 56 48 C62 46 74 48 78 58 C70 64 44 64 34 58 Z" fill="#f5f5f5" stroke="#bdbdbd" stroke-width="2.5"/>
+  <path d="M54 52 C52 40 56 30 64 26" fill="none" stroke="#c2185b" stroke-width="12" stroke-linecap="round"/>
+  <path d="M54 52 C52 40 56 30 64 26" fill="none" stroke="#f48fb1" stroke-width="7" stroke-linecap="round"/>
+  <circle cx="68" cy="22" r="12" fill="#f48fb1" stroke="#c2185b" stroke-width="2.5"/>
+  <path d="M78 16 C90 16 95 26 88 34 C86 29 82 27 77 27 Z" fill="#fbc02d" stroke="#a57c00" stroke-width="2" stroke-linejoin="round"/>
+  <circle cx="71" cy="18" r="3" fill="#212121"/><circle cx="72" cy="17" r="1" fill="#fff"/>
+</svg>

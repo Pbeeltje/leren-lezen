@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120">
+  <!-- Een kerstmuts, zelf getekend voor leren-lezen. -->
+  <path d="M20 86 C22 54 40 28 66 22 C86 18 100 28 104 44 C96 40 88 42 86 48 C92 60 96 72 98 86 Z" fill="#e53935" stroke="#b71c1c" stroke-width="3" stroke-linejoin="round"/>
+  <path d="M36 80 C40 58 52 40 68 32" fill="none" stroke="#ef9a9a" stroke-width="5" stroke-linecap="round" opacity="0.7"/>
+  <rect x="12" y="80" width="96" height="24" rx="12" fill="#fafafa" stroke="#cfd8dc" stroke-width="3"/>
+  <path d="M24 92 h4 M40 90 h4 M56 93 h4 M72 90 h4 M88 92 h4" stroke="#e0e0e0" stroke-width="3" stroke-linecap="round"/>
+  <circle cx="104" cy="50" r="11" fill="#fafafa" stroke="#cfd8dc" stroke-width="3"/>
+</svg>

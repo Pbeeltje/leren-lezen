@@ -2,7 +2,7 @@ import type { Kern } from '../../types.ts';
 import { bestaand } from './vll-hulp.ts';
 
 // Themahoofdstuk (na VLL kern 6). Dierentuindieren.
-const aap = bestaand('aap', 'jpg');
+const aap = bestaand('aap', 'svg');
 const olifant = bestaand('olifant', 'svg');
 const zebra = bestaand('zebra', 'svg');
 const giraf = bestaand('giraf', 'svg');

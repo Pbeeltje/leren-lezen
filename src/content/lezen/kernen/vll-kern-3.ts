@@ -9,11 +9,11 @@ const poes = vll('poes');
 const koek = vll('koek');
 const ijs = vll('ijs');
 const zeep = vll('zeep');
-const zon = bestaand('zon', 'jpg');
-const bij = bestaand('bij', 'jpg');
+const zon = bestaand('zon', 'svg');
+const bij = bestaand('bij', 'svg');
 const deur = bestaand('deur', 'svg');
-const voet = bestaand('voet', 'jpg');
-const eend = bestaand('eend', 'jpg');
+const voet = bestaand('voet', 'svg');
+const eend = bestaand('eend', 'svg');
 // Extra woorden met Fluent Emoji-plaatjes (MIT), alleen met letters die al bekend zijn.
 const boek = bestaand('boek', 'svg');
 const hoed = bestaand('hoed', 'svg');

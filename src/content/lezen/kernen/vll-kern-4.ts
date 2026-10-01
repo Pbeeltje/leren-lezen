@@ -11,12 +11,12 @@ const hut = bestaand('hut', 'svg');
 const hond = bestaand('hond', 'svg');
 const haan = bestaand('haan', 'svg');
 const wind = bestaand('wind', 'svg');
-const muts = bestaand('muts', 'png');
+const muts = bestaand('muts', 'svg');
 const onweer = bestaand('onweer', 'svg');
 const heet = bestaand('heet', 'svg', true);
 const kat = bestaand('kat', 'svg');
-const gans = bestaand('gans', 'jpg');
-const arm = bestaand('arm', 'jpg');
+const gans = bestaand('gans', 'svg');
+const arm = bestaand('arm', 'svg');
 const ram = bestaand('ram', 'svg');
 // Extra woorden met Fluent Emoji-plaatjes (MIT), alleen met letters die al bekend zijn.
 const hand = bestaand('hand', 'svg');

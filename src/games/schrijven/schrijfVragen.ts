@@ -8,9 +8,7 @@ import { kies } from '../kleuter/hulp.ts';
 // De drie schrijfspellen: lijnen (vanaf 3 jaar), letters (5-6) en woordjes (6).
 
 // Woorden met een nieuw, eigen plaatje (emoji of zelf getekend) in plaats van de VLL-afbeelding.
-const EIGEN_PLAATJE = new Set(['oog', 'tak', 'weg', 'hut', 'hout']);
-const W = (woord: string, ext = 'png'): string =>
-  ext === 'png' && !EIGEN_PLAATJE.has(woord) ? `assets/images/woorden/vll/${woord}.png` : `assets/images/woorden/${woord}.${ext === 'png' ? 'svg' : ext}`;
+const W = (woord: string): string => `assets/images/woorden/${woord}.svg`;
 
 // Letters in de volgorde waarin Veilig Leren Lezen ze aanbiedt, elk met een sleutelwoord
 // ("de m van maan") waar de letter duidelijk in te horen is.
@@ -45,14 +43,14 @@ const WOORDJES = [
 ];
 
 const LIJN_PAREN: [string, string][] = [
-  [W('bij', 'jpg'), W('bloem', 'svg')],
-  [W('muis', 'jpg'), W('kaas', 'svg')],
-  [W('konijn', 'svg'), W('wortel', 'svg')],
-  [W('aap', 'jpg'), W('banaan', 'svg')],
-  [W('kat', 'svg'), W('vis', 'jpg')],
-  [W('auto', 'svg'), W('huis', 'jpg')],
-  [W('boot', 'svg'), W('eiland', 'svg')],
-  [W('hond', 'svg'), W('bal', 'jpg')],
+  [W('bij'), W('bloem')],
+  [W('muis'), W('kaas')],
+  [W('konijn'), W('wortel')],
+  [W('aap'), W('banaan')],
+  [W('kat'), W('vis')],
+  [W('auto'), W('huis')],
+  [W('boot'), W('eiland')],
+  [W('hond'), W('bal')],
 ];
 
 // Nooit twee keer achter elkaar hetzelfde.

@@ -3,14 +3,14 @@ import { bestaand } from './vll-hulp.ts';
 
 // Themahoofdstuk (na VLL kern 6). Kerst. bel, muts en hulst komen van het Junior Einstein-werkblad (bronbestanden/).
 const bel = bestaand('bel', 'svg');
-const hulst = bestaand('hulst', 'png');
+const hulst = bestaand('hulst', 'svg');
 const kerstboom = bestaand('kerstboom', 'svg');
 const kerstman = bestaand('kerstman', 'svg');
 const sneeuwpop = bestaand('sneeuwpop', 'svg');
 const pakje = bestaand('pakje', 'svg');
 const rendier = bestaand('rendier', 'svg');
 const engel = bestaand('engel', 'svg');
-const muts = bestaand('muts', 'png');
+const muts = bestaand('muts', 'svg');
 
 export const kern09Kerst: Kern = {
   id: 'kern-09',

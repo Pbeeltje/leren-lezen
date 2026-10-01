@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120">
+  <!-- Een riem met gesp, zelf getekend voor leren-lezen. -->
+  <path d="M4 50 C40 44 80 44 116 50 V76 C80 70 40 70 4 76 Z" fill="#6d4c41" stroke="#3e2723" stroke-width="3" stroke-linejoin="round"/>
+  <path d="M6 56 C40 50 80 50 114 56 M6 70 C40 64 80 64 114 70" fill="none" stroke="#a1887f" stroke-width="1.6" stroke-dasharray="4 4"/>
+  <circle cx="86" cy="61" r="2.8" fill="#3e2723"/><circle cx="97" cy="61.6" r="2.8" fill="#3e2723"/><circle cx="108" cy="62.4" r="2.8" fill="#3e2723"/>
+  <rect x="22" y="38" width="36" height="48" rx="7" fill="none" stroke="#f9a825" stroke-width="7"/>
+  <rect x="22" y="38" width="36" height="48" rx="7" fill="none" stroke="#fff176" stroke-width="2" opacity="0.8"/>
+  <path d="M40 62 H62" stroke="#f9a825" stroke-width="5" stroke-linecap="round"/>
+</svg>

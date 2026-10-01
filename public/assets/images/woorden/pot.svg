@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120">
+  <!-- Een lege bloempot, zelf getekend voor leren-lezen. -->
+  <rect x="22" y="28" width="76" height="20" rx="5" fill="#e8894f" stroke="#9c4a1f" stroke-width="3"/>
+  <path d="M29 48 H91 L83 108 C82 112 79 114 75 114 H45 C41 114 38 112 37 108 Z" fill="#d9773f" stroke="#9c4a1f" stroke-width="3" stroke-linejoin="round"/>
+  <ellipse cx="60" cy="31" rx="33" ry="4" fill="#7a3d1c"/>
+  <path d="M41 56 L46 104" stroke="#f2a774" stroke-width="6" stroke-linecap="round" opacity="0.8"/>
+  <path d="M29 48 H91" stroke="#9c4a1f" stroke-width="3"/>
+</svg>

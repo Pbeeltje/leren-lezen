@@ -15,7 +15,7 @@ export interface Boekje {
   paginas: BoekjePagina[];
 }
 
-const vll = (w: string): string => `assets/images/woorden/vll/${w}.png`;
+const vll = (w: string): string => `assets/images/woorden/${w}.svg`;
 const pl = (bestand: string): string => `assets/images/woorden/${bestand}`;
 
 export const BOEKJES: Boekje[] = [
@@ -37,12 +37,12 @@ export const BOEKJES: Boekje[] = [
     kern: 2,
     titel: 'beer',
     paginas: [
-      { plaatjes: [pl('beer.jpg')], tekst: 'een beer.' },
-      { plaatjes: [pl('beer.jpg'), pl('boot.svg')], tekst: 'beer is in een boot.' },
+      { plaatjes: [pl('beer.svg')], tekst: 'een beer.' },
+      { plaatjes: [pl('beer.svg'), pl('boot.svg')], tekst: 'beer is in een boot.' },
       { plaatjes: [pl('peer.svg')], tekst: 'beer eet een peer.' },
       { plaatjes: [pl('peer.svg'), pl('peer.svg')], tekst: 'nog een peer!' },
       { plaatjes: [pl('kers.svg')], tekst: 'beer eet ook een kers.' },
-      { plaatjes: [pl('beer.jpg')], tekst: 'ik ben beer!' },
+      { plaatjes: [pl('beer.svg')], tekst: 'ik ben beer!' },
     ],
   },
   {

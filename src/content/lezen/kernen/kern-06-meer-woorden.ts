@@ -2,7 +2,7 @@ import type { Kern } from '../../types.ts';
 import { bestaand } from './vll-hulp.ts';
 
 // Themahoofdstuk (na VLL kern 6). Speelgoed (vroeger 'meer woorden': die woorden staan nu in de VLL-hoofdstukken).
-const bal = bestaand('bal', 'jpg');
+const bal = bestaand('bal', 'svg');
 const ballon = bestaand('ballon', 'svg');
 const vlieger = bestaand('vlieger', 'svg');
 const knuffel = bestaand('knuffel', 'svg');

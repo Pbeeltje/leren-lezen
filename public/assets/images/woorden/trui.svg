@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120">
+  <!-- Een trui, zelf getekend voor leren-lezen. -->
+  <path d="M40 18 H80 L108 38 L116 88 L98 92 L92 58 V110 H28 V58 L22 92 L4 88 L12 38 Z" fill="#f48fb1" stroke="#c2185b" stroke-width="3" stroke-linejoin="round"/>
+  <rect x="42" y="8" width="36" height="16" rx="5" fill="#ec407a" stroke="#c2185b" stroke-width="3"/>
+  <path d="M48 11 V21 M54 11 V21 M60 11 V21 M66 11 V21 M72 11 V21" stroke="#f8bbd0" stroke-width="2"/>
+  <rect x="28" y="98" width="64" height="12" fill="#ec407a" stroke="#c2185b" stroke-width="3"/>
+  <path d="M36 100 V108 M44 100 V108 M52 100 V108 M60 100 V108 M68 100 V108 M76 100 V108 M84 100 V108" stroke="#f8bbd0" stroke-width="2"/>
+  <path d="M4 88 L22 92 L23 84 L5 80 Z M116 88 L98 92 L97 84 L115 80 Z" fill="#ec407a" stroke="#c2185b" stroke-width="2.5" stroke-linejoin="round"/>
+  <path d="M30 60 l8 8 8 -8 8 8 8 -8 8 8 8 -8 8 8 8 -8" fill="none" stroke="#fff" stroke-width="3.5" stroke-linejoin="round"/>
+  <path d="M30 76 l8 8 8 -8 8 8 8 -8 8 8 8 -8 8 8 8 -8" fill="none" stroke="#fce4ec" stroke-width="3" stroke-linejoin="round"/>
+</svg>

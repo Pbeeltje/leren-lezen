@@ -6,7 +6,7 @@ import { bestaand } from './vll-hulp.ts';
 // kaarten; kern 7-12 hebben geen eigen kernwoorden, dus de woorden zijn zelf gekozen.
 // Plaatjes: Fluent Emoji (MIT), kooi: juf-milou-werkblad.
 const haai = bestaand('haai', 'svg');
-const kooi = { woord: 'kooi', afbeeldingPad: 'assets/images/woorden/milou/kooi.png' };
+const kooi = { woord: 'kooi', afbeeldingPad: 'assets/images/woorden/kooi.svg' };
 const boei = bestaand('boei', 'svg');
 const emmer = bestaand('emmer', 'svg');
 const kikker = bestaand('kikker', 'svg');

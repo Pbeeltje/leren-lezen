@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120">
+  <!-- Hulst met besjes, zelf getekend voor leren-lezen. -->
+  <path d="M60.0 66.0 Q56.8 57.1 56.5 44.8 Q46.9 43.5 46.5 31.3 Q34.4 33.0 31.5 23.8 Q19.3 25.6 10.0 24.0 Q13.2 32.9 13.5 45.2 Q23.1 46.5 23.5 58.7 Q35.6 57.0 38.5 66.2 Q50.7 64.4 60.0 66.0 Z" fill="#2e7d32" stroke="#1b5e20" stroke-width="2.5" stroke-linejoin="round"/>
+  <path d="M60.0 66.0 L10.0 24.0" stroke="#81c784" stroke-width="2.5" stroke-linecap="round"/>
+  <path d="M60.0 66.0 Q69.2 65.4 81.0 68.5 Q84.5 59.8 96.2 62.7 Q97.5 50.8 107.0 50.5 Q108.2 38.4 112.0 30.0 Q102.8 30.6 91.0 27.5 Q87.5 36.2 75.8 33.3 Q74.5 45.2 65.0 45.5 Q63.8 57.6 60.0 66.0 Z" fill="#2e7d32" stroke="#1b5e20" stroke-width="2.5" stroke-linejoin="round"/>
+  <path d="M60.0 66.0 L112.0 30.0" stroke="#81c784" stroke-width="2.5" stroke-linecap="round"/>
+  <path d="M60.0 66.0 Q55.3 72.1 46.3 78.0 Q50.9 84.4 42.2 90.3 Q50.4 96.9 45.3 103.0 Q53.8 109.6 58.0 116.0 Q62.7 109.9 71.7 104.0 Q67.1 97.6 75.8 91.7 Q67.6 85.1 72.7 79.0 Q64.2 72.4 60.0 66.0 Z" fill="#2e7d32" stroke="#1b5e20" stroke-width="2.5" stroke-linejoin="round"/>
+  <path d="M60.0 66.0 L58.0 116.0" stroke="#81c784" stroke-width="2.5" stroke-linecap="round"/>
+  <g stroke="#8e0000" stroke-width="2">
+    <circle cx="52" cy="58" r="10" fill="#e53935"/><circle cx="70" cy="56" r="10" fill="#e53935"/><circle cx="61" cy="72" r="10" fill="#d32f2f"/>
+  </g>
+  <circle cx="49" cy="55" r="3" fill="#ffcdd2"/><circle cx="67" cy="53" r="3" fill="#ffcdd2"/><circle cx="58" cy="69" r="3" fill="#ffcdd2"/>
+</svg>

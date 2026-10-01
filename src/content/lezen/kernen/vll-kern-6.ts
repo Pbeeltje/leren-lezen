@@ -10,11 +10,11 @@ const uil = vll('uil');
 const pauw = vll('pauw');
 const duif = vll('duif');
 const ei = vll('ei');
-const fruit = bestaand('fruit', 'png');
-const wolf = bestaand('wolf', 'jpg');
-const spook = bestaand('spook', 'png');
-const pot = bestaand('pot', 'png');
-const boom = bestaand('boom', 'png');
+const fruit = bestaand('fruit', 'svg');
+const wolf = bestaand('wolf', 'svg');
+const spook = bestaand('spook', 'svg');
+const pot = bestaand('pot', 'svg');
+const boom = bestaand('boom', 'svg');
 // Extra woorden met Fluent Emoji-plaatjes (MIT), alleen met letters die al bekend zijn.
 const fiets = bestaand('fiets', 'svg');
 const trein = bestaand('trein', 'svg');

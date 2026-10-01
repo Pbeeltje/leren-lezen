@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120">
+  <!-- Een vogelkooi met een vogeltje, zelf getekend voor leren-lezen. -->
+  <circle cx="60" cy="16" r="7" fill="none" stroke="#f9a825" stroke-width="4"/>
+  <path d="M24 56 C24 14 96 14 96 56" fill="none" stroke="#f9a825" stroke-width="4"/>
+  <path d="M60 23 V24" stroke="#f9a825" stroke-width="4"/>
+  <g transform="translate(60 76)">
+    <path d="M-20 4 C-20 -10 -8 -16 2 -14 C12 -12 16 -4 14 4 C10 12 -14 14 -20 4 Z" fill="#fdd835" stroke="#f9a825" stroke-width="2"/>
+    <circle cx="8" cy="-8" r="2.2" fill="#212121"/>
+    <path d="M14 -6 L22 -3 L14 0 Z" fill="#fb8c00"/>
+    <path d="M-12 0 C-8 -6 0 -6 4 0" fill="none" stroke="#f9a825" stroke-width="2.5" stroke-linecap="round"/>
+    <path d="M-4 12 V18 M4 12 V18" stroke="#fb8c00" stroke-width="2.5" stroke-linecap="round"/>
+  </g>
+  <path d="M34 94 H86" stroke="#8d6e63" stroke-width="4" stroke-linecap="round"/>
+  <path d="M30 38.3 V100 M40 29.4 V100 M50 25.3 V100 M60 24.0 V100 M70 25.3 V100 M80 29.4 V100 M90 38.3 V100" stroke="#f9a825" stroke-width="3"/>
+  <path d="M24 56 V100 M96 56 V100" stroke="#f9a825" stroke-width="4"/>
+  <rect x="16" y="98" width="88" height="14" rx="4" fill="#8d6e63" stroke="#5d4037" stroke-width="3"/>
+  <path d="M24 60 H96" stroke="#f9a825" stroke-width="3"/>
+</svg>
