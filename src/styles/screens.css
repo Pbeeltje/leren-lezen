@@ -1510,3 +1510,87 @@
   .boekje-plaatjes--3 img { width: 88px; height: 88px; }
   .boekje-woord { font-size: 2rem; }
 }
+
+/* ---------- Muziek ---------- */
+.muziek-kaart { position: relative; gap: 18px; }
+.muziek-nog-eens {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: #eef3fb;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 3px 0 #c5d2ea;
+}
+.muziek-nog-eens img { width: 34px; height: 34px; }
+.muziek-stippen { display: flex; gap: 10px; min-height: 22px; }
+.muziek-stippen span { width: 20px; height: 20px; border-radius: 50%; background: #dfe6f3; transition: background 0.15s; }
+.muziek-stippen .muziek-stip--goed { background: var(--kleur-succes); }
+.xylofoon {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 280px;
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
+}
+.xylofoon__staaf {
+  flex: 1 1 0;
+  max-width: 64px;
+  height: var(--lengte);
+  border-radius: 14px;
+  background: var(--kleur);
+  box-shadow: inset 0 -8px 0 rgba(0, 0, 0, 0.18), 0 4px 0 rgba(0, 0, 0, 0.15);
+  position: relative;
+}
+/* De twee spijkertjes waarmee een staaf op het frame ligt. */
+.xylofoon__staaf::before, .xylofoon__staaf::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  width: 10px;
+  height: 10px;
+  margin-left: -5px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.75);
+}
+.xylofoon__staaf::before { top: 12%; }
+.xylofoon__staaf::after { bottom: 12%; }
+.xylofoon__staaf--aan { animation: staaf-aan 0.4s ease-out; }
+@keyframes staaf-aan {
+  0% { transform: translateY(6px) scale(0.97); filter: brightness(1.5); }
+  100% { transform: none; filter: none; }
+}
+.xylofoon--wacht { opacity: 0.85; }
+.muziek-kaart--vrij .xylofoon { height: min(56vh, 400px); }
+.muziek-kaart--vrij .xylofoon__staaf { max-width: 80px; }
+.muziek-trom {
+  width: 200px;
+  height: 200px;
+  border-radius: 50%;
+  background: #fff4e6;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 6px 0 #f1d1ad;
+  touch-action: none;
+}
+.muziek-trom img { width: 150px; height: 150px; pointer-events: none; }
+.muziek-trom--bonk { animation: trom-bonk 0.22s ease-out; }
+.muziek-trom--voor { background: #e6f6ff; box-shadow: 0 6px 0 #b9dcf2; }
+@keyframes trom-bonk { 40% { transform: scale(0.9); } }
+@media (prefers-reduced-motion: reduce) {
+  .xylofoon__staaf--aan, .muziek-trom--bonk { animation: none; }
+}
+@media (max-width: 560px) {
+  .xylofoon { gap: 5px; height: 230px; }
+  .muziek-trom { width: 170px; height: 170px; }
+  .muziek-trom img { width: 124px; height: 124px; }
+}

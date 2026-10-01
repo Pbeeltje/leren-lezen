@@ -52,6 +52,14 @@ export const TOPICS: Topic[] = [
     beschikbaar: true,
   },
   {
+    // Xylofoon, speel na en ritme; de klanken maakt de browser zelf (engine/muziek.ts).
+    id: 'muziek',
+    leeftijd: [3, 4, 5, 6],
+    titel: 'Muziek',
+    icoonPad: 'assets/icons/muziek.svg',
+    beschikbaar: true,
+  },
+  {
     id: 'natuur',
     leeftijd: [3, 4, 5, 6],
     titel: 'Natuur',
