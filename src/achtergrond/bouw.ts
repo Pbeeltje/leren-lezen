@@ -7,7 +7,48 @@ import { el, kortAan, plaatje, svgUitTekst } from './hulp.ts';
 // graafmachine met een zandberg, vooraan pionnen en een afzetting. Af en toe rijdt er een
 // kiepwagen heen of terug. Bij een goed antwoord schept de graafmachine zand en kiept het
 // weer uit; aan het eind van een sessie zet de kraan het dak op het huis, de steiger gaat
-// weg, de ramen gaan aan, de vlag gaat in de top en er vliegt confetti. Alles zelf getekend.
+// weg, de ramen gaan aan, de vlag gaat in de top en er vliegt confetti. Achter de
+// bouwplaats ligt de stad (twee rijen flats en torens, de achterste bleker) en af en toe
+// vliegt er rustig een helikopter over. Alles zelf getekend, behalve de helikopter (Fluent).
+
+// De stad: gebouwen met een vaste "willekeur", zodat hij elke keer hetzelfde is.
+function skyline(rij: 'ver' | 'dichtbij'): string {
+  let zaad = rij === 'ver' ? 11 : 29;
+  const rnd = () => {
+    zaad = (zaad * 16807) % 2147483647;
+    return zaad / 2147483647;
+  };
+  const ver = rij === 'ver';
+  const kleuren = ver ? ['#b9d3e8', '#c4dbee', '#aecbe3'] : ['#8fb1cf', '#9dbbd6', '#83a7c8', '#a3bfd8'];
+  const raam = ver ? '#d8e8f5' : '#cfe3f3';
+  let uit = '';
+  let x = ver ? -10 : 0;
+  while (x < 1600) {
+    const b = ver ? 50 + rnd() * 60 : 60 + rnd() * 80;
+    const h = ver ? 120 + rnd() * 160 : 70 + rnd() * 150;
+    const top = 300 - h;
+    const kleur = kleuren[Math.floor(rnd() * kleuren.length)];
+    uit += `<rect x="${x.toFixed(0)}" y="${top.toFixed(0)}" width="${b.toFixed(0)}" height="${h.toFixed(0)}" fill="${kleur}"/>`;
+    // Een paar torens met een antenne of een getrapte top.
+    const extra = rnd();
+    if (extra < 0.18) uit += `<path d="M${(x + b / 2).toFixed(0)} ${top.toFixed(0)} V${(top - 26).toFixed(0)}" stroke="${kleur}" stroke-width="3"/><circle cx="${(x + b / 2).toFixed(0)}" cy="${(top - 27).toFixed(0)}" r="3" fill="#ff6b6b"/>`;
+    else if (extra < 0.32) uit += `<rect x="${(x + b * 0.2).toFixed(0)}" y="${(top - 18).toFixed(0)}" width="${(b * 0.6).toFixed(0)}" height="19" fill="${kleur}"/>`;
+    else if (extra < 0.4 && !ver) uit += `<rect x="${(x + b * 0.3).toFixed(0)}" y="${(top - 22).toFixed(0)}" width="${(b * 0.4).toFixed(0)}" height="16" rx="3" fill="#7c9cba"/><path d="M${(x + b * 0.35).toFixed(0)} ${(top - 6).toFixed(0)} V${top.toFixed(0)} M${(x + b * 0.65).toFixed(0)} ${(top - 6).toFixed(0)} V${top.toFixed(0)}" stroke="#7c9cba" stroke-width="3"/>`;
+    // Ramen in een raster.
+    const kol = Math.max(2, Math.floor(b / 16));
+    const vakB = b / kol;
+    for (let ry = top + 12; ry < 290; ry += ver ? 18 : 20) {
+      for (let k = 0; k < kol; k++) {
+        if (rnd() < 0.18) continue;
+        uit += `<rect x="${(x + k * vakB + vakB * 0.28).toFixed(1)}" y="${ry.toFixed(0)}" width="${(vakB * 0.44).toFixed(1)}" height="${ver ? 8 : 10}" fill="${raam}"/>`;
+      }
+    }
+    x += b + (ver ? rnd() * 6 : 4 + rnd() * 14);
+  }
+  return `<svg viewBox="0 0 1600 300" preserveAspectRatio="xMidYMax slice" aria-hidden="true">${uit}</svg>`;
+}
+const STAD_VER = skyline('ver');
+const STAD_DICHTBIJ = skyline('dichtbij');
 
 const GROND = `
 <svg viewBox="0 0 1000 100" preserveAspectRatio="none">
@@ -200,6 +241,7 @@ const AFZETTING = `
 </svg>`;
 
 const KIEP_MS = 16000;
+const HELI_MS = 34000;
 const CONFETTI = ['#ff6b6b', '#ffd23f', '#4dabf7', '#69db7c', '#b197fc', '#ff922b'];
 
 export function maakBouwDecor(): Decor {
@@ -207,6 +249,9 @@ export function maakBouwDecor(): Decor {
   plaatje('assets/achtergrond/zon.svg', 'bouw-zon', root);
   plaatje('assets/achtergrond/wolk.svg', 'drijf-wolk drijf-wolk--1', root);
   plaatje('assets/achtergrond/wolk.svg', 'drijf-wolk drijf-wolk--2', root);
+  const lucht = el('div', 'bouw-heli-baan', root);
+  svgUitTekst(STAD_VER, 'bouw-stad bouw-stad--ver', root);
+  svgUitTekst(STAD_DICHTBIJ, 'bouw-stad bouw-stad--dichtbij', root);
 
   svgUitTekst(GROND, 'bouw-grond', root);
   const plaats = svgUitTekst(BOUWPLAATS, 'bouw-plaats', root);
@@ -307,6 +352,27 @@ export function maakBouwDecor(): Decor {
   }
   plan();
 
+  // ---- Af en toe vliegt er rustig een helikopter over de stad. ----
+  let heliTimer: number | undefined;
+  let heliNaarRechts = Math.random() < 0.5;
+  function planHeli(eerste = false): void {
+    window.clearTimeout(heliTimer);
+    if (!levend || stil) return;
+    heliTimer = window.setTimeout(() => {
+      const h = el('div', 'bouw-heli', lucht);
+      h.style.setProperty('--van-x', heliNaarRechts ? '-14vw' : '104vw');
+      h.style.setProperty('--naar-x', heliNaarRechts ? '104vw' : '-14vw');
+      h.style.top = `${8 + Math.random() * 14}vh`;
+      const lijf = plaatje('assets/images/woorden/helikopter.svg', 'bouw-heli__lijf', h);
+      // De Fluent-helikopter kijkt naar links.
+      if (heliNaarRechts) lijf.classList.add('gespiegeld');
+      heliNaarRechts = !heliNaarRechts;
+      window.setTimeout(() => h.remove(), HELI_MS + 300);
+      planHeli();
+    }, eerste ? 3000 + Math.random() * 5000 : HELI_MS + 20000 + Math.random() * 20000);
+  }
+  planHeli(true);
+
   // Zandkorrels vanuit de bak van de graafmachine.
   const korrels = (aantal: number, omhoog: number) => {
     const vak = bak.getBoundingClientRect();
@@ -372,6 +438,7 @@ export function maakBouwDecor(): Decor {
   const vernietig = () => {
     levend = false;
     window.clearTimeout(timer);
+    window.clearTimeout(heliTimer);
     window.clearTimeout(resetTimer);
     cancelAnimationFrame(rafId);
   };

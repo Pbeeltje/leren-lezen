@@ -943,3 +943,8 @@ Children no longer pick an age but a group (`Groep = 'kleuter' | 'groep3'` in co
   tapping back/home/recents. A swipe up from the bottom edge shows it briefly.
 - **Stegosaurus avatar:** `avatar-stegosaurus.svg` is our own drawing (Fluent has none),
   listed after 'dino' in AVATAR_ICONEN (so it costs coins like the others).
+- **Bouwplaats extras:** `skyline('ver' | 'dichtbij')` in bouw.ts draws two rows of city
+  buildings (fixed seed, windows, a few antennas/water towers) behind the site; the far
+  row is paler and slightly blurred. A Fluent helicopter (`woorden/helikopter.svg`, faces
+  left, mirrored when flying right) crosses the sky in 34 s, first after 3-8 s, then every
+  ~55-75 s, with a gentle bob. Its timer is cleared in `vernietig`.
