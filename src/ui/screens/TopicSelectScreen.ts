@@ -12,6 +12,7 @@ import { ProfileSelectScreen } from './ProfileSelectScreen.ts';
 import { LuisterenKiesScreen } from './LuisterenKiesScreen.ts';
 import { OntdekkenKiesScreen } from './OntdekkenKiesScreen.ts';
 import { SchrijvenKiesScreen } from './SchrijvenKiesScreen.ts';
+import { BoekenkastScreen } from './BoekenkastScreen.ts';
 
 export function TopicSelectScreen(manager: ScreenManager, leeftijd: LeeftijdId): Screen {
   const el = document.createElement('div');
@@ -43,6 +44,8 @@ export function TopicSelectScreen(manager: ScreenManager, leeftijd: LeeftijdId):
           manager.push((m) => LuisterenKiesScreen(m));
         } else if (topic.id === 'ontdekken') {
           manager.push((m) => OntdekkenKiesScreen(m));
+        } else if (topic.id === 'boekjes') {
+          manager.push((m) => BoekenkastScreen(m));
         } else if (topic.id === 'schrijven') {
           manager.push((m) => SchrijvenKiesScreen(m));
         } else {

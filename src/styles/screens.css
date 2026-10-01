@@ -1415,3 +1415,98 @@
   .teken-kleur, .teken-dikte, .teken-actie { width: 42px; height: 42px; border-width: 3px; }
   .teken-balk { gap: 6px; }
 }
+
+/* ---------- Leesboekjes ---------- */
+.boekenkast {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 18px;
+  max-width: 760px;
+}
+.boekje-kaft {
+  position: relative;
+  width: 150px;
+  height: 190px;
+  border-radius: 8px 18px 18px 8px;
+  background: var(--kaft);
+  border-left: 14px solid color-mix(in srgb, var(--kaft) 70%, #000);
+  box-shadow: 0 6px 0 rgba(0, 0, 0, 0.25);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 12px;
+  color: #fff;
+}
+.boekje-kaft:active { transform: translateY(4px); box-shadow: 0 2px 0 rgba(0, 0, 0, 0.25); }
+.boekje-kaft img { width: 84px; height: 84px; object-fit: contain; background: #fff; border-radius: 14px; padding: 6px; }
+.boekje-kaft__titel { font-weight: 800; font-size: 1.15rem; line-height: 1.15; text-align: center; text-shadow: 0 2px 0 rgba(0, 0, 0, 0.2); }
+.boekje-kaft__nummer {
+  position: absolute;
+  top: 8px;
+  right: 10px;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.9);
+  color: var(--kleur-tekst);
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.boekje-container { display: flex; flex-direction: column; align-items: center; gap: 16px; }
+.boekje-pagina { position: relative; gap: 22px; min-height: 340px; justify-content: center; }
+.boekje-pagina--vooruit { animation: boekje-vooruit 0.35s ease-out; }
+.boekje-pagina--terug { animation: boekje-terug 0.35s ease-out; }
+@keyframes boekje-vooruit { from { opacity: 0; transform: translateX(40px) rotate(1deg); } }
+@keyframes boekje-terug { from { opacity: 0; transform: translateX(-40px) rotate(-1deg); } }
+.boekje-voorlees { position: absolute; top: 12px; right: 12px; width: 56px; height: 56px; }
+.boekje-voorlees img { width: 34px; height: 34px; }
+.boekje-plaatjes { display: flex; gap: 16px; justify-content: center; }
+.boekje-plaatjes img { width: 170px; height: 170px; object-fit: contain; }
+.boekje-plaatjes--2 img { width: 140px; height: 140px; }
+.boekje-plaatjes--3 img { width: 110px; height: 110px; }
+.boekje-zin { display: flex; flex-wrap: wrap; justify-content: center; gap: 4px 12px; margin: 0; }
+.boekje-woord {
+  background: transparent;
+  box-shadow: none;
+  min-height: 0;
+  font-size: 2.3rem;
+  font-weight: 800;
+  color: var(--kleur-tekst);
+  padding: 2px 6px;
+  border-radius: 10px;
+  letter-spacing: 0.03em;
+}
+.boekje-woord--aan { background: #fff3b0; }
+.boekje-nav { display: flex; align-items: center; gap: 24px; }
+.boekje-blader {
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  background: #fff;
+  color: var(--kleur-tekst);
+  font-size: 2.6rem;
+  font-weight: 800;
+  line-height: 1;
+  box-shadow: 0 4px 0 rgba(0, 0, 0, 0.2);
+}
+.boekje-blader--volgende { background: var(--kleur-primair); color: #fff; }
+.boekje-blader:disabled { opacity: 0.35; }
+.boekje-blader:active:not(:disabled) { transform: translateY(3px); box-shadow: none; }
+.boekje-teller { color: var(--kleur-tekst-licht); font-weight: 800; font-size: 1.2rem; min-width: 56px; text-align: center; }
+@media (prefers-reduced-motion: reduce) {
+  .boekje-pagina--vooruit, .boekje-pagina--terug { animation: none; }
+}
+@media (max-width: 560px) {
+  .boekje-kaft { width: 140px; height: 176px; }
+  .boekje-kaft img { width: 72px; height: 72px; }
+  .boekje-pagina { min-height: 300px; gap: 16px; }
+  .boekje-plaatjes img { width: 140px; height: 140px; }
+  .boekje-plaatjes--2 img { width: 118px; height: 118px; }
+  .boekje-plaatjes--3 img { width: 88px; height: 88px; }
+  .boekje-woord { font-size: 2rem; }
+}

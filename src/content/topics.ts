@@ -36,6 +36,14 @@ export const TOPICS: Topic[] = [
     beschikbaar: true,
   },
   {
+    // Leesboekjes bij VLL-kern 1-6: korte verhaaltjes met alleen bekende letters.
+    id: 'boekjes',
+    leeftijd: [5, 6],
+    titel: 'Leesboekjes',
+    icoonPad: 'assets/icons/boekjes.svg',
+    beschikbaar: true,
+  },
+  {
     // Overtrekken met de vinger: lijnen (3-4), letters (5-6) en woordjes (6).
     id: 'schrijven',
     leeftijd: [3, 4, 5, 6],
