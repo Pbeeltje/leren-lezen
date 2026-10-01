@@ -1,26 +1,72 @@
 import * as THREE from 'three';
-import { FontLoader, type Font } from 'three/examples/jsm/loaders/FontLoader.js';
-import { TextGeometry } from 'three/examples/jsm/geometries/TextGeometry.js';
-import { RoundedBoxGeometry } from 'three/examples/jsm/geometries/RoundedBoxGeometry.js';
 
 // Eigen, kleine three.js-scene (los van de gedeelde achtergrondlaag) speciaal voor
-// de woord-bouwen-oefening: klikbare 3D letterblokjes.
-// Lettertype: three.js' ingebouwde Helvetiker-demolettertype als tijdelijke oplossing
-// (zie plan: Fredoka/Baloo 2 omzetten naar typeface-json is latere polish, geen blokkade voor Fase 1).
+// de woord-bouwen-oefening: klikbare houten letterblokken, zoals echte speelgoedblokken
+// (beukenhout, zwart kadertje, dikke kleine letter; voorbeeld van de eigenaar in
+// bronbestanden/blocksexample.jpg). De vlakken zijn canvas-texturen in het lettertype van
+// de app (Baloo 2), dus geen apart 3D-lettertype nodig.
 
-let fontCache: Font | null = null;
-let fontBeloften: Promise<Font> | null = null;
+const VLAK_PX = 256;
 
-function laadFont(): Promise<Font> {
-  if (fontCache) return Promise.resolve(fontCache);
-  if (!fontBeloften) {
-    const loader = new FontLoader();
-    fontBeloften = loader.loadAsync('assets/fonts/helvetiker_bold.typeface.json').then((font) => {
-      fontCache = font;
-      return font;
-    });
+// Vaste pseudo-willekeur per blok, zodat de houtnerf niet bij elk frame verspringt.
+function willekeur(zaad: number): () => number {
+  let z = zaad * 9301 + 49297;
+  return () => ((z = (z * 9301 + 49297) % 233280) / 233280);
+}
+
+function houtVlak(zaad: number, letter?: string, kader = true): THREE.CanvasTexture {
+  const c = document.createElement('canvas');
+  c.width = c.height = VLAK_PX;
+  const g = c.getContext('2d')!;
+  const rnd = willekeur(zaad);
+  const verloop = g.createLinearGradient(0, 0, VLAK_PX, VLAK_PX);
+  verloop.addColorStop(0, '#f3dfbd');
+  verloop.addColorStop(1, '#e6c99b');
+  g.fillStyle = verloop;
+  g.fillRect(0, 0, VLAK_PX, VLAK_PX);
+  // Houtnerf: dunne, licht golvende lijnen.
+  for (let i = 0; i < 26; i++) {
+    const y0 = rnd() * VLAK_PX;
+    g.strokeStyle = `rgba(150, 105, 55, ${0.05 + rnd() * 0.12})`;
+    g.lineWidth = 0.6 + rnd() * 1.6;
+    g.beginPath();
+    for (let x = 0; x <= VLAK_PX; x += 16) {
+      const y = y0 + Math.sin(x / (40 + rnd() * 30) + i) * (2 + rnd() * 3);
+      if (x === 0) g.moveTo(x, y);
+      else g.lineTo(x, y);
+    }
+    g.stroke();
   }
-  return fontBeloften;
+  if (kader) {
+    const rand = VLAK_PX * 0.1;
+    g.strokeStyle = '#1d1d1f';
+    g.lineWidth = VLAK_PX * 0.055;
+    g.beginPath();
+    g.roundRect(rand, rand, VLAK_PX - rand * 2, VLAK_PX - rand * 2, VLAK_PX * 0.03);
+    g.stroke();
+  }
+  if (letter) {
+    g.fillStyle = '#1d1d1f';
+    g.font = `800 ${Math.round(VLAK_PX * 0.7)}px "Baloo 2", sans-serif`;
+    g.textAlign = 'center';
+    g.textBaseline = 'alphabetic';
+    // Midden van de letter zelf in het vak, ook bij een staartje (g, j, p) of stok (b, k).
+    const m = g.measureText(letter);
+    const hoogte = m.actualBoundingBoxAscent + m.actualBoundingBoxDescent;
+    g.fillText(letter, VLAK_PX / 2, VLAK_PX / 2 + hoogte / 2 - m.actualBoundingBoxDescent);
+  }
+  const t = new THREE.CanvasTexture(c);
+  t.colorSpace = THREE.SRGBColorSpace;
+  t.anisotropy = 4;
+  return t;
+}
+
+async function laadLettertype(): Promise<void> {
+  try {
+    await document.fonts.load(`800 100px "Baloo 2"`);
+  } catch {
+    // Geen webfont (offline): dan tekent het canvas met de reservefont.
+  }
 }
 
 interface Blok {
@@ -36,7 +82,7 @@ const BASIS_GROOTTE = 0.8;
 
 export class LetterBlokkenScene {
   private scene = new THREE.Scene();
-  private camera = new THREE.PerspectiveCamera(45, 1, 0.1, 20);
+  private camera = new THREE.PerspectiveCamera(28, 1, 0.1, 30);
   private renderer: THREE.WebGLRenderer;
   private blokken: Blok[] = [];
   private raycaster = new THREE.Raycaster();
@@ -56,11 +102,13 @@ export class LetterBlokkenScene {
     container.appendChild(this.renderer.domElement);
     this.renderer.domElement.style.touchAction = 'none';
 
-    this.camera.position.set(0, 0.3, 4.5);
+    // Smalle lens van verder weg: zelfde maat, minder vertekening aan de zijkanten.
+    this.camera.position.set(0, 0.5, 7.5);
     this.camera.lookAt(0, 0, 0);
 
-    this.scene.add(new THREE.AmbientLight(0xffffff, 1));
-    const licht = new THREE.DirectionalLight(0xffffff, 0.7);
+    // Ruim licht: lichte beuken blokken, geen schemerige kist.
+    this.scene.add(new THREE.AmbientLight(0xffffff, 2.3));
+    const licht = new THREE.DirectionalLight(0xffffff, 1.5);
     licht.position.set(2, 4, 5);
     this.scene.add(licht);
 
@@ -72,41 +120,35 @@ export class LetterBlokkenScene {
   }
 
   async toonLetters(letters: string[]): Promise<void> {
-    const font = await laadFont();
+    await laadLettertype();
     // De scene kan al vernietigd zijn terwijl het lettertype nog laadde.
     if (!this.actief) return;
     this.ruimOp();
 
-    // Elk blokje is een gekleurd kubusje met de letter ervoor: het hele blokje is
-    // aantikbaar, niet alleen de dunne lijnen van de letter (lastig bij een i of l).
-    const blokGeometrie = new RoundedBoxGeometry(BASIS_GROOTTE * 1.4, BASIS_GROOTTE * 1.5, BASIS_GROOTTE * 0.6, 3, 0.12);
+    const maat = BASIS_GROOTTE * 1.35;
+    const geometrie = new THREE.BoxGeometry(maat, maat, maat);
     letters.forEach((letter, index) => {
-      const letterGeometrie = new TextGeometry(letter, {
-        font,
-        size: BASIS_GROOTTE,
-        depth: BASIS_GROOTTE * 0.2,
-        curveSegments: 6,
-        bevelEnabled: true,
-        bevelThickness: 0.03,
-        bevelSize: 0.02,
-      });
-      letterGeometrie.computeBoundingBox();
-      letterGeometrie.center();
-
-      const tint = (index * 0.15) % 1;
-      const blokMateriaal = new THREE.MeshStandardMaterial({ color: new THREE.Color().setHSL(tint, 0.75, 0.75), roughness: 0.5 });
-      const letterMateriaal = new THREE.MeshStandardMaterial({ color: 0x2d2a4a, roughness: 0.4 });
-      const blok = new THREE.Mesh(blokGeometrie.clone(), blokMateriaal);
-      const tekst = new THREE.Mesh(letterGeometrie, letterMateriaal);
-      tekst.position.z = BASIS_GROOTTE * 0.4;
-
+      // Volgorde van de vlakken bij BoxGeometry: rechts, links, boven, onder, voor, achter.
+      const vlakken = [
+        houtVlak(index * 7 + 1),
+        houtVlak(index * 7 + 2),
+        houtVlak(index * 7 + 3, undefined, false),
+        houtVlak(index * 7 + 4, undefined, false),
+        houtVlak(index * 7 + 5, letter),
+        houtVlak(index * 7 + 6),
+      ];
+      const materialen = vlakken.map((map) => new THREE.MeshStandardMaterial({ map, roughness: 0.75 }));
+      const blok = new THREE.Mesh(geometrie.clone(), materialen);
       const groep = new THREE.Group();
-      groep.add(blok, tekst);
+      groep.add(blok);
+      // Een beetje scheef, zoals blokken die op tafel liggen; de bovenkant is net te zien.
+      groep.userData.draai = (willekeur(index + 3)() - 0.5) * 0.26;
+      groep.rotation.x = 0.16;
       groep.userData.blokIndex = index;
       this.scene.add(groep);
-      this.blokken.push({ groep, letter, gebruikt: false, materialen: [blokMateriaal, letterMateriaal], basisX: 0 });
+      this.blokken.push({ groep, letter, gebruikt: false, materialen, basisX: 0 });
     });
-    blokGeometrie.dispose();
+    geometrie.dispose();
     this.plaatsBlokken();
   }
 
@@ -124,7 +166,8 @@ export class LetterBlokkenScene {
     const perRij = Math.ceil(aantal / rijen);
     // Twee rijen op een telefoon: wat kleiner, anders vult één blok bijna de hele breedte.
     const spacing = Math.min(rijen === 2 ? 1.3 : maxSpacing, (zichtbareBreedte * (rijen === 2 ? 0.8 : 0.92)) / perRij);
-    const schaal = Math.min(1, (spacing * 0.6) / BASIS_GROOTTE);
+    // Blok (1.35 x BASIS breed) iets smaller dan de afstand, zodat scheve blokken elkaar niet raken.
+    const schaal = Math.min(1, (spacing * (rijen === 2 ? 0.82 : 0.64)) / (BASIS_GROOTTE * 1.35));
     this.blokken.forEach((blok, index) => {
       const rij = Math.floor(index / perRij);
       const inRij = rij === rijen - 1 ? aantal - perRij * (rijen - 1) : perRij;
@@ -142,7 +185,10 @@ export class LetterBlokkenScene {
       blok.groep.traverse((obj) => {
         if (obj instanceof THREE.Mesh) obj.geometry.dispose();
       });
-      for (const materiaal of blok.materialen) materiaal.dispose();
+      for (const materiaal of blok.materialen) {
+        materiaal.map?.dispose();
+        materiaal.dispose();
+      }
     }
     this.blokken = [];
   }
@@ -189,7 +235,7 @@ export class LetterBlokkenScene {
   private tik(tijd: number): void {
     const nu = performance.now();
     for (const blok of this.blokken) {
-      blok.groep.rotation.y = Math.sin(tijd * 0.0006 + blok.basisX) * 0.15;
+      blok.groep.rotation.y = (blok.groep.userData.draai as number) + Math.sin(tijd * 0.0006 + blok.basisX) * 0.08;
       // Schudden rond de vaste plek, zodat een blokje na een fout niet langzaam wegdrijft.
       const schudTot = blok.groep.userData.schudTot as number | undefined;
       blok.groep.position.x = schudTot && nu < schudTot ? blok.basisX + Math.sin(nu * 0.08) * 0.08 : blok.basisX;
