@@ -838,7 +838,7 @@ creates `audio/boekjes/` by itself.
 ## Drum kit, wooden blocks, backgrounds and profile menu (latest round)
 
 - **Ritme** (`games/muziek/muziekVragen.ts`): figures `ta`/`titi` per question number (`FIGUREN`), drums via `drumsVoor` (bass → +snare from question 3 → +cymbal from 6). Gaps KORT 0.24 / LANG 0.72; `ritmeKlopt` judges relative to the child's own tempo. Hitting the wrong drum is a mistake. Free play (`XylofoonScreen`) switches between the xylophone and `maakDrumstel(['bas','snare','bekken'])`.
-- **Woord bouwen blocks** (`three/letterBlocks.ts`): wooden canvas texture (`houtVlak`), black frame, lowercase Baloo 2, lens PerspectiveCamera(28). Double letters: every letter still gets its own block, but `ongebruikteMet` lets either block of that letter count (kaas: either a works twice).
+- **Woord bouwen blocks** (`three/letterBlocks.ts`): wooden canvas texture (`houtVlak`), black frame, lowercase Andika, lens PerspectiveCamera(28). Double letters: every letter gets its own block and the tapped block disappears (kaas: tap one a, then the other a).
 - **Backgrounds** (`src/achtergrond/`): every theme is a DOM `Decor` (`{element, juich, feest?, vernietig?}`), CSS in `styles/achtergrond.css`.
   - **zee:** the boat rides the higher of the two waves (`drijf` rAF loop). Rainbow (`maakRegenboog` in hulp.ts) 2.2 s after the storm. The whale (`kortAan(walvis,'duikt-op')`) appears 3.5 s after the boat is fully off screen.
   - **kasteel:** day 25 s / night 20 s (`data-tijd`), sometimes a rainbow by day, `.valster` shooting stars by night.
