@@ -174,7 +174,8 @@ export function VangScreen(manager: ScreenManager): Screen {
     const groei = 1 + Math.min(0.8, tijd / 56);
     const m0 = dingMaat();
     // Meteoren: eerst weinig, later meer (kleuters altijd minder).
-    const kansMeteoor = Math.min(kleuter ? 0.28 : 0.42, 0.14 + tijd * 0.0064);
+    // Kleuters beginnen met minder gevaar (9%), groep 3 met 14%.
+    const kansMeteoor = Math.min(kleuter ? 0.28 : 0.42, (kleuter ? 0.09 : 0.14) + tijd * 0.0064);
     const lot = Math.random();
     const moetGevaar = !gevaarGezien && tijd >= 1.1;
     const soort: Ding['soort'] = moetGevaar || lot < kansMeteoor ? 'gevaar' : lot > 0.95 ? 'ster' : 'lekker';
