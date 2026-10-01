@@ -948,3 +948,11 @@ Children no longer pick an age but a group (`Groep = 'kleuter' | 'groep3'` in co
   row is paler and slightly blurred. A Fluent helicopter (`woorden/helikopter.svg`, faces
   left, mirrored when flying right) crosses the sky in 34 s, first after 3-8 s, then every
   ~55-75 s, with a gentle bob. Its timer is cleared in `vernietig`.
+- **Treinreis trains:** wagon kinds personen, post (orange, envelope), stenen (rock
+  hopper), tank (gas tank) and container (coloured, with a Fluent picture of the cargo via
+  `<image href>`). `vulReizigers`: post behind the loc, 2-3 passenger cars, sometimes a
+  container; `vulGoederen`: 5-8 of stenen/tank/container. `rijd(vul, klaar, stop)` moves the
+  train with rAF (no Web Animation any more): with `stop = 'station'` it brakes so the
+  passenger cars stand in front of the visible part of the (wider, partly off-screen)
+  station and toots; with `'sein'` it waits before the red signal, which then turns green.
+  While stopped `.trein-trein--staat` pauses wheels and rocking. Check: `node tests/treinen.mjs <map>`.

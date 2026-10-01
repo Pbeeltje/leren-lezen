@@ -43,11 +43,12 @@
 .trein-boom--2 { right: 31%; width: clamp(30px, 4vw, 56px); animation-delay: -2s; }
 .trein-boom--3 { right: 13%; width: clamp(32px, 4.5vw, 62px); animation-delay: -4s; }
 
+/* Breed station dat links een stukje buiten beeld loopt. */
 .trein-station {
   position: absolute;
-  left: 0.5%;
+  left: -4vw;
   bottom: calc(var(--spoor) - 3px);
-  width: clamp(104px, 14vw, 200px);
+  width: clamp(190px, 27vw, 380px);
   height: auto;
 }
 
@@ -150,6 +151,9 @@
   transform-origin: center;
   animation: draai-langzaam 0.7s linear infinite;
 }
+/* Stilstaan (station of rood sein): wielen en geschok stoppen. */
+.trein-trein--staat .trein-wiel,
+.trein-trein--staat .trein-wagon__svg { animation-play-state: paused; }
 
 /* Rookpluimpjes uit de schoorsteen (bovenkant op 78% / 6% van de locomotief). */
 .trein-rook { position: absolute; left: 78%; top: 6%; width: 0; height: 0; }
