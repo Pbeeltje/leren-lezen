@@ -26,15 +26,43 @@ function knopNogEens(opnieuw: () => void): HTMLButtonElement {
   return b;
 }
 
+// Niveaus (kies je vóór het spel, zie MuziekKiesScreen): hoeveel noten of slagen, en op
+// hoeveel staven / met welke drums. Binnen een niveau groeit de lengte per vraag van min
+// naar max. De eigenaar wil tot 10-12 kunnen gaan ("misschien kan het kind het wel!").
+export const AANTAL_NIVEAUS = 6;
+const SPEEL_NA_NIVEAUS = [
+  { min: 2, max: 3, staven: VIJFTONIG, tussen: 0.75 },
+  { min: 3, max: 4, staven: VIJFTONIG, tussen: 0.7 },
+  { min: 4, max: 6, staven: [0, 1, 2, 3, 4, 5, 6, 7], tussen: 0.62 },
+  { min: 6, max: 8, staven: [0, 1, 2, 3, 4, 5, 6, 7], tussen: 0.58 },
+  { min: 8, max: 10, staven: [0, 1, 2, 3, 4, 5, 6, 7], tussen: 0.54 },
+  { min: 10, max: 12, staven: [0, 1, 2, 3, 4, 5, 6, 7], tussen: 0.5 },
+];
+const RITME_NIVEAUS: { min: number; max: number; drums: DrumSoort[] }[] = [
+  { min: 2, max: 3, drums: ['bas'] },
+  { min: 3, max: 4, drums: ['bas', 'snare'] },
+  { min: 4, max: 6, drums: ['bas', 'snare', 'bekken'] },
+  { min: 6, max: 8, drums: ['bas', 'snare', 'bekken'] },
+  { min: 8, max: 10, drums: ['bas', 'snare', 'bekken'] },
+  { min: 10, max: 12, drums: ['bas', 'snare', 'bekken'] },
+];
+// Wat er op de niveautegel staat: aantal noten/slagen en (bij ritme) de drums.
+export const niveauOmschrijving = (spel: 'speel-na' | 'ritme', niveau: number): { min: number; max: number; drums?: DrumSoort[] } =>
+  spel === 'speel-na' ? SPEEL_NA_NIVEAUS[niveau - 1] : RITME_NIVEAUS[niveau - 1];
+
+const lengteVoor = (n: { min: number; max: number }, vraag: number): number =>
+  n.min + Math.round(((n.max - n.min) * Math.min(vraag, 9)) / 9);
+
 // Nieuwe teller per keer dat het spel opent, zodat het weer kort begint.
-export function maakSpeelNaVragen(): () => RondeVraag {
+export function maakSpeelNaVragen(niveau = 1): () => RondeVraag {
+  const instelling = SPEEL_NA_NIVEAUS[Math.max(0, Math.min(AANTAL_NIVEAUS, niveau) - 1)];
+  const staven = instelling.staven;
   let nummer = 0;
   return () => {
-    const max = jong() ? 3 : 5;
-    const lengte = Math.min(max, 2 + Math.floor(nummer++ / 3));
+    const lengte = lengteVoor(instelling, nummer++);
     const melodie: number[] = [];
     while (melodie.length < lengte) {
-      const p = geheelTussen(0, VIJFTONIG.length - 1);
+      const p = geheelTussen(0, staven.length - 1);
       if (p !== melodie[melodie.length - 1]) melodie.push(p);
     }
     return {
@@ -51,7 +79,7 @@ export function maakSpeelNaVragen(): () => RondeVraag {
         let timers: number[] = [];
         let klaar = false;
 
-        const xylo = maakXylofoon(VIJFTONIG, (positie) => {
+        const xylo = maakXylofoon(staven, (positie) => {
           if (klaar) return;
           if (positie === melodie[gespeeld]) {
             stippen.children[gespeeld].classList.add('muziek-stip--goed');
@@ -74,9 +102,9 @@ export function maakSpeelNaVragen(): () => RondeVraag {
           gespeeld = 0;
           for (const s of stippen.children) s.classList.remove('muziek-stip--goed');
           xylo.zetActief(false);
-          const tussen = jong() ? 0.75 : 0.6;
+          const tussen = instelling.tussen + (jong() ? 0.1 : 0);
           melodie.forEach((p, i) => {
-            speelNoot(TONEN[VIJFTONIG[p]], 0.5 + i * tussen);
+            speelNoot(TONEN[staven[p]], 0.5 + i * tussen);
             timers.push(window.setTimeout(() => xylo.licht(p), (0.5 + i * tussen) * 1000));
           });
           timers.push(window.setTimeout(() => xylo.zetActief(true), (0.5 + lengte * tussen) * 1000));
@@ -98,8 +126,8 @@ export function maakSpeelNaVragen(): () => RondeVraag {
 
 // Ritme op een drumstel. Een ritme is een rij figuren: "ta" (één tik) of "ti-ti" (twee
 // snelle tikken, een dubbele tik). Tussen figuren zit een duidelijke pauze, binnen ti-ti
-// niet; zo hoor je bv. dubbel-enkel-dubbel. Eerst alleen de grote trom; na 3 oefeningen
-// komt de snaredrum erbij, na nog 3 het bekken (verzoek van de eigenaar).
+// niet; zo hoor je bv. dubbel-enkel-dubbel. Het niveau bepaalt hoeveel slagen en welke
+// drums (grote trom, + snaredrum, + bekken).
 type Figuur = 'ta' | 'titi';
 type Ritme = ('K' | 'L')[]; // tussenpozen tussen de slagen: kort of lang
 interface Slag {
@@ -110,27 +138,23 @@ interface Slag {
 const KORT = 0.24;
 const LANG = 0.72;
 
-const FIGUREN: Figuur[][][] = [
-  [['ta', 'ta']], // 1: simpel
-  [['titi', 'ta'], ['ta', 'titi']], // 2-3
-  [['ta', 'ta', 'titi'], ['titi', 'ta', 'ta'], ['ta', 'titi', 'ta'], ['titi', 'titi']], // 4-6
-  [['titi', 'ta', 'titi'], ['ta', 'ta', 'titi', 'ta'], ['titi', 'titi', 'ta'], ['ta', 'titi', 'ta', 'ta'], ['ta', 'titi', 'titi']], // 7+
-];
-
-function drumsVoor(nummer: number): DrumSoort[] {
-  if (nummer < 3) return ['bas'];
-  if (nummer < 6) return ['bas', 'snare'];
-  return ['bas', 'snare', 'bekken'];
-}
-
-const slagenIn = (f: Figuur[]): number => f.reduce((n, x) => n + (x === 'titi' ? 2 : 1), 0);
-
-function kiesFiguren(nummer: number, maxSlagen: number, vorige?: string): Figuur[] {
-  const groep = FIGUREN[nummer === 0 ? 0 : nummer < 3 ? 1 : nummer < 6 ? 2 : 3];
-  let keuzes = groep.filter((f) => slagenIn(f) <= maxSlagen && f.join() !== vorige);
-  if (!keuzes.length) keuzes = groep.filter((f) => slagenIn(f) <= maxSlagen);
-  if (!keuzes.length) keuzes = FIGUREN[2].filter((f) => slagenIn(f) <= maxSlagen && f.join() !== vorige);
-  return keuzes[geheelTussen(0, keuzes.length - 1)];
+// Een willekeurige rij ta's en ti-ti's met precies `slagen` tikken. Vanaf 3 tikken zitten
+// er altijd allebei in (anders is het geen ritme), en nooit drie keer hetzelfde achter
+// elkaar, zodat je de afwisseling goed hoort.
+function maakFiguren(slagen: number, vorige?: string): Figuur[] {
+  for (let poging = 0; poging < 200; poging++) {
+    const figuren: Figuur[] = [];
+    let over = slagen;
+    while (over > 0) {
+      const f: Figuur = over >= 2 && Math.random() < 0.45 ? 'titi' : 'ta';
+      figuren.push(f);
+      over -= f === 'titi' ? 2 : 1;
+    }
+    const drieGelijk = figuren.some((f, i) => i >= 2 && f === figuren[i - 1] && f === figuren[i - 2]);
+    const gemengd = slagen < 3 || (figuren.includes('ta') && figuren.includes('titi'));
+    if (gemengd && !drieGelijk && figuren.join() !== vorige) return figuren;
+  }
+  return Array.from({ length: slagen }, () => 'ta' as Figuur);
 }
 
 // Elke figuur krijgt één drum. De nieuwste drum komt er altijd in voor, en als er genoeg
@@ -170,17 +194,19 @@ export function ritmeKlopt(ritme: Ritme, tijden: number[]): boolean {
   return tussen.every((d, i) => (d > grens ? 'L' : 'K') === ritme[i]);
 }
 
-export function maakRitmeVragen(): () => RondeVraag {
+export function maakRitmeVragen(niveau = 1): () => RondeVraag {
+  const instelling = RITME_NIVEAUS[Math.max(0, Math.min(AANTAL_NIVEAUS, niveau) - 1)];
+  const drums = instelling.drums;
   let nummer = 0;
   let vorige: string | undefined;
   return () => {
     const dit = nummer++;
-    const figuren = kiesFiguren(dit, jong() ? 4 : 5, vorige);
+    const figuren = maakFiguren(lengteVoor(instelling, dit), vorige);
     vorige = figuren.join();
-    const drums = drumsVoor(dit);
     const slagen = maakSlagen(figuren, drums);
     const ritme = tussenpozen(slagen);
-    const nieuweDrum: DrumSoort | undefined = dit === 3 ? 'snare' : dit === 6 ? 'bekken' : undefined;
+    // Eerste vraag: elke drum van dit niveau even los laten horen, zodat je weet welke welke is.
+    const voorstellen: DrumSoort[] = dit === 0 && drums.length > 1 ? drums : [];
     return {
       instructie: 'Luister en trommel het na',
       audioPad: instructieAudioPad('muziek-ritme'),
@@ -227,7 +253,6 @@ export function maakRitmeVragen(): () => RondeVraag {
             if (tijden.length >= slagen.length) timers.push(window.setTimeout(beoordeel, 250));
             else wachtTimer = window.setTimeout(beoordeel, 2200); // gestopt met trommelen
           },
-          nieuweDrum,
         );
 
         function fout(): void {
@@ -284,17 +309,17 @@ export function maakRitmeVragen(): () => RondeVraag {
 
         kaart.append(knopNogEens(voorspelen), stippen, kit.element);
         container.appendChild(kaart);
-        // Een nieuwe drum eerst even alleen laten horen, dan pas het ritme.
+        // Eerst (alleen bij de eerste vraag) de drums één voor één voorstellen, dan het ritme.
         const start = dit === 0 ? 1800 : 600;
-        if (nieuweDrum) {
+        voorstellen.forEach((drum, i) => {
           timers.push(
             window.setTimeout(() => {
-              speelDrum(nieuweDrum);
-              kit.licht(nieuweDrum);
-            }, start),
+              speelDrum(drum);
+              kit.licht(drum);
+            }, start + i * 700),
           );
-        }
-        timers.push(window.setTimeout(voorspelen, start + (nieuweDrum ? 1100 : 0)));
+        });
+        timers.push(window.setTimeout(voorspelen, start + voorstellen.length * 700 + (voorstellen.length ? 400 : 0)));
         return () => {
           for (const t of timers) window.clearTimeout(t);
           window.clearTimeout(wachtTimer);

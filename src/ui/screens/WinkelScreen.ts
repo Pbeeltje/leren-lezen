@@ -131,7 +131,7 @@ export function WinkelScreen(manager: ScreenManager): Screen {
     const artikelen = ARTIKELEN[soort];
     const smal = window.innerWidth < 560;
     const opties =
-      soort === 'figuur' ? { kolommen: smal ? 3 : 5, rijen: 2 } : { kolommen: smal ? 2 : 4, rijen: smal ? 2 : 1 };
+      soort === 'figuur' ? { kolommen: smal ? 3 : 5, rijen: window.innerHeight > 700 ? 3 : 2 } : { kolommen: smal ? 2 : 4, rijen: smal ? 2 : 1 };
     const blader = maakBladeraar(artikelen.map(kaart), { ...opties, klasse: `winkel__blader winkel__blader--${soort}` });
     vak.replaceChildren(blader.element);
     const i = artikelen.findIndex(gekozen);
