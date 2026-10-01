@@ -249,6 +249,9 @@ export function maakProfielMenu(manager: ScreenManager): { element: HTMLElement;
     }
     toon('hoofd');
     paneel.hidden = false;
+    // Het pijltje bovenaan het paneel wijst naar het midden van de profielknop.
+    const k = knop.getBoundingClientRect();
+    paneel.style.setProperty('--pijl-rechts', `${Math.max(12, window.innerWidth - 12 - (k.left + k.width / 2) - 8)}px`);
     knop.setAttribute('aria-expanded', 'true');
     // volgende tick, anders vangt dezelfde klik het paneel meteen weer dicht
     setTimeout(() => document.addEventListener('pointerdown', opBuitenKlik), 0);

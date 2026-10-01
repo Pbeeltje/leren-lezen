@@ -205,9 +205,11 @@
 }
 
 .profiel-menu__paneel {
-  position: absolute;
-  top: 66px;
-  right: 0;
+  /* Vast aan de rechterrand van het scherm (niet aan de knop): op smalle telefoons
+     (Galaxy Fold buitenscherm, 344px) liep het anders links uit beeld. */
+  position: fixed;
+  top: 82px;
+  right: 12px;
   z-index: 6;
   background: #fff;
   border-radius: 22px;
@@ -226,7 +228,7 @@
   content: '';
   position: absolute;
   top: -8px;
-  right: 20px;
+  right: var(--pijl-rechts, 20px);
   width: 16px;
   height: 16px;
   background: #fff;
@@ -815,3 +817,17 @@
 .winkel-venster__knop--ja { background: var(--kleur-succes); box-shadow: 0 5px 0 #2a9e52; }
 .winkel-venster__knop--nee { background: #9aa3b8; box-shadow: 0 5px 0 #747d92; }
 .winkel-venster__knop:active { transform: translateY(3px); box-shadow: none; }
+
+/* Hoekknoppen buiten de inkeping/statusbalk houden (zie --veilig-* in global.css). */
+.terug-knop {
+  top: calc(16px + var(--veilig-boven));
+  left: calc(16px + var(--veilig-links));
+}
+.top-rechts-balk {
+  top: calc(16px + var(--veilig-boven));
+  right: calc(16px + var(--veilig-rechts));
+}
+.profiel-menu__paneel {
+  top: calc(82px + var(--veilig-boven));
+  right: calc(12px + var(--veilig-rechts));
+}

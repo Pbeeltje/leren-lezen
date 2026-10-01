@@ -1,3 +1,4 @@
+import './styles/fonts.css';
 import './styles/global.css';
 import './styles/components.css';
 import './styles/screens.css';
@@ -7,6 +8,7 @@ import { ScreenManager } from './engine/screenManager.ts';
 import { sceneManager } from './three/sceneManager.ts';
 import { ProfileSelectScreen } from './ui/screens/ProfileSelectScreen.ts';
 import { initAchtergrond } from './achtergrond/achtergrond.ts';
+import { herstelEnSpiegelOpslag, koppelAppKnoppen } from './engine/native.ts';
 
 // Kinderen drukken per ongeluk op de terug/vooruit-knoppen van de muis (knop 4 en 5), en
 // de app heeft geen URL-routes, dus de browser zou de hele app verlaten. Blokkeer die
@@ -24,20 +26,31 @@ for (const soort of ['mousedown', 'mouseup', 'auxclick'] as const) {
 history.pushState(null, '', location.href);
 window.addEventListener('popstate', () => history.pushState(null, '', location.href));
 
-const app = document.querySelector<HTMLDivElement>('#app')!;
+// iPhone/iPad: zonder dit zet de stille-modus-schakelaar alle Web Audio (xylofoon, drums)
+// op stil (Safari 17+ / WKWebView). Gewone geluidsclips hebben er geen last van.
+const audioSessie = (navigator as Navigator & { audioSession?: { type: string } }).audioSession;
+if (audioSessie) audioSessie.type = 'playback';
 
-const drieLaag = document.createElement('div');
-drieLaag.id = 'drie-laag';
-app.appendChild(drieLaag);
-sceneManager.init(drieLaag);
-initAchtergrond(app);
+// In de app eerst de bewaarde voortgang terugzetten (zie engine/native.ts), dan pas starten.
+void herstelEnSpiegelOpslag().finally(start);
 
-const schermHouder = document.createElement('div');
-schermHouder.id = 'scherm-houder';
-schermHouder.style.position = 'relative';
-schermHouder.style.width = '100%';
-schermHouder.style.height = '100%';
-app.appendChild(schermHouder);
+function start(): void {
+  const app = document.querySelector<HTMLDivElement>('#app')!;
 
-const manager = new ScreenManager(schermHouder);
-manager.push((m) => ProfileSelectScreen(m));
+  const drieLaag = document.createElement('div');
+  drieLaag.id = 'drie-laag';
+  app.appendChild(drieLaag);
+  sceneManager.init(drieLaag);
+  initAchtergrond(app);
+
+  const schermHouder = document.createElement('div');
+  schermHouder.id = 'scherm-houder';
+  schermHouder.style.position = 'relative';
+  schermHouder.style.width = '100%';
+  schermHouder.style.height = '100%';
+  app.appendChild(schermHouder);
+
+  const manager = new ScreenManager(schermHouder);
+  manager.push((m) => ProfileSelectScreen(m));
+  void koppelAppKnoppen();
+}

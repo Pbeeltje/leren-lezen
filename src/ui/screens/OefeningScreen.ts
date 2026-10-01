@@ -252,6 +252,9 @@ export function OefeningScreen(
   overslaanIcoon.alt = '';
   overslaanKnop.appendChild(overslaanIcoon);
   overslaanKnop.addEventListener('click', overslaan);
+  // In de rij van de voortgangsbalk (achter het kommetje), niet zwevend onderaan: zo valt hij
+  // op geen enkel schermformaat over een antwoord of het toetsenbord.
+  voortgangsbalk.element.appendChild(overslaanKnop);
 
   let topRechts: ReturnType<typeof maakTopRechtsBalk> | null = null;
 
@@ -260,7 +263,6 @@ export function OefeningScreen(
       gemountOp = performance.now();
       root.appendChild(el);
       root.appendChild(terug);
-      root.appendChild(overslaanKnop);
       topRechts = maakTopRechtsBalk(manager);
       root.appendChild(topRechts.element);
     },

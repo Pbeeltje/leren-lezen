@@ -1,0 +1,78 @@
+# iPhone-prototype zonder eigen Mac: bouwt de Capacitor-app op een macOS-runner van GitHub
+# (gratis voor openbare repo's), start hem in de iPhone- en iPad-simulator en bewaart
+# schermafbeeldingen en de simulator-app als artefact. Ondertekenen/TestFlight zit hier
+# nog niet in (daarvoor is een Apple Developer-account nodig).
+name: iOS-prototype
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths: ['ios/**', 'src/**', 'capacitor.config.ts', '.github/workflows/ios-prototype.yml']
+
+jobs:
+  simulator:
+    runs-on: macos-26
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Web-app bouwen en in het iOS-project zetten
+        run: |
+          npm ci
+          npm run build
+          # Alleen hier: een demoscriptje dat door een paar schermen klikt (zie .github/ios-demo.js).
+          cp .github/ios-demo.js dist/ios-demo.js
+          sed -i '' 's#</body>#<script src="ios-demo.js"></script></body>#' dist/index.html
+          npx cap sync ios
+
+      - name: Simulator kiezen
+        id: sim
+        run: |
+          xcodebuild -version
+          IPHONE=$(xcrun simctl list devices available -j | python3 -c "import json,sys;d=json.load(sys.stdin)['devices'];l=[x for k in sorted(d) if 'iOS' in k for x in d[k] if x['name'].startswith('iPhone')];print(l[-1]['udid'])")
+          IPAD=$(xcrun simctl list devices available -j | python3 -c "import json,sys;d=json.load(sys.stdin)['devices'];l=[x for k in sorted(d) if 'iOS' in k for x in d[k] if x['name'].startswith('iPad')];print(l[-1]['udid'])")
+          echo "iphone=$IPHONE" >> "$GITHUB_OUTPUT"
+          echo "ipad=$IPAD" >> "$GITHUB_OUTPUT"
+          xcrun simctl list devices available | grep -E "$IPHONE|$IPAD"
+
+      - name: App bouwen voor de simulator (zonder ondertekening)
+        run: |
+          xcodebuild -project ios/App/App.xcodeproj -scheme App -configuration Debug \
+            -sdk iphonesimulator -destination "id=${{ steps.sim.outputs.iphone }}" \
+            -derivedDataPath build CODE_SIGNING_ALLOWED=NO | tail -n 25
+
+      - name: Starten en schermafbeeldingen maken
+        run: |
+          mkdir -p shots
+          APP=build/Build/Products/Debug-iphonesimulator/App.app
+          BUNDLE=$(/usr/libexec/PlistBuddy -c "Print CFBundleIdentifier" "$APP/Info.plist")
+          for SOORT in iphone ipad; do
+            if [ "$SOORT" = iphone ]; then UDID=${{ steps.sim.outputs.iphone }}; else UDID=${{ steps.sim.outputs.ipad }}; fi
+            xcrun simctl boot "$UDID"
+            xcrun simctl bootstatus "$UDID" -b
+            xcrun simctl install "$UDID" "$APP"
+            xcrun simctl launch "$UDID" "$BUNDLE"
+            # Tijden passen bij de stappen in .github/ios-demo.js.
+            for STAP in "5 1-profielen" "5 2-onderwerpen" "5 3-hoofdstukken" "4 4-hoofdstuk" "8 5-oefening" "22 6-xylofoon"; do
+              set -- $STAP; sleep "$1"
+              xcrun simctl io "$UDID" screenshot "shots/$SOORT-$2.png"
+            done
+            xcrun simctl shutdown "$UDID"
+          done
+          ls -la shots
+
+      - name: Artefacten bewaren
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ios-prototype
+          path: |
+            shots/
+            build/Build/Products/Debug-iphonesimulator/App.app
+          retention-days: 14

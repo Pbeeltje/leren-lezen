@@ -1732,3 +1732,36 @@
   min-height: 56px;
   align-content: center;
 }
+
+/* Overslaan staat in de rij van de voortgangsbalk: een rond pijltje, nooit over de inhoud. */
+.voortgangsbalk .overslaan-knop,
+.voortgangsbalk .overslaan-knop:active {
+  position: static;
+  transform: none;
+  flex-shrink: 0;
+  width: 48px;
+  height: 48px;
+  min-height: 0;
+  padding: 0;
+  justify-content: center;
+  opacity: 0.9;
+}
+.voortgangsbalk .overslaan-knop:active { transform: translateY(2px); }
+.voortgangsbalk .overslaan-knop span { display: none; }
+.voortgangsbalk .overslaan-knop img { width: 28px; height: 28px; }
+.voortgangsbalk { width: min(92vw, 480px); }
+
+/* Telefoon liggend (weinig hoogte): kleinere knoppen in de hoeken, en de titelrij met de
+   hoofdstukpijltjes blijft ertussen, zodat de pijltjes niet onder de hoekknoppen vallen. */
+@media (orientation: landscape) and (max-height: 500px) {
+  .terug-knop { top: calc(8px + var(--veilig-boven)); left: calc(8px + var(--veilig-links)); width: 60px; height: 60px; }
+  .terug-knop img { width: 34px; height: 34px; }
+  .top-rechts-balk { top: calc(8px + var(--veilig-boven)); right: calc(8px + var(--veilig-rechts)); gap: 6px; }
+  .profiel-knop { width: 46px; height: 46px; padding: 4px; }
+  .munten-teller { padding: 4px 12px 4px 4px; font-size: 1rem; min-height: 46px; }
+  .munten-teller__icoon { width: 30px; height: 30px; }
+  .profiel-menu__paneel { top: calc(62px + var(--veilig-boven)); max-height: calc(100dvh - 70px); }
+  .hoofdstuk-titel-rij { max-width: calc(100vw - 2 * 200px); min-width: 260px; gap: 8px; }
+  .hoofdstuk-titel-rij .scherm-titel { font-size: 1.15rem; }
+  .hoofdstuk-pijl { width: 46px; height: 46px; font-size: 1.5rem; }
+}

@@ -1,4 +1,10 @@
 :root {
+  /* Veilige randen (inkeping/camera op iPhone, Android edge-to-edge). Capacitor 8 zet de
+     --safe-area-inset-*-variabelen; anders env(), en in de gewone browser gewoon 0. */
+  --veilig-boven: var(--safe-area-inset-top, env(safe-area-inset-top, 0px));
+  --veilig-onder: var(--safe-area-inset-bottom, env(safe-area-inset-bottom, 0px));
+  --veilig-links: var(--safe-area-inset-left, env(safe-area-inset-left, 0px));
+  --veilig-rechts: var(--safe-area-inset-right, env(safe-area-inset-right, 0px));
   --kleur-achtergrond: #0f1b3d;
   --kleur-oppervlak: #ffffff;
   --kleur-tekst: #1b1b2f;
@@ -102,7 +108,10 @@ img {
      centreren de bovenkant nog steeds precies in die knoppenzone duwen, waardoor tekst
      er zichtbaar achter/onder verdwijnt. Deze minimale top-padding houdt inhoud daar
      altijd onder vandaan, ook al is er verder niets dat overflowt. */
-  padding-top: max(24px, 112px);
+  padding-top: calc(112px + var(--veilig-boven));
+  padding-bottom: calc(24px + var(--veilig-onder));
+  padding-left: calc(24px + var(--veilig-links));
+  padding-right: calc(24px + var(--veilig-rechts));
   gap: 24px;
   animation: scherm-in 0.35s ease-out;
   overflow-y: auto;
