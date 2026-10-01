@@ -113,6 +113,7 @@ export function VangScreen(manager: ScreenManager): Screen {
   let frame = 0;
   let vorigeT = 0;
   let geraakt = 0; // tot wanneer de speler knippert (onkwetsbaar)
+  let gevaarGezien = false; // binnen 2 s valt er altijd een gevaar, zodat je ziet wat je moet ontwijken
   let noot = 0;
   let overlay: HTMLElement | null = null;
 
@@ -170,12 +171,14 @@ export function VangScreen(manager: ScreenManager): Screen {
 
   function laatVallen(): void {
     // Het gevaar groeit mee met de tijd: na drie kwartier is het 1,8 keer zo groot.
-    const groei = 1 + Math.min(0.8, tijd / 45);
+    const groei = 1 + Math.min(0.8, tijd / 56);
     const m0 = dingMaat();
     // Meteoren: eerst weinig, later meer (kleuters altijd minder).
-    const kansMeteoor = Math.min(kleuter ? 0.28 : 0.42, 0.14 + tijd * 0.008);
+    const kansMeteoor = Math.min(kleuter ? 0.28 : 0.42, 0.14 + tijd * 0.0064);
     const lot = Math.random();
-    const soort: Ding['soort'] = lot < kansMeteoor ? 'gevaar' : lot > 0.95 ? 'ster' : 'lekker';
+    const moetGevaar = !gevaarGezien && tijd >= 1.1;
+    const soort: Ding['soort'] = moetGevaar || lot < kansMeteoor ? 'gevaar' : lot > 0.95 ? 'ster' : 'lekker';
+    if (soort === 'gevaar') gevaarGezien = true;
     const img = document.createElement('img');
     img.className = `vang-ding vang-ding--${soort}${soort === 'gevaar' && thema.rood ? ' vang-ding--rood' : ''}`;
     img.src = soort === 'gevaar' ? thema.gevaar : soort === 'ster' ? STER : LEKKERS[Math.floor(Math.random() * LEKKERS.length)];
@@ -185,7 +188,7 @@ export function VangScreen(manager: ScreenManager): Screen {
     img.style.height = `${m}px`;
     veld.appendChild(img);
     const basis = (kleuter ? 0.2 : 0.26) * hoogte();
-    const snelheid = basis * (1 + Math.min(1.6, tijd / 22)) * (0.85 + Math.random() * 0.3);
+    const snelheid = basis * (1 + Math.min(1.6, tijd / 27.5)) * (0.85 + Math.random() * 0.3);
     dingen.push({
       el: img,
       x: m / 2 + Math.random() * (breedte() - m),
@@ -244,8 +247,9 @@ export function VangScreen(manager: ScreenManager): Screen {
 
     if (tijd >= volgende) {
       laatVallen();
-      const tussen = Math.max(kleuter ? 0.6 : 0.38, (kleuter ? 1.2 : 0.95) - tijd * 0.025);
+      const tussen = Math.max(kleuter ? 0.6 : 0.38, (kleuter ? 1.2 : 0.95) - tijd * 0.02);
       volgende = tijd + tussen * (0.8 + Math.random() * 0.4);
+      if (!gevaarGezien) volgende = Math.min(volgende, 1.4);
     }
 
     // Vangzone: het bovenste deel van het figuurtje.
@@ -281,6 +285,7 @@ export function VangScreen(manager: ScreenManager): Screen {
     tijd = 0;
     volgende = 0.6;
     geraakt = 0;
+    gevaarGezien = false;
     noot = 0;
     spelerX = doelX = breedte() / 2;
     plaatsSpeler();
