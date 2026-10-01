@@ -12,17 +12,15 @@ import { haalVoortgang } from '../../engine/progressStore.ts';
 import { speelSchermOvergang } from '../../three/transitions.ts';
 import { isGedempt, zetGedempt } from '../../engine/audioManager.ts';
 import { THEMAS, huidigThema, kiesAchtergrond } from '../../achtergrond/achtergrond.ts';
-import { leesBackupCode, maakBackupCode, zetBackupTerug } from '../../engine/backup.ts';
 import { AgeSelectScreen } from '../screens/AgeSelectScreen.ts';
 import { ProfileSelectScreen } from '../screens/ProfileSelectScreen.ts';
 
 // Profielmenu als klein kaartje: bovenaan je eigen figuur met je naam, daaronder vier
-// plaatjestegels (Mijn figuur, Achtergrond, Geluid, Wisselen) en onderaan een klein
-// "Voor ouders"-knopje voor de back-up. Elke tegel behalve Geluid opent een eigen
-// submenu met een terugpijl; Geluid schakelt meteen om. Zo blijft het hoofdmenu kort
+// plaatjestegels (Mijn figuur, Achtergrond, Geluid, Wisselen). Elke tegel behalve Geluid
+// opent een eigen submenu met een terugpijl; Geluid schakelt meteen om. Zo blijft het hoofdmenu kort
 // en kan een kind het zonder te lezen gebruiken (verzoek van de eigenaar: "te groot").
 
-type Weergave = 'hoofd' | 'figuur' | 'achtergrond' | 'wisselen' | 'ouders';
+type Weergave = 'hoofd' | 'figuur' | 'achtergrond' | 'wisselen';
 
 function maak<K extends keyof HTMLElementTagNameMap>(tag: K, klasse: string, ouder?: HTMLElement): HTMLElementTagNameMap[K] {
   const e = document.createElement(tag);
@@ -107,11 +105,6 @@ export function maakProfielMenu(manager: ScreenManager): { element: HTMLElement;
   const wisselTegel = tegel('Wisselen', leeftijdIcoon, () => toon('wisselen'));
   wisselTegel.knop.classList.add('profiel-tegel--wissel');
 
-  const oudersKnop = maak('button', 'profiel-menu__ouders', hoofd);
-  plaatje('assets/icons/slot.svg', '', oudersKnop);
-  oudersKnop.append('Voor ouders');
-  oudersKnop.addEventListener('click', () => toon('ouders'));
-
   // ---- Submenu's: elk met een kopregel (terugpijl + titel) ----
   function submenu(titel: string): HTMLElement {
     const w = maak('div', 'profiel-menu__weergave profiel-menu__sub', paneel);
@@ -195,51 +188,7 @@ export function maakProfielMenu(manager: ScreenManager): { element: HTMLElement;
   groteKeuze('Ander profiel', 'assets/icons/avatar-panda.svg', () => manager.replace((m) => ProfileSelectScreen(m)));
   groteKeuze('Leeftijd', leeftijdIcoon, () => manager.replace((m) => AgeSelectScreen(m)));
 
-  // Voor ouders: voortgang overzetten naar een ander apparaat.
-  const ouders = submenu('Voor ouders');
-  ouders.classList.add('backup-weergave');
-  const uitleg = maak('p', 'backup-uitleg', ouders);
-  uitleg.textContent = 'Back-up: zet alle profielen en voortgang over naar een ander apparaat.';
-  const kanDelen = typeof navigator.share === 'function';
-  const maakKnop = maak('button', 'profiel-menu__optie', ouders);
-  maakKnop.textContent = kanDelen ? 'Back-up delen' : 'Back-up kopiëren';
-  const codeVak = maak('textarea', 'backup-code', ouders);
-  codeVak.placeholder = 'Plak hier een back-up-code';
-  codeVak.rows = 3;
-  const terugzetKnop = maak('button', 'profiel-menu__optie', ouders);
-  terugzetKnop.textContent = 'Terugzetten';
-  const melding = maak('p', 'backup-melding', ouders);
-
-  maakKnop.addEventListener('click', async () => {
-    try {
-      const code = await maakBackupCode();
-      codeVak.value = code;
-      if (kanDelen) {
-        await navigator.share({ title: 'Leren Lezen back-up', text: code }).catch(() => undefined);
-        melding.textContent = 'Code staat ook hierboven.';
-      } else {
-        await navigator.clipboard?.writeText(code).catch(() => undefined);
-        codeVak.select();
-        melding.textContent = 'Gekopieerd!';
-      }
-    } catch {
-      melding.textContent = 'Back-up maken lukte niet.';
-    }
-  });
-  terugzetKnop.addEventListener('click', async () => {
-    try {
-      const { backup, namen } = await leesBackupCode(codeVak.value);
-      const lijst = namen.length ? namen.join(', ') : 'geen profielen';
-      if (!window.confirm(`Deze profielen terugzetten: ${lijst}?
-Bestaande profielen met dezelfde naam worden overschreven.`)) return;
-      zetBackupTerug(backup);
-      location.reload();
-    } catch {
-      melding.textContent = 'Dat is geen geldige back-up-code.';
-    }
-  });
-
-  const weergaven: Record<Weergave, HTMLElement> = { hoofd, figuur, achtergrond, wisselen, ouders };
+  const weergaven: Record<Weergave, HTMLElement> = { hoofd, figuur, achtergrond, wisselen };
 
   function markeer(): void {
     for (const k of avatarKnoppen) k.classList.toggle('geselecteerd', k.dataset.icoon === icoonId());
@@ -257,8 +206,6 @@ Bestaande profielen met dezelfde naam worden overschreven.`)) return;
     paneel.hidden = true;
     knop.setAttribute('aria-expanded', 'false');
     toon('hoofd');
-    codeVak.value = '';
-    melding.textContent = '';
     document.removeEventListener('pointerdown', opBuitenKlik);
   }
 

@@ -599,40 +599,6 @@ body:not(.thema-ruimte) .instructie-tekst:not(.instructie-tekst--donker) {
   100% { transform: translate(calc(-50% + var(--dx)), calc(var(--dy) * -0.2 + 80px)) scale(0.6); opacity: 0; }
 }
 
-/* ---- Back-up in het profielmenu ---- */
-.backup-weergave {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  width: auto;
-}
-
-.backup-weergave[hidden] {
-  display: none;
-}
-
-.backup-uitleg,
-.backup-melding {
-  margin: 0;
-  font-size: 0.85rem;
-  color: var(--kleur-tekst);
-}
-
-.backup-melding:empty {
-  display: none;
-}
-
-.backup-code {
-  font: inherit;
-  font-size: 0.75rem;
-  padding: 8px;
-  border-radius: 10px;
-  border: 2px solid #d5d9e4;
-  resize: none;
-  word-break: break-all;
-  user-select: text;
-}
-
 /* ---- Regenboog (zee na onweer, kasteel overdag) ---- */
 .regenboog {
   position: absolute;

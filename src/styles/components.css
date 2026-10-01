@@ -342,29 +342,6 @@
   font-size: 0.8rem;
 }
 
-.profiel-menu__ouders {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 6px;
-  min-height: 40px;
-  border-radius: 12px;
-  background: none;
-  color: #7a7f93;
-  font-weight: 700;
-  font-size: 0.85rem;
-}
-
-.profiel-menu__ouders img {
-  width: 18px;
-  height: 18px;
-  opacity: 0.7;
-}
-
-.profiel-menu__ouders:active {
-  background: #f1f2f6;
-}
-
 /* Submenu-kop: terugpijl en titel. */
 .profiel-menu__subkop {
   display: flex;
@@ -437,21 +414,6 @@
 
 .profiel-keuze:active {
   transform: translateY(2px);
-}
-
-.profiel-menu__optie {
-  min-height: 48px;
-  padding: 10px 14px;
-  border-radius: 14px;
-  background: #f1f2f6;
-  color: var(--kleur-tekst);
-  font-weight: 700;
-  font-size: 0.95rem;
-  text-align: center;
-}
-
-.profiel-menu__optie:active {
-  background: #e3e5ec;
 }
 
 .avatar-grid {
