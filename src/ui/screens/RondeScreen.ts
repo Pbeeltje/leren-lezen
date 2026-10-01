@@ -15,6 +15,9 @@ const AANTAL_RONDES = 2;
 export interface RondeVraag {
   instructie: string;
   audioPad?: string;
+  // false: de instructie alleen bij de eerste vraag vanzelf laten horen, omdat hij elke
+  // keer hetzelfde is (speel na, ritme). De luidsprekerknop herhaalt hem altijd.
+  instructieElkeVraag?: boolean;
   // Rendert de vraag in container; roept afgerond() aan zodra hij goed beantwoord is.
   // Fout is altijd gewoon opnieuw proberen. Geeft een opruimfunctie terug.
   render: (container: HTMLElement, afgerond: () => void) => () => void;
@@ -76,8 +79,9 @@ export function RondeScreen(manager: ScreenManager, titelTekst: string, maakVraa
     voortgangsbalk.zetVoortgang(inRonde);
     const vraag = maakVraag();
     instructie.textContent = vraag.instructie;
+    const eersteVraag = rondesKlaar === 0 && inRonde === 0;
     huidigeAudio = vraag.audioPad;
-    speelAf(huidigeAudio);
+    if (eersteVraag || vraag.instructieElkeVraag !== false) speelAf(huidigeAudio);
     let beantwoord = false;
     opruimen = vraag.render(container, () => {
       if (!actief || beantwoord) return;

@@ -39,6 +39,7 @@ export function maakSpeelNaVragen(): () => RondeVraag {
     return {
       instructie: 'Luister goed en speel het na',
       audioPad: instructieAudioPad('muziek-speel-na'),
+      instructieElkeVraag: false,
       render(container, afgerond) {
         const kaart = document.createElement('div');
         kaart.className = 'oefen-kaart muziek-kaart';
@@ -94,21 +95,31 @@ export function maakSpeelNaVragen(): () => RondeVraag {
   };
 }
 
-// Een ritme is een rij tussenpozen: kort (K) of lang (L) tussen de slagen.
-const KORT = 0.32;
-const LANG = 0.7;
+// Een ritme is een rij tussenpozen tussen de slagen: kort (K, "ti") of lang (L, "ta").
+// Het verschil is ruim (bijna 3x), zodat het goed te horen is.
+type Ritme = ('K' | 'L')[];
+const KORT = 0.28;
+const LANG = 0.78;
 
-function maakRitme(slagen: number, metLang: boolean): ('K' | 'L')[] {
-  const uit: ('K' | 'L')[] = [];
-  for (let i = 0; i < slagen - 1; i++) uit.push(metLang && Math.random() < 0.45 ? 'L' : 'K');
-  if (metLang && !uit.includes('L') && uit.length) uit[geheelTussen(0, uit.length - 1)] = 'L';
-  return uit;
+// Bekende kinderritmes uit de muziekles (ta = lange tel, ti-ti = twee snelle), als
+// tussenpozen. Elk ritme mengt snel en langzaam: de eigenaar merkte dat Ritme anders
+// "geen ritme" had, alleen 3 of 4 gelijke slagen.
+const RITMES: Record<number, Ritme[]> = {
+  3: [['K', 'L'], ['L', 'K']], // ti-ti ta / ta ti-ti
+  4: [['L', 'K', 'K'], ['K', 'K', 'L'], ['K', 'L', 'K'], ['L', 'L', 'K']], // ta ti-ti ta / ti-ti ta ta ...
+  5: [['L', 'L', 'K', 'K'], ['K', 'K', 'L', 'K'], ['L', 'K', 'K', 'L'], ['K', 'L', 'K', 'K'], ['K', 'K', 'K', 'L']],
+};
+
+function maakRitme(slagen: number, vorige?: Ritme): Ritme {
+  if (slagen <= 2) return ['K'];
+  const keuzes = RITMES[slagen].filter((r) => r.join('') !== vorige?.join(''));
+  return keuzes[geheelTussen(0, keuzes.length - 1)];
 }
 
 // Klopt het nagetrommelde ritme? Altijd het aantal slagen; bij een ritme met lange en
 // korte pauzes ook de volgorde, ruim beoordeeld: per tussenpoos kijken of hij dichter
 // bij de korte of de lange tussenpozen van het kind zelf ligt.
-export function ritmeKlopt(ritme: ('K' | 'L')[], tijden: number[]): boolean {
+export function ritmeKlopt(ritme: Ritme, tijden: number[]): boolean {
   if (tijden.length !== ritme.length + 1) return false;
   if (!ritme.includes('L') || !ritme.includes('K')) return true;
   const tussen = tijden.slice(1).map((t, i) => t - tijden[i]);
@@ -121,13 +132,18 @@ export function ritmeKlopt(ritme: ('K' | 'L')[], tijden: number[]): boolean {
 
 export function maakRitmeVragen(): () => RondeVraag {
   let nummer = 0;
+  let vorige: Ritme | undefined;
   return () => {
-    const slagen = Math.min(jong() ? 4 : 5, 2 + Math.floor(nummer++ / 2));
-    // De kleintjes tellen alleen; vanaf 5 jaar komt er ook kort-lang in.
-    const ritme = maakRitme(slagen, !jong() && slagen >= 3);
+    // Eerst twee keer simpel twee slagen, daarna altijd een echt ritme met snel en
+    // langzaam: 3 slagen, dan 4, en vanaf 5 jaar ook 5.
+    const slagen = Math.min(jong() ? 4 : 5, nummer < 2 ? 2 : 3 + Math.floor((nummer - 2) / 3));
+    nummer++;
+    const ritme = maakRitme(slagen, vorige);
+    vorige = ritme;
     return {
       instructie: 'Luister en trommel het na',
       audioPad: instructieAudioPad('muziek-ritme'),
+      instructieElkeVraag: false,
       render(container, afgerond) {
         const kaart = document.createElement('div');
         kaart.className = 'oefen-kaart muziek-kaart';

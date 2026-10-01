@@ -7,7 +7,7 @@ import { maakLetterVraag, maakLijnVraag, maakWoordVraag } from '../../games/schr
 // "Schrijven": overtrekken met de vinger, in rondes van 5 (RondeScreen), en vrij tekenen.
 export function SchrijvenKiesScreen(manager: ScreenManager): Screen {
   return SpelKiesScreen(manager, [
-    { icoon: 'lijnen', label: 'Lijnen', open: (m) => RondeScreen(m, 'Lijnen', maakLijnVraag) },
+    { icoon: 'lijnen', label: 'Lijnen', leeftijden: [3], open: (m) => RondeScreen(m, 'Lijnen', maakLijnVraag) },
     { icoon: 'letters', label: 'Letters', leeftijden: [5, 6], open: (m) => RondeScreen(m, 'Letters', maakLetterVraag) },
     { icoon: 'woordjes', label: 'Woordjes', leeftijden: [6], open: (m) => RondeScreen(m, 'Woordjes', maakWoordVraag) },
     { icoon: 'tekenen', label: 'Tekenen', open: (m) => TekenScreen(m) },
