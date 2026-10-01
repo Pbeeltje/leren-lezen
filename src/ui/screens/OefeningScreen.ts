@@ -18,6 +18,8 @@ import {
   MUNTEN_TOETS_GOED,
   MUNTEN_TOETS_HERHAALD,
   MUNTEN_TOETS_PERFECT_BONUS,
+  perGoed,
+  voorSet,
 } from '../../engine/rewards.ts';
 import { type OefenModus, type OefeningNummer, genereerSessie, woordenVanOefening } from '../../engine/oefeningGenerator.ts';
 import { renderPlaatjeWoordKeuze } from '../../games/plaatjeWoordKeuze.ts';
@@ -156,14 +158,14 @@ export function OefeningScreen(
     if (juist) {
       aantalGoed++;
       if (modus === 'oefenen') {
-        const munten = wasAlGeoefend ? MUNTEN_OEFENING_HERHAALD : MUNTEN_OEFENING_GOED;
+        const munten = perGoed(wasAlGeoefend ? MUNTEN_OEFENING_HERHAALD : MUNTEN_OEFENING_GOED);
         voegMuntenToe(munten);
         muntenDitKeer += munten;
       } else if (!wasAlGehaald) {
         // Bij een hertoets van een al gehaalde kern komt er aan het eind één vast
         // bedrag (MUNTEN_TOETS_HERHAALD) i.p.v. per-vraag munten — zie afronden().
-        voegMuntenToe(MUNTEN_TOETS_GOED);
-        muntenDitKeer += MUNTEN_TOETS_GOED;
+        voegMuntenToe(perGoed(MUNTEN_TOETS_GOED));
+        muntenDitKeer += perGoed(MUNTEN_TOETS_GOED);
       }
     }
     // "zelf-typen" telt niet mee voor zijn eigen vrijspeelvoorwaarde; elke andere
@@ -200,11 +202,11 @@ export function OefeningScreen(
       const fractie = aantalGoed / oefeningen.length;
       const sterren: 0 | 1 | 2 | 3 = fractie === 1 ? 3 : fractie >= 0.7 ? 2 : fractie >= 0.4 ? 1 : 0;
       if (wasAlGehaald) {
-        voegMuntenToe(MUNTEN_TOETS_HERHAALD);
-        muntenDitKeer += MUNTEN_TOETS_HERHAALD;
+        voegMuntenToe(voorSet(MUNTEN_TOETS_HERHAALD));
+        muntenDitKeer += voorSet(MUNTEN_TOETS_HERHAALD);
       } else if (fractie === 1) {
-        voegMuntenToe(MUNTEN_TOETS_PERFECT_BONUS);
-        muntenDitKeer += MUNTEN_TOETS_PERFECT_BONUS;
+        voegMuntenToe(voorSet(MUNTEN_TOETS_PERFECT_BONUS));
+        muntenDitKeer += voorSet(MUNTEN_TOETS_PERFECT_BONUS);
       }
       markeerKernVoltooid(kern.id, sterren);
       speelSchermOvergang();

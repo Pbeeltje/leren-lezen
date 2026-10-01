@@ -2,7 +2,7 @@ import type { Screen, ScreenManager } from '../../engine/screenManager.ts';
 import { maakTerugKnop } from '../components/TerugKnop.ts';
 import { maakTopRechtsBalk } from '../components/TopRechtsBalk.ts';
 import { voegMuntenToe } from '../../engine/progressStore.ts';
-import { MUNTEN_TOETS_GOED } from '../../engine/rewards.ts';
+import { MUNTEN_TOETS_GOED, perGoed } from '../../engine/rewards.ts';
 import { genereerGeheugenbord } from '../../engine/geheugenGenerator.ts';
 import { renderGeheugenSpel } from '../../games/geheugenSpel.ts';
 import { confetti } from '../../three/particles.ts';
@@ -41,7 +41,7 @@ export function GeheugenScreen(manager: ScreenManager, aantalParen = 4): Screen 
     const kaarten = genereerGeheugenbord(aantalParen);
     opruimen = renderGeheugenSpel(oefenContainer, kaarten, () => {
       if (!actief) return;
-      voegMuntenToe(MUNTEN_TOETS_GOED);
+      voegMuntenToe(perGoed(MUNTEN_TOETS_GOED));
       bordenKlaar++;
       if (bordenKlaar >= AANTAL_BORDEN) {
         timer = window.setTimeout(() => {

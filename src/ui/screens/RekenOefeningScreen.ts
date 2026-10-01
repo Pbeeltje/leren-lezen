@@ -17,6 +17,8 @@ import {
   MUNTEN_TOETS_GOED,
   MUNTEN_TOETS_HERHAALD,
   MUNTEN_TOETS_PERFECT_BONUS,
+  perGoed,
+  voorSet,
 } from '../../engine/rewards.ts';
 import { type RekenModus, genereerRekenSessie } from '../../engine/rekenenGenerator.ts';
 import { renderHoeveelheidNaarCijfer } from '../../games/hoeveelheidNaarCijfer.ts';
@@ -143,12 +145,12 @@ export function RekenOefeningScreen(
     if (juist) {
       aantalGoed++;
       if (modus === 'oefenen') {
-        const munten = wasAlGeoefend ? MUNTEN_OEFENING_HERHAALD : MUNTEN_OEFENING_GOED;
+        const munten = perGoed(wasAlGeoefend ? MUNTEN_OEFENING_HERHAALD : MUNTEN_OEFENING_GOED);
         voegMuntenToe(munten);
         muntenDitKeer += munten;
       } else if (!wasAlGehaald) {
-        voegMuntenToe(MUNTEN_TOETS_GOED);
-        muntenDitKeer += MUNTEN_TOETS_GOED;
+        voegMuntenToe(perGoed(MUNTEN_TOETS_GOED));
+        muntenDitKeer += perGoed(MUNTEN_TOETS_GOED);
       }
     }
     timer = window.setTimeout(volgende, 900);
@@ -177,11 +179,11 @@ export function RekenOefeningScreen(
       const fractie = aantalGoed / oefeningen.length;
       const sterren: 0 | 1 | 2 | 3 = fractie === 1 ? 3 : fractie >= 0.7 ? 2 : fractie >= 0.4 ? 1 : 0;
       if (wasAlGehaald) {
-        voegMuntenToe(MUNTEN_TOETS_HERHAALD);
-        muntenDitKeer += MUNTEN_TOETS_HERHAALD;
+        voegMuntenToe(voorSet(MUNTEN_TOETS_HERHAALD));
+        muntenDitKeer += voorSet(MUNTEN_TOETS_HERHAALD);
       } else if (fractie === 1) {
-        voegMuntenToe(MUNTEN_TOETS_PERFECT_BONUS);
-        muntenDitKeer += MUNTEN_TOETS_PERFECT_BONUS;
+        voegMuntenToe(voorSet(MUNTEN_TOETS_PERFECT_BONUS));
+        muntenDitKeer += voorSet(MUNTEN_TOETS_PERFECT_BONUS);
       }
       markeerKernVoltooid(kern.id, sterren);
       speelSchermOvergang();

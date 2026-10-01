@@ -5,7 +5,7 @@ import { maakAudioKnop } from '../components/AudioKnop.ts';
 import { maakVoortgangsbalk } from '../components/Voortgangsbalk.ts';
 import { naHuidigeAudio, speelAf } from '../../engine/audioManager.ts';
 import { voegMuntenToe } from '../../engine/progressStore.ts';
-import { MUNTEN_OEFENING_GOED } from '../../engine/rewards.ts';
+import { MUNTEN_OEFENING_GOED, perGoed } from '../../engine/rewards.ts';
 import { confetti } from '../../three/particles.ts';
 import { toonKlaarKaart } from '../components/KlaarKaart.ts';
 
@@ -86,7 +86,7 @@ export function RondeScreen(manager: ScreenManager, titelTekst: string, maakVraa
     opruimen = vraag.render(container, () => {
       if (!actief || beantwoord) return;
       beantwoord = true;
-      voegMuntenToe(MUNTEN_OEFENING_GOED);
+      voegMuntenToe(perGoed(MUNTEN_OEFENING_GOED));
       inRonde++;
       voortgangsbalk.zetVoortgang(inRonde);
       naHuidigeAudio(volgendeVraag); // eerst "Goed gedaan!" laten uitpraten
