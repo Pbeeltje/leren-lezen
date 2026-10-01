@@ -17,7 +17,7 @@ await page.locator('.icoon-tegel', { hasText: 'Anna' }).click(); await page.wait
 await page.evaluate(() => document.querySelectorAll('.scherm, .terug-knop, .top-rechts-balk').forEach((e) => (e.style.visibility = 'hidden')));
 const start = Date.now();
 const toestand = () => page.evaluate(() => { const d = document.querySelector('.decor-winter'); return `${d.classList.contains('weer-storm') ? 'storm' : d.classList.contains('weer-licht') ? 'licht' : 'helder'}, vogels: ${document.querySelectorAll('.winter-vogel').length}`; });
-for (const [s, naam] of [[7, 'helder'], [30, 'licht'], [56.5, 'storm-schuilen'], [62, 'storm']]) {
+for (const [s, naam] of [[6, 'helder'], [14, 'helder-2'], [30, 'licht'], [56.5, 'storm-schuilen'], [62, 'storm']]) {
   const wacht = s * 1000 - (Date.now() - start);
   if (wacht > 0) await page.waitForTimeout(wacht);
   await page.screenshot({ path: `${OUT}winter-${naam}.png` });

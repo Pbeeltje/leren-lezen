@@ -6,8 +6,8 @@ import { el, kortAan, plaatje, svgUitTekst, zetOpPad } from './hulp.ts';
 // glijdt er een pinguïn op een slee de heuvel af. Bij een goed antwoord springt
 // de hoge hoed van de sneeuwpop op, met een wolkje sneeuw; aan het eind van een sessie komt
 // er noorderlicht in de lucht en dwarrelen er sneeuwvlokjes en sterretjes naar beneden.
-// Rechts vooraan ligt een ijsvijvertje (loopt buiten beeld), af en toe vliegt er een groepje
-// roodborstjes over, en het weer wisselt: helder, lichte sneeuw (iets donkerder), weer helder
+// Rechts vooraan ligt een ijsvijvertje (loopt buiten beeld), af en toe vliegt er een vogeltje
+// over (meestal één, soms twee; een roodborstje of een pimpelmees), en het weer wisselt: helder, lichte sneeuw (iets donkerder), weer helder
 // en dan een flinke sneeuwstorm (donker, veel schuine sneeuw; de vogeltjes schieten snel de
 // dennen in om te schuilen).
 // Slee, pinguïn en sneeuwvlok zijn Fluent Emoji, de rest is zelf getekend.
@@ -99,6 +99,27 @@ const VOGEL = `
     <path d="M14 20 C20 4 34 2 36 18 C30 22 20 24 14 20 Z" fill="#6b4a32"/>
   </g>
 </svg>`;
+
+// Pimpelmees van opzij (kijkt naar rechts): blauw petje, witte wangen met een zwart
+// oogstreepje, gele buik en blauwgroene vleugel.
+const MEES = `
+<svg viewBox="0 0 60 44" aria-hidden="true">
+  <path d="M8 22 L0 15 L2 27 Z" fill="#3a78c9"/>
+  <ellipse cx="26" cy="24" rx="17" ry="13" fill="#7fa86a"/>
+  <path d="M28 20 C40 20 45 30 38 36 C31 40 22 37 21 31 C25 29 27 25 28 20 Z" fill="#ffd93b"/>
+  <path d="M33 27 V35" stroke="#3b3b4f" stroke-width="1.8" stroke-linecap="round" opacity="0.6"/>
+  <circle cx="40" cy="16" r="9" fill="#ffffff"/>
+  <path d="M31 13 C33 5 47 4 49 13 C44 10 36 10 31 13 Z" fill="#3a8ee0"/>
+  <path d="M33 16 L48 15" stroke="#1b2a4a" stroke-width="2" stroke-linecap="round"/>
+  <path d="M33 22 C38 25 44 24 48 20" stroke="#1b2a4a" stroke-width="1.6" fill="none" stroke-linecap="round"/>
+  <path d="M48 15 L54 17 L48 19 Z" fill="#3b3b4f"/>
+  <circle cx="43" cy="15.5" r="1.8" fill="#1b1b2f"/>
+  <g class="winter-vogel__vleugel">
+    <path d="M14 20 C20 4 34 2 36 18 C30 22 20 24 14 20 Z" fill="#4f9bd6"/>
+    <path d="M18 17 C24 10 30 9 33 15" stroke="#ffffff" stroke-width="1.5" fill="none" opacity="0.8"/>
+  </g>
+</svg>`;
+const VOGELSOORTEN = [VOGEL, MEES];
 
 // Het weer: [stand, duur in ms]. Helder, lichte sneeuw, helder, sneeuwstorm, en opnieuw.
 type Weer = 'helder' | 'licht' | 'storm';
@@ -201,10 +222,11 @@ export function maakWinterDecor(): Decor {
   const vliegOver = (snel: boolean, naarBoom?: HTMLElement) => {
     const r = root.getBoundingClientRect();
     const v = el('div', 'winter-vogel', vogels);
-    svgUitTekst(VOGEL, 'winter-vogel__svg', v);
+    svgUitTekst(VOGELSOORTEN[Math.floor(Math.random() * VOGELSOORTEN.length)], 'winter-vogel__svg', v);
     const naarRechts = naarBoom ? false : Math.random() < 0.5;
     if (!naarRechts) v.classList.add('gespiegeld');
-    const y0 = r.height * (0.12 + Math.random() * 0.25);
+    // De helft van de keren laag, net boven de heuvels; anders hoog in de lucht.
+    const y0 = r.height * (Math.random() < 0.5 ? 0.5 + Math.random() * 0.1 : 0.12 + Math.random() * 0.25);
     const breedte = r.width;
     let eindX = naarRechts ? breedte + 60 : -80;
     let eindY = y0 + (Math.random() - 0.5) * 60;
@@ -261,9 +283,9 @@ export function maakWinterDecor(): Decor {
     root.classList.toggle('weer-storm', w === 'storm');
     if (w === 'storm') {
       vluchtNaarBomen();
-      // Nog een paar vogeltjes die snel komen schuilen.
+      // Nog een vogeltje of twee dat snel komt schuilen.
       const zichtbaar = bomen.filter((x) => x.offsetParent);
-      for (let i = 0; i < 3; i++) later(() => zichtbaar.length && vliegOver(true, zichtbaar[Math.floor(Math.random() * zichtbaar.length)]), 600 + i * 700);
+      for (let i = 0; i < 2; i++) later(() => zichtbaar.length && vliegOver(true, zichtbaar[Math.floor(Math.random() * zichtbaar.length)]), 600 + i * 700);
     }
   };
   function volgendWeer(): void {
@@ -274,13 +296,13 @@ export function maakWinterDecor(): Decor {
     weerStap++;
     weerTimer = window.setTimeout(volgendWeer, duur);
   }
-  // Groepjes vogels over de lucht, niet tijdens de storm.
+  // Vogeltjes over de lucht (meestal één, soms twee), niet tijdens de storm.
   function planVogels(eerste = false): void {
     window.clearTimeout(vogelTimer);
     if (!levend || stil) return;
     vogelTimer = window.setTimeout(() => {
       if (weer !== 'storm') {
-        const n = 1 + Math.floor(Math.random() * 3);
+        const n = Math.random() < 0.75 ? 1 : 2;
         for (let i = 0; i < n; i++) later(() => weer !== 'storm' && vliegOver(false), i * (300 + Math.random() * 500));
       }
       planVogels();
