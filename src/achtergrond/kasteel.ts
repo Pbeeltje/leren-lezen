@@ -3,8 +3,8 @@ import { el, kortAan, maakRegenboog, plaatje, svgUitTekst, zetOpPad } from './hu
 
 // Prinsessenkasteel op een heuvel rechtsonder (buiten het midden, waar de vragen staan),
 // heuvels in de verte en roze gras vooraan met een eenhoorn. Dag en nacht wisselen zacht
-// (dag 20 s, nacht 15 s, overgang 5 s): overdag een zon en soms een regenboog, 's nachts
-// de maan, sterretjes en zwevende lichtjes. Bij een goed antwoord gaat het kasteel stralen, spatten er
+// (dag 25 s, nacht 20 s, overgang 5 s): overdag een zon en soms een regenboog, 's nachts
+// de maan, sterretjes, zwevende lichtjes en af en toe een klein vallend sterretje. Bij een goed antwoord gaat het kasteel stralen, spatten er
 // vonkjes omhoog en springt de eenhoorn.
 const HEUVEL_PAD = 'M0 300 L0 250 C120 230 200 150 330 120 C450 95 540 130 600 150 L600 300 Z';
 const HEUVEL = `
@@ -66,8 +66,8 @@ const MAAN = `
   <path d="M62 8 A44 44 0 1 0 92 70 A36 36 0 1 1 62 8 Z" fill="#fff4c4"/>
 </svg>`;
 
-const DAG_DUUR = 20000;
-const NACHT_DUUR = 15000;
+const DAG_DUUR = 25000;
+const NACHT_DUUR = 20000;
 
 export function maakKasteelDecor(): Decor {
   const root = el('div', 'decor decor-kasteel');
@@ -124,9 +124,22 @@ export function maakKasteelDecor(): Decor {
   };
   let tijdTimer: number | undefined;
   let regenboogTimer: number | undefined;
+  let valTimer: number | undefined;
+  // Klein vallend sterretje: een kort lichtstreepje schuin omlaag, elke paar seconden.
+  const valsterren = () => {
+    if (root.dataset.tijd !== 'nacht') return;
+    const v = el('div', 'kasteel-valster', nacht);
+    v.style.left = `${10 + Math.random() * 70}%`;
+    v.style.top = `${4 + Math.random() * 30}%`;
+    window.setTimeout(() => v.remove(), 1400);
+    valTimer = window.setTimeout(valsterren, 2500 + Math.random() * 3500);
+  };
   const zetTijd = (tijd: 'dag' | 'nacht') => {
     root.dataset.tijd = tijd;
     window.clearTimeout(regenboogTimer);
+    window.clearTimeout(valTimer);
+    // Pas als de nacht echt gevallen is (na de overgang van 5 s).
+    if (tijd === 'nacht') valTimer = window.setTimeout(valsterren, 4500);
     // Af en toe (ongeveer de helft van de dagen) een regenboog, midden op de dag.
     if (tijd === 'dag' && Math.random() < 0.5) {
       regenboogTimer = window.setTimeout(() => kortAan(regenboog, 'verschijnt', 7000), 5000 + Math.random() * 5000);
@@ -138,6 +151,7 @@ export function maakKasteelDecor(): Decor {
   const vernietig = () => {
     window.clearTimeout(tijdTimer);
     window.clearTimeout(regenboogTimer);
+    window.clearTimeout(valTimer);
   };
   const top = heuvelSvg.querySelector('path')!;
   return { element: root, juich, vernietig, plaats: () => zetOpPad(kasteel, top, 4, true) };
