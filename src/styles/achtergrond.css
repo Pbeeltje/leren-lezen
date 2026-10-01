@@ -328,6 +328,7 @@ body:not(.thema-ruimte) .instructie-tekst:not(.instructie-tekst--donker) {
 
 .zee-boot {
   position: absolute;
+  /* Startwaarde; zee.ts zet de hoogte elk frame op het water. */
   bottom: 62%;
   left: -15%;
   width: clamp(70px, 10vw, 130px);
@@ -717,4 +718,53 @@ body:not(.thema-ruimte) .instructie-tekst:not(.instructie-tekst--donker) {
 }
 @media (prefers-reduced-motion: reduce) {
   .kasteel-valster { display: none; }
+}
+
+.zee-boot__kantel { transform-origin: 50% 80%; }
+
+/* Walvis: komt langzaam boven, kijkt rond (pupillen, knipoog, fonteintje) en duikt weer. */
+.zee-walvis {
+  position: absolute;
+  bottom: 14%;
+  width: clamp(110px, 13vw, 190px);
+  height: auto;
+  transform: translateY(110%);
+  pointer-events: none;
+}
+.zee-walvis.duikt-op { animation: walvis-op 12s ease-in-out forwards; }
+.zee-walvis .walvis__fontein { opacity: 0; transform-origin: 118px 30px; }
+.zee-walvis.duikt-op .walvis__fontein { animation: walvis-fontein 12s ease-out forwards; }
+.zee-walvis.duikt-op .walvis__pupil { animation: walvis-kijk 12s ease-in-out forwards; }
+.zee-walvis .walvis__oog { transform-origin: 150px 78px; }
+.zee-walvis.duikt-op .walvis__oog { animation: walvis-knipper 12s linear forwards; }
+@keyframes walvis-op {
+  0% { transform: translateY(110%); }
+  28% { transform: translateY(0); }
+  34%, 66% { transform: translateY(4%); }
+  50% { transform: translateY(-2%); }
+  100% { transform: translateY(110%); }
+}
+@keyframes walvis-fontein {
+  0%, 30% { opacity: 0; transform: scaleY(0.2); }
+  35% { opacity: 1; transform: scaleY(1.15); }
+  44% { opacity: 0; transform: scaleY(1.4); }
+  100% { opacity: 0; }
+}
+@keyframes walvis-kijk {
+  0%, 32% { transform: translate(0, 0); }
+  40%, 46% { transform: translate(-5px, -1px); }
+  54%, 60% { transform: translate(4px, -2px); }
+  66%, 100% { transform: translate(0, 0); }
+}
+@keyframes walvis-knipper {
+  0%, 49% { transform: scaleY(1); }
+  50% { transform: scaleY(0.1); }
+  51.5%, 100% { transform: scaleY(1); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .zee-walvis { display: none; }
+}
+@media (max-width: 560px) {
+  /* Op een telefoon zijn de golven lager: walvis iets groter en hoger, zodat zijn oog boven komt. */
+  .zee-walvis { width: 130px; bottom: 20%; }
 }
