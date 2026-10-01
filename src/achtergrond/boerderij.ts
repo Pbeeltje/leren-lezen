@@ -7,15 +7,18 @@ import { el, kortAan, plaatje, svgUitTekst } from './hulp.ts';
 // tegen de klok in draaien. Daarvoor slootjes die in perspectief naar de horizon lopen (met
 // glinsteringen, een houten bruggetje en riet), een wuivend tarweveld, een geploegde akker
 // en een rode schuur, een zandweg waarover af en toe een tractor rijdt, en vooraan een hek
-// met een koe, een varken, een schaap, een haan en kuikentjes. Bij een goed antwoord springt
-// de koe op met "boe!"; aan het eind van een sessie springen alle dieren na elkaar.
+// met een koe, een varken, een schaap, een kip en kuikentjes. De tractor rijdt meestal
+// vooruit (gespiegeld als hij naar rechts rijdt) en één op de vijf keer voor de grap
+// achteruit. Bij een goed antwoord springt de koe op met "boe!"; aan het eind van een sessie
+// springen alle dieren na elkaar.
 // Heel langzaam wordt het avond en nacht (DAGCYCLUS zet data-tijd: dag 50 s, schemer 25 s
 // met een zakkende zon en een oranje-roze lucht, nacht 35 s met fonkelende sterren, een
-// opkomende maan en verlichte ramen in schuur, molen en dorp, ochtend 25 s). Het schaap en
-// het varken vallen af en toe in slaap (zakken wat in, ademen traag, zzz); 's nachts slapen
-// ze bijna altijd, vaak de hele nacht. Bij juichen of feest worden ze wakker. Dieren en
-// tractor zijn Fluent Emoji; polder, molen, schuur, brug, riet, tarwe, hek, maan en sterren
-// zijn zelf getekend.
+// opkomende maan en verlichte ramen in schuur, molen en dorp, ochtend 25 s). Het schaap, het
+// varken, de koe en de kip doen overdag af en toe een dutje (zakken wat in, ogen dicht,
+// ademen traag, zzz); 's nachts slaapt iedereen, meestal de hele nacht. De kuikens trippelen
+// 's avonds naar de kip, slapen tegen haar aan en lopen 's ochtends terug. Bij juichen of
+// feest wordt iedereen wakker. Dieren en tractor zijn Fluent Emoji; polder, molen, schuur,
+// brug, riet, tarwe, hek, maan en sterren zijn zelf getekend.
 
 // ---- Polder (viewBox 1000 x 300, rekt mee met het scherm) ----
 // Alle perceelranden en slootjes lopen naar één verdwijnpunt boven de horizon, zodat ze
@@ -243,14 +246,19 @@ const MAAN = `
 
 // Dichte oogjes voor een slapend dier: een vlekje in de kleur van de kop over het open oog,
 // met een gebogen streepje erop. Zelfde viewBox als de Fluent-tekening (32 x 32), zodat de
-// plek precies klopt (het oog van het schaap staat op 5.45, 8.8; van het varken op 7.55, 16.5).
-const dichtOog = (x: number, y: number, kleur: string): string => `
+// plek precies klopt. De ogen in de tekeningen: schaap 5.43, 8.83 (ovaal); varken 7.55, 16.5
+// (ovaal); koe 7.11, 9.27 (staand staafje van 1 x 2, op de grijze vlek); haan 6.54, 7.53
+// (rondje r 0.5, in de rode wang); kuiken 9.47, 10.5 (rondje r 0.5).
+const dichtOog = (x: number, y: number, kleur: string, rx = 0.85, ry = 1.4, streep = '#40333a'): string => `
 <svg viewBox="0 0 32 32" aria-hidden="true">
-  <ellipse cx="${x}" cy="${y}" rx="0.85" ry="1.4" fill="${kleur}"/>
-  <path d="M${x - 0.75} ${y - 0.15} Q${x} ${y + 0.75} ${x + 0.75} ${y - 0.15}" fill="none" stroke="#40333a" stroke-width="0.42" stroke-linecap="round"/>
+  <ellipse cx="${x}" cy="${y}" rx="${rx}" ry="${ry}" fill="${kleur}"/>
+  <path d="M${x - rx * 0.88} ${y - 0.15} Q${x} ${y + rx * 0.88} ${x + rx * 0.88} ${y - 0.15}" fill="none" stroke="${streep}" stroke-width="${Math.min(0.42, rx * 0.5).toFixed(2)}" stroke-linecap="round"/>
 </svg>`;
 const OOG_SCHAAP = dichtOog(5.43, 8.83, '#cd8b49');
 const OOG_VARKEN = dichtOog(7.55, 16.5, '#fd839c');
+const OOG_KOE = dichtOog(7.11, 9.27, '#757378', 0.66, 1.16, '#2b2228');
+const OOG_HAAN = dichtOog(6.54, 7.53, '#ed1840', 0.66, 0.66);
+const OOG_KUIKEN = dichtOog(9.47, 10.5, '#ffcd3d', 0.66, 0.66);
 
 // Dag en nacht: de tijd staat in data-tijd op de decor; de CSS laat alles heel langzaam
 // in elkaar overvloeien (lucht, zon, maan, sterren, kleur van het land, lampjes).
@@ -335,27 +343,24 @@ export function maakBoerderijDecor(): Decor {
   svgUitTekst(LICHT_MOLEN, 'boerderij-molen__svg', el('div', 'boerderij-molen', lichten));
   svgUitTekst(LICHT_SCHUUR, 'boerderij-schuur__svg', el('div', 'boerderij-schuur', lichten));
 
-  // Het schaap en het varken kunnen slapen: hun plaatje zit samen met de dichte oogjes in
-  // één lijf, zodat inzakken, spiegelen en het nachtfilter voor allebei gelden.
-  const slaperLijf = (dier: HTMLElement, src: string, oog: string, gespiegeld = false): void => {
+  // Alle dieren kunnen slapen: hun plaatje zit samen met de dichte oogjes in één lijf, zodat
+  // inzakken, spiegelen en het nachtfilter voor allebei gelden.
+  const slaperLijf = (dier: HTMLElement, src: string, oog: string, gespiegeld = false): HTMLElement => {
     const lijf = el('div', `boer-dier__lijf boerderij-f${gespiegeld ? ' gespiegeld' : ''}`, dier);
     plaatje(src, 'boer-dier__beeld', lijf);
     svgUitTekst(oog, 'boer-oog', lijf);
+    return lijf;
   };
-  const schaap = el('div', 'boer-dier boer-dier--slaper boer-dier--schaap', root);
-  slaperLijf(schaap, 'assets/achtergrond/schaap.svg', OOG_SCHAAP);
-  const koe = el('div', 'boer-dier boer-dier--koe', root);
-  plaatje('assets/achtergrond/koe.svg', 'boer-dier__lijf boerderij-f', koe);
-  const varken = el('div', 'boer-dier boer-dier--slaper boer-dier--varken', root);
-  slaperLijf(varken, 'assets/achtergrond/varken.svg', OOG_VARKEN, true);
+  const maakDier = (soort: string, src: string, oog: string, gespiegeld = false): [HTMLElement, HTMLElement] => {
+    const dier = el('div', `boer-dier boer-dier--slaper boer-dier--${soort}`, root);
+    return [dier, slaperLijf(dier, src, oog, gespiegeld)];
+  };
+  const [schaap, schaapLijf] = maakDier('schaap', 'assets/achtergrond/schaap.svg', OOG_SCHAAP);
+  const [koe, koeLijf] = maakDier('koe', 'assets/achtergrond/koe.svg', OOG_KOE);
+  const [varken, varkenLijf] = maakDier('varken', 'assets/achtergrond/varken.svg', OOG_VARKEN, true);
   el('div', 'boerderij-hek boerderij-f', root);
-  const haan = el('div', 'boer-dier boer-dier--haan', root);
-  plaatje('assets/achtergrond/haan.svg', 'boer-dier__lijf boerderij-f', haan);
-  const kuikens = [1, 2].map((n) => {
-    const k = el('div', `boer-dier boer-dier--kuiken boer-dier--kuiken-${n}`, root);
-    plaatje('assets/achtergrond/kuiken.svg', 'boer-dier__lijf boerderij-f', k);
-    return k;
-  });
+  const [haan, haanLijf] = maakDier('haan', 'assets/achtergrond/haan.svg', OOG_HAAN);
+  const kuikens = [1, 2].map((n) => maakDier(`kuiken boer-dier--kuiken-${n}`, 'assets/achtergrond/kuiken.svg', OOG_KUIKEN));
 
   const stil = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   let levend = true;
@@ -368,35 +373,61 @@ export function maakBoerderijDecor(): Decor {
     }, ms);
     losseTimers.add(id);
   };
-  // De tractor rijdt over de zandweg tussen de akkers en de voorste sloot.
+  // De tractor rijdt over de zandweg tussen de akkers en de voorste sloot, de ene keer naar
+  // links en de andere keer naar rechts. Het Fluent-plaatje kijkt naar links, dus naar rechts
+  // spiegelen we hem. Eén op de vijf keer rijdt hij voor de grap achteruit (niet gespiegeld
+  // naar rechts, of gespiegeld naar links).
   function plan(): void {
     window.clearTimeout(timer);
     if (!levend || stil) return;
     timer = window.setTimeout(() => {
-      const t = el('div', 'boer-tractor', tractorBaan);
+      const naarRechts = Math.random() < 0.5;
+      const achteruit = Math.random() < 0.2;
+      const t = el('div', `boer-tractor${achteruit ? ' achteruit' : ''}`, tractorBaan);
+      t.style.setProperty('--van-x', naarRechts ? '-16vw' : '104vw');
+      t.style.setProperty('--naar-x', naarRechts ? '104vw' : '-16vw');
       const schok = el('div', 'boer-tractor__schok', t);
-      plaatje('assets/achtergrond/tractor.svg', 'boer-tractor__lijf', schok);
+      const lijf = plaatje('assets/achtergrond/tractor.svg', 'boer-tractor__lijf', schok);
+      if (naarRechts !== achteruit) lijf.classList.add('gespiegeld');
       later(() => t.remove(), TRACTOR_MS + 200);
       later(plan, TRACTOR_MS);
     }, 8000 + Math.random() * 14000);
   }
   plan();
 
-  // ---- Slapen: het schaap en het varken doen af en toe een dutje ----
-  // Ze zakken wat in en laten hun kop hangen (CSS .slaapt), ademen traag en er zweven
-  // zzz'tjes op. Overdag na 25-60 s, voor 10-18 s; 's nachts vallen ze snel in slaap en
-  // slapen ze meestal tot de ochtend. Wakker worden gaat met een rekje en een hupje.
+  // ---- Slapen: alle dieren doen af en toe een dutje, en 's nachts slaapt iedereen ----
+  // Ze zakken wat in en laten hun kop hangen (CSS .slaapt), ademen traag, doen hun ogen dicht
+  // en er zweven zzz'tjes op. Overdag doen het schaap en het varken na 25-60 s een dutje, de
+  // koe en de haan na 45-95 s, voor 10-18 s. 's Nachts vallen ze snel in slaap en slapen ze
+  // meestal tot de ochtend. Wakker worden gaat met een rekje en een hupje.
+  // De kuikens slapen alleen 's nachts: ze trippelen dan eerst naar de kip toe (CSS .bij-kip,
+  // een trage overgang van left met hupjes), kruipen tegen haar aan en slapen daar de hele
+  // nacht. 's Ochtends worden ze wakker en lopen ze terug naar hun eigen plekje.
   interface Slaper {
     dier: HTMLElement;
+    lijf: HTMLElement;
     slaapt: boolean;
     heleNacht: boolean;
+    /** Overdag: [minimaal, plus willekeurig] wachten tot een dutje (null = geen dutjes). */
+    dag: [number, number] | null;
+    kuiken: boolean;
+    bijKip: boolean;
+    loopt: boolean;
     timer?: number;
+    loopTimer?: number;
   }
-  const slapers: Slaper[] = [schaap, varken].map((dier) => {
+  const maakSlaper = ([dier, lijf]: [HTMLElement, HTMLElement], dag: [number, number] | null, kuiken = false): Slaper => {
     const zzz = el('div', 'boer-zzz', dier);
     for (const letter of ['Z', 'z', 'z']) el('span', '', zzz).textContent = letter;
-    return { dier, slaapt: false, heleNacht: false };
-  });
+    return { dier, lijf, slaapt: false, heleNacht: false, dag, kuiken, bijKip: false, loopt: false };
+  };
+  const slapers: Slaper[] = [
+    maakSlaper([schaap, schaapLijf], [25000, 35000]),
+    maakSlaper([varken, varkenLijf], [25000, 35000]),
+    maakSlaper([koe, koeLijf], [45000, 50000]),
+    maakSlaper([haan, haanLijf], [45000, 50000]),
+    ...kuikens.map((k) => maakSlaper(k, null, true)),
+  ];
   const isNacht = (): boolean => root.dataset.tijd === 'nacht';
   const wachtSlaper = (s: Slaper, fn: () => void, ms: number): void => {
     window.clearTimeout(s.timer);
@@ -404,18 +435,26 @@ export function maakBoerderijDecor(): Decor {
   };
   function planSlaap(s: Slaper, ms?: number): void {
     if (!levend || stil) return;
-    const wacht = ms ?? (isNacht() ? 3000 + Math.random() * 9000 : 25000 + Math.random() * 35000);
+    // Een kuiken gaat alleen slapen als het 's nachts bij de kip zit.
+    if (s.kuiken && (!isNacht() || !s.bijKip || s.loopt)) return;
+    let wacht = ms;
+    if (wacht === undefined) {
+      if (isNacht()) wacht = 3000 + Math.random() * 9000;
+      else if (s.dag) wacht = s.dag[0] + Math.random() * s.dag[1];
+      else return;
+    }
     wachtSlaper(s, () => valInSlaap(s), wacht);
   }
   function valInSlaap(s: Slaper): void {
     if (!levend || s.slaapt) return;
     s.slaapt = true;
     s.dier.classList.add('slaapt');
-    s.heleNacht = isNacht() && Math.random() < 0.75;
+    s.heleNacht = isNacht() && (s.kuiken || Math.random() < 0.75);
     if (s.heleNacht) window.clearTimeout(s.timer);
     else wachtSlaper(s, () => wordWakker(s, true), 10000 + Math.random() * 8000);
   }
   function wordWakker(s: Slaper, rekken: boolean): void {
+    if (s.loopt) return; // een lopend kuiken is al wakker en loopt gewoon door
     window.clearTimeout(s.timer);
     if (s.slaapt) {
       s.slaapt = false;
@@ -425,7 +464,42 @@ export function maakBoerderijDecor(): Decor {
     }
     planSlaap(s);
   }
+  // Een kuiken loopt (met hupjes) naar de kip of terug naar zijn eigen plekje. Het plaatje
+  // kijkt naar links; de kip staat links van de kuikens, dus terug lopen ze gespiegeld.
+  const LOOP_MS = 4600;
+  function loop(s: Slaper, naarKip: boolean, klaar?: () => void): void {
+    if (!levend) return;
+    window.clearTimeout(s.loopTimer);
+    s.loopt = true;
+    s.lijf.classList.toggle('gespiegeld', !naarKip);
+    s.dier.classList.add('loopt');
+    s.dier.classList.toggle('bij-kip', naarKip);
+    s.loopTimer = window.setTimeout(() => {
+      s.loopt = false;
+      s.bijKip = naarKip;
+      s.dier.classList.remove('loopt');
+      if (!naarKip) s.lijf.classList.remove('gespiegeld'); // thuis weer omdraaien
+      klaar?.();
+    }, LOOP_MS);
+  }
   function tijdVoorSlaper(s: Slaper, tijd: Tijd): void {
+    // Kuikens gebruiken loopTimer voor het lopen, zodat juichen (dat de slaaptimer wist) de
+    // tocht naar de kip of terug niet kan afbreken.
+    if (s.kuiken) {
+      const wachtLoop = (fn: () => void, ms: number): void => {
+        window.clearTimeout(s.loopTimer);
+        s.loopTimer = window.setTimeout(fn, ms);
+      };
+      if (tijd === 'nacht') {
+        wachtLoop(() => loop(s, true, () => planSlaap(s, 800 + Math.random() * 2500)), 400 + Math.random() * 2200);
+      } else if (tijd === 'ochtend') {
+        wachtLoop(() => {
+          wordWakker(s, true);
+          if (s.bijKip) wachtLoop(() => loop(s, false), 1300 + Math.random() * 1500);
+        }, 3000 + Math.random() * 14000);
+      }
+      return;
+    }
     if (tijd === 'nacht') {
       // Wie wakker is, wordt nu snel slaperig; wie al een dutje doet, slaapt vaak door.
       if (!s.slaapt) planSlaap(s, 2000 + Math.random() * 10000);
@@ -461,16 +535,19 @@ export function maakBoerderijDecor(): Decor {
     later(() => wolkje.remove(), 1400);
   };
 
+  // Wakker schrikken: de kuikens doen een hupje (en blijven 's nachts gewoon bij de kip).
+  const iedereenWakker = () => slapers.forEach((s) => wordWakker(s, s.kuiken));
+
   const juich = () => {
-    slapers.forEach((s) => wordWakker(s, false));
+    iedereenWakker();
     kortAan(koe, 'juicht', 1200);
     roep(koe, 'boe!');
   };
 
   // Einde van een sessie: alle dieren springen na elkaar, met sterretjes.
   const feest = () => {
-    slapers.forEach((s) => wordWakker(s, false));
-    const rij = [koe, haan, ...kuikens, schaap, varken];
+    iedereenWakker();
+    const rij = [koe, haan, ...kuikens.map(([k]) => k), schaap, varken];
     rij.forEach((dier, i) => {
       later(() => {
         kortAan(dier, 'juicht', 1200);
@@ -486,7 +563,10 @@ export function maakBoerderijDecor(): Decor {
     levend = false;
     window.clearTimeout(timer);
     window.clearTimeout(tijdTimer);
-    slapers.forEach((s) => window.clearTimeout(s.timer));
+    slapers.forEach((s) => {
+      window.clearTimeout(s.timer);
+      window.clearTimeout(s.loopTimer);
+    });
     losseTimers.forEach((id) => window.clearTimeout(id));
     losseTimers.clear();
   };

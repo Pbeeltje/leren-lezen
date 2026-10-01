@@ -844,7 +844,7 @@ creates `audio/boekjes/` by itself.
   - **kasteel:** day 25 s / night 20 s (`data-tijd`), sometimes a rainbow by day, `.valster` shooting stars by night.
   - **ruimte** (`achtergrond/ruimte.ts`): one scheduler for shooting stars (`.valster`, random position) and the slow diagonal `.raket` (22%). Never two at once, ≥ 5 s rest between them; `juich` only fires when the sky is free. The old three.js shooting star is gone.
   - **onderwater:** light rays, rising bubbles, seaweed, own clownfish in an anemone (jumps out on `juich`), a walking crab, and one Fluent fish at a time swimming past (`.zwemmer`, `zwem-over` with `--van-x/--naar-x`). `feest`: a turtle plus a school of fish.
-  - **boerderij:** flat polder (`.boerderij-polder`, see the last bullet of this file), own windmill (`.molen__wieken` rotates) and barn, CSS fence, Fluent cow/pig/sheep/rooster/chicks. Tractor every 8–22 s. `juich`: the cow jumps with a "boe!" bubble; `feest`: all animals jump in turn.
+  - **boerderij:** flat polder (`.boerderij-polder`, see the last bullet of this file), own windmill (`.molen__wieken` rotates) and barn, CSS fence, Fluent cow/pig/sheep/rooster/chicks. Tractor every 8–22 s, random direction; the Fluent tractor faces left, so it gets `.gespiegeld` when driving right, except 20% of the time when it deliberately drives backwards (class `achteruit`, mirror flipped). `juich`: the cow jumps with a "boe!" bubble; `feest`: all animals jump in turn.
   - **herfst, winter, kermis, bouw, trein:** each has its own CSS file `styles/achtergrond-<id>.css` (imported in main.ts) and pictures with the prefix `<id>-` in `public/assets/achtergrond/`.
   - **Adding a theme:** add the id to `ThemaId`, plus an entry in `THEMAS` and `MAKERS`. The shop and profile menu pick it up automatically (200 coins). Fluent animals face left: mirror them with `.gespiegeld`. If `prefers-reduced-motion` is set, don't start JS schedulers. View a theme with `node tests/achtergronden.mjs <map> <id>` (rest/juich/feest on phone, pc and landscape).
 - **Shop** (`ui/screens/WinkelScreen.ts`): owned items come first (in the fixed order), then the rest. Backgrounds use compact cards: 6 columns (3 on phones) and up to 4 rows, so everything fits on one page. Check with `tests/winkel-rij.mjs`.
@@ -1026,13 +1026,21 @@ Children no longer pick an age but a group (`Groep = 'kleuter' | 'groep3'` in co
   the sun sinks behind the polder (`.boerderij-zonbaan`), stars twinkle, a moon (own SVG)
   rises on the left, and land parts with `.boerderij-f` (polder, fence, animal bodies) get a
   filter per time of day. Lit windows live in a second, unfiltered `.boerderij-lichten`
-  polder layer with the same positions (mill, barn, village). The sheep and pig
-  (`.boer-dier--slaper`) nap every 25-60 s for 10-18 s (`.slaapt`: body sinks, head tilts
-  towards the side it faces, slow breathing, `.boer-zzz`, closed eyes = `.boer-oog`, an SVG
-  in the Fluent 32×32 viewBox inside the same `.boer-dier__lijf` wrapper so mirroring
-  follows); at night they fall asleep within seconds and usually sleep till dawn; they wake
-  with a stretch-hop (`.rekt`), and `juich`/`feest` wake them at once. Reduced motion: always
-  day, no naps.
+  polder layer with the same positions (mill, barn, village). Every animal is a
+  `.boer-dier--slaper` (`maakDier`/`maakSlaper`): by day the sheep and pig nap every 25-60 s
+  and the cow and rooster every 45-95 s, for 10-18 s (`.slaapt`: body sinks, head tilts
+  towards the side it faces via `--kantel`, slow breathing, `.boer-zzz` (smaller for chicks),
+  closed eyes = `.boer-oog`, made by `dichtOog(x, y, faceColour, rx, ry)`: an SVG in the
+  Fluent 32×32 viewBox inside the same `.boer-dier__lijf` wrapper so mirroring follows; eye
+  centres: sheep 5.43,8.83, pig 7.55,16.5, cow 7.11,9.27, rooster 6.54,7.53, chick
+  9.47,10.5). At night everyone falls asleep within seconds and usually sleeps till dawn.
+  Chicks only sleep at night: at `nacht` they hop over to the rooster (`.loopt` hop
+  animation + `.bij-kip`, a 4.6 s `left` transition to spots computed from `--haan-x`/
+  `--haan-b`), sleep there all night, and in the morning wake and walk back mirrored (own
+  `loopTimer`, so `juich` can't cancel the walk). Animals wake with a stretch-hop (`.rekt`);
+  `juich`/`feest` wake them at once (chicks hop and stay by the rooster until morning).
+  Reduced motion: always day, no naps. Check with Playwright `page.clock` (pause, `runFor`
+  into the night) but wait real seconds, since CSS transitions run in real time.
 - **Music levels:** Speel na and Ritme have 5 levels (`AANTAL_NIVEAUS`): 2-4, 4-6, 6-8, 8-10,
   10-12. Level 1 uses a fixed `reeks` over the 10 questions (2,2,2,3,3,3,3,3,4,4; ritme with
   bass + snare). `niveausVoorGroep()` gives kleuters only levels 1 and 2 (2-4 and 4-6).

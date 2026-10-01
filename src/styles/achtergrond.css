@@ -1323,8 +1323,8 @@ svg.dino__lijf {
   animation: adem 3.4s ease-in-out infinite;
 }
 .boer-dier__lijf { position: relative !important; display: block; width: 100%; }
-/* Slapen (schaap en varken): het lijf zakt wat in en de kop hangt (naar de kant waar het
-   dier naar kijkt: het schaap links, het gespiegelde varken rechts), traag ademen en zzz. */
+/* Slapen (alle dieren): het lijf zakt wat in en de kop hangt (naar de kant waar het dier
+   naar kijkt: links, het gespiegelde varken rechts), traag ademen, ogen dicht en zzz. */
 .boer-dier--slaper .boer-dier__lijf {
   transform-origin: 50% 90%;
   transform: translateY(0) rotate(0deg) scale(1, 1);
@@ -1344,6 +1344,9 @@ svg.dino__lijf {
 .boer-dier.slaapt .boer-oog { opacity: 1; transition: opacity 1.2s ease 0.6s; }
 .boer-dier--schaap { --kantel: -7deg; --zzz-x: -24px; }
 .boer-dier--varken { --kantel: 7deg; --zzz-x: -16px; }
+.boer-dier--koe { --kantel: -5deg; --zzz-x: -26px; }
+.boer-dier--haan { --kantel: -7deg; --zzz-x: -20px; }
+.boer-dier--kuiken { --kantel: -8deg; --zzz-x: -10px; --zzz-y: -26px; }
 .boer-dier.slaapt { animation: boer-slaapadem 4.6s ease-in-out infinite; }
 .boer-dier.slaapt .boer-dier__lijf {
   transform: translateY(6%) rotate(var(--kantel)) scale(1.04, 0.9);
@@ -1373,6 +1376,10 @@ svg.dino__lijf {
   pointer-events: none;
 }
 .boer-dier--varken .boer-zzz { left: auto; right: 22%; }
+.boer-dier--koe .boer-zzz { top: 9%; left: 20%; }
+.boer-dier--haan .boer-zzz { top: -4%; left: 22%; }
+.boer-dier--kuiken .boer-zzz { top: 0; left: 26%; }
+.boer-dier--kuiken .boer-zzz span { font-size: clamp(0.6rem, 1vw, 0.85rem); }
 .boer-dier.slaapt .boer-zzz { opacity: 1; transition: opacity 1.5s ease 1.6s; }
 .boer-zzz span {
   position: absolute;
@@ -1388,14 +1395,27 @@ svg.dino__lijf {
 @keyframes boer-zzz {
   0% { transform: translate(0, 0) scale(0.55); opacity: 0; }
   20% { opacity: 1; }
-  100% { transform: translate(var(--zzz-x), -48px) scale(1.25); opacity: 0; }
+  100% { transform: translate(var(--zzz-x), var(--zzz-y, -48px)) scale(1.25); opacity: 0; }
 }
 .boer-dier.juicht { animation: juich-sprong 0.6s ease-out 2; }
+/* 's Nachts trippelen de kuikens met hupjes naar de kip (.bij-kip) en kruipen ze tegen haar
+   aan: kuiken 1 achter haar, kuiken 2 voor haar borst. 's Ochtends lopen ze terug. De plek
+   van de kip staat in --haan-x en --haan-b, zodat de nestplekjes meeschuiven. */
+.decor-boerderij { --haan-x: 20%; --haan-b: clamp(54px, 7vw, 96px); --kuiken-b: clamp(26px, 3.4vw, 46px); }
+.boer-dier--kuiken { transition: left 4.6s ease-in-out; }
+.boer-dier--kuiken.loopt { animation: kuiken-hup 0.46s ease-in-out infinite; }
+.boer-dier--kuiken-1.bij-kip { left: calc(var(--haan-x) + var(--haan-b) * 0.74); }
+.boer-dier--kuiken-2.bij-kip { left: calc(var(--haan-x) - var(--kuiken-b) * 0.5); }
+@keyframes kuiken-hup {
+  0%, 100% { transform: translateY(0); }
+  45% { transform: translateY(-5px) rotate(-4deg); }
+  70% { transform: translateY(0) scale(1.04, 0.96); }
+}
 .boer-dier--koe { left: 2%; bottom: 4vh; width: clamp(100px, 14vw, 190px); }
 .boer-dier--varken { right: 3%; bottom: 4vh; width: clamp(80px, 11vw, 150px); animation-delay: -1.2s; }
 .boer-dier--schaap { right: 30%; bottom: calc(var(--land) * 0.26); width: clamp(54px, 7vw, 96px); animation-delay: -2s; }
-.boer-dier--haan { left: 20%; bottom: 1vh; width: clamp(54px, 7vw, 96px); animation: haan-pik 4s ease-in-out infinite; }
-.boer-dier--kuiken { bottom: 0.5vh; width: clamp(26px, 3.4vw, 46px); animation: kuiken-trippel 9s ease-in-out infinite; }
+.boer-dier--haan { left: var(--haan-x); bottom: 1vh; width: var(--haan-b); animation: haan-pik 4s ease-in-out infinite; }
+.boer-dier--kuiken { bottom: 0.5vh; width: var(--kuiken-b); animation: kuiken-trippel 9s ease-in-out infinite; }
 .boer-dier--kuiken-1 { left: 28%; }
 .boer-dier--kuiken-2 { left: 32%; animation-delay: -3s; }
 @keyframes haan-pik {
@@ -1450,6 +1470,6 @@ svg.dino__lijf {
   .anemoon { left: 16%; }
   .onderwater-krab { left: 46%; }
   .onderwater-octopus { right: 22%; }
-  .boer-dier--haan { left: 24%; }
+  .decor-boerderij { --haan-x: 24%; }
   .boer-dier--kuiken-1 { left: 42%; }
 }
