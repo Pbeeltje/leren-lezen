@@ -319,6 +319,10 @@
 .leeuw__slaap { opacity: 0; transition: opacity 1s ease; }
 .decor-savanne[data-tijd='nacht'] .leeuw__ogen { opacity: 0; }
 .decor-savanne[data-tijd='nacht'] .leeuw__slaap { opacity: 1; }
+/* Slapen: de kop zakt wat naar beneden en ze ademen rustiger. */
+.leeuw__kop { transition: transform 2s ease; }
+.decor-savanne[data-tijd='nacht'] .savanne-leeuw:not(.brult) .leeuw__kop { transform: rotate(7deg) translateY(3px); }
+.decor-savanne[data-tijd='nacht'] .savanne-leeuw__svg { animation-duration: 6.5s; }
 
 /* Gapen: kop iets naar achteren, ogen dicht, bek wijd open. */
 .savanne-leeuw.gaapt .leeuw__kop { animation: leeuw-gaapkop 2.4s ease-in-out; }
@@ -435,16 +439,17 @@
 
 /* Een zwerm vogels langs de lucht. */
 .savanne-zwerm { position: absolute; inset: 0; pointer-events: none; }
-.savanne-zwermvogel { position: absolute; left: 0; top: 0; width: clamp(18px, 2.2vw, 30px); }
+.savanne-zwermvogel { position: absolute; left: 0; top: 0; width: clamp(22px, 2.6vw, 36px); }
 .savanne-zwermvogel__svg { display: block; width: 100%; height: auto; overflow: visible; }
-.zwermvogel__vleugels {
-  transform-box: fill-box;
-  transform-origin: center;
+.zwermvogel__vleugel {
+  transform-box: view-box;
   animation: zwermvogel-flap var(--flap, 0.5s) ease-in-out infinite alternate;
 }
+.zwermvogel__vleugel--l { transform-origin: 21px 12px; --kant: 1; }
+.zwermvogel__vleugel--r { transform-origin: 23px 12px; --kant: -1; }
 @keyframes zwermvogel-flap {
-  from { transform: scaleY(1); }
-  to { transform: scaleY(-0.5); }
+  from { transform: rotate(calc(var(--kant) * 18deg)); }
+  to { transform: rotate(calc(var(--kant) * -34deg)); }
 }
 
 @media (max-width: 560px) {

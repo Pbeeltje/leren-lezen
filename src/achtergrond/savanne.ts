@@ -140,8 +140,8 @@ function leeuwSvg(k: LeeuwKleur): string {
       <circle cx="54" cy="62" r="3.4"/><circle cx="72" cy="62" r="3.4"/>
       <circle cx="55.2" cy="60.8" r="1.1" fill="#fff"/><circle cx="73.2" cy="60.8" r="1.1" fill="#fff"/>
     </g>
-    <g class="leeuw__slaap" stroke="#5a3a24" stroke-width="2" fill="none" stroke-linecap="round">
-      <path d="M50 62 Q54 65.5 58 62"/><path d="M68 62 Q72 65.5 76 62"/>
+    <g class="leeuw__slaap" stroke="#3a2416" stroke-width="3" fill="none" stroke-linecap="round">
+      <path d="M48.5 61.5 Q54 67 59.5 61.5"/><path d="M66.5 61.5 Q72 67 77.5 61.5"/>
     </g>
   </g>
 </svg>`;
@@ -152,10 +152,15 @@ const MAAN = `
   <path d="M62 8 A44 44 0 1 0 92 70 A36 36 0 1 1 62 8 Z" fill="#fff4c4"/>
 </svg>`;
 
-// Een vogeltje als silhouet (twee vleugels), voor de zwerm.
+// Een vogeltje als silhouet van voren: lijfje met twee gebogen vleugels die op en neer slaan.
 const ZWERMVOGEL = `
-<svg viewBox="0 0 30 14" aria-hidden="true">
-  <path class="zwermvogel__vleugels" d="M1 9 Q8 1 15 9 Q22 1 29 9" stroke="#2b1a14" stroke-width="2.4" fill="none" stroke-linecap="round"/>
+<svg viewBox="0 0 44 24" aria-hidden="true">
+  <g fill="#2b1a14">
+    <path class="zwermvogel__vleugel zwermvogel__vleugel--l" d="M21 12 C16 6 9 4 1 7 C8 7.5 14 10 20 15 Z"/>
+    <path class="zwermvogel__vleugel zwermvogel__vleugel--r" d="M23 12 C28 6 35 4 43 7 C36 7.5 30 10 24 15 Z"/>
+    <ellipse cx="22" cy="13.5" rx="3" ry="4"/>
+    <circle cx="22" cy="9.5" r="2.3"/>
+  </g>
 </svg>`;
 
 // Een pol savannegras: willekeurige sprieten, smal onderaan bij elkaar.
