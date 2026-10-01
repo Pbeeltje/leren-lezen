@@ -927,4 +927,5 @@ Children no longer pick an age but a group (`Groep = 'kleuter' | 'groep3'` in co
 - **Vangspel difficulty:** besides speed, frequency and meteor share, meteors grow
   (up to 1.8x after about 90 s); each falling thing keeps its own size for collisions.
 - **voet.svg** is now a skin-coloured footprint (Fluent "Footprints", one foot, recoloured);
-  the old side-view Fluent foot looked like a blob. teen.svg still uses the old foot.
+  the old side-view Fluent foot looked like a blob. teen.svg embeds this new voet.svg
+  (`inbed(..., bron=WOORDEN)` in teken-woorden.py) with a red circle round the big toe.
