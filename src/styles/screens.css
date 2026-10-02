@@ -1847,29 +1847,37 @@
 }
 
 /* ---------- Harp ---------- */
-/* Zelfde knoppen als de xylofoonstaven, als gekleurde snaren in het frame.
-   Op een groot scherm even breed als de xylofoonstaven (~120px). */
+/* Zelfde knoppen als de xylofoonstaven, als gekleurde snaren in het frame. Het frame
+   (harp-kast.svg) is 4:3 en schaalt niet scheef mee, dus het vak houdt die vorm ook en de
+   acht snaren delen de ruimte erbinnen. */
 .xylofoon.xylofoon--harp {
   position: relative;
   gap: 0;
   align-items: stretch;
-  width: min(100%, 760px);
-  max-width: 760px;
-  height: min(48vh, 420px);
-  min-height: min(36vh, 280px);
-  padding: 11% 20% 13% 12%;
+  /* Padding in % gaat uit van de breedte van de kaart, niet van de harp: daarom alles via
+     --harp-breedte. */
+  --harp-breedte: min(100%, 760px, 64vh);
+  aspect-ratio: 4 / 3;
+  width: var(--harp-breedte);
+  max-width: none;
+  height: auto;
+  min-height: 0;
+  flex: none;
+  align-self: center;
+  padding: calc(var(--harp-breedte) * 0.11) calc(var(--harp-breedte) * 0.2) calc(var(--harp-breedte) * 0.13) calc(var(--harp-breedte) * 0.12);
   overflow: hidden;
   border: none;
   border-radius: 0;
-  background: url("assets/icons/harp-kast.svg") center / 100% 100% no-repeat;
+  /* Met / vooraan: Vite herschrijft het dan relatief aan het css-bestand in dist/assets/. */
+  background: url("/assets/icons/harp-kast.svg") center / 100% 100% no-repeat;
   box-shadow: none;
 }
 .xylofoon--harp .xylofoon__staaf,
 .muziek-kaart .xylofoon--harp .xylofoon__staaf {
   max-width: none;
-  min-width: 72px;
-  flex: 1 1 72px;
-  margin: 0 -12px;
+  min-width: 0;
+  flex: 1 1 0;
+  margin: 0;
   height: 100%;
   padding: 0;
   border-radius: 0;
@@ -1880,9 +1888,9 @@
 .xylofoon--harp .xylofoon__staaf::before {
   top: auto;
   bottom: 0;
-  width: clamp(22px, 2.6vw, 40px);
+  width: clamp(8px, 45%, 40px);
   height: var(--lengte) !important;
-  margin-left: calc(clamp(22px, 2.6vw, 40px) / -2);
+  margin-left: calc(clamp(8px, 45%, 40px) / -2);
   border-radius: 99px;
   background: linear-gradient(90deg, rgba(0, 0, 0, 0.25), transparent 35%, rgba(255, 255, 255, 0.6) 50%, transparent 65%), var(--kleur);
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.35);
@@ -2726,17 +2734,12 @@
 .muziek-vrij-scherm .muziek-kaart--vrij .xylofoon--harp .xylofoon__staaf,
 .muziek-vrij-scherm .muziek-kaart--vrij .xylofoon--fluit .xylofoon__staaf { max-width: none; }
 .muziek-vrij-scherm .muziek-kaart--vrij .xylofoon--fluit { height: min(22vh, 120px); max-height: 140px; align-self: center; width: min(100%, 860px); }
+/* Zo groot als in de kaart past, in de 4:3-vorm van het frame. */
+.muziek-vrij-scherm .muziek-kaart--vrij { container-type: size; }
 .muziek-vrij-scherm .muziek-kaart--vrij .xylofoon--harp {
-  height: 100%;
-  max-height: 760px;
-  width: min(100%, 1100px);
-  max-width: 1100px;
-  min-height: 0;
-}
-.muziek-vrij-scherm .muziek-kaart--vrij .xylofoon--harp .xylofoon__staaf {
-  min-width: 120px;
-  flex: 1 1 120px;
-  margin: 0 -28px;
+  --harp-breedte: min(100cqw, 133cqh, 1100px);
+  height: auto;
+  max-height: none;
 }
 .muziek-vrij-scherm .drumstel.drumstel--5 {
   max-width: min(100%, calc((100dvh - 150px) * 1.25));
@@ -2750,7 +2753,7 @@
   .muziek-vrij-scherm .drumstel.drumstel--5 { max-width: min(100%, calc((100dvh - 110px) * 5)); }
   .muziek-vrij-scherm .drumstel.drumstel--5 .drum-pad { max-height: calc(100dvh - 130px); max-width: calc(100dvh - 130px); }
   .muziek-vrij-scherm .xylofoon--fluit { height: min(28vh, 90px); }
-  .xylofoon.xylofoon--harp { min-height: calc(100dvh - 150px); padding: 9% 20% 10% 12%; }
+  .xylofoon.xylofoon--harp { --harp-breedte: min(100%, calc((100dvh - 150px) * 4 / 3)); }
 }
 
 /* ---------- Telefoon liggend (weinig hoogte) ---------- */
@@ -2849,6 +2852,7 @@
   /* Muziek: xylofoon en drums laag genoeg dat ze helemaal in beeld staan. */
   .muziek-kaart { width: min(94vw, 780px); gap: 10px; }
   .muziek-kaart .xylofoon { height: calc(100dvh - 215px); }
+  .muziek-kaart .xylofoon.xylofoon--harp { height: auto; --harp-breedte: min(100%, calc((100dvh - 215px) * 4 / 3)); }
   .muziek-kaart .xylofoon__staaf { max-width: 80px; }
   .muziek-kaart--drums .drumstel { min-height: 0; }
   .muziek-kaart .drum-pad--bas { width: 130px; height: 130px; }
