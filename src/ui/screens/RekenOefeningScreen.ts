@@ -29,6 +29,10 @@ import { renderVingersNaarCijfer } from '../../games/vingersNaarCijfer.ts';
 import { renderReeksAanvullen } from '../../games/reeksAanvullen.ts';
 import { renderOptellen } from '../../games/optellen.ts';
 import { renderBussom } from '../../games/bussom.ts';
+import { renderSomKeuze } from '../../games/somKeuze.ts';
+import { renderSomKoppelen } from '../../games/somKoppelen.ts';
+import { renderSomTypen } from '../../games/somTypen.ts';
+import { renderGeldKeuze, renderGeldTypen } from '../../games/geld.ts';
 import { speelSchermOvergang } from '../../three/transitions.ts';
 import { TestResultScreen } from './TestResultScreen.ts';
 import { RekenChapterScreen } from './RekenChapterScreen.ts';
@@ -48,6 +52,11 @@ const INSTRUCTIES: Record<RekenOefeningDefinitie['type'], string> = {
   'reeks-aanvullen': 'Welk getal ontbreekt?',
   optellen: 'Hoeveel is dat samen?',
   bussom: 'Hoeveel mensen zitten er nu in de bus?',
+  'som-keuze': 'Hoeveel is de som?',
+  'som-koppelen': 'Welk getal hoort bij welke som?',
+  'som-typen': 'Typ het antwoord',
+  'geld-keuze': 'Hoeveel geld is dit?',
+  'geld-typen': 'Hoeveel geld is dit? Typ het in',
 };
 
 function renderOefening(
@@ -75,6 +84,16 @@ function renderOefening(
       return renderOptellen(container, oefening, opties, afgerond);
     case 'bussom':
       return renderBussom(container, oefening, opties, afgerond);
+    case 'som-keuze':
+      return renderSomKeuze(container, oefening, opties, afgerond);
+    case 'som-koppelen':
+      return renderSomKoppelen(container, oefening, opties, afgerond);
+    case 'som-typen':
+      return renderSomTypen(container, oefening, opties, afgerond);
+    case 'geld-keuze':
+      return renderGeldKeuze(container, oefening, opties, afgerond);
+    case 'geld-typen':
+      return renderGeldTypen(container, oefening, opties, afgerond);
   }
 }
 
@@ -85,7 +104,7 @@ export function RekenOefeningScreen(
   onAfgerond: () => void,
   oefeningNummer: OefeningNummer = 1,
 ): Screen {
-  const oefeningen = genereerRekenSessie(kern, modus);
+  const oefeningen = genereerRekenSessie(kern, modus, oefeningNummer);
   // Vastgelegd bij het starten van déze poging: "eerste keer" of "herhaling" (zie rewards.ts).
   const voortgangBijStart = haalKernVoortgang(kern.id);
   const herhaling =

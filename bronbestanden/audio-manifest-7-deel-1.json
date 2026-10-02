@@ -1,0 +1,26 @@
+[
+  {
+    "n": 1,
+    "slug": "zoek-kleur-paars",
+    "text": "Tik alle paarse dingen.",
+    "path": "public/assets/audio/instructies/zoek-kleur-paars.mp3"
+  },
+  {
+    "n": 2,
+    "slug": "zoek-kleur-roze",
+    "text": "Tik alle roze dingen.",
+    "path": "public/assets/audio/instructies/zoek-kleur-roze.mp3"
+  },
+  {
+    "n": 3,
+    "slug": "zoek-kleur-zwart",
+    "text": "Tik alle zwarte dingen.",
+    "path": "public/assets/audio/instructies/zoek-kleur-zwart.mp3"
+  },
+  {
+    "n": 4,
+    "slug": "zoek-kleur-bruin",
+    "text": "Tik alle bruine dingen.",
+    "path": "public/assets/audio/instructies/zoek-kleur-bruin.mp3"
+  }
+]

@@ -99,7 +99,7 @@ const haalLog = () => page.evaluate(() => window.__log);
 // 2. Luister & wijs (kleuter): tik opties tot de goede, 5 vragen.
 await stap('luister', async () => {
   await start(4);
-  await tik('.icoon-tegel', 'Luisteren'); await tik('.icoon-tegel', 'Luister & wijs');
+  await tik('.icoon-tegel', 'Luisteren');
   await page.locator('.icoon-tegel:not([disabled])').first().click(); await wacht(800);
   await leegLog();
   for (let v = 0; v < 5; v++) {
@@ -120,7 +120,7 @@ await stap('luister', async () => {
 // 3. Geheugenspel (kleuter): snel doorklikken zoals een kind doet.
 await stap('geheugen', async () => {
   await start(4);
-  await tik('.icoon-tegel', 'Luisteren'); await tik('.icoon-tegel', 'Geheugenspel'); await wacht(300);
+  await tik('.icoon-tegel', 'Spelletjes'); await tik('.icoon-tegel', 'Geheugenspel'); await wacht(300);
   await leegLog();
   // Paren vinden via het woordgeluid van elke kaart.
   const kaarten = page.locator('.geheugen-kaart');

@@ -9,7 +9,7 @@ import { KernOverviewScreen } from './KernOverviewScreen.ts';
 import { RekenKernOverviewScreen } from './RekenKernOverviewScreen.ts';
 import { ComingSoonScreen } from './ComingSoonScreen.ts';
 import { ProfileSelectScreen } from './ProfileSelectScreen.ts';
-import { LuisterenKiesScreen } from './LuisterenKiesScreen.ts';
+import { LuisterHoofdstukkenScreen } from './LuisterHoofdstukkenScreen.ts';
 import { OntdekkenKiesScreen } from './OntdekkenKiesScreen.ts';
 import { SchrijvenKiesScreen } from './SchrijvenKiesScreen.ts';
 import { BoekenkastScreen } from './BoekenkastScreen.ts';
@@ -43,7 +43,7 @@ export function TopicSelectScreen(manager: ScreenManager, groep: Groep): Screen 
         } else if (topic.id === 'tellen') {
           manager.push((m) => RekenKernOverviewScreen(m));
         } else if (topic.id === 'luisteren') {
-          manager.push((m) => LuisterenKiesScreen(m));
+          manager.push((m) => LuisterHoofdstukkenScreen(m));
         } else if (topic.id === 'ontdekken') {
           manager.push((m) => OntdekkenKiesScreen(m));
         } else if (topic.id === 'muziek') {

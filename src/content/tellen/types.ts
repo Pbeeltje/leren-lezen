@@ -7,6 +7,15 @@ export interface TelObject {
   icoonPad: string;
 }
 
+export type SomTeken = '+' | '-';
+
+export interface RekenSom {
+  a: number;
+  b: number;
+  teken: SomTeken;
+  antwoord: number;
+}
+
 export type RekenOefeningType =
   | 'hoeveelheid-naar-cijfer'
   | 'hoeveelheid-typen'
@@ -16,7 +25,12 @@ export type RekenOefeningType =
   | 'vingers-naar-cijfer'
   | 'reeks-aanvullen'
   | 'optellen'
-  | 'bussom';
+  | 'bussom'
+  | 'som-keuze'
+  | 'som-koppelen'
+  | 'som-typen'
+  | 'geld-keuze'
+  | 'geld-typen';
 
 export type RekenOefeningDefinitie =
   // Getalbeeld/tellen: N plaatjes zien, het juiste cijfer kiezen.
@@ -41,7 +55,16 @@ export type RekenOefeningDefinitie =
   | { type: 'optellen'; a: number; b: number; antwoord: number; afleiders: number[] }
   // Bussom (idee: Squla groep 3): er zitten `start` mensen in de bus, bij de halte stappen
   // er `verandering` in (positief) of uit (negatief). Hoeveel zitten er nu in?
-  | { type: 'bussom'; start: number; verandering: number; antwoord: number; afleiders: number[] };
+  | { type: 'bussom'; start: number; verandering: number; antwoord: number; afleiders: number[] }
+  // Kale plus- of minsom, zonder plaatje. Het teken komt van de kern (`somTeken`),
+  // behalve in de herhaling waar een vraag beide banden mag mengen.
+  | { type: 'som-keuze'; a: number; b: number; teken: SomTeken; antwoord: number; afleiders: number[] }
+  | { type: 'som-koppelen'; paren: [RekenSom, RekenSom, RekenSom] }
+  | { type: 'som-typen'; a: number; b: number; teken: SomTeken; antwoord: number }
+  // Geld. `briefjes` alleen als de vraag echt briefjes heeft (5, 10 of 20 euro).
+  // Munten in centen: 5, 10, 20, 50, 100, 200.
+  | { type: 'geld-keuze'; munten: number[]; antwoordCent: number; afleidersCent: number[]; briefjes?: number[] }
+  | { type: 'geld-typen'; munten: number[]; antwoordCent: number; briefjes?: number[] };
 
 export interface RekenKern {
   id: string; // bv. 'reken-kern-01'
@@ -53,4 +76,14 @@ export interface RekenKern {
   // plaatjes voor 11-20, waar 20 sterretjes tellen niet meer zinvol is). Zonder deze
   // lijst worden alle typen gebruikt die bij het bereik passen (zie rekenenGenerator.ts).
   oefeningTypen?: RekenOefeningType[];
+  // Oefening 1, 2 en 3 elk precies dit type (mag herhaald, bv. twee keer geld-keuze).
+  // De toets mengt de unieke typen gelijkmatig. Het teken en de geldmoeilijkheid
+  // komen uit `somTeken` / `geld` plus het oefeningnummer, niet uit deze lijst.
+  oefeningVolgorde?: [RekenOefeningType, RekenOefeningType, RekenOefeningType];
+  // Vast teken voor een kale plus- of minhoofdstuk. De generator gebruikt alleen dit teken.
+  somTeken?: SomTeken;
+  // Munten tot 10, of munten plus briefjes van 5/10/20.
+  geld?: 'munten' | 'briefjes';
+  // Herhaling: elke sessie bevat plus, min en geld (behalve de koppel-oefening, die alleen sommen is).
+  herhaling?: 'plus-min-geld';
 }

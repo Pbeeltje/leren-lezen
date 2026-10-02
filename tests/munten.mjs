@@ -116,8 +116,7 @@ async function rondeSet(label, tegels, verwacht) {
 
 async function geheugen(label, perPaar, perBord) {
   const voor = await munten();
-  if (await page.locator('.icoon-tegel', { hasText: 'Spelletjes' }).count()) await tik('.icoon-tegel', 'Spelletjes');
-  else if (!(await page.locator('.icoon-tegel', { hasText: 'Geheugenspel' }).count())) await tik('.icoon-tegel', 'Luisteren');
+  await tik('.icoon-tegel', 'Spelletjes');
   await tik('.icoon-tegel', 'Geheugenspel');
   if (await page.locator('.niveau-tegel').count()) await tik('.niveau-tegel');
   await page.locator('.geheugen-kaart').first().waitFor();
@@ -199,7 +198,6 @@ await rondeSet('kleuter ritme niveau 2', ['Muziek', 'Ritme', '.niveau-tegel--2']
 if (doe('luisteren')) {
 await start(4);
 await tik('.icoon-tegel', 'Luisteren');
-await tik('.icoon-tegel', 'Luister');
 await tik('.icoon-tegel', 'Boerderij');
 await rondeSet('kleuter luisteren', [], 10 * 3 + 8);
 }

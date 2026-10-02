@@ -181,9 +181,12 @@ for (let vraag = 0; vraag < 12; vraag++) {
 log('luisteren: 12 vragen gecontroleerd');
 
 log('--- Geheugen');
-await page.locator('.terug-knop').first().click();
-await page.waitForTimeout(400);
-await page.locator('.icoon-tegel').nth(1).click();
+for (let i = 0; i < 3 && !(await page.locator('.icoon-tegel', { hasText: 'Spelletjes' }).count()); i++) {
+  await page.locator('.terug-knop').first().click();
+  await page.waitForTimeout(400);
+}
+await klikTopic('Spelletjes');
+await page.locator('.icoon-tegel', { hasText: 'Geheugenspel' }).click();
 await page.waitForTimeout(600);
 const kaarten = await page.locator('.geheugen-kaart').count();
 log('geheugenkaarten:', kaarten);

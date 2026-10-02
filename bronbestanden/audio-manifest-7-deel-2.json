@@ -1,0 +1,248 @@
+[
+  {
+    "n": 1,
+    "slug": "kom",
+    "text": "kom",
+    "path": "public/assets/audio/woorden/kom.mp3"
+  },
+  {
+    "n": 2,
+    "slug": "mes",
+    "text": "mes",
+    "path": "public/assets/audio/woorden/mes.mp3"
+  },
+  {
+    "n": 3,
+    "slug": "kok",
+    "text": "kok",
+    "path": "public/assets/audio/woorden/kok.mp3"
+  },
+  {
+    "n": 4,
+    "slug": "blok",
+    "text": "blok",
+    "path": "public/assets/audio/woorden/blok.mp3"
+  },
+  {
+    "n": 5,
+    "slug": "was",
+    "text": "was",
+    "path": "public/assets/audio/woorden/was.mp3"
+  },
+  {
+    "n": 6,
+    "slug": "fee",
+    "text": "fee",
+    "path": "public/assets/audio/woorden/fee.mp3"
+  },
+  {
+    "n": 7,
+    "slug": "veer",
+    "text": "veer",
+    "path": "public/assets/audio/woorden/veer.mp3"
+  },
+  {
+    "n": 8,
+    "slug": "kast",
+    "text": "kast",
+    "path": "public/assets/audio/woorden/kast.mp3"
+  },
+  {
+    "n": 9,
+    "slug": "tulp",
+    "text": "tulp",
+    "path": "public/assets/audio/woorden/tulp.mp3"
+  },
+  {
+    "n": 10,
+    "slug": "verf",
+    "text": "verf",
+    "path": "public/assets/audio/woorden/verf.mp3"
+  },
+  {
+    "n": 11,
+    "slug": "kwast",
+    "text": "kwast",
+    "path": "public/assets/audio/woorden/kwast.mp3"
+  },
+  {
+    "n": 12,
+    "slug": "potlood",
+    "text": "potlood",
+    "path": "public/assets/audio/woorden/potlood.mp3"
+  },
+  {
+    "n": 13,
+    "slug": "molen",
+    "text": "molen",
+    "path": "public/assets/audio/woorden/molen.mp3"
+  },
+  {
+    "n": 14,
+    "slug": "kegel",
+    "text": "kegel",
+    "path": "public/assets/audio/woorden/kegel.mp3"
+  },
+  {
+    "n": 15,
+    "slug": "ketting",
+    "text": "ketting",
+    "path": "public/assets/audio/woorden/ketting.mp3"
+  },
+  {
+    "n": 16,
+    "slug": "schaats",
+    "text": "schaats",
+    "path": "public/assets/audio/woorden/schaats.mp3"
+  },
+  {
+    "n": 17,
+    "slug": "schuim",
+    "text": "schuim",
+    "path": "public/assets/audio/woorden/schuim.mp3"
+  },
+  {
+    "n": 18,
+    "slug": "schommel",
+    "text": "schommel",
+    "path": "public/assets/audio/woorden/schommel.mp3"
+  },
+  {
+    "n": 19,
+    "slug": "papegaai",
+    "text": "papegaai",
+    "path": "public/assets/audio/woorden/papegaai.mp3"
+  },
+  {
+    "n": 20,
+    "slug": "kraai",
+    "text": "kraai",
+    "path": "public/assets/audio/woorden/kraai.mp3"
+  },
+  {
+    "n": 21,
+    "slug": "meeuw",
+    "text": "meeuw",
+    "path": "public/assets/audio/woorden/meeuw.mp3"
+  },
+  {
+    "n": 22,
+    "slug": "zwaai",
+    "text": "zwaai",
+    "path": "public/assets/audio/woorden/zwaai.mp3"
+  },
+  {
+    "n": 23,
+    "slug": "storm",
+    "text": "storm",
+    "path": "public/assets/audio/woorden/storm.mp3"
+  },
+  {
+    "n": 24,
+    "slug": "bomen",
+    "text": "bomen",
+    "path": "public/assets/audio/woorden/bomen.mp3"
+  },
+  {
+    "n": 25,
+    "slug": "jassen",
+    "text": "jassen",
+    "path": "public/assets/audio/woorden/jassen.mp3"
+  },
+  {
+    "n": 26,
+    "slug": "schoenen",
+    "text": "schoenen",
+    "path": "public/assets/audio/woorden/schoenen.mp3"
+  },
+  {
+    "n": 27,
+    "slug": "blokken",
+    "text": "blokken",
+    "path": "public/assets/audio/woorden/blokken.mp3"
+  },
+  {
+    "n": 28,
+    "slug": "sokken",
+    "text": "sokken",
+    "path": "public/assets/audio/woorden/sokken.mp3"
+  },
+  {
+    "n": 29,
+    "slug": "boeken",
+    "text": "boeken",
+    "path": "public/assets/audio/woorden/boeken.mp3"
+  },
+  {
+    "n": 30,
+    "slug": "katten",
+    "text": "katten",
+    "path": "public/assets/audio/woorden/katten.mp3"
+  },
+  {
+    "n": 31,
+    "slug": "kippen",
+    "text": "kippen",
+    "path": "public/assets/audio/woorden/kippen.mp3"
+  },
+  {
+    "n": 32,
+    "slug": "ballen",
+    "text": "ballen",
+    "path": "public/assets/audio/woorden/ballen.mp3"
+  },
+  {
+    "n": 33,
+    "slug": "huizen",
+    "text": "huizen",
+    "path": "public/assets/audio/woorden/huizen.mp3"
+  },
+  {
+    "n": 34,
+    "slug": "apen",
+    "text": "apen",
+    "path": "public/assets/audio/woorden/apen.mp3"
+  },
+  {
+    "n": 35,
+    "slug": "benen",
+    "text": "benen",
+    "path": "public/assets/audio/woorden/benen.mp3"
+  },
+  {
+    "n": 36,
+    "slug": "peren",
+    "text": "peren",
+    "path": "public/assets/audio/woorden/peren.mp3"
+  },
+  {
+    "n": 37,
+    "slug": "boten",
+    "text": "boten",
+    "path": "public/assets/audio/woorden/boten.mp3"
+  },
+  {
+    "n": 38,
+    "slug": "vissen",
+    "text": "vissen",
+    "path": "public/assets/audio/woorden/vissen.mp3"
+  },
+  {
+    "n": 39,
+    "slug": "wolven",
+    "text": "wolven",
+    "path": "public/assets/audio/woorden/wolven.mp3"
+  },
+  {
+    "n": 40,
+    "slug": "rozen",
+    "text": "rozen",
+    "path": "public/assets/audio/woorden/rozen.mp3"
+  },
+  {
+    "n": 41,
+    "slug": "muizen",
+    "text": "muizen",
+    "path": "public/assets/audio/woorden/muizen.mp3"
+  }
+]

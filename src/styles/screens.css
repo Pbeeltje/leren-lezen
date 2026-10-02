@@ -4,7 +4,7 @@
   justify-content: center;
   gap: 20px;
   max-width: 700px;
-  /* Onbeperkt aantal profielen mogelijk — zelfde reden als .kern-lijst hieronder. */
+  /* Onbeperkt aantal profielen mogelijk — de lijst mag scrollen als ze niet meer passen. */
   max-height: calc(100dvh - 220px);
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
@@ -17,19 +17,126 @@
   height: 160px;
 }
 
-.kern-lijst {
+/* Hoofdstukken per bladzijde i.p.v. een lange scroll. De meting staat buiten beeld;
+   het venster toont één blad. Zie ui/components/Bladzijden.ts. */
+.kern-paginas {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  max-width: 100%;
+}
+.kern-paginas--lijst { width: min(100%, 480px); --blad-pad: 14px; }
+.kern-paginas--tegels { width: min(100%, 740px); }
+.kern-paginas__meet {
+  position: absolute;
+  visibility: hidden;
+  pointer-events: none;
+  left: 0;
+  right: 0;
+  top: 0;
+}
+.kern-paginas--lijst .kern-paginas__meet {
   display: flex;
   flex-direction: column;
   gap: 14px;
-  width: min(90vw, 480px);
-  /* Met genoeg kernen wordt deze lijst langer dan het scherm — #app/body hebben
-     overflow:hidden, dus zonder dit zouden latere kernen onbereikbaar worden
-     (geen scroll, geen manier om de knoppen te raken). */
-  max-height: calc(100dvh - 260px);
-  overflow-y: auto;
-  -webkit-overflow-scrolling: touch;
+}
+.kern-paginas--tegels .kern-paginas__meet.tegel-grid {
+  max-height: none;
+  max-width: none;
+  height: auto;
+  margin: 0;
+  overflow: visible;
+}
+.kern-paginas__venster {
+  width: 100%;
+  display: flex;
+  overflow-x: auto;
+  overflow-y: hidden;
+  scroll-snap-type: x mandatory;
+  scrollbar-width: none;
+  overscroll-behavior-x: contain;
+}
+.kern-paginas__venster::-webkit-scrollbar { display: none; }
+.kern-paginas__blad {
+  flex: 0 0 100%;
+  width: 100%;
+  max-width: 100%;
+  scroll-snap-align: start;
+  scroll-snap-stop: always;
+  min-width: 0;
+  overflow: hidden;
+  box-sizing: border-box;
+}
+.kern-paginas--lijst .kern-paginas__blad {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding: 4px 4px 10px;
+}
+.kern-paginas--bladert .kern-paginas__blad { height: 100%; }
+.kern-paginas__blad.tegel-grid {
+  max-height: none;
+  max-width: none;
+  margin: 0;
+  overflow: hidden;
+  align-content: start;
   padding: 4px 4px 12px;
-  margin: -4px -4px -12px;
+}
+.kern-paginas__nav {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+}
+.kern-paginas__nav[hidden] { display: none; }
+.kern-paginas__pijl {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  flex-shrink: 0;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.9);
+  color: var(--kleur-tekst);
+  font-size: 1.8rem;
+  font-weight: 800;
+  box-shadow: 0 4px 0 rgba(0, 0, 0, 0.15);
+  line-height: 1;
+}
+.kern-paginas__pijl:disabled { opacity: 0.3; box-shadow: none; }
+.kern-paginas__pijl:active:not(:disabled) { transform: translateY(3px); }
+.kern-paginas__stippen {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0;
+  min-width: 0;
+}
+.kern-paginas__stip {
+  width: 22px;
+  height: 32px;
+  flex: 0 0 22px;
+  border-radius: 50%;
+  background: none;
+  position: relative;
+}
+.kern-paginas__stip::after {
+  content: '';
+  position: absolute;
+  inset: 11px 6px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.45);
+}
+.kern-paginas__stip--aan::after {
+  background: var(--kleur-secundair);
+  inset: 9px 4px;
+}
+.scherm:has(.kern-paginas--bladert) {
+  justify-content: flex-start;
+  overflow: hidden;
 }
 
 .kern-rij {
@@ -77,6 +184,14 @@
 
 .kern-rij--klikbaar:active {
   transform: translateY(3px);
+}
+
+.kern-rij--laatst {
+  box-shadow: 0 6px 0 rgba(0, 0, 0, 0.12), 0 0 0 3px var(--kleur-secundair);
+}
+
+.icoon-tegel--laatst {
+  box-shadow: 0 8px 0 rgba(0, 0, 0, 0.15), 0 0 0 3px var(--kleur-secundair);
 }
 
 .kern-rij__detail {
@@ -538,6 +653,74 @@
 .koppel-woord.fout-gekozen {
   background: var(--kleur-fout);
   border-color: var(--kleur-fout);
+}
+
+.koppel-som {
+  white-space: nowrap;
+  text-transform: none;
+  min-width: 132px;
+  padding: 8px 14px;
+  font-size: 1.35rem;
+}
+
+.koppel-uitkomst {
+  text-transform: none;
+  min-width: 76px;
+  font-size: 1.6rem;
+}
+
+.som-rij {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.som-invoer.som-invoer {
+  width: 112px;
+  min-width: 112px;
+  height: 80px;
+  padding: 0;
+  font-size: 2.2rem;
+}
+
+.geld-bak {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+  padding: 14px 16px;
+  max-width: min(100%, 340px);
+  background: #fff6e4;
+  border: 4px solid #e4c48a;
+  border-radius: 22px;
+}
+
+.geld-munt { width: 58px; height: 58px; }
+.geld-munt--groot { width: 70px; height: 70px; }
+.geld-munt--klein { width: 46px; height: 46px; }
+.geld-brief { width: 112px; height: 64px; }
+
+.geld-velden {
+  display: flex;
+  gap: 18px;
+  justify-content: center;
+  align-items: flex-start;
+}
+
+.geld-veld {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+
+.geld-label {
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: var(--kleur-tekst);
 }
 
 .blokken-canvas canvas {
@@ -1144,6 +1327,25 @@
   .dubbele-dobbelsteen-rij .dobbelsteen__punt { width: 16px; height: 16px; }
   .telplaatjes-rij__plaatje { width: 46px; height: 46px; }
   .oefen-kaart { padding: 24px 16px; }
+  .koppel-som { min-width: 0; font-size: 1.15rem; padding: 8px 10px; height: 76px; }
+  .koppel-uitkomst { min-width: 64px; height: 76px; padding: 8px 12px; }
+  .koppel-rijen:has(.koppel-som) { gap: 16px; }
+  .geld-munt { width: 52px; height: 52px; }
+  .geld-munt--groot { width: 62px; height: 62px; }
+  .geld-brief { width: 100px; height: 58px; }
+  /* Twee velden plus het cijferbord moeten met de bak op één telefoonscherm. */
+  .scherm:has(.geld-velden) { gap: 8px; padding-bottom: 8px; }
+  .oefen-kaart:has(.geld-velden):has(.scherm-toetsenbord) { gap: 6px; padding: 10px 12px; }
+  .oefen-kaart:has(.geld-velden) .geld-bak { padding: 6px 8px; gap: 4px; }
+  .oefen-kaart:has(.geld-velden) .geld-munt { width: 42px; height: 42px; }
+  .oefen-kaart:has(.geld-velden) .geld-munt--groot { width: 50px; height: 50px; }
+  .oefen-kaart:has(.geld-velden) .geld-munt--klein { width: 36px; height: 36px; }
+  .oefen-kaart:has(.geld-velden) .geld-brief { width: 78px; height: 44px; }
+  .oefen-kaart:has(.geld-velden) .som-invoer.som-invoer { width: 88px; min-width: 88px; height: 58px; font-size: 1.7rem; }
+  .oefen-kaart:has(.geld-velden) .geld-label { font-size: 1rem; }
+  .oefen-kaart:has(.geld-velden) .scherm-toetsenbord { gap: 4px; }
+  .oefen-kaart:has(.geld-velden) .scherm-toetsenbord--cijfers .scherm-toets { height: 40px; flex-basis: 60px; }
+  .oefen-kaart:has(.geld-velden) .typen-knop { min-height: 46px; padding: 6px 22px; }
   /* Kaarten zijn 92vw breed; met 24px zijmarge schoof het scherm dan 8px horizontaal. */
   .scherm { padding-left: 12px; padding-right: 12px; }
   /* Overslaan als klein pijltje rechtsonder: de brede knop in het midden viel op een
@@ -1297,6 +1499,30 @@
    beeld passen. De titel mag weg; de instructie + luisterknop zeggen al wat er moet. */
 @media (max-height: 500px) {
   .scherm { gap: 8px; padding-top: 12px; padding-bottom: 12px; }
+  /* Hoofdstukkenlijst: onder de hoekknoppen blijven, en rijen compacter zodat er
+     meer dan één kern op een bladzijde past. */
+  /* Titel tussen de hoekknoppen, niet eronder: zo passen er meer hoofdstukken op een blad. */
+  .scherm:has(.kern-paginas) {
+    padding-top: calc(18px + var(--veilig-boven));
+    padding-bottom: 8px;
+    gap: 6px;
+  }
+  .scherm:has(.kern-paginas) .scherm-titel {
+    font-size: 1.2rem;
+    width: max-content;
+    max-width: calc(100vw - 200px);
+  }
+  .scherm:has(.kern-paginas) .kern-rij { padding: 6px 12px; gap: 10px; }
+  .scherm:has(.kern-paginas) .kern-rij__nummer { width: 36px; height: 36px; font-size: 1rem; }
+  .scherm:has(.kern-paginas) .kern-rij__titel { font-size: 1.05rem; }
+  .kern-paginas { gap: 6px; }
+  .kern-paginas--lijst { --blad-pad: 8px; }
+  /* Tussen de hoekknoppen blijven; 100% van het scherm loopt eronderdoor. */
+  .kern-paginas--lijst,
+  .kern-paginas--tegels { width: min(100%, calc(100vw - 250px)); }
+  .kern-paginas--lijst .kern-paginas__meet,
+  .kern-paginas--lijst .kern-paginas__blad { gap: 6px; padding: 2px 4px 6px; }
+  .kern-paginas__pijl { width: 44px; height: 44px; font-size: 1.5rem; }
   .scherm:has(.voortgangsbalk) .scherm-titel { display: none; }
   .scherm-titel { font-size: 1.3rem; }
   .instructie-tekst { font-size: 1rem; }
@@ -1367,6 +1593,7 @@
   max-width: 460px;
   align-items: center;
 }
+.scherm-toetsenbord[hidden] { display: none; }
 .scherm-toetsenbord__rij { display: flex; gap: 6px; justify-content: center; width: 100%; }
 .scherm-toets {
   flex: 0 1 52px;
@@ -2147,7 +2374,15 @@
 .doel-sleuf,
 .woordwolk-tegel,
 .koppel-woord,
+.koppel-som,
+.koppel-uitkomst,
+.oefen-kaart__som,
+.som-invoer,
+.geld-bedrag,
+.geld-label,
 .zin-tekst,
+.begrijpend-vraag,
+.begrijpend-woord,
 .typen-invoer,
 .scherm-toets,
 .boekje-woord {
@@ -2795,7 +3030,6 @@
   .tegel-grid .icoon-tegel { width: var(--tegel); height: var(--tegel); padding: 8px; gap: 4px; }
   .tegel-grid .icoon-tegel__plaatje { width: calc(var(--tegel) * 0.45); height: calc(var(--tegel) * 0.45); }
   .tegel-grid .icoon-tegel__label { font-size: 0.85rem; line-height: 1.15; overflow-wrap: normal; }
-  .kern-lijst { max-height: calc(100dvh - 100px); }
 
   /* Vraagkaart in twee kolommen: de vraag (plaatje, letter, dobbelsteen, bus) links en
      de antwoorden rechts. Kaarten met maar één kind (drie-koppelen) en muziek niet. */
@@ -2868,6 +3102,19 @@
   .koppel-kolom { flex-direction: row; gap: 18px; justify-content: center; }
   .koppel-plaatje { width: 76px; height: 76px; }
   .koppel-woord { height: 76px; min-width: 96px; }
+  .koppel-rijen:has(.koppel-som) { gap: 22px; }
+  .koppel-som { height: 64px; min-width: 108px; font-size: 1.15rem; padding: 6px 10px; }
+  .koppel-uitkomst { height: 64px; min-width: 64px; }
+  .geld-bak { max-width: 240px; padding: 6px; gap: 4px; }
+  .geld-munt { width: 36px; height: 36px; }
+  .geld-munt--groot { width: 44px; height: 44px; }
+  .geld-munt--klein { width: 30px; height: 30px; }
+  .geld-brief { width: 78px; height: 42px; }
+  .geld-velden { gap: 10px; }
+  .geld-label { font-size: 0.95rem; }
+  .som-invoer.som-invoer { width: 84px; min-width: 84px; height: 52px; font-size: 1.6rem; }
+  .som-rij { gap: 8px; }
+  .som-rij .oefen-kaart__som { font-size: 1.7rem; }
 
   /* Schrijven: het voorbeeld links, het overtrekvlak rechts en zo hoog als het kan. */
   .schrijf-kaart .overtrek__vlak { height: calc(100dvh - 190px); }
@@ -2953,4 +3200,83 @@
 }
 @media (prefers-reduced-motion: reduce) {
   .vang-draai__telefoon { animation: none; }
+}
+
+/* ---------- Begrijpend lezen ---------- */
+.begrijpend-kaart { width: min(94vw, 680px); gap: 14px; padding: 20px 18px 16px; }
+.begrijpend-plaatjes { display: flex; gap: 12px; justify-content: center; }
+.begrijpend-plaatjes img { width: 120px; height: 120px; object-fit: contain; }
+.begrijpend-plaatjes--2 img, .begrijpend-plaatjes--3 img { width: 96px; height: 96px; }
+.begrijpend-verhaal { display: flex; flex-direction: column; align-items: center; gap: 2px; }
+.begrijpend-zin {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0 8px;
+  margin: 0;
+}
+.begrijpend-woord {
+  background: transparent;
+  box-shadow: none;
+  min-height: 0;
+  padding: 0 2px;
+  font-size: 1.55rem;
+  color: var(--kleur-tekst);
+  letter-spacing: 0.02em;
+}
+.begrijpend-woord--aan { background: #fff3b0; border-radius: 8px; }
+.begrijpend-vraag {
+  margin: 4px 0 0;
+  font-size: 1.35rem;
+  text-align: center;
+  color: var(--kleur-tekst);
+}
+.begrijpend-kaart .keuze-knop {
+  flex: 1 1 calc(50% - 16px);
+  max-width: 280px;
+  font-size: 1.25rem;
+  line-height: 1.2;
+}
+@media (max-width: 560px) {
+  .begrijpend-plaatjes img { width: 96px; height: 96px; }
+  .begrijpend-plaatjes--2 img, .begrijpend-plaatjes--3 img { width: 78px; height: 78px; }
+  .begrijpend-woord { font-size: 1.35rem; }
+  .begrijpend-vraag { font-size: 1.2rem; }
+}
+@media (orientation: landscape) and (max-height: 500px) {
+  .begrijpend-kaart {
+    display: grid;
+    grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr);
+    align-items: center;
+    justify-items: center;
+    width: min(96vw, 920px);
+    column-gap: 22px;
+    row-gap: 4px;
+    padding: 10px 14px;
+  }
+  .begrijpend-plaatjes { grid-column: 1; grid-row: 1; }
+  .begrijpend-verhaal { grid-column: 1; grid-row: 2; }
+  .begrijpend-vraag { grid-column: 2; grid-row: 1; margin: 0; }
+  .begrijpend-kaart .keuze-rij { grid-column: 2; grid-row: 2; flex-wrap: wrap; width: 100%; }
+  .begrijpend-plaatjes img,
+  .begrijpend-plaatjes--2 img,
+  .begrijpend-plaatjes--3 img { width: 64px; height: 64px; }
+  .begrijpend-woord { font-size: 1.05rem; }
+  .begrijpend-vraag { font-size: 1.05rem; }
+  .begrijpend-kaart .keuze-knop { min-height: 48px; padding: 6px 10px; font-size: 1rem; }
+  .begrijpend-scherm ~ .overslaan-knop,
+  .begrijpend-scherm ~ .overslaan-knop:active {
+    left: auto;
+    right: calc(8px + var(--veilig-rechts));
+    bottom: calc(8px + var(--veilig-onder));
+    transform: none;
+    width: 48px;
+    height: 48px;
+    min-height: 0;
+    padding: 0;
+    justify-content: center;
+  }
+  .begrijpend-scherm ~ .overslaan-knop span { display: none; }
+  .begrijpend-scherm ~ .overslaan-knop img { width: 28px; height: 28px; }
+  .begrijpend-scherm ~ .overslaan-knop:active { transform: translateY(2px); }
 }

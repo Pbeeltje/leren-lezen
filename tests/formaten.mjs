@@ -61,7 +61,7 @@ async function controleer(page) {
       .filter(zichtbaar)
       .filter((e) => {
         // Alleen de bladzijde die je ziet (de rest staat expres naast het beeld).
-        const rij = e.closest('.bladeraar__rij');
+        const rij = e.closest('.bladeraar__rij, .kern-paginas__venster');
         if (!rij) return true;
         const a = rij.getBoundingClientRect(), b = e.getBoundingClientRect();
         return b.left >= a.left - 2 && b.right <= a.right + 2;
@@ -69,9 +69,10 @@ async function controleer(page) {
       .filter((e) => !e.closest('#decor-laag'));
     for (const e of klikbaar) {
       const r = e.getBoundingClientRect();
-      if (e.closest('.bladeraar__rij')) {
-        const blad = e.closest('.bladeraar__blad').getBoundingClientRect();
-        if (blad.left > W - 2) continue;
+      const bladRij = e.closest('.bladeraar__rij, .kern-paginas__venster');
+      if (bladRij) {
+        const blad = e.closest('.bladeraar__blad, .kern-paginas__blad');
+        if (blad && blad.getBoundingClientRect().left > W - 2) continue;
       }
       // In een eigen scrollvak (lange lijst) is onderaan buiten beeld gewoon wegscrollen.
       let ouder = e.parentElement, inScrollvak = false;
@@ -83,7 +84,7 @@ async function controleer(page) {
       if (r.left < -1 || r.right > W + 1) problemen.push(`buiten beeld (zijkant): ${naam(e)} [${Math.round(r.left)}..${Math.round(r.right)}]`);
       else if (r.bottom > H + 1 && !scrolltVerticaal && !inScrollvak) problemen.push(`onderaan afgesneden: ${naam(e)}`);
       else if (r.top < -1) problemen.push(`bovenaan afgesneden: ${naam(e)}`);
-      const klein = e.matches('.bladeraar__stip') ? false : Math.min(r.width, r.height) < 40;
+      const klein = e.matches('.bladeraar__stip, .kern-paginas__stip') ? false : Math.min(r.width, r.height) < 40;
       if (klein && e.tagName !== 'CANVAS' && !e.matches('input, textarea')) problemen.push(`klein tikvlak ${Math.round(r.width)}x${Math.round(r.height)}: ${naam(e)}`);
     }
     // Overlap: vaste knoppen (terug, rechtsboven, overslaan) over andere knoppen/inhoud.
@@ -206,7 +207,7 @@ async function draai([id, w, h, soort]) {
   await start(3);
   await stap('jong', async () => {
     await tik('.icoon-tegel', 'Maximiliaan'); await bekijk('onderwerpen-3jr');
-    await tik('.icoon-tegel', 'Luisteren'); await bekijk('luisteren-kies');
+    await tik('.icoon-tegel', 'Luisteren'); await bekijk('luister-hoofdstukken');
     await tik('.icoon-tegel, .kern-rij--klikbaar'); await page.waitForTimeout(400);
     if (await page.locator('.hoofdstuk-tegel').count()) await tik('.hoofdstuk-tegel');
     await loopVragen('luisteren', 5);

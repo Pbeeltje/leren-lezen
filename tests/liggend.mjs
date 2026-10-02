@@ -111,10 +111,8 @@ for (const [w, h] of MATEN) {
   // Kleuter: luisteren, ontdekken, lijnen, kleuter-lezen/tellen.
   await stap('kleuter-luisteren', async () => {
     await foto('onderwerpen-kleuter');
-    await tik('.icoon-tegel', 'Luisteren'); await foto('luisteren-kies');
-    await tik('.icoon-tegel', 'Luister'); await wacht(400);
-    if (await page.locator('.kern-rij--klikbaar').count()) { await foto('luister-hoofdstukken'); await tik('.kern-rij--klikbaar'); }
-    if (await page.locator('.hoofdstuk-tegel').count()) await tik('.hoofdstuk-tegel');
+    await tik('.icoon-tegel', 'Luisteren'); await foto('luister-hoofdstukken');
+    await tik('.icoon-tegel:not([disabled])');
     await loop('luisteren', 14);
   }, 4);
   await stap('kleuter-geheugen', async () => { await tik('.icoon-tegel', 'Spelletjes'); await tik('.icoon-tegel', 'Geheugenspel'); await foto('geheugen-kleuter'); }, 4);

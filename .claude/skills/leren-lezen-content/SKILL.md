@@ -446,6 +446,8 @@ kern-01 silently pick up reeks-aanvullen/optellen when those types were
 added; explicit restriction is what keeps "addition is its own chapter" (a
 direct user request) actually true.
 
+`oefeningVolgorde` pins oefening 1/2/3 (the toets mixes those types evenly, no extra weight on typing). Plain plus and minus, without pictures, are separate groep-3 chapters after the bus — kern 04's pictured "erbij" stays as it is. `reken-kern-06` Plus tot 10 (`somTeken: '+'`, both terms ≥ 1, sum 2–10), `07` Min tot 10 (`'-'`, minuend 1–10, result ≥ 0), `08` Plus tot 20 (sums 11–20 only), `09` Min tot 20 (minuend 11–20). The generator reads `somTeken` and does not mix in the other sign. Each chapter is `som-keuze` / `som-koppelen` / `som-typen`. Minus on screen is U+2212 via `schrijfSom`. Then `reken-kern-10` Munten tot 10 (`geld: 'munten'`, coins only, ≤ 10 euro; oefening 1 is ≤ 3 coins and ≤ 2 euro, oefening 2 still multiple choice up to 10 euro, oefening 3 is `geld-typen` with euro/cent fields starting at `0` and `00`) and `11` Munten en briefjes (`geld: 'briefjes'`, bills 5/10/20, pile ≤ 50 euro; oefening 1 is only a €5 bill plus coins). `reken-kern-12` Plus, min en geld (`herhaling: 'plus-min-geld'`) puts plus, minus and money in every session: 8 multiple choice, 5 matching (sums only, signs and both ranges may mix), 8 typing, toets of 12. Som and geld types are not in `ALLE_TYPEN`. Kleuter tellen is unchanged. Amounts use `schrijfBedrag` (`1,50`, whole euros as `2`).
+
 ## Profiles ("wie speelt er?")
 
 `engine/profielStore.ts`. Every localStorage-backed piece of state
@@ -661,13 +663,12 @@ ended and reports cheers cut short, plus duration/tail of each feedback clip).
 
 A third, structurally separate topic (`content/topics.ts`, id `luisteren`,
 ages 3-6) exists specifically for kids too young to read at all — no text
-anywhere on screen in either of its two games. Built once real audio
-existed — this is what "audio narration" was ultimately *for*, from the
-original ask for something a 3-year-old could actually use. Picking the
-topic lands on `ui/screens/LuisterenKiesScreen.ts`, a small 2-tile chooser
-between the two games below (added after the first version shipped with
-only one game and the user pointed out ~80 recorded words support a lot
-more than that).
+anywhere on screen. Built once real audio existed — this is what "audio
+narration" was ultimately *for*, from the original ask for something a
+3-year-old could actually use. Picking the topic opens
+`LuisterHoofdstukkenScreen` (Luister & wijs) directly. Geheugenspel used
+to sit here as a second tile; it is the same 4-pair board as under
+Spelletjes, so that copy is gone (`LuisterenKiesScreen` deleted).
 
 Both games are deliberately **not** built on the kernen/chapter/oefening-
 toets machinery reading and math use — no letters to learn, no progression,
@@ -697,8 +698,7 @@ penalty or fout-feedback at all (deliberately gentler than a wrong guess
 elsewhere in the app — this is unstructured toddler play, not a quiz). A
 cleared board also fires `vuurwerk('klein')` and starts a fresh board.
 Both groups also open it from the Spelletjes topic (`id: 'spellen'`): kleuters
-4 pairs, groep 3 via `GeheugenScreen(m, 8)` (8 pairs = 16 cards). Kleuters
-still have the same tile under Luisteren.
+4 pairs, groep 3 via `GeheugenScreen(m, 8)` (8 pairs = 16 cards).
 Boards with more than 4 pairs get `.geheugen-bord--groot` (4x4 portrait, 8x2
 landscape, cards shrink with the viewport so the board never scrolls). Check:
 `node tests/geheugen-groep3.mjs <map>`.
@@ -812,6 +812,18 @@ Free drawing (Tekenen) lives under Spelletjes, not here.
 - 9 colours, 2 thicknesses, an eraser (`destination-out`), undo and "nieuw blad".
 - Lines are stored as normalised points, so undo and resizing simply redraw everything.
 - Nothing is saved, by the owner's choice.
+
+## "Begrijpend lezen" (groep 3 only)
+
+Topic id `begrijpend`. A short story, then one multiple-choice question whose answer is
+literally in the text. Five stories in `content/lezen/begrijpend.ts` (fiets, aap, paraplu,
+eendjes, kat-hond), four questions each. Opening a story shows the next question for that
+profile (`volgendeBegrijpendVraag` in progressStore, key `begrijpendVraag`); leaving for the
+shop and coming back keeps the same question, because the index is picked in the screen
+factory, not in `mount`. A correct answer pays `MUNTEN_BEGRIJPEND` (50) once; a wrong answer
+can be retried; skip pays nothing and goes back to the shelf. The story is not read aloud
+(tapping a word plays its clip when one exists). Instruction clip `begrijpend-lezen` is not
+recorded yet. Kleuters do not see the topic.
 
 ## "Leesboekjes" topic: VLL reading booklets (ages 5-6)
 

@@ -1,0 +1,32 @@
+[
+  {
+    "n": 1,
+    "slug": "som-keuze",
+    "text": "Hoeveel is de som?",
+    "path": "public/assets/audio/instructies/som-keuze.mp3"
+  },
+  {
+    "n": 2,
+    "slug": "som-koppelen",
+    "text": "Welk getal hoort bij welke som?",
+    "path": "public/assets/audio/instructies/som-koppelen.mp3"
+  },
+  {
+    "n": 3,
+    "slug": "som-typen",
+    "text": "Typ het antwoord",
+    "path": "public/assets/audio/instructies/som-typen.mp3"
+  },
+  {
+    "n": 4,
+    "slug": "geld-keuze",
+    "text": "Hoeveel geld is dit?",
+    "path": "public/assets/audio/instructies/geld-keuze.mp3"
+  },
+  {
+    "n": 5,
+    "slug": "geld-typen",
+    "text": "Hoeveel geld is dit? Typ het in",
+    "path": "public/assets/audio/instructies/geld-typen.mp3"
+  }
+]
