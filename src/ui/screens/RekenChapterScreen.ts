@@ -3,7 +3,7 @@ import { rekenKernen } from '../../engine/leeftijdGrens.ts';
 import { maakTerugKnop } from '../components/TerugKnop.ts';
 import { maakTopRechtsBalk } from '../components/TopRechtsBalk.ts';
 import { maakSterBalk } from '../components/ProgressStars.ts';
-import { haalKernVoortgang, OEFENSESSIES_VOOR_TOETS } from '../../engine/progressStore.ts';
+import { haalKernVoortgang, OEFENSESSIES_VOOR_TOETS, zetLaatsteKern } from '../../engine/progressStore.ts';
 import { speelSchermOvergang } from '../../three/transitions.ts';
 import { RekenOefeningScreen } from './RekenOefeningScreen.ts';
 import { RekenKernOverviewScreen } from './RekenKernOverviewScreen.ts';
@@ -67,6 +67,7 @@ export function RekenChapterScreen(manager: ScreenManager, index: number): Scree
       tegel.appendChild(label);
       const ditNummer = i as 1 | 2 | 3;
       tegel.addEventListener('click', () => {
+        zetLaatsteKern('tellen', kern.id);
         speelSchermOvergang();
         manager.push((m) => RekenOefeningScreen(m, kern, 'oefenen', tekenTegels, ditNummer));
       });
@@ -84,6 +85,7 @@ export function RekenChapterScreen(manager: ScreenManager, index: number): Scree
     toetsTegel.appendChild(toetsLabel);
     toetsTegel.appendChild(maakSterBalk(voortgang.sterren));
     toetsTegel.addEventListener('click', () => {
+      zetLaatsteKern('tellen', kern.id);
       speelSchermOvergang();
       manager.push((m) => RekenOefeningScreen(m, kern, 'toets', tekenTegels));
     });

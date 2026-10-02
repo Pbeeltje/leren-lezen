@@ -33,6 +33,9 @@ export interface VoortgangData {
   gekocht?: string[];
   // Laatst gekozen melodie-instrument (Speel na en Vrij spelen openen ermee).
   instrument?: Instrument;
+  // Laatst geopende oefening of toets, per groep en menu ('kleuter:lezen' → kern-id).
+  // Het hoofdstukkenoverzicht opent op de bladzijde waar die kern staat.
+  laatsteKern?: Record<string, string>;
   // Begrijpend lezen: welke vraag dit kind de vorige keer bij dat verhaal zag.
   // De volgende keer dat het verhaal opengaat, komt de vraag erna.
   begrijpendVraag?: Record<string, number>;
@@ -131,6 +134,30 @@ export function zetInstrument(instrument: Instrument): void {
   const data = leesRuw();
   data.instrument = instrument;
   schrijfRuw(data);
+}
+
+export type KernMenu = 'lezen' | 'tellen' | 'luisteren';
+
+function laatsteKernSleutel(menu: KernMenu): string | undefined {
+  const groep = haalGroep();
+  if (!groep) return undefined;
+  return `${groep}:${menu}`;
+}
+
+/** Onthoud welke kern dit kind net opende, zodat het overzicht daar weer opent. */
+export function zetLaatsteKern(menu: KernMenu, kernId: string): void {
+  const sleutel = laatsteKernSleutel(menu);
+  if (!sleutel) return;
+  const data = leesRuw();
+  data.laatsteKern = { ...data.laatsteKern, [sleutel]: kernId };
+  schrijfRuw(data);
+}
+
+export function haalLaatsteKern(menu: KernMenu): string | undefined {
+  const sleutel = laatsteKernSleutel(menu);
+  if (!sleutel) return undefined;
+  const id = leesRuw().laatsteKern?.[sleutel];
+  return typeof id === 'string' ? id : undefined;
 }
 
 /** Koopt iets als er genoeg munten zijn; geeft false (en verandert niets) als dat niet zo is. */

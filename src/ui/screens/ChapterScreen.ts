@@ -3,7 +3,7 @@ import { leesKernen } from '../../engine/leeftijdGrens.ts';
 import { maakTerugKnop } from '../components/TerugKnop.ts';
 import { maakTopRechtsBalk } from '../components/TopRechtsBalk.ts';
 import { maakSterBalk } from '../components/ProgressStars.ts';
-import { haalKernVoortgang, OEFENSESSIES_VOOR_TOETS } from '../../engine/progressStore.ts';
+import { haalKernVoortgang, OEFENSESSIES_VOOR_TOETS, zetLaatsteKern } from '../../engine/progressStore.ts';
 import { speelSchermOvergang } from '../../three/transitions.ts';
 import { OefeningScreen } from './OefeningScreen.ts';
 import { KernOverviewScreen } from './KernOverviewScreen.ts';
@@ -70,6 +70,7 @@ export function ChapterScreen(manager: ScreenManager, index: number): Screen {
       tegel.appendChild(label);
       const ditNummer = i as 1 | 2 | 3;
       tegel.addEventListener('click', () => {
+        zetLaatsteKern('lezen', kern.id);
         speelSchermOvergang();
         manager.push((m) => OefeningScreen(m, kern, 'oefenen', tekenTegels, ditNummer));
       });
@@ -87,6 +88,7 @@ export function ChapterScreen(manager: ScreenManager, index: number): Screen {
     toetsTegel.appendChild(toetsLabel);
     toetsTegel.appendChild(maakSterBalk(voortgang.sterren));
     toetsTegel.addEventListener('click', () => {
+      zetLaatsteKern('lezen', kern.id);
       speelSchermOvergang();
       manager.push((m) => OefeningScreen(m, kern, 'toets', tekenTegels));
     });

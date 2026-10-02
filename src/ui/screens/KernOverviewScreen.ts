@@ -3,7 +3,8 @@ import { maakTerugKnop } from '../components/TerugKnop.ts';
 import { maakTopRechtsBalk } from '../components/TopRechtsBalk.ts';
 import { maakSterBalk } from '../components/ProgressStars.ts';
 import { leesKernen } from '../../engine/leeftijdGrens.ts';
-import { haalKernVoortgang, haalGroep, OEFENSESSIES_VOOR_TOETS } from '../../engine/progressStore.ts';
+import { haalKernVoortgang, haalGroep, haalLaatsteKern, OEFENSESSIES_VOOR_TOETS } from '../../engine/progressStore.ts';
+import { maakBladzijden } from '../components/Bladzijden.ts';
 import { speelSchermOvergang } from '../../three/transitions.ts';
 import { ChapterScreen } from './ChapterScreen.ts';
 import { TopicSelectScreen } from './TopicSelectScreen.ts';
@@ -21,18 +22,18 @@ export function KernOverviewScreen(manager: ScreenManager): Screen {
   titel.textContent = 'Leren lezen';
   el.appendChild(titel);
 
-  const lijst = document.createElement('div');
-  lijst.className = 'kern-lijst';
-  el.appendChild(lijst);
+  let bladzijden: ReturnType<typeof maakBladzijden> | null = null;
 
   function tekenLijst(): void {
-    lijst.innerHTML = '';
-
-    leesKernen().forEach((kern, index) => {
+    bladzijden?.vernietig();
+    const kernen = leesKernen();
+    const laatste = haalLaatsteKern('lezen');
+    const rijen = kernen.map((kern, index) => {
       const voortgang = haalKernVoortgang(kern.id);
 
       const rij = document.createElement('button');
       rij.className = 'kern-rij kern-rij--klikbaar';
+      if (kern.id === laatste) rij.classList.add('kern-rij--laatst');
       rij.addEventListener('click', () => {
         speelSchermOvergang();
         manager.push((m) => ChapterScreen(m, index));
@@ -61,8 +62,11 @@ export function KernOverviewScreen(manager: ScreenManager): Screen {
       info.appendChild(detailRij);
 
       rij.appendChild(info);
-      lijst.appendChild(rij);
+      return rij;
     });
+    const geopend = laatste ? kernen.findIndex((kern) => kern.id === laatste) : 0;
+    bladzijden = maakBladzijden(rijen, { startIndex: geopend < 0 ? 0 : geopend, soort: 'lijst' });
+    el.appendChild(bladzijden.element);
   }
 
   // Normaal gepusht vanaf TopicSelectScreen, maar ChapterScreen's terug-knop komt hier
@@ -102,6 +106,8 @@ export function KernOverviewScreen(manager: ScreenManager): Screen {
       topRechts?.element.remove();
       topRechts?.vernietig();
       topRechts = null;
+      bladzijden?.vernietig();
+      bladzijden = null;
     },
   };
 }
