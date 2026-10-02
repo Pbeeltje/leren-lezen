@@ -138,14 +138,21 @@ function beschikbareTypen(kern: Kern, doel: Woord, uitgesloten: OefeningType[]):
   if (klank && klankAfleiders(kern.woordenbank, doel, klank).length > 0) {
     basis.push('klank-herkennen');
   }
-  // Drie plaatjes tegelijk uit elkaar houden kan alleen met genoeg andere woorden in de bank.
-  if (drieKoppelKandidaten(kern, doel).length >= 2) basis.push('drie-koppelen');
+  // Koppelen eist dat het plaatje dat woord is. vereistTekst (twee bijen bij "en",
+  // een sneeuwvlok bij "koud") valt daarom af, ook als doel.
+  if (!doel.vereistTekst && drieKoppelKandidaten(kern, doel).length >= 2) basis.push('drie-koppelen');
+
+  // "en" is getekend als twee bijen ("bij en bij"). Dat leest als bijen, dus geen vraag
+  // waar dat plaatje het antwoord is. De zin en de letter blijven.
+  if (doel.woord === 'en') {
+    basis = basis.filter((type) => type === 'zin-invullen' || type === 'letter-herkennen' || type === 'klank-herkennen');
+  }
 
   const overgebleven = basis.filter((type) => !uitgesloten.includes(type));
   return overgebleven.length > 0 ? overgebleven : basis;
 }
 
-// De twee andere woorden bij drie-koppelen: geen vereistTekst (zie kiesAfleiders).
+// De twee andere woorden bij drie-koppelen: geen vereistTekst (het doel ook niet, zie beschikbareTypen).
 function drieKoppelKandidaten(kern: Kern, doel: Woord): Woord[] {
   return kern.woordenbank.filter((w) => w.woord !== doel.woord && !w.vereistTekst);
 }

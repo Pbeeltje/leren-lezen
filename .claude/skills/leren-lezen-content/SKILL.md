@@ -390,9 +390,13 @@ among decoys — a direct response to "maybe you can do something where you
 have to match three images to the right word at once?". Its three words are
 `doel` plus two others sampled fresh from the kern's `woordenbank` in
 `maakOefening()`'s `'drie-koppelen'` case (needs `woordenbank.length >= 3`,
-true for every kern) — unlike every other type, it isn't really "about" one
-`doel` word, so `woordVanOefening()` (used for blootstelling tracking) just
-reports `paren[0]` as a reasonable approximation.
+true for every kern). `vereistTekst` words are never one of the three: the
+picture has to be that word (two bees are not "en"). Unlike every other type,
+it isn't really "about" one `doel` word, so `woordenVanOefening()` (used for
+blootstelling tracking) just reports `paren[0]` as a reasonable approximation.
+The word `en` is a further exception: its picture is two bees and reads as
+bijen, so `beschikbareTypen()` only keeps `zin-invullen` and `letter-herkennen`
+for it, and `zinInvullen` does not show that picture.
 
 `woordwolk` — a picture with **exactly one** correct word among ~7 cloud
 tiles (the rest are other woordenbank words as decoys), tap the one correct

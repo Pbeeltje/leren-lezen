@@ -16,11 +16,14 @@ export function renderZinInvullen(
   const kaart = document.createElement('div');
   kaart.className = 'oefen-kaart';
 
-  const plaatje = document.createElement('img');
-  plaatje.className = 'oefen-kaart__plaatje';
-  plaatje.src = oefening.doel.afbeeldingPad;
-  plaatje.alt = '';
-  kaart.appendChild(plaatje);
+  // "en" is twee bijen; bij "Papa ___ mama" hoort dat plaatje niet.
+  if (oefening.doel.woord !== 'en') {
+    const plaatje = document.createElement('img');
+    plaatje.className = 'oefen-kaart__plaatje';
+    plaatje.src = oefening.doel.afbeeldingPad;
+    plaatje.alt = '';
+    kaart.appendChild(plaatje);
+  }
 
   const zinEl = document.createElement('p');
   zinEl.className = 'zin-tekst';
