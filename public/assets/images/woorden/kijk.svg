@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120">
+  <!-- Een oog dat kijkt, zelf getekend voor leren-lezen. -->
+  <path d="M10 60 C28 28 92 28 110 60 C92 92 28 92 10 60 Z" fill="#fff" stroke="#37474f" stroke-width="3"/>
+  <circle cx="60" cy="60" r="18" fill="#29b6f6" stroke="#0277bd" stroke-width="3"/>
+  <circle cx="60" cy="60" r="8" fill="#212121"/>
+  <circle cx="54" cy="54" r="3" fill="#fff"/>
+</svg>

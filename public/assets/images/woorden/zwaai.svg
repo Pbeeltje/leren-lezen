@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120">
+  <!-- Iemand die zwaait, zelf getekend voor leren-lezen. -->
+  <circle cx="48" cy="28" r="14" fill="#f6c39a" stroke="#c98b5e" stroke-width="3"/>
+  <path d="M36 44 C40 70 56 74 60 92 L40 112 H28 L36 90 C28 70 24 50 36 44 Z" fill="#42a5f5" stroke="#1565c0" stroke-width="3"/>
+  <path d="M56 50 C80 30 100 36 104 20" fill="none" stroke="#f6c39a" stroke-width="10" stroke-linecap="round"/>
+  <path d="M56 50 C80 30 100 36 104 20" fill="none" stroke="#c98b5e" stroke-width="3" stroke-linecap="round"/>
+  <circle cx="104" cy="18" r="8" fill="#f6c39a" stroke="#c98b5e" stroke-width="2.5"/>
+</svg>

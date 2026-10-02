@@ -18,7 +18,7 @@ export const AVATAR_KLEUREN = [0, 45, 90, 150, 200, 260, 320] as const;
 
 export function avatarFilter(kleur: number | undefined): string {
   const waarde = kleur ?? 0;
-  return waarde === 0 ? '' : `hue-rotate(${waarde}deg) saturate(1.15)`;
+  return waarde === 0 ? '' : `hue-rotate(${waarde}deg) saturate(1.9) contrast(1.12)`;
 }
 
 // De eerste vijf zijn gratis (zie engine/winkel.ts), de rest koop je met munten.

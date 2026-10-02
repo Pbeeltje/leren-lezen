@@ -1846,39 +1846,49 @@
   .muziek-kaart:has(> .muziek-instrumenten) { padding-right: 64px; }
 }
 
-/* ---------- Snaarinstrumenten (gitaar, harp, steelgitaar) ---------- */
-/* Zelfde knoppen als de xylofoonstaven, maar dan als gekleurde snaar over een klankkast.
-   Elke knop is een brede strook, zodat de snaar makkelijk te raken is. */
-.xylofoon.xylofoon--snaren {
+/* ---------- Harp ---------- */
+/* Zelfde knoppen als de xylofoonstaven, als gekleurde snaren in het frame.
+   Op een groot scherm even breed als de xylofoonstaven (~120px). */
+.xylofoon.xylofoon--harp {
   position: relative;
   gap: 0;
   align-items: stretch;
+  width: min(100%, 760px);
   max-width: 760px;
-  padding: 0 4%;
+  height: min(48vh, 420px);
+  min-height: min(36vh, 280px);
+  padding: 11% 20% 13% 12%;
+  overflow: hidden;
+  border: none;
+  border-radius: 0;
+  background: url("assets/icons/harp-kast.svg") center / 100% 100% no-repeat;
+  box-shadow: none;
 }
-.muziek-kaart .xylofoon.xylofoon--snaren .xylofoon__staaf,
-.xylofoon.xylofoon--snaren .xylofoon__staaf {
+.xylofoon--harp .xylofoon__staaf,
+.muziek-kaart .xylofoon--harp .xylofoon__staaf {
   max-width: none;
-  height: auto;
-  min-height: 0;
+  min-width: 72px;
+  flex: 1 1 72px;
+  margin: 0 -12px;
+  height: 100%;
   padding: 0;
   border-radius: 0;
   background: transparent;
   box-shadow: none;
+  align-self: stretch;
 }
-.xylofoon--snaren .xylofoon__staaf::before {
-  top: 0;
+.xylofoon--harp .xylofoon__staaf::before {
+  top: auto;
   bottom: 0;
-  width: var(--dikte);
-  height: auto;
-  margin-left: calc(var(--dikte) / -2);
+  width: clamp(22px, 2.6vw, 40px);
+  height: var(--lengte) !important;
+  margin-left: calc(clamp(22px, 2.6vw, 40px) / -2);
   border-radius: 99px;
   background: linear-gradient(90deg, rgba(0, 0, 0, 0.25), transparent 35%, rgba(255, 255, 255, 0.6) 50%, transparent 65%), var(--kleur);
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.35);
 }
-.xylofoon--snaren .xylofoon__staaf::after { display: none; }
-.xylofoon--snaren .xylofoon__staaf--aan { animation: snaar-knop 0.6s ease-out; }
-.xylofoon--snaren .xylofoon__staaf--aan::before { animation: snaar-tril 0.6s ease-out; }
+.xylofoon--harp .xylofoon__staaf--aan { animation: snaar-knop 0.6s ease-out; }
+.xylofoon--harp .xylofoon__staaf--aan::before { animation: snaar-tril 0.6s ease-out; }
 @keyframes snaar-knop { from { filter: brightness(1.3); } to { filter: none; } }
 @keyframes snaar-tril {
   0% { transform: translateX(-5px); box-shadow: 0 0 0 3px #fff, 0 0 20px 6px var(--kleur); }
@@ -1888,59 +1898,59 @@
   60% { transform: translateX(-1px); }
   100% { transform: none; }
 }
-/* Gitaar: houten blad met klankgat; de snaren lopen van de witte kam tot de brug. */
-.xylofoon--gitaar {
-  border: 6px solid #8a4b1d;
-  border-top: 14px solid #f3ead7;
-  border-radius: 36px;
-  background:
-    radial-gradient(circle min(15vh, 105px) at 50% 44%, #3b2210 0 80%, #b86b2c 81% 90%, #f7d39b 91% 100%, transparent 101%),
-    linear-gradient(to bottom, transparent 82%, #5b3417 82% 88%, transparent 88%),
-    linear-gradient(100deg, #e39a4c, #f6c27e 45%, #e09649);
-  box-shadow: 0 6px 0 rgba(0, 0, 0, 0.15);
-}
-.xylofoon--gitaar .xylofoon__staaf::before { bottom: 15%; }
-/* Harp: gouden zuil links, gebogen hals bovenaan, klankkast onderaan; lange snaren laag,
-   korte hoog (zelfde lengtes als de xylofoon), met een goudkleurig stemknopje bovenaan. */
-.xylofoon.xylofoon--harp {
-  align-items: flex-end;
-  padding: 22px 4% 0 5%;
-  border-left: 18px solid #e6a800;
-  border-bottom: 16px solid #a0561d;
-  border-radius: 18px 80px 10px 18px;
-  background:
-    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100' preserveAspectRatio='none'%3E%3Cpolygon points='0,-3 100,45 100,51 0,3' fill='%23e6a800'/%3E%3C/svg%3E") content-box no-repeat,
-    linear-gradient(160deg, #fff8e1, #ffecb3);
-  background-size: 100% 100%, auto;
-  box-shadow: 0 6px 0 rgba(0, 0, 0, 0.15);
-}
-.muziek-kaart .xylofoon.xylofoon--harp .xylofoon__staaf,
-.xylofoon.xylofoon--harp .xylofoon__staaf { height: var(--lengte); }
 .xylofoon--harp .xylofoon__staaf::after {
   display: block;
-  top: -6px;
+  top: -8px;
   bottom: auto;
-  width: 12px;
-  height: 12px;
-  margin-left: -6px;
+  width: 14px;
+  height: 14px;
+  margin-left: -7px;
   background: #fff3c4;
-  box-shadow: 0 0 0 3px #c68a00;
+  box-shadow: 0 0 0 2px #c68a00;
 }
-/* Steelgitaar (Hawaii): ligt plat op schoot, glanzend blad met fretlijntjes, stippen en
-   een chromen element; je speelt hem met een metalen staafje (vandaar het glijden). */
-.xylofoon--steelgitaar {
-  border: 6px solid #0e3a40;
-  border-top: 14px solid #cfd8dc;
-  border-radius: 22px;
+/* Lage fluit (alt/bas): dikke donkere buis, gekleurde speelgaten. Zelfde klank als de
+   oude steelgitaar. */
+.xylofoon.xylofoon--fluit {
+  gap: 2px;
+  align-items: center;
+  height: min(22vh, 120px);
+  max-width: 860px;
+  padding: 0 7% 0 16%;
+  border-radius: 80px;
   background:
-    radial-gradient(circle at 50% 24%, #fff 0 5px, transparent 6px),
-    radial-gradient(circle at 50% 48%, #fff 0 5px, transparent 6px),
-    linear-gradient(to bottom, transparent 77%, #90a4ae 77%, #eceff1 81%, #90a4ae 86%, transparent 86%),
-    repeating-linear-gradient(to bottom, transparent 0 calc(12% - 2px), rgba(255, 255, 255, 0.45) calc(12% - 2px) 12%) top / 100% 72% no-repeat,
-    linear-gradient(100deg, #1b6d73, #2a9aa0 45%, #17575d);
-  box-shadow: 0 6px 0 rgba(0, 0, 0, 0.15);
+    radial-gradient(ellipse 36px 22px at 8% 50%, #cfd6dc 0 40%, transparent 70%),
+    linear-gradient(180deg, #6d767f 0%, #b7c0c8 32%, #4a5259 100%);
+  box-shadow: inset 0 10px 0 rgba(255, 255, 255, 0.28), 0 8px 0 rgba(0, 0, 0, 0.16);
 }
-.xylofoon--steelgitaar .xylofoon__staaf::before { bottom: 10%; }
+.muziek-kaart .xylofoon.xylofoon--fluit .xylofoon__staaf,
+.xylofoon.xylofoon--fluit .xylofoon__staaf {
+  max-width: none;
+  height: 100%;
+  min-height: 0;
+  padding: 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+}
+.xylofoon--fluit .xylofoon__staaf::before {
+  top: 50%;
+  left: 50%;
+  bottom: auto;
+  width: min(46px, 72%);
+  height: min(46px, 52%);
+  margin: 0;
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  background: radial-gradient(circle at 38% 32%, #4a3428, #1a100c 68%);
+  box-shadow: 0 0 0 4px var(--kleur), inset 0 3px 5px #000;
+}
+.xylofoon--fluit .xylofoon__staaf::after { display: none; }
+.xylofoon--fluit .xylofoon__staaf--aan { animation: snaar-knop 0.45s ease-out; }
+.xylofoon--fluit .xylofoon__staaf--aan::before { animation: fluit-gat 0.45s ease-out; }
+@keyframes fluit-gat {
+  0% { transform: translate(-50%, -50%) scale(0.86); box-shadow: 0 0 0 5px #fff, 0 0 16px 4px var(--kleur); }
+  100% { transform: translate(-50%, -50%); }
+}
 /* Keyboard: zwarte kast met lampjes, witte toetsen met onderaan een gekleurd vlakje (de
    kleur van de toon), en zwarte toetsen als versiering (tikken daarop speelt de witte). */
 .xylofoon.xylofoon--keyboard {
@@ -1999,7 +2009,8 @@
   .xylofoon--keyboard .xylofoon__staaf--aan { animation: none; }
 }
 @media (prefers-reduced-motion: reduce) {
-  .xylofoon--snaren .xylofoon__staaf--aan, .xylofoon--snaren .xylofoon__staaf--aan::before { animation: none; }
+  .xylofoon--harp .xylofoon__staaf--aan,
+  .xylofoon--harp .xylofoon__staaf--aan::before { animation: none; }
 }
 @media (prefers-reduced-motion: reduce) {
   .drum-pad--bonk, .drum-pad--nieuw, .drum-pad--bekken.drum-pad--bonk { animation: none; }
@@ -2173,6 +2184,7 @@
   left: 0;
   bottom: 16px;
   pointer-events: none;
+  transform-origin: center bottom;
   filter: drop-shadow(0 6px 4px rgba(0, 0, 0, 0.3));
   will-change: transform;
 }
@@ -2184,6 +2196,7 @@
   75% { margin-left: 12px; }
 }
 .vang-ding { position: absolute; left: 0; top: 0; pointer-events: none; will-change: transform; }
+.vang-ding--groot { z-index: 2; }
 .vang-ding--ster { filter: drop-shadow(0 0 10px rgba(255, 220, 80, 0.95)); }
 .vang-ding--gevaar { filter: drop-shadow(0 0 8px rgba(255, 120, 60, 0.7)); }
 /* Gevaar in een thema: rood gekleurd met een rode gloed. */
@@ -2242,6 +2255,15 @@
 .vang-venster__score { display: flex; align-items: center; gap: 8px; font-size: 2.6rem; font-weight: 800; }
 .vang-venster__score img { width: 52px; height: 52px; }
 .vang-venster__record { margin: 0; font-size: 1.2rem; font-weight: 700; color: var(--kleur-tekst-zacht, #5b6b7c); }
+.vang-venster__bonus {
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 1.6rem;
+  font-weight: 800;
+}
+.vang-venster__bonus img { width: 28px; height: 28px; }
 .vang-venster__start {
   width: 96px;
   height: 96px;
@@ -2321,7 +2343,7 @@
 @media (max-width: 640px) {
   .muziek-vrij-scherm .muziek-wissel { align-self: flex-end; }
 }
-/* Vijf instrumenten en de munt: alleen met namen erbij als er echt ruimte is. */
+/* Vier instrumenten en de munt: alleen met namen erbij als er echt ruimte is. */
 @media (max-width: 1099px) {
   .muziek-vrij-scherm .muziek-wissel__knop { width: 56px; height: 56px; padding: 0; justify-content: center; }
   .muziek-vrij-scherm .muziek-wissel__knop > span { display: none; }
@@ -2343,6 +2365,21 @@
 }
 .muziek-vrij-scherm .muziek-kaart--vrij .xylofoon { height: 100%; max-height: 640px; gap: 10px; }
 .muziek-vrij-scherm .muziek-kaart--vrij .xylofoon__staaf { max-width: 120px; }
+.muziek-vrij-scherm .muziek-kaart--vrij .xylofoon--harp .xylofoon__staaf,
+.muziek-vrij-scherm .muziek-kaart--vrij .xylofoon--fluit .xylofoon__staaf { max-width: none; }
+.muziek-vrij-scherm .muziek-kaart--vrij .xylofoon--fluit { height: min(22vh, 120px); max-height: 140px; align-self: center; width: min(100%, 860px); }
+.muziek-vrij-scherm .muziek-kaart--vrij .xylofoon--harp {
+  height: 100%;
+  max-height: 760px;
+  width: min(100%, 1100px);
+  max-width: 1100px;
+  min-height: 0;
+}
+.muziek-vrij-scherm .muziek-kaart--vrij .xylofoon--harp .xylofoon__staaf {
+  min-width: 120px;
+  flex: 1 1 120px;
+  margin: 0 -28px;
+}
 .muziek-vrij-scherm .drumstel.drumstel--5 {
   max-width: min(100%, calc((100dvh - 150px) * 1.25));
   width: 100%;
@@ -2354,6 +2391,8 @@
   .muziek-vrij-scherm .muziek-wissel { min-height: 60px; }
   .muziek-vrij-scherm .drumstel.drumstel--5 { max-width: min(100%, calc((100dvh - 110px) * 5)); }
   .muziek-vrij-scherm .drumstel.drumstel--5 .drum-pad { max-height: calc(100dvh - 130px); max-width: calc(100dvh - 130px); }
+  .muziek-vrij-scherm .xylofoon--fluit { height: min(28vh, 90px); }
+  .xylofoon.xylofoon--harp { min-height: calc(100dvh - 150px); padding: 9% 20% 10% 12%; }
 }
 
 /* ---------- Telefoon liggend (weinig hoogte) ---------- */

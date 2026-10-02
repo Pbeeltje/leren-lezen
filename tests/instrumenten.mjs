@@ -1,5 +1,5 @@
 import { chromium } from 'playwright';
-// Gitaar, harp en steelgitaar: kiezen in Vrij spelen en Speel na, kopen via het slotje en
+// Harp, fluit en keyboard: kiezen in Vrij spelen en Speel na, kopen via het slotje en
 // via de munt, en of alles op het scherm past.
 // Gebruik: node tests/instrumenten.mjs <map>
 const OUT = process.argv[2] + '/';
@@ -14,7 +14,7 @@ for (const [bw, bh, tag] of [[390, 844, 'tel'], [844, 390, 'liggend'], [1024, 13
   await page.evaluate(() => {
     localStorage.clear();
     localStorage.setItem('leren-lezen:profielen', JSON.stringify([{ id: 'a', naam: 'Tim', icoonId: 'trex', kleur: 0, aangemaakt: 1 }]));
-    localStorage.setItem('leren-lezen:voortgang:a', JSON.stringify({ versie: 1, laatstGekozenGroep: 'groep3', kernen: {}, munten: 450, woordBlootstelling: {}, gekocht: ['instrument:gitaar', 'instrument:keyboard'] }));
+    localStorage.setItem('leren-lezen:voortgang:a', JSON.stringify({ versie: 1, laatstGekozenGroep: 'groep3', kernen: {}, munten: 450, woordBlootstelling: {}, gekocht: ['instrument:keyboard'] }));
   });
   await page.reload(); await w(700);
   await page.locator('.icoon-tegel', { hasText: 'Tim' }).click(); await w(700);
@@ -27,9 +27,6 @@ for (const [bw, bh, tag] of [[390, 844, 'tel'], [844, 390, 'liggend'], [1024, 13
   });
   console.log(tag, '| op slot:', sloten.join(','), '| overlapt terug of rand:', overlap);
   await foto('1-xylofoon');
-  await page.locator('.muziek-wissel__knop[data-instrument="gitaar"]').click(); await w(300);
-  for (const s of await page.locator('.xylofoon__staaf').all()) { await s.dispatchEvent('pointerdown'); await page.dispatchEvent('body', 'pointerup'); await w(40); }
-  await foto('2-gitaar');
   await page.locator('.muziek-wissel__knop[data-instrument="keyboard"]').click(); await w(300);
   await page.locator('.xylofoon__staaf').nth(3).dispatchEvent('pointerdown'); await w(100);
   await foto('2b-keyboard');
@@ -42,10 +39,9 @@ for (const [bw, bh, tag] of [[390, 844, 'tel'], [844, 390, 'liggend'], [1024, 13
   console.log(tag, '| na koop harp:', await page.locator('.xylofoon').getAttribute('class'));
   await page.locator('.xylofoon__staaf').nth(2).dispatchEvent('pointerdown'); await w(100);
   await foto('5-harp');
-  // De munt: de instrumenten in de winkel; steelgitaar kopen.
   await page.locator('.muziek-winkel-knop').click(); await w(700);
   await foto('6-winkel-instrumenten');
-  await page.locator('.winkel-kaart', { hasText: 'Steelgitaar' }).click(); await w(300);
+  await page.locator('.winkel-kaart', { hasText: 'Fluit' }).click(); await w(300);
   await page.locator('.winkel-venster__knop--ja').click(); await w(500);
   await page.locator('.terug-knop').first().click(); await w(600);
   await foto('7-steelgitaar');

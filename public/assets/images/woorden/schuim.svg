@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120">
+  <!-- Schuim met belletjes, zelf getekend voor leren-lezen. -->
+  <path d="M8 96 C20 70 50 78 60 88 C72 68 104 72 112 96 V112 H8 Z" fill="#b3e5fc"/>
+  <g fill="#fff" stroke="#90caf9" stroke-width="2">
+    <circle cx="28" cy="72" r="16"/><circle cx="50" cy="58" r="20"/><circle cx="76" cy="64" r="18"/><circle cx="96" cy="78" r="14"/>
+    <circle cx="40" cy="86" r="12"/><circle cx="68" cy="84" r="10"/>
+  </g>
+</svg>

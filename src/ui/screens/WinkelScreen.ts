@@ -57,7 +57,7 @@ export function WinkelScreen(manager: ScreenManager, start?: { soort: WinkelSoor
     [
       ['figuur', 'Figuren', avatarPad(profiel?.icoonId ?? 'kat')],
       ['achtergrond', 'Achtergronden', 'assets/icons/ster.svg'],
-      ['instrument', 'Instrumenten', 'assets/icons/gitaar.svg'],
+      ['instrument', 'Instrumenten', 'assets/icons/harp.svg'],
     ] as const
   ).map(([id, naam, src]) => {
     const k = document.createElement('button');

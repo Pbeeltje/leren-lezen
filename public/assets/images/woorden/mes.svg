@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120">
+  <!-- Een mes, zelf getekend voor leren-lezen. -->
+  <path d="M18 78 L92 22 C98 18 106 22 108 30 C96 48 70 70 48 86 Z" fill="#eceff1" stroke="#546e7a" stroke-width="3" stroke-linejoin="round"/>
+  <path d="M22 76 L88 26 C90 32 70 52 48 72 Z" fill="#cfd8dc"/>
+  <path d="M14 72 L40 96 C46 102 40 108 32 106 L8 88 C4 84 8 76 14 72 Z" fill="#6d4c41" stroke="#3e2723" stroke-width="3"/>
+  <path d="M20 80 L34 94" stroke="#a1887f" stroke-width="2"/>
+</svg>

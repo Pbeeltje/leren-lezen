@@ -39,7 +39,11 @@ export function prijsVan(soort: WinkelSoort, id: string): number {
 }
 
 export function heeft(soort: WinkelSoort, id: string): boolean {
-  return prijsVan(soort, id) === 0 || bezit().includes(sleutel(soort, id));
+  if (prijsVan(soort, id) === 0) return true;
+  const lijst = bezit();
+  if (lijst.includes(sleutel(soort, id))) return true;
+  if (soort === 'instrument' && id === 'fluit' && lijst.includes('instrument:steelgitaar')) return true;
+  return false;
 }
 
 export function koop(soort: WinkelSoort, id: string): boolean {
@@ -51,8 +55,11 @@ export const eigenFiguren = (): string[] => AVATAR_ICONEN.filter((id) => heeft('
 export const eigenAchtergronden = () => THEMAS.filter((t) => heeft('achtergrond', t.id));
 
 // Het gekozen instrument, zolang het kind het (nog) heeft; anders de gratis xylofoon.
+const OUD_INSTRUMENT: Record<string, Instrument> = { steelgitaar: 'fluit' };
+
 export function huidigInstrument(): Instrument {
-  const gekozen = haalVoortgang().instrument;
+  const ruw = haalVoortgang().instrument;
+  const gekozen = ruw ? (OUD_INSTRUMENT[ruw] ?? ruw) : undefined;
   return gekozen && INSTRUMENTEN.some((i) => i.id === gekozen) && heeft('instrument', gekozen) ? gekozen : GRATIS_INSTRUMENT;
 }
 

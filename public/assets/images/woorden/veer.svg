@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120">
+  <!-- Een veer, zelf getekend voor leren-lezen. -->
+  <path d="M20 100 C28 40 70 10 104 16 C88 28 74 50 70 100 Z" fill="#90caf9" stroke="#1565c0" stroke-width="3" stroke-linejoin="round"/>
+  <path d="M70 100 C66 60 80 28 104 16" fill="none" stroke="#1565c0" stroke-width="3"/>
+  <g stroke="#e3f2fd" stroke-width="2" stroke-linecap="round">
+    <path d="M64 36 L48 28 M62 50 L42 44 M60 64 L40 62 M58 78 L44 80"/>
+  </g>
+</svg>

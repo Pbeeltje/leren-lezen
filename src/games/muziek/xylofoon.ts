@@ -2,9 +2,9 @@ import { STAAF_KLEUREN, TONEN, speelInstrument, type Instrument } from '../../en
 
 // Een xylofoon van gekleurde staven, lang (laag) naar kort (hoog). Tikken speelt een toon;
 // met de vinger eroverheen glijden speelt ze allemaal (glissando). tonen = indexen in TONEN.
-// Dezelfde knoppen worden met zetInstrument een gitaar, harp of steelgitaar (gekleurde
-// snaren) of een keyboard (witte toetsen met een gekleurd vlakje). Elke toon houdt zijn
-// kleur, zodat de stippen van Speel na blijven kloppen.
+// Dezelfde knoppen worden met zetInstrument een harp (snaren), een fluit
+// (gaatjes) of een keyboard. Elke toon houdt zijn kleur, zodat de stippen van Speel na
+// blijven kloppen.
 export function maakXylofoon(
   tonen: number[],
   opTik?: (positie: number) => void,
@@ -42,7 +42,13 @@ export function maakXylofoon(
 
   function zetKlasse(): void {
     el.className =
-      huidig === 'xylofoon' ? 'xylofoon' : huidig === 'keyboard' ? 'xylofoon xylofoon--keyboard' : `xylofoon xylofoon--snaren xylofoon--${huidig}`;
+      huidig === 'xylofoon'
+        ? 'xylofoon'
+        : huidig === 'keyboard'
+          ? 'xylofoon xylofoon--keyboard'
+          : huidig === 'fluit'
+            ? 'xylofoon xylofoon--fluit'
+            : `xylofoon xylofoon--${huidig}`;
     el.classList.toggle('xylofoon--wacht', !actief);
   }
   zetKlasse();

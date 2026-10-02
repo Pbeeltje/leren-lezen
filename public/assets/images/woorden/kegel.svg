@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120">
+  <!-- Een kegel, zelf getekend voor leren-lezen. -->
+  <path d="M44 24 H76 L84 88 H36 Z" fill="#ef5350" stroke="#c62828" stroke-width="3" stroke-linejoin="round"/>
+  <rect x="40" y="48" width="40" height="16" fill="#fafafa" stroke="#c62828" stroke-width="2"/>
+  <ellipse cx="60" cy="22" rx="16" ry="10" fill="#ef5350" stroke="#c62828" stroke-width="3"/>
+  <ellipse cx="60" cy="94" rx="28" ry="12" fill="#ef5350" stroke="#c62828" stroke-width="3"/>
+</svg>

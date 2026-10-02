@@ -1,0 +1,57 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120">
+  <!-- Meer kip: 2 stuks, zelf getekend voor leren-lezen. -->
+<g fill="none" transform="translate(8 20) scale(0.2600) translate(-0.0 -0.0)">
+  <defs>
+    <linearGradient id="m0kp-lijf" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#fff7ea"/>
+      <stop offset="1" stop-color="#f0dcc0"/>
+    </linearGradient>
+  </defs>
+  <!-- nestje -->
+  <path d="M20 150 C30 132 170 132 180 150 C176 170 24 170 20 150 Z" fill="#d8a656" stroke="#8a5f22" stroke-width="3"/>
+  <path d="M30 146 C60 140 80 150 110 142 C130 138 150 146 172 142 M34 156 C70 150 110 160 166 152" fill="none" stroke="#a87a33" stroke-width="2.5" stroke-linecap="round"/>
+  <!-- eitje naast de kip -->
+  <ellipse cx="152" cy="134" rx="14" ry="18" fill="#fffaf2" stroke="#b9a890" stroke-width="2.5"/>
+  <!-- ronde kip (hen): klein kammetje, kort staartje -->
+  <path d="M40 104 C32 88 38 74 50 70 C48 82 52 90 60 94 Z" fill="#e8cfa9" stroke="#8a6a44" stroke-width="3" stroke-linejoin="round"/>
+  <ellipse cx="92" cy="112" rx="50" ry="34" fill="url(#m0kp-lijf)" stroke="#8a6a44" stroke-width="3"/>
+  <path d="M66 108 C80 96 104 98 112 112 C98 110 82 114 72 124 Z" fill="#ead3b0" stroke="#8a6a44" stroke-width="2.5" stroke-linejoin="round"/>
+  <circle cx="118" cy="72" r="26" fill="url(#m0kp-lijf)" stroke="#8a6a44" stroke-width="3"/>
+  <!-- klein kammetje -->
+  <path d="M106 50 C106 42 114 40 116 46 C118 40 126 40 126 48 C130 46 134 50 130 54 Z" fill="#e8534b" stroke="#a52a24" stroke-width="2.5" stroke-linejoin="round"/>
+  <!-- snavel en lelletje -->
+  <path d="M142 70 L156 76 L142 82 Z" fill="#ffb13d" stroke="#c77a12" stroke-width="2.5" stroke-linejoin="round"/>
+  <path d="M140 84 C144 90 140 96 136 92 C134 88 136 84 140 84 Z" fill="#e8534b" stroke="#a52a24" stroke-width="2"/>
+  <!-- oog en wangetje -->
+  <circle cx="128" cy="68" r="4.5" fill="#1b1b2f"/>
+  <circle cx="129.5" cy="66.5" r="1.4" fill="#fff"/>
+  <ellipse cx="124" cy="80" rx="6" ry="3.5" fill="#ffab9e" opacity="0.8"/>
+</g>
+<g fill="none" transform="translate(60 28) scale(0.2600) translate(-0.0 -0.0)">
+  <defs>
+    <linearGradient id="m1kp-lijf" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#fff7ea"/>
+      <stop offset="1" stop-color="#f0dcc0"/>
+    </linearGradient>
+  </defs>
+  <!-- nestje -->
+  <path d="M20 150 C30 132 170 132 180 150 C176 170 24 170 20 150 Z" fill="#d8a656" stroke="#8a5f22" stroke-width="3"/>
+  <path d="M30 146 C60 140 80 150 110 142 C130 138 150 146 172 142 M34 156 C70 150 110 160 166 152" fill="none" stroke="#a87a33" stroke-width="2.5" stroke-linecap="round"/>
+  <!-- eitje naast de kip -->
+  <ellipse cx="152" cy="134" rx="14" ry="18" fill="#fffaf2" stroke="#b9a890" stroke-width="2.5"/>
+  <!-- ronde kip (hen): klein kammetje, kort staartje -->
+  <path d="M40 104 C32 88 38 74 50 70 C48 82 52 90 60 94 Z" fill="#e8cfa9" stroke="#8a6a44" stroke-width="3" stroke-linejoin="round"/>
+  <ellipse cx="92" cy="112" rx="50" ry="34" fill="url(#m1kp-lijf)" stroke="#8a6a44" stroke-width="3"/>
+  <path d="M66 108 C80 96 104 98 112 112 C98 110 82 114 72 124 Z" fill="#ead3b0" stroke="#8a6a44" stroke-width="2.5" stroke-linejoin="round"/>
+  <circle cx="118" cy="72" r="26" fill="url(#m1kp-lijf)" stroke="#8a6a44" stroke-width="3"/>
+  <!-- klein kammetje -->
+  <path d="M106 50 C106 42 114 40 116 46 C118 40 126 40 126 48 C130 46 134 50 130 54 Z" fill="#e8534b" stroke="#a52a24" stroke-width="2.5" stroke-linejoin="round"/>
+  <!-- snavel en lelletje -->
+  <path d="M142 70 L156 76 L142 82 Z" fill="#ffb13d" stroke="#c77a12" stroke-width="2.5" stroke-linejoin="round"/>
+  <path d="M140 84 C144 90 140 96 136 92 C134 88 136 84 140 84 Z" fill="#e8534b" stroke="#a52a24" stroke-width="2"/>
+  <!-- oog en wangetje -->
+  <circle cx="128" cy="68" r="4.5" fill="#1b1b2f"/>
+  <circle cx="129.5" cy="66.5" r="1.4" fill="#fff"/>
+  <ellipse cx="124" cy="80" rx="6" ry="3.5" fill="#ffab9e" opacity="0.8"/>
+</g>
+</svg>

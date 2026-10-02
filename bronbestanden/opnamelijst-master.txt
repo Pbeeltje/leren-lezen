@@ -1,0 +1,383 @@
+Master-opnamelijst (gegenereerd, niet met de hand wijzigen).
+Herbouw: node bronbestanden/maak-opnamelijst-master.mjs
+Delen: opnamelijst-2-deel-1, opnamelijst-2-deel-2, opnamelijst-2-deel-3, opnamelijst-3-deel-1, opnamelijst-4-deel-1, opnamelijst-5-deel-1, opnamelijst-5-deel-2, opnamelijst-6-deel-1, opnamelijst-7-deel-1, opnamelijst-7-deel-2.
+
+--- lijst 2 deel 1 (63 regels) ---
+1. ik
+2. aan
+3. pen
+4. en
+5. teen
+6. een
+7. buik
+8. doos
+9. poes
+10. ijs
+11. weg
+12. bos
+13. hut
+14. reus
+15. jas
+16. riem
+17. bijl
+18. geit
+19. uil
+20. pauw
+21. duif
+22. ei
+23. kaars
+24. kroon
+25. kers
+26. peer
+27. boot
+28. been
+29. berg
+30. taart
+31. ui
+32. boek
+33. hoed
+34. soep
+35. zee
+36. bed
+37. koe
+38. brood
+39. hand
+40. tand
+41. bus
+42. hart
+43. mond
+44. tent
+45. lamp
+46. bril
+47. bloem
+48. blad
+49. slak
+50. klok
+51. stoel
+52. mier
+53. vlieg
+54. melk
+55. jurk
+56. vlag
+57. fiets
+58. trein
+59. ambulance
+60. baard
+61. bad
+62. ballon
+63. brandweerauto
+
+--- lijst 2 deel 2 (63 regels) ---
+64. dobbelsteen
+65. douche
+66. duim
+67. eiland
+68. engel
+69. flamingo
+70. flos
+71. gier
+72. gitaar
+73. gras
+74. haai
+75. helikopter
+76. ijsbeer
+77. kalkoen
+78. kangoeroe
+79. kar
+80. kerstboom
+81. kerstman
+82. knuffel
+83. konijn
+84. kooi
+85. kopje
+86. krijtje
+87. laars
+88. leeuw
+89. lepel
+90. motor
+91. neushoorn
+92. nijlpaard
+93. pakje
+94. paraplu
+95. pijl
+96. puzzel
+97. raket
+98. regenboog
+99. rendier
+100. riet
+101. robot
+102. schaap
+103. schaar
+104. schip
+105. slang
+106. sleutel
+107. sneeuwpop
+108. spiegel
+109. step
+110. tandenborstel
+111. taxi
+112. telefoon
+113. tijger
+114. tong
+115. touw
+116. tractor
+117. tram
+118. trommel
+119. vinger
+120. vlieger
+121. vliegtuig
+122. vrachtwagen
+123. vrouw
+124. weeg
+125. zeehond
+126. zing
+
+--- lijst 2 deel 3 (39 regels) ---
+127. zwaan
+128. Tik de grote.
+129. Tik de kleine.
+130. Welke is zwaar?
+131. Welke is licht?
+132. Welke is lang?
+133. Welke is kort?
+134. Waar zijn er meer?
+135. Waar zijn er minder?
+136. Tik alle rode dingen.
+137. Tik alle blauwe dingen.
+138. Tik alle gele dingen.
+139. Tik alle groene dingen.
+140. Tik alle rondjes.
+141. Tik alle vierkanten.
+142. Tik alle driehoeken.
+143. Tik alle sterren.
+144. Hoeveel mensen zitten er nu in de bus?
+145. Tik het woord aan dat bij het plaatje hoort.
+146. Waar is het rondje?
+147. Waar is het vierkant?
+148. Waar is de driehoek?
+149. Waar is de ster?
+150. Waar is het hartje?
+151. Waar is de rechthoek?
+152. Waar is het ovaal?
+153. Waar is de ruit?
+154. Waar is de maan?
+155. Waar is het kruis?
+156. Super!
+157. Heel goed!
+158. Goed gedaan!
+159. Wauw!
+160. Prima!
+161. Fantastisch!
+162. Jij kunt het!
+163. Hoera!
+164. Wat knap!
+165. Helemaal goed!
+
+--- lijst 3 deel 1 (44 regels) ---
+166. schoen
+167. schelp
+168. school
+169. ring
+170. spin
+171. krab
+172. broek
+173. kraan
+174. strik
+175. kerk
+176. voetbal
+177. bank
+178. nacht
+179. spons
+180. web
+181. sla
+182. plant
+183. fles
+184. ski
+185. krant
+186. boei
+187. emmer
+188. kikker
+189. appel
+190. dolfijn
+191. wortel
+192. paddenstoel
+193. vogel
+194. hamer
+195. banaan
+196. tomaat
+197. ladder
+198. piano
+199. radio
+200. koning
+201. koningin
+202. honing
+203. tekening
+204. vuilnisbak
+205. schildpad
+206. lieveheersbeestje
+207. sinaasappel
+208. aardbei
+209. vrolijk
+
+--- lijst 4 deel 1 (10 regels) ---
+210. zwaan
+211. Welk cijfer hoort bij de vingers?
+212. teen
+213. bijl
+214. hand
+215. tand
+216. jurk
+217. duim
+218. flos
+219. boei
+
+--- lijst 5 deel 1 (54 regels) ---
+220. Trek de lijn over met je vinger
+221. Schrijf het woord na
+222. Luister goed en speel het na
+223. Luister en trommel het na
+224. Schrijf de m van maan
+225. Schrijf de r van roos
+226. Schrijf de s van sok
+227. Schrijf de v van vis
+228. Schrijf de i van ik
+229. Schrijf de k van koek
+230. Schrijf de o van oog
+231. Schrijf de p van poes
+232. Schrijf de e van pen
+233. Schrijf de n van neus
+234. Schrijf de t van teen
+235. Schrijf de b van buik
+236. Schrijf de g van geit
+237. Schrijf de d van doos
+238. Schrijf de z van zeep
+239. Schrijf de h van huis
+240. Schrijf de w van weg
+241. Schrijf de a van tak
+242. Schrijf de u van hut
+243. Schrijf de j van jas
+244. Schrijf de l van uil
+245. Schrijf de f van duif
+246. in
+247. ook
+248. is
+249. nog
+250. ben
+251. de
+252. zit
+253. moe
+254. kijk
+255. op
+256. dit
+257. het
+258. wat
+259. dat
+260. gaan
+261. naar
+262. wil
+263. hij
+264. pakt
+265. hak
+266. nu
+267. lekker
+268. warm
+269. daar
+270. dak
+271. wie
+272. legt
+273. dag
+
+--- lijst 5 deel 2 (37 regels) ---
+274. vos.
+275. kip.
+276. vos en kip.
+277. kip in sok!
+278. vos ook in sok!
+279. vos en kip en maan.
+280. een beer.
+281. beer is in een boot.
+282. beer eet een peer.
+283. nog een peer!
+284. beer eet ook een kers.
+285. ik ben beer!
+286. de poes.
+287. de doos.
+288. de poes zit in de doos.
+289. poes is moe.
+290. kijk, een koek!
+291. poes eet de koek op.
+292. dit is een hut.
+293. de hut is in het bos.
+294. een tak op de weg.
+295. wat is dat?
+296. het is een hond!
+297. hond en ik gaan naar huis.
+298. dit is een reus.
+299. de reus wil hout.
+300. hij pakt de bijl.
+301. hak, hak, hak!
+302. nu is het vuur aan.
+303. de reus is lekker warm.
+304. dit is de geit.
+305. de geit eet gras.
+306. daar is de pauw.
+307. de duif zit op het dak.
+308. en wie is dat? de uil!
+309. de kip legt een ei.
+310. dag geit, dag pauw, dag uil!
+
+--- lijst 6 deel 1 (5 regels) ---
+311. Tik het woord aan dat bij het plaatje hoort.
+312. Knap gedaan!
+313. Wat knap!
+314. Schrijf de j van jas.
+315. muis
+
+--- lijst 7 deel 1 (4 regels) ---
+316. Tik alle paarse dingen.
+317. Tik alle roze dingen.
+318. Tik alle zwarte dingen.
+319. Tik alle bruine dingen.
+
+--- lijst 7 deel 2 (41 regels) ---
+320. kom
+321. mes
+322. kok
+323. blok
+324. was
+325. fee
+326. veer
+327. kast
+328. tulp
+329. verf
+330. kwast
+331. potlood
+332. molen
+333. kegel
+334. ketting
+335. schaats
+336. schuim
+337. schommel
+338. papegaai
+339. kraai
+340. meeuw
+341. zwaai
+342. storm
+343. bomen
+344. jassen
+345. schoenen
+346. blokken
+347. sokken
+348. boeken
+349. katten
+350. kippen
+351. ballen
+352. huizen
+353. apen
+354. benen
+355. peren
+356. boten
+357. vissen
+358. wolven
+359. rozen
+360. muizen

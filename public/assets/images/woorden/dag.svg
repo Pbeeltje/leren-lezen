@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120">
+  <!-- Zon en een dag op de kalender, zelf getekend voor leren-lezen. -->
+  <circle cx="60" cy="48" r="22" fill="#ffcc33" stroke="#f9a825" stroke-width="3"/>
+  <g stroke="#ffb020" stroke-width="4" stroke-linecap="round">
+    <path d="M60 8 V16 M60 80 V88 M20 48 H28 M92 48 H100 M32 20 L38 26 M82 70 L88 76 M88 20 L82 26 M38 70 L32 76"/>
+  </g>
+  <rect x="22" y="84" width="76" height="28" rx="6" fill="#fff" stroke="#90a4ae" stroke-width="3"/>
+  <path d="M22 96 H98" stroke="#ef5350" stroke-width="4"/>
+  <g fill="#546e7a"><circle cx="40" cy="104" r="3"/><circle cx="60" cy="104" r="3"/><circle cx="80" cy="104" r="3"/></g>
+</svg>

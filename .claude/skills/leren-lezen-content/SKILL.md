@@ -173,12 +173,11 @@ advancing if skip races the exercise's own `afgerond` callback.
 
 ## Reading-specific: the word bank + mixed exercises
 
-A reading `Kern` (`content/types.ts`) bundles **multiple** structure words
-(e.g. `kern-01` = maan+roos+vis together) plus a `woordenbank` of ~10
-klankzuiver (phonetically regular) words built only from letters introduced
-so far, plus optional `zinnen` (fill-in-the-blank sentences, picture-
-supported; sentence *filler* words can exceed the known-letters set, but the
-blank target word itself must come from the woordenbank).
+A reading `Kern` (`content/types.ts`) has a `woordenbank` of **12** words
+(ids `lezen-01` … `lezen-23` in `lezen-hoofdstukken.ts`) plus optional
+`zinnen`. Difficulty order: CVC → long vowels → clusters → diphthongs →
+sch/eeuw → themed review → plurals. Each word sits in exactly one chapter.
+The toets is the whole bank (12). Old `vll-kern-*` / `kern-0*` ids are gone.
 
 `zelf-typen` (type the word from scratch, no choices) is **never** picked as a
 regular question. It is only added at the end of a series, for a word that already
@@ -298,10 +297,11 @@ dry) came from `game-icons:clothesline`, which is **CC BY 3.0** and does
 require attribution; see `ATTRIBUTIONS.md` at the project root, which must be
 kept up to date if more non-MIT icons are added this way.
 
-Ten reading kernen exist now (kern-01 maan/roos/vis, kern-02 weer, kern-03
-boerderijdieren, kern-04 dierentuindieren, kern-05 "spullen & lijf", kern-06
-"meer woorden", kern-07 "klanken", kern-08 "weer, deel 2", kern-09 "kerst",
-kern-10 "klanken, deel 2"). Kernen 1-6
+Reading chapters live in `lezen-hoofdstukken.ts` (23 × 12 words). The list
+and picture/audio notes are in `C:\\Claude\\leren-lezen-hoofdstukken-plan.md`.
+New pictures: `bronbestanden/teken-lezen-nieuw.py` (daisy for bloem, tulp
+from the old bloem file, plurals as 2–3 copies). Older notes below about
+the first ten kernen are history. Kernen 1-6
 deliberately avoided Dutch long-vowel-digraph spelling (oo/aa/ee) and true
 diphthongs (ei/ij/ui/ou/eu/au) to keep "difficulty" flat while expanding
 vocabulary — except the words that were already spent as kern-01
@@ -458,7 +458,7 @@ adding a new global key.
 
 Avatars: 13 Fluent Emoji icons (`AVATAR_ICONEN`) × 7 hue-rotate tints
 (`AVATAR_KLEUREN`, applied via `avatarFilter(kleur)` → CSS `filter:
-hue-rotate(Ndeg) saturate(1.15)` on the `<img>`). A rotation shifts each
+hue-rotate(Ndeg) saturate(1.9) contrast(1.12)` on the `<img>`). A rotation shifts each
 icon's *own* base hue, so the same degree value looks different per icon
 (fox orange→green, unicorn pink→orange, etc.) — that's correct, not a bug,
 if a color picker "looks wrong" at a glance, check the DOM's actual computed
@@ -748,19 +748,13 @@ the bus shows the starting passengers, the stop shows who gets on or off, and th
 is written below. `start` is always one of the distractors, because forgetting who got
 on or off is the classic mistake.
 
-## VLL kern 7-12 (Lezen 7-12)
+## Reading chapters (Lezen 1–23)
 
-From kern 7 on VLL adds no new single letters and no own structure words, only sound
-groups, per the 2nd maan-versie goal posters (jufinger.nl) and KlasCement Logico cards:
-kern 7 sch/ng (+ mmkm/mkmm, compounds), kern 8 ch(t)/nk (+ mmkmm, words ending in a
-vowel), kern 9 aai/ooi/oei (+ two syllables), kern 10 eeuw/ieuw/uw (+ open syllables),
-kern 11 -ig/-lijk/-ing (+ long words), kern 12 review. Files `vll-kern-7..12.ts`; the
-practice words are our own choice (pictures: Fluent Emoji, kooi from juf-milou), so don't
-present them as original VLL word lists. The themed chapters follow as Lezen 13-21 (ids
-kern-02..kern-10 kept for saved stars). `KLANKEN` in oefeningGenerator lists the longer
-groups first ('aai' before 'aa', 'sch' before 'ch'). Words longer than 8 letters skip
-woord-bouwen, longer than 10 skip hakken-en-plakken. Their audio is on
-`opnamelijst-3-deel-1`.
+See `lezen-hoofdstukken.ts` and `C:\\Claude\\leren-lezen-hoofdstukken-plan.md`.
+`KLANKEN` in oefeningGenerator lists the longer groups first ('aai' before 'aa',
+'sch' before 'ch'). Words longer than 8 letters skip woord-bouwen, longer than
+10 skip hakken-en-plakken. Kleuters use `kleuter-letters.ts` (letter-herkennen
+from the groep-3 word bank), not chapters 1–2.
 
 ## On-screen keyboard for typing questions (touch screens)
 
@@ -870,30 +864,26 @@ The games:
 - The maker functions (`maakSpeelNaVragen()`) hold their own counter, so every time the
   game opens it starts short again.
 
-### Instruments: gitaar, harp, steelgitaar, keyboard (shop items)
+### Instruments: harp, fluit, keyboard (shop items)
 
 - `Instrument` / `INSTRUMENTEN` in `engine/muziek.ts`; `speelInstrument(instrument, toon, wanneer)`.
-  Xylofoon is free; the other four cost `INSTRUMENT_PRIJS` (200) as `WinkelSoort` `instrument`
+  Xylofoon is free; the other three cost `INSTRUMENT_PRIJS` (200) as `WinkelSoort` `instrument`
   (keys `instrument:<id>` in `gekocht`). The choice is remembered per profile
   (`VoortgangData.instrument`, read via `huidigInstrument()` in `engine/winkel.ts`, which falls
   back to xylofoon when unset or not owned).
-- Sound: matched to `bronbestanden/{guitar,harp,steelguitar}.m4a` (ignore the harp file's
-  silent/static gaps). Guitar and harp are Karplus-Strong (`snaarBuffer`) an octave below the
-  xylophone, 3-tap loop filter, lowpass that closes (`filterBegin`→`filterEind`). The
-  recordings are dark (centroid ~1.1–1.6 kHz, almost no energy above 2 kHz) and fairly dry, so
-  guitar reverb is 5%, harp 20%; no triangle pluck (that was shrill). Guitar has a very quiet
-  octave-up string. Steelgitaar is additive sines 1–6 (`speelSteel`), not KS — the recording
-  shows parallel harmonics and KS sounded "computery". Small ~40-cent slide, 80 ms swell,
-  late 4.4 Hz vibrato, 55% reverb. Keyboard = 2-operator FM like a 90s soundcard MIDI piano
-  (`speelKeyboard`); the owner is happy with that sound.
+- Sound: harp is Karplus-Strong (`snaarBuffer`, 3-tap, dark, 20% reverb) matched to
+  `bronbestanden/harp.m4a`. Fluit keeps the last steel-synth (`speelSteel`: one voice,
+  sine+triangle, short swell). Keyboard = 2-operator FM (`speelKeyboard`). Old shop key
+  `instrument:steelgitaar` still counts as fluit. Banjo/gitaar were dropped.
 - Keyboard look: white keys with a coloured patch, decorative black keys via
   `[data-zwart]::after` (set in `maakXylofoon` for do/re/fa/sol/la when the next key exists);
   tapping a black key plays the white key it belongs to. `xylofoon.svg` is now our own
   xylophone drawing (it used to be the Fluent piano emoji, which clashed with the keyboard).
 - `maakXylofoon(tonen, opTik, instrument)` is the component for all four: same buttons
-  (`.xylofoon__staaf`), `zetInstrument()` switches the look (`.xylofoon--snaren
-  .xylofoon--<id>`, CSS bodies in screens.css) and `speel(positie, wanneer)` plays with the
-  current sound. Strings keep `STAAF_KLEUREN`, so the Speel na dots still match.
+  (`.xylofoon__staaf`), `zetInstrument()` switches the look (`.xylofoon--<id>`, CSS in
+  screens.css) and `speel(positie, wanneer)` plays with the current sound. Strings keep
+  `STAAF_KLEUREN`, so the Speel na dots still match. Harp keys are ~120px wide (same as
+  the vrij-spelen xylophone bars); the frame is `harp-kast.svg`.
 - Picker: `ui/components/InstrumentKnoppen.ts` (buttons with `data-instrument`; not owned =
   grey + lock, tap opens `WinkelScreen(m, { soort: 'instrument', koop: id })` with the purchase
   window open) plus the coin button `.muziek-winkel-knop` (store on the Instrumenten tab).
@@ -902,7 +892,7 @@ The games:
   in the card (top right; a column on the right when the screen is ≤820px high);
   `maakSpeelNaVragen(niveau, naarWinkel)`.
 - Shop: third tab Instrumenten; on phones (≤600px) the tabs show only their icons.
-- Icons `gitaar.svg`, `harp.svg`, `steelgitaar.svg`, `keyboard.svg`, `xylofoon.svg` are our own drawings.
+- Icons `harp.svg`, `harp-kast.svg`, `fluit.svg`, `keyboard.svg`, `xylofoon.svg` are our own drawings.
 - Check: `node tests/instrumenten.mjs <map>`.
 
 ## Recording list 5
@@ -993,10 +983,16 @@ Children no longer pick an age but a group (`Groep = 'kleuter' | 'groep3'` in co
   booklets yet). Code and audio stay; give it groups again to bring it back.
 - **Kleuter topic order:** `topicsVoorGroep('kleuter')` puts Luisteren first.
 - **Vangspel** (`ui/screens/VangScreen.ts`, topic `vangen`, both groups; the tile shows the
-  profile's own figure): the figure stands at the bottom and follows the finger (or arrow
-  keys). Catch falling food (+1) and the odd glowing star (+5); meteors cost one of 3
+  profile's own figure, with `avatarFilter` for the picked tint — same on the in-game
+  player and the start/end portrait): the figure stands at the bottom and follows the finger (or arrow
+  keys). A tap (or space / arrow up / W) hops about half the figure's height (~0.4 s, no double
+  jump); the catch zone rises with it. Catch falling food (+1) and the odd glowing star (+5); meteors cost one of 3
   hearts (1.2 s blinking afterwards). Speed and meteor share rise with time; kleuters
-  slower and fewer meteors. Missed food costs nothing. No coins (coins come from
+  slower and fewer meteors. Missed food costs nothing. At 40 s normal drops stop: one huge
+  hazard falls (width leaves a lane wider than the figure, slower than the late-game
+  drops, overlap hitbox), then a huge star. Catching the star or letting it leave ends
+  the round; finishing with all 3 hearts adds +10 (on top of the star's +5 if caught).
+  Dying at 0 hearts still ends immediately, with no star and no bonus. No coins (coins come from
   learning); record per profile in `leren-lezen:vangspel:<profielId>`. Start and end
   screens are pictures only (food ✓, meteor ✕, play button). Check:
   `node tests/vangspel.mjs <map>`.
@@ -1026,7 +1022,8 @@ Children no longer pick an age but a group (`Groep = 'kleuter' | 'groep3'` in co
 - **Vangspel themes:** what falls depends on `huidigThema()`: `THEMA_DINGEN` in
   VangScreen.ts lists per background the good things and one hazard (onder water:
   pufferfish, herfst: wolf, boerderij: fox, zee: jellyfish, kasteel: dragon, winter: polar
-  bear, kermis: ghost, trein: thunderstorm, bouw: fire; ruimte and dino keep the meteor).
+  bear, kermis: ghost, trein: lightning bolt (`bliksem.svg`, not the thundercloud, and not
+  red-tinted — the bolt is already the hazard), bouw: fire; ruimte and dino keep the meteor).
   Hazards with `rood: true` get `.vang-ding--rood` (grayscale, then sepia + hue-rotate to
   one strong red, plus a red glow). Don't use red things as good items (that's why herfst
   has no maple leaf). Difficulty ramps quickly: speed doubles in ~20 s (max 2.6x), the

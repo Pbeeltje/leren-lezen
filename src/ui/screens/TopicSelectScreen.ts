@@ -16,7 +16,7 @@ import { SchrijvenKiesScreen } from './SchrijvenKiesScreen.ts';
 import { BoekenkastScreen } from './BoekenkastScreen.ts';
 import { MuziekKiesScreen } from './MuziekKiesScreen.ts';
 import { VangScreen } from './VangScreen.ts';
-import { avatarPad, haalActiefProfiel } from '../../engine/profielStore.ts';
+import { avatarFilter, avatarPad, haalActiefProfiel } from '../../engine/profielStore.ts';
 
 export function TopicSelectScreen(manager: ScreenManager, groep: Groep): Screen {
   const el = document.createElement('div');
@@ -32,9 +32,9 @@ export function TopicSelectScreen(manager: ScreenManager, groep: Groep): Screen 
   el.appendChild(grid);
 
   for (const topic of topicsVoorGroep(groep)) {
-    const eigenFiguur = topic.id === 'vangen' ? haalActiefProfiel()?.icoonId : undefined;
+    const profiel = topic.id === 'vangen' ? haalActiefProfiel() : undefined;
     const tegel = maakIconTile({
-      icoonPad: eigenFiguur ? avatarPad(eigenFiguur) : topic.icoonPad,
+      icoonPad: profiel ? avatarPad(profiel.icoonId) : topic.icoonPad,
       label: topic.titel,
       beschikbaar: topic.beschikbaar,
       badge: topic.beschikbaar ? undefined : 'binnenkort',
@@ -64,6 +64,10 @@ export function TopicSelectScreen(manager: ScreenManager, groep: Groep): Screen 
         }
       },
     });
+    if (profiel) {
+      const img = tegel.querySelector('img');
+      if (img) img.style.filter = avatarFilter(profiel.kleur);
+    }
     grid.appendChild(tegel);
   }
 

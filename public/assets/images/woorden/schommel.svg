@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120">
+  <!-- Een schommel, zelf getekend voor leren-lezen. -->
+  <path d="M16 8 H104" stroke="#6d4c41" stroke-width="8" stroke-linecap="round"/>
+  <path d="M32 8 V78 M88 8 V78" stroke="#90a4ae" stroke-width="4"/>
+  <rect x="26" y="76" width="68" height="14" rx="4" fill="#d7a86e" stroke="#6d4c41" stroke-width="3"/>
+  <circle cx="60" cy="56" r="14" fill="#f6c39a" stroke="#c98b5e" stroke-width="2.5"/>
+  <path d="M48 70 C50 88 70 88 72 70" fill="#42a5f5" stroke="#1565c0" stroke-width="2.5"/>
+</svg>

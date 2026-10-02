@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120">
+  <!-- Een kraai, zelf getekend voor leren-lezen. -->
+  <path d="M16 80 C20 50 50 36 78 48 C96 56 100 78 86 90 C70 102 36 100 20 88 Z" fill="#37474f" stroke="#212121" stroke-width="3"/>
+  <path d="M78 52 C104 40 112 62 92 70" fill="#455a64" stroke="#212121" stroke-width="3"/>
+  <path d="M86 62 L108 56 L88 70 Z" fill="#f9a825" stroke="#f57f17" stroke-width="2"/>
+  <circle cx="70" cy="58" r="4" fill="#fff"/><circle cx="71" cy="57" r="2" fill="#212121"/>
+  <path d="M40 92 L28 110 M56 94 L56 112" stroke="#212121" stroke-width="3" stroke-linecap="round"/>
+</svg>

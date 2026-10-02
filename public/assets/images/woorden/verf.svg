@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120">
+  <!-- Een pot verf, zelf getekend voor leren-lezen. -->
+  <rect x="30" y="38" width="60" height="64" rx="8" fill="#eceff1" stroke="#546e7a" stroke-width="3"/>
+  <path d="M30 54 H90" stroke="#546e7a" stroke-width="3"/>
+  <ellipse cx="60" cy="38" rx="30" ry="10" fill="#42a5f5" stroke="#1565c0" stroke-width="3"/>
+  <path d="M38 70 H82" stroke="#90caf9" stroke-width="8" stroke-linecap="round"/>
+  <circle cx="50" cy="28" r="8" fill="#ef5350"/><circle cx="70" cy="24" r="7" fill="#66bb6a"/>
+</svg>

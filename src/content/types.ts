@@ -82,7 +82,7 @@ export type OefeningDefinitie =
   | { type: 'drie-koppelen'; paren: [Woord, Woord, Woord] };
 
 export interface Kern {
-  id: string; // bv. 'kern-01'
+  id: string; // bv. 'lezen-01'
   volgnummer: number;
   titel: string; // bv. 'maan, roos & vis'
   structuurwoorden: StructuurWoord[]; // de nieuwe woorden die in deze kern ontleed worden

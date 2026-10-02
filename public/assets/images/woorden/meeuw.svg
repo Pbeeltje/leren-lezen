@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120">
+  <!-- Een meeuw, zelf getekend voor leren-lezen. -->
+  <path d="M8 64 C28 40 52 48 60 58 C68 48 92 40 112 64" fill="none" stroke="#eceff1" stroke-width="10" stroke-linecap="round"/>
+  <path d="M8 64 C28 44 52 52 60 60 C68 52 92 44 112 64" fill="none" stroke="#90a4ae" stroke-width="3"/>
+  <ellipse cx="60" cy="66" rx="16" ry="12" fill="#fafafa" stroke="#90a4ae" stroke-width="2"/>
+  <path d="M74 64 L88 60 L76 70 Z" fill="#fb8c00"/>
+  <circle cx="68" cy="62" r="2" fill="#212121"/>
+</svg>

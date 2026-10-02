@@ -33,11 +33,9 @@ function kiesType(typen: OefeningType[]): OefeningType {
   return typen[typen.length - 1];
 }
 
-// Tweeklanken/klankcombinaties waarop klank-herkennen let (zie kern-07-klanken.ts).
-// 'oe' erbij vanaf kern-09 (koek) -- een van de meest voorkomende Nederlandse
-// klankcombinaties, dus de moeite waard ook al is er (nog) maar één woord voor.
-// Volgorde telt: 'ee' en 'ie' vóór 'eu', anders krijgt "sneeuw"/"nieuw" de klank 'eu'.
-// Langere klankgroepen (VLL kern 7-10) eerst, anders wint bv. 'aa' van 'aai' en 'ch' van 'sch'.
+// Tweeklanken/klankcombinaties waarop klank-herkennen let.
+// Volgorde telt: langere groepen eerst, anders wint 'aa' van 'aai' en 'ch' van 'sch'.
+// 'ee' en 'ie' vóór 'eu', anders krijgt "sneeuw" de klank 'eu'.
 const KLANKEN = ['eeuw', 'ieuw', 'aai', 'ooi', 'oei', 'sch', 'ng', 'nk', 'ch', 'ee', 'ie', 'oe', 'oo', 'aa', 'eu', 'au', 'ou', 'ui', 'ij', 'ei', 'uu'];
 // Klanken die hetzelfde klinken: een afleider met de "tweeling" is geen eerlijk fout antwoord.
 const ZELFDE_KLANK: Record<string, string[]> = { ei: ['ij'], ij: ['ei'], au: ['ou'], ou: ['au'] };

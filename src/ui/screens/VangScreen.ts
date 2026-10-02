@@ -1,16 +1,20 @@
 import type { Screen, ScreenManager } from '../../engine/screenManager.ts';
 import { maakTerugKnop } from '../components/TerugKnop.ts';
-import { avatarPad, haalActiefProfiel, haalActiefProfielId } from '../../engine/profielStore.ts';
+import { avatarFilter, avatarPad, haalActiefProfiel, haalActiefProfielId } from '../../engine/profielStore.ts';
 import { haalGroep } from '../../engine/progressStore.ts';
 import { TONEN, speelDrum, speelNoot } from '../../engine/muziek.ts';
 import { confetti } from '../../three/particles.ts';
 import { huidigThema, type ThemaId } from '../../achtergrond/achtergrond.ts';
 
 // Vangspel: je eigen figuurtje staat onderaan en schuift mee met je vinger (of de
-// pijltjestoetsen). Vang het lekkers dat naar beneden valt, ontwijk de meteoren. Drie
+// pijltjestoetsen). Een tik op het scherm (of spatie / pijl omhoog) geeft een klein
+// sprongetje, zodat je net iets hoger kunt vangen. Vang het lekkers dat naar beneden
+// valt, ontwijk de meteoren. Drie
 // hartjes; elke meteoor kost er één. Het wordt langzaam moeilijker: alles valt sneller en
-// vaker, er komen meer meteoren en die worden ook steeds groter. Missen van lekkers
-// kost niets. Geen munten: munten verdien je met leren. Wel een record per profiel.
+// vaker, er komen meer meteoren en die worden ook steeds groter. Na 40 seconden valt er
+// één grote vijand (te ontwijken) en daarna een grote ster. Vang je de ster of valt hij
+// van het scherm, dan is het spel af. Eindig je met alle drie de hartjes, dan +10.
+// Missen van lekkers kost niets. Geen munten: munten verdien je met leren. Wel een record per profiel.
 
 // Wat er valt hangt af van de gekozen achtergrond: goede dingen om te vangen en één ding
 // om te ontwijken. Dat gevaar is rood gekleurd (behalve de meteoor, die is al gevaarlijk
@@ -41,12 +45,15 @@ const THEMA_DINGEN: Partial<Record<ThemaId, VangThema>> = {
   kasteel: { goed: [w('kroon'), w('sleutel'), a('eenhoorn'), w('ster'), w('koningin')], gevaar: i('avatar-draak'), rood: true },
   kermis: { goed: [a('kermis-ijsje'), a('kermis-popcorn'), w('ballon'), w('taart'), w('koek')], gevaar: w('spook'), rood: true },
   bouw: { goed: [w('hamer'), w('touw'), w('emmer'), w('ladder'), w('schaar')], gevaar: w('vuur'), rood: false },
-  trein: { goed: [w('tas'), w('pet'), w('appel'), w('boek'), w('fles')], gevaar: w('onweer'), rood: true },
+  // Bliksem, niet de onweerswolk. Niet rood kleuren: de schicht is al bliksem.
+  trein: { goed: [w('tas'), w('pet'), w('appel'), w('boek'), w('fles')], gevaar: w('bliksem'), rood: false },
   savanne: { goed: [w('giraf'), w('zebra'), w('olifant'), w('banaan'), w('leeuw')], gevaar: w('krokodil'), rood: true },
 };
 const STER = w('ster');
 const HART = 'assets/icons/bewaar.svg';
 const LEVENS = 3;
+const EINDE_NA = 40; // seconden, daarna de grote vijand
+const HEEL_BONUS = 10;
 
 interface Ding {
   el: HTMLImageElement;
@@ -56,6 +63,7 @@ interface Ding {
   maat: number; // px
   draai: number;
   soort: 'lekker' | 'ster' | 'gevaar';
+  slot?: 'vijand' | 'ster';
 }
 
 const recordSleutel = (): string => `leren-lezen:vangspel:${haalActiefProfielId() ?? 'gast'}`;
@@ -104,10 +112,14 @@ export function VangScreen(manager: ScreenManager): Screen {
   draai.innerHTML = '<div class="vang-draai__telefoon"></div><p>Draai je telefoon</p>';
   el.appendChild(draai);
 
+  const profiel = haalActiefProfiel();
+  const tint = avatarFilter(profiel?.kleur);
   const speler = document.createElement('img');
   speler.className = 'vang-speler';
-  speler.src = avatarPad(haalActiefProfiel()?.icoonId ?? 'kat');
+  speler.src = avatarPad(profiel?.icoonId ?? 'kat');
   speler.alt = '';
+  // Inline filter wint van de CSS drop-shadow, dus die blijft hieraan geplakt.
+  speler.style.filter = [tint, 'drop-shadow(0 6px 4px rgba(0, 0, 0, 0.3))'].filter(Boolean).join(' ');
   veld.appendChild(speler);
 
   let dingen: Ding[] = [];
@@ -115,6 +127,8 @@ export function VangScreen(manager: ScreenManager): Screen {
   let levens = LEVENS;
   let spelerX = 0;
   let doelX = 0;
+  let springY = 0; // px boven de grond
+  let springV = 0;
   let kijkRechts = false;
   let bezig = false;
   let tijd = 0; // seconden sinds de start
@@ -124,12 +138,25 @@ export function VangScreen(manager: ScreenManager): Screen {
   let geraakt = 0; // tot wanneer de speler knippert (onkwetsbaar)
   let gevaarGezien = false; // binnen 2 s valt er altijd een gevaar, zodat je ziet wat je moet ontwijken
   let noot = 0;
+  let fase: 'spel' | 'vijand' | 'ster' | 'uit' = 'spel';
+  let heelGebleven = false;
+  // Gezet tijdens de filter-stap; afhandelen pas erna, anders valt het nieuwe stuk
+  // buiten de lijst die filter teruggeeft.
+  let hierna: 'ster' | 'einde' | null = null;
   let overlay: HTMLElement | null = null;
 
   const breedte = (): number => veld.clientWidth;
   const hoogte = (): number => veld.clientHeight;
   const spelerMaat = (): number => Math.min(130, Math.max(80, breedte() * 0.16));
   const dingMaat = (): number => Math.min(84, Math.max(52, breedte() * 0.1));
+  // Klein sprongetje: ongeveer de helft van het figuurtje, in ruim een derde seconde weer neer.
+  const SPRING_G = 2400;
+
+  function spring(): void {
+    if (!bezig || springY > 0.5 || draaiNodig.matches) return;
+    springV = Math.sqrt(2 * SPRING_G * spelerMaat() * 0.48);
+    speelDrum('tom');
+  }
 
   function tekenHartjes(): void {
     hartjes.replaceChildren(
@@ -152,7 +179,7 @@ export function VangScreen(manager: ScreenManager): Screen {
     const m = spelerMaat();
     speler.style.width = `${m}px`;
     speler.style.height = `${m}px`;
-    speler.style.transform = `translate(${spelerX - m / 2}px, 0) scaleX(${kijkRechts ? -1 : 1})`;
+    speler.style.transform = `translate(${spelerX - m / 2}px, ${-springY}px) scaleX(${kijkRechts ? -1 : 1})`;
   }
 
   // Volgen van de vinger: overal op het veld tikken of slepen.
@@ -163,6 +190,7 @@ export function VangScreen(manager: ScreenManager): Screen {
   veld.addEventListener('pointerdown', (e) => {
     e.preventDefault();
     naarVinger(e);
+    spring();
   });
   veld.addEventListener('pointermove', (e) => {
     if (e.pointerType === 'mouse' || e.buttons) naarVinger(e);
@@ -182,6 +210,9 @@ export function VangScreen(manager: ScreenManager): Screen {
     } else if ((e.key === ' ' || e.key === 'Enter') && overlay && !e.repeat) {
       e.preventDefault();
       start();
+    } else if (bezig && !e.repeat && (e.key === ' ' || e.key === 'ArrowUp' || e.key.toLowerCase() === 'w')) {
+      e.preventDefault();
+      spring();
     }
   };
   const toetsOp = (e: KeyboardEvent): void => {
@@ -225,15 +256,17 @@ export function VangScreen(manager: ScreenManager): Screen {
   function vang(d: Ding): void {
     d.el.remove();
     if (d.soort === 'gevaar') {
-      if (tijd < geraakt) return;
-      levens--;
-      geraakt = tijd + 1.2;
-      speelDrum('bas');
-      speelDrum('bekken', 0.05);
-      speler.classList.remove('vang-speler--au');
-      void speler.offsetWidth;
-      speler.classList.add('vang-speler--au');
-      tekenHartjes();
+      if (tijd >= geraakt) {
+        levens--;
+        geraakt = tijd + 1.2;
+        speelDrum('bas');
+        speelDrum('bekken', 0.05);
+        speler.classList.remove('vang-speler--au');
+        void speler.offsetWidth;
+        speler.classList.add('vang-speler--au');
+        tekenHartjes();
+      }
+      if (d.slot === 'vijand' && levens > 0) hierna = 'ster';
       if (levens <= 0) klaar();
       return;
     }
@@ -242,13 +275,64 @@ export function VangScreen(manager: ScreenManager): Screen {
     speelNoot(TONEN[noot % TONEN.length]);
     if (d.soort === 'ster') speelNoot(TONEN[7], 0.08);
     noot++;
+    toonPlop(d.x, d.y, d.soort === 'ster' ? '+5' : '+1');
+    if (d.slot === 'ster') hierna = 'einde';
+  }
+
+  function toonPlop(x: number, y: number, tekst: string): void {
     const plop = document.createElement('div');
     plop.className = 'vang-plop';
-    plop.textContent = d.soort === 'ster' ? '+5' : '+1';
-    plop.style.left = `${d.x}px`;
-    plop.style.top = `${d.y}px`;
+    plop.textContent = tekst;
+    plop.style.left = `${x}px`;
+    plop.style.top = `${y}px`;
     veld.appendChild(plop);
     window.setTimeout(() => plop.remove(), 700);
+  }
+
+  // Groot, maar er blijft een strook over die breder is dan het figuurtje.
+  function grootMaat(): number {
+    const m = spelerMaat();
+    const baan = m + 72;
+    const gewenst = Math.max(dingMaat() * 2.8, breedte() * 0.52);
+    return Math.min(gewenst, Math.max(1, breedte() - baan), hoogte() * 0.5);
+  }
+
+  function laatGrootVallen(slot: 'vijand' | 'ster'): void {
+    if (!bezig || fase === 'uit') return;
+    if (slot === 'vijand' && fase !== 'spel') return;
+    if (slot === 'ster' && fase !== 'vijand') return;
+    fase = slot;
+    const dm = grootMaat();
+    const img = document.createElement('img');
+    const soort: Ding['soort'] = slot === 'vijand' ? 'gevaar' : 'ster';
+    img.className = `vang-ding vang-ding--${soort} vang-ding--groot${soort === 'gevaar' && thema.rood ? ' vang-ding--rood' : ''}`;
+    img.src = slot === 'vijand' ? thema.gevaar : STER;
+    img.alt = '';
+    img.style.width = `${dm}px`;
+    img.style.height = `${dm}px`;
+    veld.appendChild(img);
+    dingen.push({
+      el: img,
+      x: dm / 2 + Math.random() * (breedte() - dm),
+      y: -dm / 2,
+      snelheid: hoogte() * 0.34,
+      maat: dm,
+      draai: 0,
+      soort,
+      slot,
+    });
+    if (slot === 'vijand') speelDrum('bekken');
+    else speelNoot(TONEN[7]);
+  }
+
+  function eindeRonde(): void {
+    if (fase === 'uit') return;
+    heelGebleven = levens === LEVENS;
+    if (heelGebleven) {
+      zetScore(score + HEEL_BONUS);
+      toonPlop(spelerX, hoogte() - spelerMaat(), `+${HEEL_BONUS}`);
+    }
+    klaar();
   }
 
   function stap(t: number): void {
@@ -273,35 +357,56 @@ export function VangScreen(manager: ScreenManager): Screen {
     const oud = spelerX;
     spelerX += (doelX - spelerX) * Math.min(1, dt * 14);
     if (Math.abs(spelerX - oud) > 0.6) kijkRechts = spelerX > oud;
+    if (springY > 0 || springV !== 0) {
+      springV -= SPRING_G * dt;
+      springY += springV * dt;
+      if (springY <= 0) {
+        springY = 0;
+        springV = 0;
+      }
+    }
     speler.classList.toggle('vang-speler--knipper', tijd < geraakt);
     plaatsSpeler();
 
-    if (tijd >= volgende) {
+    if (fase === 'spel' && tijd >= EINDE_NA) {
+      laatGrootVallen('vijand');
+    } else if (fase === 'spel' && tijd >= volgende) {
       laatVallen();
       const tussen = Math.max(kleuter ? 0.6 : 0.38, (kleuter ? 1.2 : 0.95) - tijd * 0.02);
       volgende = tijd + tussen * (0.8 + Math.random() * 0.4);
       if (!gevaarGezien) volgende = Math.min(volgende, 1.4);
     }
 
-    // Vangzone: het bovenste deel van het figuurtje.
+    // Vangzone: het bovenste deel van het figuurtje. Grote stukken raken al zodra ze
+    // die zone overlappen, anders zakt hun midden pas veel te laat door het figuurtje.
     const bodem = hoogte() - 16;
-    const spelerBoven = bodem - m;
+    const spelerBoven = bodem - m - springY;
+    const bandBoven = spelerBoven + m * 0.1;
+    const bandOnder = spelerBoven + m * 0.8;
+    hierna = null;
     dingen = dingen.filter((d) => {
       const dm = d.maat;
       d.y += d.snelheid * dt;
       d.draai += dt * (d.soort === 'gevaar' ? 0 : 40);
       d.el.style.transform = `translate(${d.x - dm / 2}px, ${d.y - dm / 2}px) rotate(${d.draai}deg)`;
-      const raakt = d.y > spelerBoven + m * 0.1 && d.y < spelerBoven + m * 0.8 && Math.abs(d.x - spelerX) < (m + dm) * 0.38;
+      const naast = Math.abs(d.x - spelerX) < (d.slot ? m * 0.42 + dm * 0.46 : (m + dm) * 0.38);
+      const raakt = d.slot
+        ? naast && d.y + dm / 2 > bandBoven && d.y - dm / 2 < bandOnder
+        : naast && d.y > bandBoven && d.y < bandOnder;
       if (raakt) {
         vang(d);
         return false;
       }
-      if (d.y > hoogte() + dm) {
+      if (d.y - dm / 2 > hoogte()) {
         d.el.remove();
+        if (d.slot === 'vijand') hierna = 'ster';
+        else if (d.slot === 'ster') hierna = 'einde';
         return false;
       }
       return true;
     });
+    if (hierna === 'ster') laatGrootVallen('ster');
+    else if (hierna === 'einde') eindeRonde();
     if (bezig) frame = requestAnimationFrame(stap);
   }
 
@@ -318,7 +423,12 @@ export function VangScreen(manager: ScreenManager): Screen {
     geraakt = 0;
     gevaarGezien = false;
     noot = 0;
+    fase = 'spel';
+    heelGebleven = false;
+    hierna = null;
     spelerX = doelX = breedte() / 2;
+    springY = 0;
+    springV = 0;
     plaatsSpeler();
     bezig = true;
     vorigeT = 0;
@@ -349,7 +459,8 @@ export function VangScreen(manager: ScreenManager): Screen {
       doos.innerHTML = `
         <img class="vang-venster__figuur" src="${speler.src}" alt="">
         <div class="vang-venster__score"><img src="${STER}" alt=""><span>${score}</span></div>
-        <p class="vang-venster__record">${nieuw ? 'Nieuw record!' : `Record: ${record}`}</p>`;
+        <p class="vang-venster__record">${nieuw ? 'Nieuw record!' : `Record: ${record}`}</p>
+        ${heelGebleven ? `<p class="vang-venster__bonus"><img src="${HART}" alt=""><img src="${HART}" alt=""><img src="${HART}" alt=""><span>+${HEEL_BONUS}</span></p>` : ''}`;
       if (nieuw && score > 0) confetti.vuurwerk('klein');
     } else {
       doos.innerHTML = `
@@ -361,11 +472,13 @@ export function VangScreen(manager: ScreenManager): Screen {
       if (matchMedia('(hover: hover) and (pointer: fine)').matches) {
         const hint = document.createElement('p');
         hint.className = 'vang-venster__toetsen';
-        hint.innerHTML = '<kbd>←</kbd><kbd>→</kbd>';
-        hint.setAttribute('aria-label', 'pijltjestoetsen');
+        hint.innerHTML = '<kbd>←</kbd><kbd>→</kbd><kbd>↑</kbd>';
+        hint.setAttribute('aria-label', 'pijltjestoetsen, omhoog is springen');
         doos.appendChild(hint);
       }
     }
+    const figuur = doos.querySelector<HTMLImageElement>('.vang-venster__figuur');
+    if (figuur) figuur.style.filter = tint;
     doos.appendChild(knop('vang-venster__start', '<img src="assets/icons/vangspel-start.svg" alt="">', eind ? 'nog een keer' : 'start', start));
     v.appendChild(doos);
     el.appendChild(v);
@@ -373,6 +486,8 @@ export function VangScreen(manager: ScreenManager): Screen {
   }
 
   function klaar(): void {
+    if (fase === 'uit') return;
+    fase = 'uit';
     bezig = false;
     cancelAnimationFrame(frame);
     window.setTimeout(() => {
