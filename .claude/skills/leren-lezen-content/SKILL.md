@@ -986,9 +986,14 @@ Children no longer pick an age but a group (`Groep = 'kleuter' | 'groep3'` in co
 - **Kleuter topic order:** `topicsVoorGroep('kleuter')` puts Luisteren first.
 - **Tafeltennis** (`ui/screens/TafeltennisScreen.ts`, under Spelletjes, Fluent ping pong
   icon): pong in portrait. Your figure + red bat at the bottom (finger/mouse x, arrows/A/D),
-  three random other avatars (random tint) at the top, one after another, getting better
-  (`NIVEAUS`: bat speed, reaction delay, aim error, whether it predicts wall bounces and
-  returns to the middle, ball speed). First to 3 wins: stars = your goals, hearts = their
+  three random other avatars (random tint) at the top, one after another, getting better.
+  The opponent plays fair: it only sees the ball, looks every `kijkElke` s and guesses the
+  landing spot with an error that shrinks as the ball nears (`ruis`), grows per wall bounce
+  still to come (`stuiterFout`; level 1 doesn't see bounces, just follows the ball) and
+  with ball speed (`snelheidsFout`); a per-ball `neiging` keeps the error on one side. Its
+  bat has weight (`topsnelheid`, `versnelling`) and can overshoot. Tuned on random-angle
+  shots to return ~54% / 70% / 84% (the old bot did 54 / 98 / 100); a node simulation of
+  the same logic is in `tests/_tmp/pong-sim.mjs`. First to 3 wins: stars = your goals, hearts = their
   goals left. Lose a match = retry that same opponent; beat all three = trophy + big
   fireworks, then three new opponents. Ball speeds up 4.5% per hit (max 1.8x), the bounce
   angle depends on where it hits the bat (max 55°). Kleuter: ball 0.8x, opponents 0.85x.

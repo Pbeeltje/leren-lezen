@@ -16,20 +16,29 @@ const HART = 'assets/icons/bewaar.svg';
 const TROFEE = 'assets/icons/trofee.svg';
 const DOELEN = 3;
 
+// De tegenstander speelt eerlijk: hij ziet alleen waar de bal is en hoe die gaat, en schat
+// zo nu en dan waar hij aankomt. Die schatting zit er eerst flink naast en wordt beter naarmate
+// de bal dichterbij komt; stuiters tegen de rand en een snelle bal maken het lastiger. Zijn
+// batje moet op gang komen en schiet soms door. Zo mist hij net, in plaats van rustig naast
+// de bal te gaan staan.
 interface Niveau {
-  snelheid: number; // batje, tafelbreedtes per seconde
-  reactie: number; // seconden voordat hij op een nieuwe bal reageert
-  fout: number; // hoe ver hij naast de bal mikt, in halve batbreedtes
-  voorspelt: boolean; // rekent uit waar de bal (na de randen) aankomt
+  topsnelheid: number; // batje, tafelbreedtes per seconde
+  versnelling: number; // batje, tafelbreedtes per seconde²
+  reactie: number; // seconden voordat hij voor het eerst naar een nieuwe bal kijkt
+  kijkElke: number; // seconden tussen twee keer kijken
+  ruis: number; // hoe ver de schatting ernaast zit als de bal nog aan jouw kant is, in halve batbreedtes
+  zietStuiters: boolean; // rekent een stuiter tegen de rand mee (anders volgt hij gewoon de bal)
+  stuiterFout: number; // extra misschatting per stuiter die nog komt, in halve batbreedtes
+  snelheidsFout: number; // hoeveel meer hij misschat als de bal sneller is dan bij de opslag
   terugNaarMidden: boolean;
   bal: number; // balsnelheid ten opzichte van de eerste tegenstander
 }
-// De eerste is echt niet goed, de laatste wel. Een snelle schuine bal krijgt ook de
-// laatste niet altijd terug, want de bal wordt bij elke slag iets sneller.
+// Van ballen met een willekeurige hoek (zoals een kind slaat) krijgen ze er ongeveer 54%,
+// 70% en 84% terug.
 const NIVEAUS: Niveau[] = [
-  { snelheid: 0.42, reactie: 0.35, fout: 1.05, voorspelt: false, terugNaarMidden: false, bal: 1 },
-  { snelheid: 0.75, reactie: 0.18, fout: 0.65, voorspelt: true, terugNaarMidden: false, bal: 1.12 },
-  { snelheid: 1.15, reactie: 0.07, fout: 0.3, voorspelt: true, terugNaarMidden: true, bal: 1.25 },
+  { topsnelheid: 0.66, versnelling: 5, reactie: 0.3, kijkElke: 0.1, ruis: 1, zietStuiters: false, stuiterFout: 0, snelheidsFout: 0.8, terugNaarMidden: false, bal: 1 },
+  { topsnelheid: 0.58, versnelling: 2.8, reactie: 0.28, kijkElke: 0.28, ruis: 3.6, zietStuiters: true, stuiterFout: 2.4, snelheidsFout: 1.4, terugNaarMidden: false, bal: 1.05 },
+  { topsnelheid: 0.66, versnelling: 3.2, reactie: 0.22, kijkElke: 0.22, ruis: 3.4, zietStuiters: true, stuiterFout: 1.8, snelheidsFout: 1.3, terugNaarMidden: true, bal: 1.1 },
 ];
 
 interface Tegenstander {
@@ -139,8 +148,9 @@ export function TafeltennisScreen(manager: ScreenManager): Screen {
   let doelX = 0;
   let tegenX = 0;
   let tegenDoel = 0;
-  let reageerVanaf = 0;
-  let afwijking = 0;
+  let tegenV = 0;
+  let volgendeBlik = 0;
+  let neiging = 0; // per bal: naar welke kant hij zich vergist
   let balNaarTegen = false;
   let bx = 0;
   let by = 0;
@@ -230,19 +240,30 @@ export function TafeltennisScreen(manager: ScreenManager): Screen {
     tegenFiguur.style.filter = [avatarFilter(t.kleur), 'drop-shadow(0 5px 3px rgba(0, 0, 0, 0.3))'].filter(Boolean).join(' ');
   }
 
-  // Waar de bal de lijn van de tegenstander haalt, met de stuiters tegen de zijkanten.
-  function voorspelX(): number {
+  // Waar de bal de lijn van de tegenstander haalt, en hoe vaak hij daarvoor nog tegen een
+  // zijkant stuitert.
+  function voorspel(): { x: number; stuiters: number } {
     const t = (by - tegenLijn) / -vy;
     const breed = B - 2 * straal;
-    let x = bx - straal + vx * t;
-    x = ((x % (2 * breed)) + 2 * breed) % (2 * breed);
+    const ruw = bx - straal + vx * t;
+    const stuiters = ruw >= 0 ? Math.floor(ruw / breed) : Math.floor(-ruw / breed) + 1;
+    let x = ((ruw % (2 * breed)) + 2 * breed) % (2 * breed);
     if (x > breed) x = 2 * breed - x;
-    return x + straal;
+    return { x: x + straal, stuiters };
+  }
+
+  // Eén blik op de bal: waar denkt hij dat die aankomt?
+  function schat(n: Niveau): number {
+    const { x, stuiters } = n.zietStuiters ? voorspel() : { x: bx, stuiters: 0 };
+    const nogTeGaan = Math.max(0.12, Math.min(1, (by - tegenLijn) / (spelerLijn - tegenLijn)));
+    const sneller = Math.max(0, snelheid / basisSnelheid() - 1);
+    const spreiding = (n.ruis * nogTeGaan + n.stuiterFout * stuiters) * (1 + n.snelheidsFout * sneller) * (batBreedte / 2);
+    return x + spreiding * (0.7 * neiging + 0.3 * (Math.random() * 2 - 1));
   }
 
   function nieuweBalVoorTegen(): void {
-    reageerVanaf = tijd + niveau().reactie;
-    afwijking = (Math.random() * 2 - 1) * niveau().fout * (batBreedte / 2);
+    volgendeBlik = tijd + niveau().reactie;
+    neiging = Math.random() * 2 - 1;
   }
 
   function serveer(): void {
@@ -341,13 +362,23 @@ export function TafeltennisScreen(manager: ScreenManager): Screen {
     // Tegenstander.
     const n = niveau();
     if (bezig && balNaarTegen) {
-      if (tijd >= reageerVanaf) tegenDoel = (n.voorspelt ? voorspelX() : bx) + afwijking;
+      if (tijd >= volgendeBlik) {
+        tegenDoel = schat(n);
+        volgendeBlik = tijd + n.kijkElke * (0.8 + Math.random() * 0.4);
+      }
     } else if (n.terugNaarMidden) {
       tegenDoel = B / 2;
     }
-    const maxStap = n.snelheid * (kleuter ? 0.85 : 1) * B * dt;
-    tegenX += Math.max(-maxStap, Math.min(maxStap, tegenDoel - tegenX));
-    tegenX = Math.min(B - batBreedte / 2, Math.max(batBreedte / 2, tegenX));
+    // Het batje heeft gewicht: het komt op gang en remt af, en schiet door als hij van
+    // gedachten verandert.
+    const top = n.topsnelheid * (kleuter ? 0.85 : 1) * B;
+    const gewenst = Math.max(-top, Math.min(top, (tegenDoel - tegenX) * 8));
+    const dv = n.versnelling * B * dt;
+    tegenV += Math.max(-dv, Math.min(dv, gewenst - tegenV));
+    tegenX += tegenV * dt;
+    const geklemd = Math.min(B - batBreedte / 2, Math.max(batBreedte / 2, tegenX));
+    if (geklemd !== tegenX) tegenV = 0;
+    tegenX = geklemd;
 
     if (!bezig && wachtTot && tijd >= wachtTot) {
       wachtTot = 0;
@@ -431,6 +462,7 @@ export function TafeltennisScreen(manager: ScreenManager): Screen {
     zetTegenstander();
     tekenStand();
     spelerX = doelX = tegenX = tegenDoel = B / 2;
+    tegenV = 0;
     // De eerste opslag gaat naar de tegenstander, zodat je eerst ziet hoe hij terugslaat.
     opslagNaarSpeler = false;
     bezig = false;
