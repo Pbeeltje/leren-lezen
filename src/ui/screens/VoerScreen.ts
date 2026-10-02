@@ -124,6 +124,7 @@ for (const id of ['tijger', 'leeuw', 'trex', 'ijsbeer', 'wolf', 'vos']) DIEREN.f
 const PROOI: Partial<Record<Eten, string[]>> = { muis: ['muis', 'muisje'], schaap: ['schaap'], kip: ['haan', 'kuiken'] };
 const lust = (p: Dier, q: Dier): boolean => p.goed.some((e) => PROOI[e]?.includes(q.id));
 const PLANTEN: Eten[] = ['gras', 'sla', 'wortel', 'appel', 'banaan', 'mais', 'brood', 'blad', 'pinda', 'bloem', 'zeewier'];
+const kruipt = (g: { dier: Dier }): boolean => g.dier.komt === 'kruipt';
 const eetPlanten = (d: Dier): boolean => d.goed.every((e) => PLANTEN.includes(e));
 // Apen en bijen komen vaak met z'n tweeën of drieën; soms komt de muis met vier muisjes.
 const SAMEN: Record<string, { twee: number; drie: number }> = {
@@ -242,6 +243,7 @@ export function VoerScreen(manager: ScreenManager): Screen {
   let levens = LEVENS;
   let spel = 0; // telt op bij elke start en bij weggaan; lopende stappen stoppen dan
   let gasten: Gast[] = [];
+  let kruipers: Gast[] = []; // slakken en schildpadden die nog wegkruipen, los van het groepje
   let vorigeDieren: string[] = [];
   let noot = 0;
   let overlay: HTMLElement | null = null;
@@ -429,14 +431,14 @@ export function VoerScreen(manager: ScreenManager): Screen {
       }
       case 'kruipt':
       case 'kronkelt': {
-        // Kruipen gaat heel langzaam (een derde lijf per seconde); weg mag iets vlotter, anders
-        // duurt het te lang. Een slang kronkelt in een rustig tempo.
-        const kruipt = g.dier.komt === 'kruipt';
+        // Kruipen gaat heel langzaam (een derde lijf per seconde), ook weer weg: daar wacht
+        // niemand op. Een slang kronkelt in een rustig tempo.
+        const traag = kruipt(g);
         const klasse = `voer-dier__plaatje--${g.dier.komt}`;
         const plaatje = plaatjeVan(g);
         plaatje.classList.add(klasse);
-        plaatje.style.animationDuration = `${(kruipt ? 1.2 : 0.6) / g.dier.tempo}s`;
-        const snel = !kruipt ? v * 0.6 : richting === 'in' ? m * 0.33 * g.dier.tempo : Math.max(m * 0.9, breedte() / 3.5);
+        plaatje.style.animationDuration = `${(traag ? 1.2 : 0.6) / g.dier.tempo}s`;
+        const snel = traag ? m * 0.33 * g.dier.tempo : v * 0.6;
         const ok = await speel(g, [{ transform: gastTransform(g, g.x) }, { transform: gastTransform(g, naar) }], (Math.abs(naar - g.x) / snel) * 1000, 'linear', naar);
         plaatje.classList.remove(klasse);
         plaatje.style.animationDuration = '';
@@ -625,27 +627,29 @@ export function VoerScreen(manager: ScreenManager): Screen {
     zetPlekken(gasten);
     // De linkse eerst: die moet het verst lopen. Muisjes trippelen vlak achter elkaar.
     const na = gasten.length > 3 ? 170 : 380;
-    await Promise.all(
-      gasten.map(async (g) => {
-        await slaap(g.slot * na);
-        if (mijn !== spel) return;
-        if (!(await beweeg(g, g.doelX, 'in'))) return;
-        if (g.staat !== 'komt') return;
-        zetStaat(g, 'wacht');
-        toonBallon(g);
-        if (g.dier.spuit) spuitWater(g);
-        if (g.dier.slaapt) laatInslapen(g);
-        if (g.dier.id === 'aap') {
-          // Apen wippen ongeduldig op en neer (elk in zijn eigen ritme).
-          plaatjeVan(g).style.animationDelay = `${-Math.random()}s`;
-          g.el.classList.add('voer-dier--wipt');
-        }
-        if (g.dier.komt === 'vliegt') {
-          plaatjeVan(g).style.animationDelay = `${-Math.random()}s`;
-          g.el.classList.add('voer-dier--zweeft');
-        }
-      }),
-    );
+    // Op een slak of schildpad wacht niemand: de bak komt zodra de rest er is, de kruiper
+    // sluit later aan.
+    const lopen = gasten.map(async (g) => {
+      await slaap(g.slot * na);
+      if (mijn !== spel) return;
+      if (!(await beweeg(g, g.doelX, 'in'))) return;
+      if (g.staat !== 'komt') return;
+      zetStaat(g, 'wacht');
+      toonBallon(g);
+      if (g.dier.spuit) spuitWater(g);
+      if (g.dier.slaapt) laatInslapen(g);
+      if (g.dier.id === 'aap') {
+        // Apen wippen ongeduldig op en neer (elk in zijn eigen ritme).
+        plaatjeVan(g).style.animationDelay = `${-Math.random()}s`;
+        g.el.classList.add('voer-dier--wipt');
+      }
+      if (g.dier.komt === 'vliegt') {
+        plaatjeVan(g).style.animationDelay = `${-Math.random()}s`;
+        g.el.classList.add('voer-dier--zweeft');
+      }
+    });
+    const vlot = lopen.filter((_, i) => !kruipt(gasten[i]));
+    await Promise.all(vlot.length ? vlot : lopen);
     if (mijn !== spel) return;
     // Eén akkoordje voor het hele groepje, als het eten klaarligt: twee toetsen met er één
     // tussen (do-mi) tegelijk, bij drie of meer dieren ook de sol erbij.
@@ -900,6 +904,7 @@ export function VoerScreen(manager: ScreenManager): Screen {
     plaatje.classList.remove('voer-dier__plaatje--blij');
     zetStaat(g, 'weg');
     vulBak();
+    laatKruipen(g);
     // Blij verder naar links, vóór het figuurtje langs.
     if (!(await beweeg(g, -g.maat / 2 - 10, 'uit'))) return;
     await vertrokken(g);
@@ -941,20 +946,37 @@ export function VoerScreen(manager: ScreenManager): Screen {
     ballon?.classList.remove('voer-ballon--zie');
     zetStaat(g, 'weg');
     if (levens > 0) vulBak();
+    laatKruipen(g);
     kijk(g, 'rechts');
     if (!(await beweeg(g, breedte() + g.maat / 2 + 10, 'uit'))) return;
     await vertrokken(g);
   }
 
+  // Een slak of schildpad die weggaat hoort niet meer bij het groepje: het volgende groepje
+  // komt gewoon al en loopt er (ervoor) langs.
+  function laatKruipen(g: Gast): void {
+    if (!kruipt(g) || levens <= 0) return;
+    gasten = gasten.filter((x) => x !== g);
+    kruipers.push(g);
+    if (!gasten.length) void volgende();
+  }
+
   async function vertrokken(g: Gast): Promise<void> {
-    const mijn = spel;
     g.el.remove();
+    if (kruipers.includes(g)) {
+      kruipers = kruipers.filter((x) => x !== g);
+      return;
+    }
     gasten = gasten.filter((x) => x !== g);
     if (levens <= 0) {
       if (!gasten.some((x) => x.staat === 'eet')) klaar();
       return;
     }
-    if (gasten.length) return;
+    if (!gasten.length) await volgende();
+  }
+
+  async function volgende(): Promise<void> {
+    const mijn = spel;
     await slaap(250);
     if (mijn === spel) void volgendGroepje();
   }
@@ -1009,8 +1031,9 @@ export function VoerScreen(manager: ScreenManager): Screen {
     sleep?.img.remove();
     sleep = null;
     for (const anim of veld.getAnimations({ subtree: true })) anim.cancel();
-    for (const g of gasten) g.el.remove();
+    for (const g of [...gasten, ...kruipers]) g.el.remove();
     gasten = [];
+    kruipers = [];
     for (const x of veld.querySelectorAll('.voer-vlieg, .voer-spoor, .voer-hartje, .voer-druppel, .vang-plop')) x.remove();
     veld.classList.remove('voer-veld--dreun');
     bak.classList.add('voer-bak--weg');

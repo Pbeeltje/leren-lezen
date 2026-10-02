@@ -5,9 +5,9 @@ import { chromium } from 'playwright';
 // Gebruik: node tests/voeren-dieren.mjs <map> [breedte] [hoogte]
 const OUT = process.argv[2] + '/';
 const bw = Number(process.argv[3] ?? 390), bh = Number(process.argv[4] ?? 844);
-const ALLES = [['vlinder', 'vlinder', 'vlinder'], ['slang'], ['wolf', 'vos'], ['muis', 'olifant'], ['slak'], ['schildpad', 'slak'], ['bij', 'bij', 'bij'], ['muis', 'muisje', 'muisje', 'muisje', 'muisje'], ['aap', 'aap', 'aap'], ['leeuw', 'zebra'], ['pinguin'], ['hond'], ['poes'], ['luiaard'], ['olifant'], ['brachiosaurus', 'stegosaurus']];
+const ALLES = [['slak'], ['koe'], ['zebra', 'schildpad'], ['vlinder', 'vlinder', 'vlinder'], ['slang'], ['wolf', 'vos'], ['muis', 'olifant'], ['slak'], ['schildpad', 'slak'], ['bij', 'bij', 'bij'], ['muis', 'muisje', 'muisje', 'muisje', 'muisje'], ['aap', 'aap', 'aap'], ['leeuw', 'zebra'], ['pinguin'], ['hond'], ['poes'], ['luiaard'], ['olifant'], ['brachiosaurus', 'stegosaurus']];
 const GROEPJES = process.env.ALLEEN ? ALLES.slice(0, Number(process.env.ALLEEN)) : ALLES;
-const FOTO_NA = { vlinder: [1200, 3000], slang: [500, 2500], wolf: [1000, 2500], slak: [1500, 4000], schildpad: [2000, 5000], bij: [1200, 3000], muis: [2500], aap: [400, 2500], leeuw: [3000, 7000], pinguin: [500, 1300], hond: [700, 1600], poes: [600], luiaard: [900, 7500], olifant: [2350, 2700], brachiosaurus: [2000] };
+const FOTO_NA = { koe: [900, 1800], zebra: [1500, 3000], vlinder: [1200, 3000], slang: [500, 2500], wolf: [1000, 2500], slak: [1500, 4000], schildpad: [2000, 5000], bij: [1200, 3000], muis: [2500], aap: [400, 2500], leeuw: [3000, 7000], pinguin: [500, 1300], hond: [700, 1600], poes: [600], luiaard: [900, 7500], olifant: [2350, 2700], brachiosaurus: [2000] };
 const NIET_VOEREN = ['leeuw']; // die laten we jagen
 const b = await chromium.launch(); const fouten = [];
 const page = await (await b.newContext({ viewport: { width: bw, height: bh }, hasTouch: true })).newPage();
@@ -59,8 +59,8 @@ for (const groep of GROEPJES) {
     await w(150);
     if (k === 0 && groep.length > 1) await page.screenshot({ path: `${OUT}${tag}-${groep.join('+')}-gooien.png` });
   }
-  // Wachten tot alles weg is.
-  for (let i = 0; i < 120 && (await page.locator('.voer-dier').count()); i++) await w(100);
+  // Wachten tot iedereen op weg is (een wegkruipende slak houdt niets op).
+  for (let i = 0; i < 120 && (await page.locator('.voer-dier:not([data-staat="weg"])').count()); i++) await w(100);
   console.log(groep.join('+'), '| score', await page.locator('.vang-score span').textContent());
 }
 console.log('fouten', fouten); await b.close();
