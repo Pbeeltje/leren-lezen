@@ -13,13 +13,12 @@ import {
 } from '../../engine/progressStore.ts';
 import {
   MUNTEN_OEFENING_GOED,
-  MUNTEN_OEFENING_HERHAALD,
+  MUNTEN_OEFENING_SET,
   MUNTEN_TOETS_GOED,
-  MUNTEN_TOETS_HERHAALD,
-  MUNTEN_TOETS_PERFECT_BONUS,
-  perGoed,
-  voorSet,
+  lesMunten,
+  toetsEindMunten,
 } from '../../engine/rewards.ts';
+import type { OefeningNummer } from '../../engine/oefeningGenerator.ts';
 import { type RekenModus, genereerRekenSessie } from '../../engine/rekenenGenerator.ts';
 import { renderHoeveelheidNaarCijfer } from '../../games/hoeveelheidNaarCijfer.ts';
 import { renderHoeveelheidTypen } from '../../games/hoeveelheidTypen.ts';
@@ -35,7 +34,7 @@ import { TestResultScreen } from './TestResultScreen.ts';
 import { RekenChapterScreen } from './RekenChapterScreen.ts';
 import { maakVoortgangsbalk } from '../components/Voortgangsbalk.ts';
 import { maakAudioKnop } from '../components/AudioKnop.ts';
-import { speelAf, instructieAudioPad } from '../../engine/audioManager.ts';
+import { naHuidigeAudio, speelAf, instructieAudioPad } from '../../engine/audioManager.ts';
 
 export type { RekenModus };
 
@@ -84,11 +83,14 @@ export function RekenOefeningScreen(
   kern: RekenKern,
   modus: RekenModus,
   onAfgerond: () => void,
+  oefeningNummer: OefeningNummer = 1,
 ): Screen {
   const oefeningen = genereerRekenSessie(kern, modus);
+  // Vastgelegd bij het starten van déze poging: "eerste keer" of "herhaling" (zie rewards.ts).
   const voortgangBijStart = haalKernVoortgang(kern.id);
-  const wasAlGeoefend = voortgangBijStart.gestart;
-  const wasAlGehaald = voortgangBijStart.voltooid;
+  const herhaling =
+    modus === 'oefenen' ? voortgangBijStart.oefeningenAf.includes(oefeningNummer) : voortgangBijStart.sterren === 3;
+  const muntenPerGoed = lesMunten(modus === 'oefenen' ? MUNTEN_OEFENING_GOED : MUNTEN_TOETS_GOED, herhaling);
 
   const el = document.createElement('div');
   el.className = 'scherm';
@@ -120,8 +122,10 @@ export function RekenOefeningScreen(
   // volgende scherm: nieuwe vraag + instructie-audio, of bij de laatste toetsvraag zelfs
   // een sprong naar het resultaatscherm.
   let timer: number | undefined;
+  let stopWachten: (() => void) | null = null;
   let actief = true;
   let onderbroken = false;
+  let isAfgerond = false; // de eindbonus maar één keer, ook als een winkelbezoek volgende() opnieuw plant
 
   function toonHuidige(): void {
     klaarMetDeze = false;
@@ -145,16 +149,10 @@ export function RekenOefeningScreen(
     voortgangsbalk.zetVoortgang(huidigeIndex + 1);
     if (juist) {
       aantalGoed++;
-      if (modus === 'oefenen') {
-        const munten = perGoed(wasAlGeoefend ? MUNTEN_OEFENING_HERHAALD : MUNTEN_OEFENING_GOED);
-        voegMuntenToe(munten);
-        muntenDitKeer += munten;
-      } else if (!wasAlGehaald) {
-        voegMuntenToe(perGoed(MUNTEN_TOETS_GOED));
-        muntenDitKeer += perGoed(MUNTEN_TOETS_GOED);
-      }
+      voegMuntenToe(muntenPerGoed);
+      muntenDitKeer += muntenPerGoed;
     }
-    timer = window.setTimeout(volgende, 900);
+    stopWachten = naHuidigeAudio(volgende, 300, 4000, 900); // eerst "Goed gedaan!" laten uitpraten
   }
 
   function overslaan(): void {
@@ -165,6 +163,8 @@ export function RekenOefeningScreen(
 
   function volgende(): void {
     if (!actief) return;
+    stopWachten?.();
+    stopWachten = null;
     opruimen?.();
     huidigeIndex++;
     if (huidigeIndex >= oefeningen.length) {
@@ -175,16 +175,16 @@ export function RekenOefeningScreen(
   }
 
   function afronden(): void {
+    if (isAfgerond) return;
+    isAfgerond = true;
     events.emit('sessie-klaar', undefined);
     if (modus === 'toets') {
       const fractie = aantalGoed / oefeningen.length;
       const sterren: 0 | 1 | 2 | 3 = fractie === 1 ? 3 : fractie >= 0.7 ? 2 : fractie >= 0.4 ? 1 : 0;
-      if (wasAlGehaald) {
-        voegMuntenToe(voorSet(MUNTEN_TOETS_HERHAALD));
-        muntenDitKeer += voorSet(MUNTEN_TOETS_HERHAALD);
-      } else if (fractie === 1) {
-        voegMuntenToe(voorSet(MUNTEN_TOETS_PERFECT_BONUS));
-        muntenDitKeer += voorSet(MUNTEN_TOETS_PERFECT_BONUS);
+      const eind = toetsEindMunten(fractie, herhaling);
+      if (eind > 0) {
+        voegMuntenToe(eind);
+        muntenDitKeer += eind;
       }
       markeerKernVoltooid(kern.id, sterren);
       speelSchermOvergang();
@@ -198,9 +198,11 @@ export function RekenOefeningScreen(
       );
       return;
     }
-    verhoogOefenSessies(kern.id);
+    verhoogOefenSessies(kern.id, oefeningNummer);
     onAfgerond();
     manager.pop();
+    // Na de pop, zodat de muntenteller van het hoofdstukscherm de eindbonus laat oppulsen.
+    voegMuntenToe(lesMunten(MUNTEN_OEFENING_SET, herhaling));
   }
 
   if (modus === 'oefenen') {
@@ -250,6 +252,8 @@ export function RekenOefeningScreen(
       actief = false;
       onderbroken = true;
       window.clearTimeout(timer);
+      stopWachten?.();
+      stopWachten = null;
       opruimen?.();
       opruimen = null;
       el.remove();

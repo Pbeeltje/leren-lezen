@@ -129,16 +129,41 @@ question count = word count, currently 8-10 per kern); math uses a fixed
 Computes 0–3 `sterren` from the fraction correct, ends in `TestResultScreen`.
 
 **Repeat-scoring tiers** (`engine/rewards.ts`), applied identically in both
-`OefeningScreen` and `RekenOefeningScreen`: at screen-entry time, capture
-`haalKernVoortgang(kern.id)` *before* `markeerKernGestart` runs, and hold
-`wasAlGeoefend`/`wasAlGehaald` for the whole attempt (don't re-check mid-
-session). First-ever oefenen on a kern pays `MUNTEN_OEFENING_GOED` (2) per
-correct; any oefenen after that pays `MUNTEN_OEFENING_HERHAALD` (1). First-
-ever toets pass pays `MUNTEN_TOETS_GOED` (5) per correct plus
-`MUNTEN_TOETS_PERFECT_BONUS` (10) if perfect; a hertoets of an
-already-`voltooid` kern skips per-question rewards entirely and pays one flat
-`MUNTEN_TOETS_HERHAALD` (10) at the end regardless of score. This exists
-specifically to stop coin-farming on content a child has already mastered.
+`OefeningScreen` and `RekenOefeningScreen`. The repeat flag `herhaling` is captured
+once at screen-entry (`haalKernVoortgang` before anything is written) and held for
+the whole attempt. Oefening: `herhaling` = this Oefening 1/2/3 is in
+`KernVoortgang.oefeningenAf` (added by `verhoogOefenSessies(kernId, nummer)` when a
+session is played to the end; skips count). Toets: `herhaling` = `sterren === 3`
+(perfected before). Starting without finishing never reduces anything. Old saves
+without `oefeningenAf` get `[]` in `leesRuw()` (not derived from `oefenSessies`, which
+counts sessions, not which oefening).
+- Oefening: `MUNTEN_OEFENING_GOED` 2 per correct, `MUNTEN_OEFENING_SET` 5 at the end
+  (paid right after `manager.pop()` so the chapter screen's counter pulses; there is
+  no result screen).
+- Toets: `MUNTEN_TOETS_GOED` 2 per correct; end amount from `toetsEindMunten()`:
+  `MUNTEN_TOETS_VOLDOENDE` 10 if ≥ half correct, `MUNTEN_TOETS_PERFECT` 20 instead if
+  perfect, plus `MUNTEN_TOETS_EERSTE_PERFECT` 50 the first time that toets is perfect.
+  `TestResultScreen` shows the total (`muntenDitKeer`).
+- Repeat (groep 3, `lesMunten`): half of everything, rounded up (5 becomes 3).
+- Kleuter: every amount x1.5 rounded up (`kleuterFactor`), never halved, but the
+  perfect bonus (30) and first-perfect extra (75) are once per toets: a perfect kleuter
+  retake pays 3 per correct + 15.
+- An `isAfgerond` guard in `afronden()` keeps a shop visit from paying an end bonus twice.
+
+Other activities, no repeat discount, all through `kleuterFactor`:
+- Luisteren, Ontdekken, Schrijven (Lijnen, Letters, Woordjes): 2 per correct plus
+  `MUNTEN_RONDE_SET` 5 when all rounds are done, shown on the klaar card.
+- Geheugenspel: `MUNTEN_GEHEUGEN_PAAR` 2 per pair, the moment it is matched (the
+  `paarGevonden` callback of `renderGeheugenSpel`), plus `MUNTEN_GEHEUGEN_BORD` 10 per
+  finished board. Groep 3 (8 pairs) 26 per board, kleuter (4 pairs) 27.
+- Speel na and Ritme: `muziekMunten(max)` from the level's max length
+  (`MUNTEN_MUZIEK_GOED` 2 and `MUNTEN_MUZIEK_SET` 10, times `muziekMuntFactor`: x1 up
+  to 6, x2 above 6, x4 above 8, no higher), then `kleuterFactor`. A set is the 10
+  questions in `RondeScreen` (2 rounds of 5): full set = 30 x factor (groep 3) or
+  45 x factor (kleuter). Levels 1–5 for groep 3: 30, 30, 60, 120, 120.
+- Leesboekjes: flat `MUNTEN_OEFENING_GOED * 3` at the end, no kleuter factor.
+
+Wrong answers pay nothing. The coin counter pulses live.
 
 A **skip button** (`.overslaan-knop`, bottom-center) is present on every
 exercise screen: counts as wrong (no reward) but always advances, so a stuck
@@ -618,6 +643,20 @@ corrected `kat.mp3` was never committed, so the live site kept playing "kip" for
 After writing audio, run `git rm -r -q --cached public/assets && git add public/assets`
 and look at `git status` before committing.
 
+**Feedback clips are never cut off: advance with `naHuidigeAudio`, not a fixed timer.**
+`speelAf()` stops whatever plays, so anything that starts audio after a goed/fout answer
+(next instruction, next word, a memory card's word, `pop`/`replace` at the end of a session,
+which call `stopAudio()`) must wait for the feedback clip. `naHuidigeAudio(fn, stilteMs,
+maxMs, minMs)` calls `fn` after the current clip ends (or is paused/errors) plus `stilteMs`,
+at most `maxMs`, at least `minMs` after the call (so muted play keeps the old pause), and
+returns a cancel function: store it and call it in `vernietig`/`unmount` and when advancing
+some other way, so terug/winkel mid-feedback stays silent. Used by `OefeningScreen` and
+`RekenOefeningScreen` (300 ms gap, 900 ms minimum; the old fixed 900 ms timer always cut
+"Helemaal goed!" at 1.3 s and others on slow loads), `RondeScreen`, `luisterKiezen` and
+`geheugenSpel` (the board locks until the word and then "Goed zo!" are finished; the next
+card would cut them). Check: `node tests/feedback-audio.mjs <map>` (logs every play/pause/
+ended and reports cheers cut short, plus duration/tail of each feedback clip).
+
 ## "Luisteren" topic — the non-readers' entry point
 
 A third, structurally separate topic (`content/topics.ts`, id `luisteren`,
@@ -647,7 +686,7 @@ burst at the end of each round, then a fresh round starts automatically —
 added after the first version ran as one endless undifferentiated stream
 with no sense of progress or payoff. Wrong answers always allow retry (no
 toets-style "fail immediately" mode here at all), a correct answer pays a
-small oefening-tier coin.
+small oefening-tier coin and the finished set pays `MUNTEN_RONDE_SET`.
 
 **Geheugenspel** (`ui/screens/GeheugenScreen.ts`, `games/geheugenSpel.ts`):
 classic memory/matching-pairs — `genereerGeheugenbord()` picks 4 words from
@@ -815,15 +854,56 @@ The sounds are synthesised in `engine/muziek.ts` with Web Audio, so nothing is r
 
 The games:
 - **Xylofoon** (`XylofoonScreen`): free play on 8 bars.
-- **Speel na:** uses only the five-note scale (`VIJFTONIG`) so any random tune sounds
-  pleasant. Tunes go from 2 notes up to 5 (3 for ages 3-4).
-- **Ritme:** 2 hits up to 5 (4 for ages 3-4). From age 5 the beats mix short and long
-  gaps. `ritmeKlopt()` always checks the number of hits and, for mixed beats, classifies
-  each of the child's gaps against their own shortest and longest gaps, so overall tempo
-  doesn't matter.
-- A wrong answer just replays the tune or beat.
+- **Speel na:** level 1 uses only the five-note scale (`VIJFTONIG`) so any random tune sounds
+  pleasant; from level 2 all 8 bars, and from 5 notes the start of a real song. Each note is a
+  dot with that bar's colour (same rim and fill as the rhythm dots, via `muziek-stippen--ritme`
+  and `--drum` set to `STAAF_KLEUREN`).
+- **Ritme:** length and drums grow per level (kleuters only 2–4 and 4–6; see Music levels).
+  From 5 hits the beat rotates through `GROOVES`. There is no one-drum-at-a-time preview;
+  the question plays only the pattern (instruction audio still plays by itself on the first
+  question, and hits count only after that playback). Free play never had that preview.
+  `ritmeKlopt()` always checks the number of hits and, for mixed beats, classifies each of
+  the child's gaps against their own shortest and longest gaps, so overall tempo doesn't matter.
+- A wrong answer just replays the tune or beat (no coins). A correct copy pays
+  `muziekMunten` for that level; the trophy after 10 questions pays the set bonus too.
+  Free play pays nothing.
 - The maker functions (`maakSpeelNaVragen()`) hold their own counter, so every time the
   game opens it starts short again.
+
+### Instruments: gitaar, harp, steelgitaar, keyboard (shop items)
+
+- `Instrument` / `INSTRUMENTEN` in `engine/muziek.ts`; `speelInstrument(instrument, toon, wanneer)`.
+  Xylofoon is free; the other four cost `INSTRUMENT_PRIJS` (200) as `WinkelSoort` `instrument`
+  (keys `instrument:<id>` in `gekocht`). The choice is remembered per profile
+  (`VoortgangData.instrument`, read via `huidigInstrument()` in `engine/winkel.ts`, which falls
+  back to xylofoon when unset or not owned).
+- Sound: matched to `bronbestanden/{guitar,harp,steelguitar}.m4a` (ignore the harp file's
+  silent/static gaps). Guitar and harp are Karplus-Strong (`snaarBuffer`) an octave below the
+  xylophone, 3-tap loop filter, lowpass that closes (`filterBegin`→`filterEind`). The
+  recordings are dark (centroid ~1.1–1.6 kHz, almost no energy above 2 kHz) and fairly dry, so
+  guitar reverb is 5%, harp 20%; no triangle pluck (that was shrill). Guitar has a very quiet
+  octave-up string. Steelgitaar is additive sines 1–6 (`speelSteel`), not KS — the recording
+  shows parallel harmonics and KS sounded "computery". Small ~40-cent slide, 80 ms swell,
+  late 4.4 Hz vibrato, 55% reverb. Keyboard = 2-operator FM like a 90s soundcard MIDI piano
+  (`speelKeyboard`); the owner is happy with that sound.
+- Keyboard look: white keys with a coloured patch, decorative black keys via
+  `[data-zwart]::after` (set in `maakXylofoon` for do/re/fa/sol/la when the next key exists);
+  tapping a black key plays the white key it belongs to. `xylofoon.svg` is now our own
+  xylophone drawing (it used to be the Fluent piano emoji, which clashed with the keyboard).
+- `maakXylofoon(tonen, opTik, instrument)` is the component for all four: same buttons
+  (`.xylofoon__staaf`), `zetInstrument()` switches the look (`.xylofoon--snaren
+  .xylofoon--<id>`, CSS bodies in screens.css) and `speel(positie, wanneer)` plays with the
+  current sound. Strings keep `STAAF_KLEUREN`, so the Speel na dots still match.
+- Picker: `ui/components/InstrumentKnoppen.ts` (buttons with `data-instrument`; not owned =
+  grey + lock, tap opens `WinkelScreen(m, { soort: 'instrument', koop: id })` with the purchase
+  window open) plus the coin button `.muziek-winkel-knop` (store on the Instrumenten tab).
+  Vrij spelen: in the top row next to Drumstel (labels only from 1100px wide); it builds its
+  instruments in `mount` so it survives a trip to the store. Speel na: `.muziek-instrumenten`
+  in the card (top right; a column on the right when the screen is ≤820px high);
+  `maakSpeelNaVragen(niveau, naarWinkel)`.
+- Shop: third tab Instrumenten; on phones (≤600px) the tabs show only their icons.
+- Icons `gitaar.svg`, `harp.svg`, `steelgitaar.svg`, `keyboard.svg`, `xylofoon.svg` are our own drawings.
+- Check: `node tests/instrumenten.mjs <map>`.
 
 ## Recording list 5
 
@@ -837,7 +917,7 @@ creates `audio/boekjes/` by itself.
 
 ## Drum kit, wooden blocks, backgrounds and profile menu (latest round)
 
-- **Ritme** (`games/muziek/muziekVragen.ts`): figures `ta`/`titi` per question number (`FIGUREN`), drums via `drumsVoor` (bass → +snare from question 3 → +cymbal from 6). Gaps KORT 0.24 / LANG 0.72; `ritmeKlopt` judges relative to the child's own tempo. Hitting the wrong drum is a mistake. Free play (`XylofoonScreen`) switches between the xylophone and `maakDrumstel(['bas','snare','bekken'])`.
+- **Ritme** (`games/muziek/muziekVragen.ts`): figures `ta`/`titi`. Drums per level, not per question: 1 bas+snare, 2 +bekken, 3 +tom, 4–5 +crash (kleuters only 1–2). From 5 hits `GROOVES` rotates one real beat per question (see the Music bullet). No solo-drum preview before the pattern. Gaps KORT 0.24 / LANG 0.72; `ritmeKlopt` judges relative to the child's own tempo. Hitting the wrong drum is a mistake. Free play (`XylofoonScreen`) switches between the xylophone and all five drums; drums sound only when tapped.
 - **Woord bouwen blocks** (`three/letterBlocks.ts`): wooden canvas texture (`houtVlak`), black frame, lowercase Andika, lens PerspectiveCamera(28). Double letters: every letter gets its own block and the tapped block disappears (kaas: tap one a, then the other a).
 - **Backgrounds** (`src/achtergrond/`): every theme is a DOM `Decor` (`{element, juich, feest?, vernietig?}`), CSS in `styles/achtergrond.css`.
   - **zee:** the boat rides the higher of the two waves (`drijf` rAF loop). Rainbow (`maakRegenboog` in hulp.ts) 2.2 s after the storm. The whale (`kortAan(walvis,'duikt-op')`) appears 3.5 s after the boat is fully off screen.
@@ -861,6 +941,7 @@ creates `audio/boekjes/` by itself.
 - Android end-to-end testing: Playwright `_android.devices()` → `device.webView({ pkg })` (plain connectOverCDP doesn't work). Typing via `adb shell input text`. The emulator's WebView is Chrome 133, where Capacitor pads the WebView; a stale strip under the status bar there is an emulator display glitch (the WebView's own screenshot is clean).
 - iOS: no Mac needed for building — `.github/workflows/ios-prototype.yml` (macos-26, Xcode 26) builds for the simulator, injects `.github/ios-demo.js` (CI only) to click through screens, and uploads screenshots as an artifact. Signing/TestFlight is not set up yet (needs Apple Developer Program + App Store Connect API key in GitHub Secrets); see `C:\claude\leren-lezen-iphone-plan.md`.
 - Layout sweep over 24 phone/tablet sizes: the skip button now sits in the progress-bar row (`.voortgangsbalk .overslaan-knop`), the profile menu is `position: fixed` against the screen edge, and landscape phones (max-height 500px) get smaller corner controls.
+- Landscape phones (phone held sideways): everything lives in one block at the end of `screens.css`, `@media (orientation: landscape) and (max-height: 500px)`. Question cards with 2+ children become a two-column grid (first child = the question, left, `grid-row: 1 / span 6`; the rest right). Gotcha: that `> :first-child` rule is more specific than `> *`, so the typing layout (`.oefen-kaart:has(> .scherm-toetsenbord)`: picture/input/button left, keyboard right) must reset `grid-row` on `:first-child` too. Woord bouwen, typing and the test result get extra-compact padding there to fit 667×375. Vangspel shows a "Draai je telefoon" overlay (`.vang-draai`) that pauses the game; the `matchMedia` in `VangScreen.ts` must stay identical to the `.vang-draai` media query (it adds `pointer: coarse`). Tablets/laptops held sideways get a separate, milder block right after it, `(orientation: landscape) and (min-height: 501px) and (max-height: 820px)` (1024×768, 1180×820, 1366×768): single-column cards stay, only gaps/pictures shrink (word building, typing, number typing incl. 10 pictures in two rows) and `.scherm-titel` is hidden on screens with a `.voortgangsbalk` (schrijven, muziek). Screenshot walk: `node tests/liggend.mjs <folder> [844x390 667x375 1024x768]`, `ALLEEN=lezen,tellen,...` limits sections. Findings and open items: `C:\claude\leren-lezen-liggend.md`.
 
 ## Groups instead of ages
 
@@ -884,8 +965,19 @@ Children no longer pick an age but a group (`Groep = 'kleuter' | 'groep3'` in co
   physical keyboard still types into the readOnly field via a keydown handler.
 - **Music:** Speel na from 5 notes plays the start of a real song (`LIEDJES` in
   `muziekVragen.ts`: Kortjakje, Vader Jacob, In de maneschijn, Ode an die Freude, Mary had a
-  little lamb, Jingle bells) with its note lengths. Ritme from 5 hits uses `maakGroove`: a
-  repeated motif, bass on the first and snare on the second figure, cymbal at the end.
+  little lamb, Jingle bells) with its note lengths. The dots show which bar is coming
+  (rim and fill in `STAAF_KLEUREN`, same classes as the rhythm dots). Ritme from 5 hits
+  rotates `GROOVES` (a different beat each question, only drums that level unlocked).
+  Level 2: boem-titi-bekken, stomp-stomp-clap, rock (bas snare bas bekken), waltz,
+  bekken on the off-beat, stomp-bekken-snare. Level 3 adds the tom (march, tom doubles,
+  tom fill, bekken-tom, stomp-stomp with tom, tom on 2 and 4). Levels 4–5 add the crash
+  (downbeat, rock ending on crash, stomp-stomp into crash, tom-fill into crash, crash
+  on the off-beat, tom-march into crash). Shorter questions stay `maakFiguren`.
+  Ritme does not introduce the kit by playing each drum once; only the pattern is played.
+  That preview is not in `maakDrumstel` or free play (a drum sounds when the child taps it).
+  Speel na and Ritme pay coins (free play does not): 2 per correct copy and 10 for the
+  finished set, times 1 / 2 / 4 when the level max is ≤6 / >6 / >8, then the kleuter
+  x1.5 (`kleuterFactor`). Replaying a set pays again.
 
 - **Saved drawings:** Tekenen has a heart button (bewaar) and a framed-picture button (mijn
   tekeningen). `engine/tekeningenStore.ts` keeps 10 slots per profile in localStorage key
@@ -911,7 +1003,9 @@ Children no longer pick an age but a group (`Groep = 'kleuter' | 'groep3'` in co
 - **Drum kit:** `DrumSoort` also has `tom` (green, pitched) and `crash` (orange, tilted,
   long). The snare is now drawn flat with wires underneath. Free play uses all five
   (`.drumstel--5`: cymbals and tom on top, snare and bass below; one row on low
-  landscape screens). Ritme still uses bas/snare/bekken. Check: `node tests/drumstel.mjs <map>`.
+  landscape screens). Ritme adds them by level: 1 bas+snare, 2 +bekken, 3 +tom
+  (same `--5` sizing, 2×2 grid without an empty crash slot), 4–5 +crash. Kleuters
+  only get levels 1–2. Check: `node tests/drumstel.mjs <map>`.
 - **Kleuter counting has its own set:** `content/tellen/kernen/kleuter-tellen.ts`, 4 chapters
   "Tellen tot 4/6/8/10" with only hoeveelheid-naar-cijfer and cijfer-naar-hoeveelheid.
   Math screens get the list from `rekenKernen()` in `engine/leeftijdGrens.ts`; never use
@@ -1054,7 +1148,8 @@ Children no longer pick an age but a group (`Groep = 'kleuter' | 'groep3'` in co
   into the night) but wait real seconds, since CSS transitions run in real time.
 - **Music levels:** Speel na and Ritme have 5 levels (`AANTAL_NIVEAUS`): 2-4, 4-6, 6-8, 8-10,
   10-12. Level 1 uses a fixed `reeks` over the 10 questions (2,2,2,3,3,3,3,3,4,4; ritme with
-  bass + snare). `niveausVoorGroep()` gives kleuters only levels 1 and 2 (2-4 and 4-6).
+  bass + snare). Ritme level 2 adds bekken, level 3 tom, levels 4–5 crash.
+  `niveausVoorGroep()` gives kleuters only levels 1 and 2 (2-4 and 4-6), so no tom or crash.
 - **Dino-wei scenery:** all own drawings. `achtergrond/dino-landschap.ts` holds `VERTE`
   (`.dino-verte`, viewBox 2000x300 `xMidYMax slice`, bottom 13vh: hazy far mountains with an
   extinct flat-topped volcano, two seeded jungle rows with tree-fern and araucaria

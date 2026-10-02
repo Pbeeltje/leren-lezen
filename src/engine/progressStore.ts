@@ -1,6 +1,8 @@
 import type { Groep } from '../content/types.ts';
 import { events } from './events.ts';
 import { haalActiefProfielId } from './profielStore.ts';
+import type { OefeningNummer } from './oefeningGenerator.ts';
+import type { Instrument } from './muziek.ts';
 
 // Aantal voltooide oefensessies vóórdat de toets van een kern ontgrendelt.
 export const OEFENSESSIES_VOOR_TOETS = 3;
@@ -11,6 +13,9 @@ export interface KernVoortgang {
   sterren: 0 | 1 | 2 | 3;
   // Aantal keer dat een oefensessie (niet toets) voor deze kern is afgerond.
   oefenSessies: number;
+  // Welke Oefening 1/2/3 al eens tot het eind gespeeld is (bepaalt de herhaal-korting op
+  // munten, zie engine/rewards.ts). Oude opslag heeft het niet: dan telt geen enkele als af.
+  oefeningenAf: OefeningNummer[];
 }
 
 export interface VoortgangData {
@@ -26,6 +31,8 @@ export interface VoortgangData {
   // Wat dit kind in de winkel heeft (sleutels als 'figuur:vos' en 'achtergrond:zee').
   // Ontbreekt bij oude opslag; engine/winkel.ts vult het dan één keer met wat het kind al gebruikte.
   gekocht?: string[];
+  // Laatst gekozen melodie-instrument (Speel na en Vrij spelen openen ermee).
+  instrument?: Instrument;
 }
 
 // Elk profiel heeft zijn eigen sleutel, zodat munten/voortgang niet tussen kinderen
@@ -70,6 +77,9 @@ function leesRuw(): VoortgangData {
         // dat als 1 sessie zodat niemand plots opnieuw vanaf 0 hoeft te oefenen.
         data.kernen[kernId].oefenSessies = data.kernen[kernId].gestart ? 1 : 0;
       }
+      // Niet afleiden uit oefenSessies: dat telt sessies, niet welke oefening (Rekenen had
+      // tot nu toe niet eens een nummer), en ten onrechte "af" zou munten kosten.
+      if (!Array.isArray(data.kernen[kernId].oefeningenAf)) data.kernen[kernId].oefeningenAf = [];
     }
     return data;
   } catch {
@@ -114,6 +124,12 @@ export function zetGekocht(gekocht: string[]): void {
   schrijfRuw(data);
 }
 
+export function zetInstrument(instrument: Instrument): void {
+  const data = leesRuw();
+  data.instrument = instrument;
+  schrijfRuw(data);
+}
+
 /** Koopt iets als er genoeg munten zijn; geeft false (en verandert niets) als dat niet zo is. */
 export function koopMetMunten(sleutel: string, prijs: number): boolean {
   const data = leesRuw();
@@ -128,7 +144,7 @@ export function koopMetMunten(sleutel: string, prijs: number): boolean {
 }
 
 function legeKernVoortgang(): KernVoortgang {
-  return { gestart: false, voltooid: false, sterren: 0, oefenSessies: 0 };
+  return { gestart: false, voltooid: false, sterren: 0, oefenSessies: 0, oefeningenAf: [] };
 }
 
 export function markeerKernGestart(kernId: string): void {
@@ -139,11 +155,12 @@ export function markeerKernGestart(kernId: string): void {
 }
 
 /** Aangeroepen wanneer een oefensessie (niet toets) daadwerkelijk is afgerond. */
-export function verhoogOefenSessies(kernId: string): number {
+export function verhoogOefenSessies(kernId: string, nummer: OefeningNummer): number {
   const data = leesRuw();
   const huidig = data.kernen[kernId] ?? legeKernVoortgang();
   const oefenSessies = huidig.oefenSessies + 1;
-  data.kernen[kernId] = { ...huidig, gestart: true, oefenSessies };
+  const oefeningenAf = huidig.oefeningenAf.includes(nummer) ? huidig.oefeningenAf : [...huidig.oefeningenAf, nummer];
+  data.kernen[kernId] = { ...huidig, gestart: true, oefenSessies, oefeningenAf };
   schrijfRuw(data);
   return oefenSessies;
 }

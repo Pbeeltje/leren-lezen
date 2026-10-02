@@ -5,7 +5,7 @@ import { maakAudioKnop } from '../components/AudioKnop.ts';
 import { maakVoortgangsbalk } from '../components/Voortgangsbalk.ts';
 import { speelAf, woordAudioPad } from '../../engine/audioManager.ts';
 import { markeerKernVoltooid, voegMuntenToe } from '../../engine/progressStore.ts';
-import { MUNTEN_OEFENING_GOED, perGoed } from '../../engine/rewards.ts';
+import { MUNTEN_OEFENING_GOED, MUNTEN_RONDE_SET, kleuterFactor } from '../../engine/rewards.ts';
 import { genereerLuisterVraag, hoofdstukWoorden, type LuisterVraag } from '../../engine/luisterenGenerator.ts';
 import type { LuisterHoofdstuk } from '../../content/luisteren/hoofdstukken.ts';
 import { toonKlaarKaart } from '../components/KlaarKaart.ts';
@@ -56,6 +56,13 @@ export function LuisterenScreen(manager: ScreenManager, hoofdstuk: LuisterHoofds
   // hardop klinkt, geen munten voor een vraag die al weg is.
   let actief = true;
   let timer: number | undefined;
+  let verdiend = 0;
+
+  function betaal(basis: number): void {
+    const munten = kleuterFactor(basis);
+    voegMuntenToe(munten);
+    verdiend += munten;
+  }
 
   function volgendeVraag(): void {
     if (!actief) return;
@@ -65,10 +72,11 @@ export function LuisterenScreen(manager: ScreenManager, hoofdstuk: LuisterHoofds
       rondesKlaar++;
       if (rondesKlaar >= AANTAL_RONDES) {
         markeerKernVoltooid(`luister-${hoofdstuk.id}`, 3);
+        betaal(MUNTEN_RONDE_SET);
         instructieRij.style.display = 'none';
         voortgangsbalk.element.style.display = 'none';
         opruimen = null;
-        toonKlaarKaart(oefenContainer, () => manager.pop());
+        toonKlaarKaart(oefenContainer, () => manager.pop(), verdiend);
         return;
       }
       confetti.vuurwerk('klein');
@@ -80,7 +88,7 @@ export function LuisterenScreen(manager: ScreenManager, hoofdstuk: LuisterHoofds
     huidigeVraag = genereerLuisterVraag(3, huidigeVraag?.doel.woord, woorden);
     opruimen = renderLuisterKiezen(oefenContainer, huidigeVraag, () => {
       if (!actief) return;
-      voegMuntenToe(perGoed(MUNTEN_OEFENING_GOED));
+      betaal(MUNTEN_OEFENING_GOED);
       inRonde++;
       volgendeVraag();
     }).vernietig;

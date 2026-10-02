@@ -47,10 +47,12 @@ export function renderDrieKoppelen(
     for (const { plaatje, woord, lijn } of gevondenParen) {
       const p = plaatje.getBoundingClientRect();
       const w = woord.getBoundingClientRect();
-      lijn.setAttribute('x1', String(p.right - basis.left));
-      lijn.setAttribute('y1', String(p.top + p.height / 2 - basis.top));
-      lijn.setAttribute('x2', String(w.left - basis.left));
-      lijn.setAttribute('y2', String(w.top + w.height / 2 - basis.top));
+      // Liggende telefoon: woorden onder de plaatjes, dan van onderkant naar bovenkant.
+      const onderElkaar = w.top >= p.bottom;
+      lijn.setAttribute('x1', String((onderElkaar ? p.left + p.width / 2 : p.right) - basis.left));
+      lijn.setAttribute('y1', String((onderElkaar ? p.bottom : p.top + p.height / 2) - basis.top));
+      lijn.setAttribute('x2', String((onderElkaar ? w.left + w.width / 2 : w.left) - basis.left));
+      lijn.setAttribute('y2', String((onderElkaar ? w.top : w.top + w.height / 2) - basis.top));
     }
   }
 

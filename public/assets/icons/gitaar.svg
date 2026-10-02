@@ -1,0 +1,17 @@
+<svg width="64" height="64" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g transform="rotate(35 32 32)">
+<rect x="27" y="-1" width="10" height="9" rx="2.5" fill="#5d3418"/>
+<circle cx="25.5" cy="2" r="1.8" fill="#e0e0e0"/>
+<circle cx="25.5" cy="6" r="1.8" fill="#e0e0e0"/>
+<circle cx="38.5" cy="2" r="1.8" fill="#e0e0e0"/>
+<circle cx="38.5" cy="6" r="1.8" fill="#e0e0e0"/>
+<rect x="29" y="7" width="6" height="24" fill="#8d5a2b"/>
+<path d="M29 12h6M29 17h6M29 22h6" stroke="#d7ccc8" stroke-width="1"/>
+<path d="M32 18 C22 18 19 24 21 30 C22.5 34 22.5 36 20 39 C14 45 17 62 32 62 C47 62 50 45 44 39 C41.5 36 41.5 34 43 30 C45 24 42 18 32 18Z" fill="#f0a54a" stroke="#a0561d" stroke-width="2"/>
+<path d="M26 22 C23 24 22.5 28 24 31" stroke="#ffd08a" stroke-width="2" stroke-linecap="round"/>
+<circle cx="32" cy="38" r="5.5" fill="#3e2312"/>
+<circle cx="32" cy="38" r="7" fill="none" stroke="#c97a30" stroke-width="1.5"/>
+<rect x="26" y="51" width="12" height="3.5" rx="1.5" fill="#4e2a12"/>
+<path d="M30 8V52M32 8V52M34 8V52" stroke="#fff8e1" stroke-width="0.9"/>
+</g>
+</svg>

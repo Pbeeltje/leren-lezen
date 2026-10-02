@@ -65,9 +65,10 @@ export function RekenChapterScreen(manager: ScreenManager, index: number): Scree
       const label = document.createElement('span');
       label.textContent = `Oefening ${i}`;
       tegel.appendChild(label);
+      const ditNummer = i as 1 | 2 | 3;
       tegel.addEventListener('click', () => {
         speelSchermOvergang();
-        manager.push((m) => RekenOefeningScreen(m, kern, 'oefenen', tekenTegels));
+        manager.push((m) => RekenOefeningScreen(m, kern, 'oefenen', tekenTegels, ditNummer));
       });
       tegelGrid.appendChild(tegel);
     }

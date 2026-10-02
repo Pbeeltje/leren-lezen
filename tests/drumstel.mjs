@@ -28,7 +28,8 @@ for (const [bw, bh, tag] of [[390, 844, 'tel'], [844, 390, 'liggend'], [1024, 13
   if (tag === 'tel') {
     await page.locator('.terug-knop').first().click(); await w(500);
     await page.locator('.icoon-tegel', { hasText: 'Ritme' }).click(); await w(500);
-    await page.locator('.niveau-tegel').nth(2).click(); await w(4000);
+    // Kleuters hebben maar twee niveaus; neem het moeilijkste dat er is.
+    await page.locator('.niveau-tegel').last().click(); await w(4000);
     await page.screenshot({ path: OUT + tag + '-ritme.png' });
   }
   await page.close();

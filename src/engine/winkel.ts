@@ -1,17 +1,20 @@
 import { AVATAR_ICONEN, haalActiefProfiel } from './profielStore.ts';
-import { haalVoortgang, koopMetMunten, zetGekocht } from './progressStore.ts';
+import { haalVoortgang, koopMetMunten, zetGekocht, zetInstrument } from './progressStore.ts';
 import { THEMAS, huidigThema, type ThemaId } from '../achtergrond/achtergrond.ts';
+import { INSTRUMENTEN, type Instrument } from './muziek.ts';
 
-// Muntenwinkel: figuren en achtergronden kopen met verdiende munten. Een paar dingen zijn
-// gratis; de rest kost een vaste prijs (wens van de eigenaar). Wat gekocht is, hoort bij
-// het profiel (in de voortgang), zodat broertjes en zusjes elk hun eigen spullen hebben.
+// Muntenwinkel: figuren, achtergronden en instrumenten kopen met verdiende munten. Een paar
+// dingen zijn gratis; de rest kost een vaste prijs (wens van de eigenaar). Wat gekocht is,
+// hoort bij het profiel (in de voortgang), zodat broertjes en zusjes elk hun eigen spullen hebben.
 
 export const GRATIS_FIGUREN = ['jongen', 'meisje', 'robot', 'kat', 'hond'];
 export const FIGUUR_PRIJS = 30;
 export const GRATIS_ACHTERGROND: ThemaId = 'ruimte';
 export const ACHTERGROND_PRIJS = 200;
+export const GRATIS_INSTRUMENT: Instrument = 'xylofoon';
+export const INSTRUMENT_PRIJS = 200;
 
-export type WinkelSoort = 'figuur' | 'achtergrond';
+export type WinkelSoort = 'figuur' | 'achtergrond' | 'instrument';
 
 const sleutel = (soort: WinkelSoort, id: string) => `${soort}:${id}`;
 
@@ -31,6 +34,7 @@ function bezit(): string[] {
 
 export function prijsVan(soort: WinkelSoort, id: string): number {
   if (soort === 'figuur') return GRATIS_FIGUREN.includes(id) ? 0 : FIGUUR_PRIJS;
+  if (soort === 'instrument') return id === GRATIS_INSTRUMENT ? 0 : INSTRUMENT_PRIJS;
   return id === GRATIS_ACHTERGROND ? 0 : ACHTERGROND_PRIJS;
 }
 
@@ -45,3 +49,11 @@ export function koop(soort: WinkelSoort, id: string): boolean {
 
 export const eigenFiguren = (): string[] => AVATAR_ICONEN.filter((id) => heeft('figuur', id));
 export const eigenAchtergronden = () => THEMAS.filter((t) => heeft('achtergrond', t.id));
+
+// Het gekozen instrument, zolang het kind het (nog) heeft; anders de gratis xylofoon.
+export function huidigInstrument(): Instrument {
+  const gekozen = haalVoortgang().instrument;
+  return gekozen && INSTRUMENTEN.some((i) => i.id === gekozen) && heeft('instrument', gekozen) ? gekozen : GRATIS_INSTRUMENT;
+}
+
+export const kiesInstrument = (instrument: Instrument): void => zetInstrument(instrument);

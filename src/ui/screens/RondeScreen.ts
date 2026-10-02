@@ -5,7 +5,7 @@ import { maakAudioKnop } from '../components/AudioKnop.ts';
 import { maakVoortgangsbalk } from '../components/Voortgangsbalk.ts';
 import { naHuidigeAudio, speelAf } from '../../engine/audioManager.ts';
 import { voegMuntenToe } from '../../engine/progressStore.ts';
-import { MUNTEN_OEFENING_GOED, perGoed } from '../../engine/rewards.ts';
+import { MUNTEN_OEFENING_GOED, MUNTEN_RONDE_SET, kleuterFactor } from '../../engine/rewards.ts';
 import { confetti } from '../../three/particles.ts';
 import { toonKlaarKaart } from '../components/KlaarKaart.ts';
 
@@ -23,10 +23,22 @@ export interface RondeVraag {
   render: (container: HTMLElement, afgerond: () => void) => () => void;
 }
 
+// Munten per goed en per afgeronde set. Speel na / Ritme geven hun eigen bedragen (zie
+// muziekMunten); andere rondes (lijnen, letters, woordjes, ontdekken) de gewone.
+export interface RondeBeloning {
+  perGoed: number;
+  perSet: number;
+}
+
 // Gedeelde schil voor de kleuterspellen: 2 rondes van 5 vragen met een voortgangsbalk,
 // een klein vuurwerkje na elke ronde en dan de klaar-kaart (zelfde opzet als
 // LuisterenScreen). Geen toets, niets op slot, fout is opnieuw proberen.
-export function RondeScreen(manager: ScreenManager, titelTekst: string, maakVraag: () => RondeVraag): Screen {
+export function RondeScreen(
+  manager: ScreenManager,
+  titelTekst: string,
+  maakVraag: () => RondeVraag,
+  beloning: RondeBeloning = { perGoed: kleuterFactor(MUNTEN_OEFENING_GOED), perSet: kleuterFactor(MUNTEN_RONDE_SET) },
+): Screen {
   const el = document.createElement('div');
   el.className = 'scherm';
 
@@ -57,19 +69,28 @@ export function RondeScreen(manager: ScreenManager, titelTekst: string, maakVraa
   let rondesKlaar = 0;
   let onderbroken = false;
   let timer: number | undefined;
+  let stopWachten: (() => void) | null = null;
   let actief = true;
+  let setKlaar = false;
+  let verdiend = 0;
 
   function volgendeVraag(): void {
     if (!actief) return;
+    stopWachten?.();
+    stopWachten = null;
     opruimen?.();
     opruimen = null;
     if (inRonde >= RONDE_LENGTE) {
+      if (setKlaar) return;
       voortgangsbalk.zetVoortgang(RONDE_LENGTE);
       rondesKlaar++;
       if (rondesKlaar >= AANTAL_RONDES) {
+        setKlaar = true;
+        voegMuntenToe(beloning.perSet);
+        verdiend += beloning.perSet;
         instructieRij.style.display = 'none';
         voortgangsbalk.element.style.display = 'none';
-        toonKlaarKaart(container, () => manager.pop());
+        toonKlaarKaart(container, () => manager.pop(), verdiend);
         return;
       }
       confetti.vuurwerk('klein');
@@ -87,10 +108,11 @@ export function RondeScreen(manager: ScreenManager, titelTekst: string, maakVraa
     opruimen = vraag.render(container, () => {
       if (!actief || beantwoord) return;
       beantwoord = true;
-      voegMuntenToe(perGoed(MUNTEN_OEFENING_GOED));
+      voegMuntenToe(beloning.perGoed);
+      verdiend += beloning.perGoed;
       inRonde++;
       voortgangsbalk.zetVoortgang(inRonde);
-      naHuidigeAudio(volgendeVraag); // eerst "Goed gedaan!" laten uitpraten
+      stopWachten = naHuidigeAudio(volgendeVraag); // eerst "Goed gedaan!" laten uitpraten
     });
   }
 
@@ -117,6 +139,8 @@ export function RondeScreen(manager: ScreenManager, titelTekst: string, maakVraa
       actief = false;
       onderbroken = true;
       window.clearTimeout(timer);
+      stopWachten?.();
+      stopWachten = null;
       opruimen?.();
       opruimen = null;
       el.remove();

@@ -3,15 +3,17 @@ import { AVATAR_ICONEN, avatarFilter, avatarPad, haalActiefProfiel, wijzigProfie
 import { haalVoortgang } from '../../engine/progressStore.ts';
 import { events } from '../../engine/events.ts';
 import { THEMAS, huidigThema, kiesAchtergrond } from '../../achtergrond/achtergrond.ts';
-import { heeft, koop, prijsVan, type WinkelSoort } from '../../engine/winkel.ts';
-import { speelNoot, TONEN } from '../../engine/muziek.ts';
+import { heeft, huidigInstrument, kiesInstrument, koop, prijsVan, type WinkelSoort } from '../../engine/winkel.ts';
+import { INSTRUMENTEN, speelNoot, TONEN, type Instrument } from '../../engine/muziek.ts';
 import { confetti } from '../../three/particles.ts';
 import { maakTerugKnop } from '../components/TerugKnop.ts';
 import { maakBladeraar } from '../components/Bladeraar.ts';
 
-// Muntenwinkel: bovenaan je munten, dan twee tabbladen (Figuren / Achtergronden) met de
-// spullen per bladzijde om zijwaarts door te bladeren. Op een slotje staat de prijs; tik
-// erop om te kopen. Wat je al hebt kies je hier ook meteen.
+// Muntenwinkel: bovenaan je munten, dan drie tabbladen (Figuren / Achtergronden /
+// Instrumenten) met de spullen per bladzijde om zijwaarts door te bladeren. Op een slotje
+// staat de prijs; tik erop om te kopen. Wat je al hebt kies je hier ook meteen.
+// start: met welk tabblad de winkel opent, en eventueel meteen het koopvenster van iets
+// (vanuit Speel na / Vrij spelen: de munt of een instrument met een slotje).
 
 interface Artikel {
   soort: WinkelSoort;
@@ -23,9 +25,10 @@ interface Artikel {
 const ARTIKELEN: Record<WinkelSoort, Artikel[]> = {
   figuur: AVATAR_ICONEN.map((id) => ({ soort: 'figuur', id, naam: '', plaatje: avatarPad(id) })),
   achtergrond: THEMAS.map((t) => ({ soort: 'achtergrond', id: t.id, naam: t.naam, plaatje: t.voorbeeld })),
+  instrument: INSTRUMENTEN.map((i) => ({ soort: 'instrument', id: i.id, naam: i.naam, plaatje: i.icoon })),
 };
 
-export function WinkelScreen(manager: ScreenManager): Screen {
+export function WinkelScreen(manager: ScreenManager, start?: { soort: WinkelSoort; koop?: string }): Screen {
   const profiel = haalActiefProfiel();
   const el = document.createElement('div');
   el.className = 'scherm winkel';
@@ -49,16 +52,18 @@ export function WinkelScreen(manager: ScreenManager): Screen {
   vak.className = 'winkel__vak';
   el.appendChild(vak);
 
-  let soort: WinkelSoort = 'figuur';
+  let soort: WinkelSoort = start?.soort ?? 'figuur';
   const tabKnoppen = (
     [
       ['figuur', 'Figuren', avatarPad(profiel?.icoonId ?? 'kat')],
       ['achtergrond', 'Achtergronden', 'assets/icons/ster.svg'],
+      ['instrument', 'Instrumenten', 'assets/icons/gitaar.svg'],
     ] as const
   ).map(([id, naam, src]) => {
     const k = document.createElement('button');
     k.type = 'button';
     k.className = 'winkel__tab';
+    k.setAttribute('aria-label', naam);
     k.innerHTML = `<img src="${src}" alt=""><span>${naam}</span>`;
     k.addEventListener('click', () => {
       soort = id;
@@ -69,13 +74,16 @@ export function WinkelScreen(manager: ScreenManager): Screen {
   });
 
   const munten = () => haalVoortgang().munten;
-  const gekozen = (a: Artikel) => (a.soort === 'figuur' ? profiel?.icoonId === a.id : huidigThema() === a.id);
+  const gekozen = (a: Artikel) =>
+    a.soort === 'figuur' ? profiel?.icoonId === a.id : a.soort === 'instrument' ? huidigInstrument() === a.id : huidigThema() === a.id;
 
   function kies(a: Artikel): void {
     if (a.soort === 'figuur') {
       if (!profiel) return;
       wijzigProfielIcoon(profiel.id, a.id);
       profiel.icoonId = a.id;
+    } else if (a.soort === 'instrument') {
+      kiesInstrument(a.id as Instrument);
     } else {
       kiesAchtergrond(a.id as (typeof THEMAS)[number]['id']);
     }
@@ -136,8 +144,10 @@ export function WinkelScreen(manager: ScreenManager): Screen {
     const opties =
       soort === 'figuur'
         ? { kolommen: smal ? 3 : 5, rijen: hoog > 700 ? 3 : 2 }
-        : // Kleine kaartjes, zodat alle achtergronden (en een paar nieuwe) op één bladzijde passen.
-          { kolommen: smal ? 3 : 6, rijen: smal ? (hoog >= 700 ? 4 : 3) : hoog >= 620 ? 2 : 1 };
+        : soort === 'instrument'
+          ? { kolommen: smal ? 2 : 4, rijen: smal ? 2 : 1 }
+          : // Kleine kaartjes, zodat alle achtergronden (en een paar nieuwe) op één bladzijde passen.
+            { kolommen: smal ? 3 : 6, rijen: smal ? (hoog >= 700 ? 4 : 3) : hoog >= 620 ? 2 : 1 };
     const blader = maakBladeraar(artikelen.map(kaart), { ...opties, klasse: `winkel__blader winkel__blader--${soort}` });
     vak.replaceChildren(blader.element);
     const i = artikelen.findIndex(gekozen);
@@ -207,6 +217,8 @@ export function WinkelScreen(manager: ScreenManager): Screen {
   });
   const opResize = () => teken();
   teken();
+  const meteenKopen = start?.koop && ARTIKELEN[soort].find((a) => a.id === start.koop);
+  if (meteenKopen && !heeft(meteenKopen.soort, meteenKopen.id)) vraagKoop(meteenKopen);
 
   const terug = maakTerugKnop(() => manager.pop());
   return {

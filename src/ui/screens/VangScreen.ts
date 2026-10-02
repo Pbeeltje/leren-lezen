@@ -95,6 +95,15 @@ export function VangScreen(manager: ScreenManager): Screen {
   balk.append(scoreEl, hartjes);
   el.appendChild(balk);
 
+  // Liggende telefoon: te weinig hoogte om de dingen op tijd te zien vallen. Dan vraagt een
+  // draaiend telefoontje om de telefoon rechtop te houden, en staat het spel stil. Moet
+  // gelijk blijven aan de media query van .vang-draai in screens.css.
+  const draaiNodig = window.matchMedia('(orientation: landscape) and (max-height: 500px) and (pointer: coarse)');
+  const draai = document.createElement('div');
+  draai.className = 'vang-draai';
+  draai.innerHTML = '<div class="vang-draai__telefoon"></div><p>Draai je telefoon</p>';
+  el.appendChild(draai);
+
   const speler = document.createElement('img');
   speler.className = 'vang-speler';
   speler.src = avatarPad(haalActiefProfiel()?.icoonId ?? 'kat');
@@ -244,6 +253,11 @@ export function VangScreen(manager: ScreenManager): Screen {
 
   function stap(t: number): void {
     if (!bezig) return;
+    if (draaiNodig.matches) {
+      vorigeT = t;
+      frame = requestAnimationFrame(stap);
+      return;
+    }
     const dt = Math.min(0.05, (t - (vorigeT || t)) / 1000);
     vorigeT = t;
     tijd += dt;

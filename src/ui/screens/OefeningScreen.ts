@@ -14,12 +14,10 @@ import {
 } from '../../engine/progressStore.ts';
 import {
   MUNTEN_OEFENING_GOED,
-  MUNTEN_OEFENING_HERHAALD,
+  MUNTEN_OEFENING_SET,
   MUNTEN_TOETS_GOED,
-  MUNTEN_TOETS_HERHAALD,
-  MUNTEN_TOETS_PERFECT_BONUS,
-  perGoed,
-  voorSet,
+  lesMunten,
+  toetsEindMunten,
 } from '../../engine/rewards.ts';
 import { type OefenModus, type OefeningNummer, genereerSessie, woordenVanOefening } from '../../engine/oefeningGenerator.ts';
 import { renderPlaatjeWoordKeuze } from '../../games/plaatjeWoordKeuze.ts';
@@ -37,7 +35,7 @@ import { TestResultScreen } from './TestResultScreen.ts';
 import { ChapterScreen } from './ChapterScreen.ts';
 import { maakVoortgangsbalk } from '../components/Voortgangsbalk.ts';
 import { maakAudioKnop } from '../components/AudioKnop.ts';
-import { speelAf, instructieAudioPad } from '../../engine/audioManager.ts';
+import { naHuidigeAudio, speelAf, instructieAudioPad } from '../../engine/audioManager.ts';
 
 export type { OefenModus };
 
@@ -99,10 +97,9 @@ export function OefeningScreen(
   // Vastgelegd bij het starten van déze poging (niet later herberekend): bepaalt of
   // deze poging als "eerste keer" of "herhaling" beloond wordt.
   const voortgangBijStart = haalKernVoortgang(kern.id);
-  const wasAlGeoefend = voortgangBijStart.gestart;
-  // Een eerdere toets met 0 sterren telt niet als "gehaald": een herkansing verdient dan
-  // gewoon de munten per goed antwoord.
-  const wasAlGehaald = voortgangBijStart.voltooid && voortgangBijStart.sterren > 0;
+  const herhaling =
+    modus === 'oefenen' ? voortgangBijStart.oefeningenAf.includes(oefeningNummer) : voortgangBijStart.sterren === 3;
+  const muntenPerGoed = lesMunten(modus === 'oefenen' ? MUNTEN_OEFENING_GOED : MUNTEN_TOETS_GOED, herhaling);
 
   const el = document.createElement('div');
   el.className = 'scherm';
@@ -131,8 +128,10 @@ export function OefeningScreen(
   let opruimen: (() => void) | null = null;
   let klaarMetDeze = false; // voorkomt dubbele afhandeling als overslaan en afgerond() elkaar kruisen
   let volgendeTimer: number | undefined;
+  let stopWachten: (() => void) | null = null;
   let gemountOp = 0;
   let onderbroken = false;
+  let isAfgerond = false; // de eindbonus maar één keer, ook als een winkelbezoek volgende() opnieuw plant
 
   function toonHuidige(): void {
     klaarMetDeze = false;
@@ -158,23 +157,15 @@ export function OefeningScreen(
     klaarMetDeze = true;
     if (juist) {
       aantalGoed++;
-      if (modus === 'oefenen') {
-        const munten = perGoed(wasAlGeoefend ? MUNTEN_OEFENING_HERHAALD : MUNTEN_OEFENING_GOED);
-        voegMuntenToe(munten);
-        muntenDitKeer += munten;
-      } else if (!wasAlGehaald) {
-        // Bij een hertoets van een al gehaalde kern komt er aan het eind één vast
-        // bedrag (MUNTEN_TOETS_HERHAALD) i.p.v. per-vraag munten — zie afronden().
-        voegMuntenToe(perGoed(MUNTEN_TOETS_GOED));
-        muntenDitKeer += perGoed(MUNTEN_TOETS_GOED);
-      }
+      voegMuntenToe(muntenPerGoed);
+      muntenDitKeer += muntenPerGoed;
     }
     // "zelf-typen" telt niet mee voor zijn eigen vrijspeelvoorwaarde; elke andere
     // vorm telt als geoefend, ongeacht of het antwoord goed was.
     if (oefening.type !== 'zelf-typen') {
       for (const woord of woordenVanOefening(oefening)) verhoogBlootstelling(woord);
     }
-    volgendeTimer = window.setTimeout(volgende, 900);
+    stopWachten = naHuidigeAudio(volgende, 300, 4000, 900); // eerst "Goed gedaan!" laten uitpraten
   }
 
   function overslaan(): void {
@@ -187,6 +178,8 @@ export function OefeningScreen(
 
   function volgende(): void {
     clearTimeout(volgendeTimer);
+    stopWachten?.();
+    stopWachten = null;
     opruimen?.();
     opruimen = null;
     huidigeIndex++;
@@ -198,16 +191,16 @@ export function OefeningScreen(
   }
 
   function afronden(): void {
+    if (isAfgerond) return;
+    isAfgerond = true;
     events.emit('sessie-klaar', undefined);
     if (modus === 'toets') {
       const fractie = aantalGoed / oefeningen.length;
       const sterren: 0 | 1 | 2 | 3 = fractie === 1 ? 3 : fractie >= 0.7 ? 2 : fractie >= 0.4 ? 1 : 0;
-      if (wasAlGehaald) {
-        voegMuntenToe(voorSet(MUNTEN_TOETS_HERHAALD));
-        muntenDitKeer += voorSet(MUNTEN_TOETS_HERHAALD);
-      } else if (fractie === 1) {
-        voegMuntenToe(voorSet(MUNTEN_TOETS_PERFECT_BONUS));
-        muntenDitKeer += voorSet(MUNTEN_TOETS_PERFECT_BONUS);
+      const eind = toetsEindMunten(fractie, herhaling);
+      if (eind > 0) {
+        voegMuntenToe(eind);
+        muntenDitKeer += eind;
       }
       markeerKernVoltooid(kern.id, sterren);
       speelSchermOvergang();
@@ -221,9 +214,11 @@ export function OefeningScreen(
       );
       return;
     }
-    verhoogOefenSessies(kern.id);
+    verhoogOefenSessies(kern.id, oefeningNummer);
     onAfgerond();
     manager.pop();
+    // Na de pop, zodat de muntenteller van het hoofdstukscherm de eindbonus laat oppulsen.
+    voegMuntenToe(lesMunten(MUNTEN_OEFENING_SET, herhaling));
   }
 
   if (modus === 'oefenen') {
@@ -282,6 +277,8 @@ export function OefeningScreen(
       // Anders loopt de sessie na "terug" onzichtbaar door (en pop't bij de laatste vraag
       // het hoofdstukscherm weg).
       clearTimeout(volgendeTimer);
+      stopWachten?.();
+      stopWachten = null;
       opruimen?.();
       opruimen = null;
       el.remove();

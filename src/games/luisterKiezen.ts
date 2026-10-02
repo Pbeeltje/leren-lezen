@@ -20,6 +20,7 @@ export function renderLuisterKiezen(
   kaart.appendChild(rij);
 
   let afgehandeld = false;
+  let stopWachten: (() => void) | null = null;
 
   for (const optie of vraag.opties) {
     const knop = document.createElement('button');
@@ -36,7 +37,7 @@ export function renderLuisterKiezen(
         afgehandeld = true;
         knop.classList.add('gevonden');
         toonGoedFeedback();
-        naHuidigeAudio(afgerond);
+        stopWachten = naHuidigeAudio(afgerond);
         return;
       }
 
@@ -50,5 +51,10 @@ export function renderLuisterKiezen(
   container.appendChild(kaart);
   speelAf(woordAudioPad(vraag.doel.woord));
 
-  return { vernietig: () => container.replaceChildren() };
+  return {
+    vernietig: () => {
+      stopWachten?.();
+      container.replaceChildren();
+    },
+  };
 }

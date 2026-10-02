@@ -1,9 +1,9 @@
 import { speelDrum, type DrumSoort } from '../../engine/muziek.ts';
 
 // Drumstel met zelfgetekende onderdelen: grote trom (rood), snaredrum (blauw, plat met
-// snaren eronder), tom (groen), bekken (goud) en crash (oranje, groter en schuin). Ritme
-// gebruikt alleen grote trom, snare en bekken; vrij spelen het hele stel. Elke trom is een
-// eigen knop, zodat twee vingers tegelijk kunnen trommelen.
+// snaren eronder), tom (groen), bekken (goud) en crash (oranje, groter en schuin). Vrij
+// spelen toont het hele stel. Ritme bouwt op: bas + snare, dan bekken, dan tom, dan crash.
+// Elke trom is een eigen knop, zodat twee vingers tegelijk kunnen trommelen.
 
 export const DRUM_KLEUR: Record<DrumSoort, string> = {
   bas: '#e53935',
@@ -64,9 +64,13 @@ export function maakDrumstel(
   soorten: DrumSoort[],
   opTik?: (soort: DrumSoort) => void,
   nieuw?: DrumSoort,
-): { element: HTMLElement; licht: (soort: DrumSoort) => void; zetActief: (aan: boolean) => void } {
+): { element: HTMLElement; licht: (soort: DrumSoort) => void; zetActief: (aan: boolean) => void; opruimen: () => void } {
   const el = document.createElement('div');
-  el.className = `drumstel drumstel--${soorten.length}`;
+  // Tom en crash hebben alleen maten binnen drumstel--5. Niveau 3 heeft de tom nog
+  // zonder crash: zelfde klasse, maar een raster zonder lege crash-plek. Vijf drums
+  // (vrij spelen, ritme vanaf niveau 4) houdt het gewone vijfraster.
+  const vier = soorten.includes('tom') && !soorten.includes('crash');
+  el.className = vier || soorten.length === 5 ? 'drumstel drumstel--5' : `drumstel drumstel--${soorten.length}`;
   let actief = true;
   const pads = new Map<DrumSoort, HTMLButtonElement>();
 
@@ -98,6 +102,23 @@ export function maakDrumstel(
     pad.classList.add('drum-pad--bonk');
   }
 
+  let opruimen = (): void => {};
+  if (vier) {
+    const mq = window.matchMedia('(orientation: landscape) and (max-height: 600px)');
+    const zet = (): void => {
+      if (mq.matches) {
+        el.style.gridTemplateColumns = 'repeat(4, minmax(0, 1fr))';
+        el.style.gridTemplateAreas = '"tom snare bas bekken"';
+      } else {
+        el.style.gridTemplateColumns = 'repeat(4, minmax(0, 1fr))';
+        el.style.gridTemplateAreas = '"tom tom bekken bekken" "snare snare bas bas"';
+      }
+    };
+    zet();
+    mq.addEventListener('change', zet);
+    opruimen = () => mq.removeEventListener('change', zet);
+  }
+
   return {
     element: el,
     licht,
@@ -105,5 +126,6 @@ export function maakDrumstel(
       actief = aan;
       el.classList.toggle('drumstel--voor', !aan);
     },
+    opruimen,
   };
 }

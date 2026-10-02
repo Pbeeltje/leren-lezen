@@ -3,7 +3,7 @@ import { confetti } from '../../three/particles.ts';
 
 // Eindkaart na een heel kleuterhoofdstuk: beker, drie sterren en één grote knop om terug
 // te gaan. Geen tekst nodig om hem te snappen; de achtergrond viert feest (vulkaan!).
-export function toonKlaarKaart(container: HTMLElement, onVerder: () => void): void {
+export function toonKlaarKaart(container: HTMLElement, onVerder: () => void, muntenVerdiend?: number): void {
   container.innerHTML = '';
   const kaart = document.createElement('div');
   kaart.className = 'oefen-kaart klaar-kaart';
@@ -38,4 +38,15 @@ export function toonKlaarKaart(container: HTMLElement, onVerder: () => void): vo
   container.appendChild(kaart);
   confetti.vuurwerk('groot');
   events.emit('sessie-klaar', undefined);
+
+  if (muntenVerdiend === undefined) return;
+  const rij = document.createElement('div');
+  rij.className = 'resultaat-munten-rij';
+  const icoon = document.createElement('img');
+  icoon.src = 'assets/icons/munt.svg';
+  icoon.alt = '';
+  const tekst = document.createElement('span');
+  tekst.textContent = `+${muntenVerdiend} munten`;
+  rij.append(icoon, tekst);
+  knop.before(rij);
 }

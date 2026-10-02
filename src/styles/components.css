@@ -691,6 +691,11 @@
 
 .winkel__tab img { width: 36px; height: 36px; }
 .winkel__tab--aan { background: #fff; box-shadow: 0 4px 0 rgba(0, 0, 0, 0.15); }
+/* Drie tabbladen passen op een telefoon alleen als plaatje. */
+@media (max-width: 600px) {
+  .winkel__tab { padding: 6px 14px; }
+  .winkel__tab span { display: none; }
+}
 
 .winkel__vak {
   width: min(760px, 100%);

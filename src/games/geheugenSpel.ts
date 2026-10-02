@@ -1,5 +1,5 @@
 import type { GeheugenKaart } from '../engine/geheugenGenerator.ts';
-import { speelAf, woordAudioPad } from '../engine/audioManager.ts';
+import { naHuidigeAudio, speelAf, woordAudioPad } from '../engine/audioManager.ts';
 import { toonGoedFeedback } from '../ui/components/FeedbackOverlay.ts';
 
 // Klassiek geheugenspel (kaarten omdraaien, paren zoeken) -- puur visueel te spelen,
@@ -9,6 +9,7 @@ import { toonGoedFeedback } from '../ui/components/FeedbackOverlay.ts';
 export function renderGeheugenSpel(
   container: HTMLElement,
   kaarten: GeheugenKaart[],
+  paarGevonden: () => void,
   afgerond: () => void,
 ): { vernietig: () => void } {
   container.innerHTML = '';
@@ -20,6 +21,7 @@ export function renderGeheugenSpel(
   let eersteOmgedraaid: { kaart: GeheugenKaart; knop: HTMLButtonElement } | null = null;
   let vergrendeld = false;
   let gevondenParen = 0;
+  let stopWachten: (() => void) | null = null;
   const totaalParen = kaarten.length / 2;
 
   for (const kaart of kaarten) {
@@ -54,12 +56,19 @@ export function renderGeheugenSpel(
       if (eerste.kaart.woord.woord === tweede.kaart.woord.woord) {
         eerste.knop.classList.add('gevonden');
         tweede.knop.classList.add('gevonden');
-        toonGoedFeedback();
         gevondenParen++;
-        if (gevondenParen === totaalParen) {
-          vergrendeld = true;
-          setTimeout(afgerond, 900);
-        }
+        paarGevonden();
+        const laatste = gevondenParen === totaalParen;
+        // Bord dicht tot woord en "Goed zo!" uitgesproken zijn: de volgende kaart speelt
+        // zijn woord af en zou de feedback anders meteen afkappen.
+        vergrendeld = true;
+        const verder = () => (laatste ? afgerond() : (vergrendeld = false));
+        stopWachten = naHuidigeAudio(() => {
+          // Scherm intussen weg (bv. winkel): geen "Goed zo!" over het volgende scherm heen.
+          if (!bord.isConnected) return verder();
+          toonGoedFeedback();
+          stopWachten = naHuidigeAudio(verder, laatste ? 300 : 100, 4000, laatste ? 900 : 0);
+        }, 0, 2500);
       } else {
         vergrendeld = true;
         setTimeout(() => {
@@ -73,5 +82,10 @@ export function renderGeheugenSpel(
     bord.appendChild(knop);
   }
 
-  return { vernietig: () => container.replaceChildren() };
+  return {
+    vernietig: () => {
+      stopWachten?.();
+      container.replaceChildren();
+    },
+  };
 }

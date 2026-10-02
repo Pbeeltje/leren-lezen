@@ -1808,6 +1808,199 @@
 }
 .muziek-wissel__knop img { width: 32px; height: 32px; }
 .muziek-wissel__knop--aan { background: #fff; outline: 4px solid var(--kleur-munt); }
+/* Nog niet gekocht: grijs plaatje met een slotje in de hoek (tik = koopvenster). */
+.muziek-wissel__knop { position: relative; }
+.muziek-wissel__knop .muziek-wissel__slot { display: none; }
+.muziek-wissel__knop--slot > img:first-child { filter: grayscale(0.85) opacity(0.6); }
+.muziek-wissel__knop--slot > span { opacity: 0.6; }
+.muziek-wissel__knop--slot .muziek-wissel__slot { display: block; position: absolute; top: -5px; right: -5px; width: 24px; height: 24px; }
+/* De munt naast de instrumenten: naar de instrumenten in de winkel. */
+.muziek-winkel-knop {
+  flex: 0 0 auto;
+  width: 52px;
+  height: 52px;
+  padding: 0;
+  border-radius: 50%;
+  background: transparent;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.muziek-winkel-knop img { width: 100%; height: 100%; filter: drop-shadow(0 3px 0 rgba(0, 0, 0, 0.18)); }
+.muziek-winkel-knop:active { transform: translateY(2px); }
+/* Speel na: kleine ronde knoppen (alleen plaatjes) rechtsboven in de kaart. */
+.muziek-instrumenten { display: flex; align-items: center; gap: 4px; align-self: flex-end; margin: -18px -18px 0 0; }
+.muziek-instrumenten .muziek-wissel__knop { width: 46px; height: 46px; padding: 0; justify-content: center; background: #eef3fb; }
+.muziek-instrumenten .muziek-wissel__knop > span { display: none; }
+.muziek-instrumenten .muziek-wissel__knop > img:first-child { width: 32px; height: 32px; }
+.muziek-instrumenten .muziek-wissel__knop--aan { background: #fff; outline-width: 3px; }
+.muziek-instrumenten .muziek-wissel__knop--slot .muziek-wissel__slot { width: 18px; height: 18px; top: -3px; right: -3px; }
+.muziek-instrumenten .muziek-winkel-knop { width: 46px; height: 46px; }
+@media (max-width: 560px) {
+  .muziek-instrumenten .muziek-wissel__knop, .muziek-instrumenten .muziek-winkel-knop { width: 38px; height: 38px; }
+  .muziek-instrumenten .muziek-wissel__knop > img:first-child { width: 27px; height: 27px; }
+}
+/* Weinig hoogte: als kolom rechts in de kaart, anders valt het instrument onder de rand. */
+@media (max-height: 820px) {
+  .muziek-instrumenten { position: absolute; top: 50%; right: 8px; transform: translateY(-50%); flex-direction: column; gap: 4px; margin: 0; }
+  .muziek-kaart:has(> .muziek-instrumenten) { padding-right: 64px; }
+}
+
+/* ---------- Snaarinstrumenten (gitaar, harp, steelgitaar) ---------- */
+/* Zelfde knoppen als de xylofoonstaven, maar dan als gekleurde snaar over een klankkast.
+   Elke knop is een brede strook, zodat de snaar makkelijk te raken is. */
+.xylofoon.xylofoon--snaren {
+  position: relative;
+  gap: 0;
+  align-items: stretch;
+  max-width: 760px;
+  padding: 0 4%;
+}
+.muziek-kaart .xylofoon.xylofoon--snaren .xylofoon__staaf,
+.xylofoon.xylofoon--snaren .xylofoon__staaf {
+  max-width: none;
+  height: auto;
+  min-height: 0;
+  padding: 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+}
+.xylofoon--snaren .xylofoon__staaf::before {
+  top: 0;
+  bottom: 0;
+  width: var(--dikte);
+  height: auto;
+  margin-left: calc(var(--dikte) / -2);
+  border-radius: 99px;
+  background: linear-gradient(90deg, rgba(0, 0, 0, 0.25), transparent 35%, rgba(255, 255, 255, 0.6) 50%, transparent 65%), var(--kleur);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.35);
+}
+.xylofoon--snaren .xylofoon__staaf::after { display: none; }
+.xylofoon--snaren .xylofoon__staaf--aan { animation: snaar-knop 0.6s ease-out; }
+.xylofoon--snaren .xylofoon__staaf--aan::before { animation: snaar-tril 0.6s ease-out; }
+@keyframes snaar-knop { from { filter: brightness(1.3); } to { filter: none; } }
+@keyframes snaar-tril {
+  0% { transform: translateX(-5px); box-shadow: 0 0 0 3px #fff, 0 0 20px 6px var(--kleur); }
+  15% { transform: translateX(4px); }
+  30% { transform: translateX(-3px); }
+  45% { transform: translateX(2px); box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.7), 0 0 12px 3px var(--kleur); }
+  60% { transform: translateX(-1px); }
+  100% { transform: none; }
+}
+/* Gitaar: houten blad met klankgat; de snaren lopen van de witte kam tot de brug. */
+.xylofoon--gitaar {
+  border: 6px solid #8a4b1d;
+  border-top: 14px solid #f3ead7;
+  border-radius: 36px;
+  background:
+    radial-gradient(circle min(15vh, 105px) at 50% 44%, #3b2210 0 80%, #b86b2c 81% 90%, #f7d39b 91% 100%, transparent 101%),
+    linear-gradient(to bottom, transparent 82%, #5b3417 82% 88%, transparent 88%),
+    linear-gradient(100deg, #e39a4c, #f6c27e 45%, #e09649);
+  box-shadow: 0 6px 0 rgba(0, 0, 0, 0.15);
+}
+.xylofoon--gitaar .xylofoon__staaf::before { bottom: 15%; }
+/* Harp: gouden zuil links, gebogen hals bovenaan, klankkast onderaan; lange snaren laag,
+   korte hoog (zelfde lengtes als de xylofoon), met een goudkleurig stemknopje bovenaan. */
+.xylofoon.xylofoon--harp {
+  align-items: flex-end;
+  padding: 22px 4% 0 5%;
+  border-left: 18px solid #e6a800;
+  border-bottom: 16px solid #a0561d;
+  border-radius: 18px 80px 10px 18px;
+  background:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100' preserveAspectRatio='none'%3E%3Cpolygon points='0,-3 100,45 100,51 0,3' fill='%23e6a800'/%3E%3C/svg%3E") content-box no-repeat,
+    linear-gradient(160deg, #fff8e1, #ffecb3);
+  background-size: 100% 100%, auto;
+  box-shadow: 0 6px 0 rgba(0, 0, 0, 0.15);
+}
+.muziek-kaart .xylofoon.xylofoon--harp .xylofoon__staaf,
+.xylofoon.xylofoon--harp .xylofoon__staaf { height: var(--lengte); }
+.xylofoon--harp .xylofoon__staaf::after {
+  display: block;
+  top: -6px;
+  bottom: auto;
+  width: 12px;
+  height: 12px;
+  margin-left: -6px;
+  background: #fff3c4;
+  box-shadow: 0 0 0 3px #c68a00;
+}
+/* Steelgitaar (Hawaii): ligt plat op schoot, glanzend blad met fretlijntjes, stippen en
+   een chromen element; je speelt hem met een metalen staafje (vandaar het glijden). */
+.xylofoon--steelgitaar {
+  border: 6px solid #0e3a40;
+  border-top: 14px solid #cfd8dc;
+  border-radius: 22px;
+  background:
+    radial-gradient(circle at 50% 24%, #fff 0 5px, transparent 6px),
+    radial-gradient(circle at 50% 48%, #fff 0 5px, transparent 6px),
+    linear-gradient(to bottom, transparent 77%, #90a4ae 77%, #eceff1 81%, #90a4ae 86%, transparent 86%),
+    repeating-linear-gradient(to bottom, transparent 0 calc(12% - 2px), rgba(255, 255, 255, 0.45) calc(12% - 2px) 12%) top / 100% 72% no-repeat,
+    linear-gradient(100deg, #1b6d73, #2a9aa0 45%, #17575d);
+  box-shadow: 0 6px 0 rgba(0, 0, 0, 0.15);
+}
+.xylofoon--steelgitaar .xylofoon__staaf::before { bottom: 10%; }
+/* Keyboard: zwarte kast met lampjes, witte toetsen met onderaan een gekleurd vlakje (de
+   kleur van de toon), en zwarte toetsen als versiering (tikken daarop speelt de witte). */
+.xylofoon.xylofoon--keyboard {
+  gap: 3px;
+  align-items: stretch;
+  max-width: 760px;
+  padding: 34px 14px 14px;
+  border-radius: 22px;
+  background:
+    radial-gradient(circle at 24px 17px, #ff5252 0 5px, transparent 6px),
+    radial-gradient(circle at 42px 17px, #69f0ae 0 5px, transparent 6px),
+    linear-gradient(to right, transparent calc(100% - 120px), #111 calc(100% - 120px) calc(100% - 24px), transparent calc(100% - 24px)) 0 10px / 100% 14px no-repeat,
+    linear-gradient(#3a3a3a, #1c1c1c);
+  box-shadow: 0 6px 0 rgba(0, 0, 0, 0.2);
+}
+.muziek-kaart .xylofoon.xylofoon--keyboard .xylofoon__staaf,
+.xylofoon.xylofoon--keyboard .xylofoon__staaf {
+  max-width: none;
+  height: auto;
+  min-height: 0;
+  padding: 0;
+  border-radius: 0 0 10px 10px;
+  background: linear-gradient(#f4f4f4, #fff 30%);
+  box-shadow: inset 0 -10px 0 #dcdcdc, 0 2px 0 rgba(0, 0, 0, 0.4);
+}
+.xylofoon--keyboard .xylofoon__staaf::before {
+  top: auto;
+  bottom: 18px;
+  left: 18%;
+  width: 64%;
+  height: 16%;
+  margin: 0;
+  border-radius: 8px;
+  background: var(--kleur);
+}
+.xylofoon--keyboard .xylofoon__staaf::after { display: none; }
+.xylofoon--keyboard .xylofoon__staaf[data-zwart]::after {
+  display: block;
+  top: 0;
+  bottom: auto;
+  left: auto;
+  right: calc(-30% - 2px);
+  width: 60%;
+  height: 58%;
+  margin: 0;
+  border-radius: 0 0 6px 6px;
+  background: linear-gradient(#444, #111 85%, #333);
+  z-index: 2;
+}
+.xylofoon--keyboard .xylofoon__staaf--aan { animation: toets-aan 0.35s ease-out; }
+@keyframes toets-aan {
+  0% { transform: translateY(3px); background: color-mix(in srgb, var(--kleur) 30%, #fff); box-shadow: inset 0 -4px 0 #dcdcdc; }
+  100% { transform: none; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .xylofoon--keyboard .xylofoon__staaf--aan { animation: none; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .xylofoon--snaren .xylofoon__staaf--aan, .xylofoon--snaren .xylofoon__staaf--aan::before { animation: none; }
+}
 @media (prefers-reduced-motion: reduce) {
   .drum-pad--bonk, .drum-pad--nieuw, .drum-pad--bekken.drum-pad--bonk { animation: none; }
 }
@@ -2128,6 +2321,18 @@
 @media (max-width: 640px) {
   .muziek-vrij-scherm .muziek-wissel { align-self: flex-end; }
 }
+/* Vijf instrumenten en de munt: alleen met namen erbij als er echt ruimte is. */
+@media (max-width: 1099px) {
+  .muziek-vrij-scherm .muziek-wissel__knop { width: 56px; height: 56px; padding: 0; justify-content: center; }
+  .muziek-vrij-scherm .muziek-wissel__knop > span { display: none; }
+  .muziek-vrij-scherm .muziek-wissel__knop > img:first-child { width: 36px; height: 36px; }
+}
+@media (max-width: 640px) {
+  .muziek-vrij-scherm .muziek-wissel { gap: 3px; padding-left: 92px; flex-wrap: wrap; justify-content: flex-end; }
+  .muziek-vrij-scherm .muziek-wissel__knop, .muziek-vrij-scherm .muziek-winkel-knop { width: 36px; height: 36px; }
+  .muziek-vrij-scherm .muziek-wissel__knop > img:first-child { width: 26px; height: 26px; }
+  .muziek-vrij-scherm .muziek-wissel__knop--slot .muziek-wissel__slot { width: 18px; height: 18px; top: -4px; right: -4px; }
+}
 .muziek-vrij-scherm .muziek-kaart--vrij {
   flex: 1 1 0;
   min-height: 0;
@@ -2149,4 +2354,178 @@
   .muziek-vrij-scherm .muziek-wissel { min-height: 60px; }
   .muziek-vrij-scherm .drumstel.drumstel--5 { max-width: min(100%, calc((100dvh - 110px) * 5)); }
   .muziek-vrij-scherm .drumstel.drumstel--5 .drum-pad { max-height: calc(100dvh - 130px); max-width: calc(100dvh - 130px); }
+}
+
+/* ---------- Telefoon liggend (weinig hoogte) ---------- */
+/* Op een liggende telefoon is er maar ~380px hoogte. Zonder deze regels vielen de
+   antwoorden onder de rand (en moest een kind zelf gaan scrollen), toonde het
+   onderwerpenscherm maar 3 van de tegels en de hoofdstuklijst maar één hoofdstuk. */
+@media (orientation: landscape) and (max-height: 500px) {
+  /* Tegels: kleiner en 4 per rij, zodat alle onderwerpen in beeld staan. */
+  .tegel-grid {
+    --tegel: clamp(96px, calc((100dvh - 150px) / 2), 130px);
+    gap: 14px;
+    max-width: calc(4 * var(--tegel) + 3 * 14px + 8px);
+    max-height: calc(100dvh - 90px);
+  }
+  .tegel-grid .icoon-tegel { width: var(--tegel); height: var(--tegel); padding: 8px; gap: 4px; }
+  .tegel-grid .icoon-tegel__plaatje { width: calc(var(--tegel) * 0.45); height: calc(var(--tegel) * 0.45); }
+  .tegel-grid .icoon-tegel__label { font-size: 0.85rem; line-height: 1.15; overflow-wrap: normal; }
+  .kern-lijst { max-height: calc(100dvh - 100px); }
+
+  /* Vraagkaart in twee kolommen: de vraag (plaatje, letter, dobbelsteen, bus) links en
+     de antwoorden rechts. Kaarten met maar één kind (drie-koppelen) en muziek niet. */
+  .scherm:has(.voortgangsbalk) .oefen-kaart:has(> :nth-child(2)):not(.muziek-kaart) {
+    display: grid;
+    grid-template-columns: auto auto;
+    justify-content: center;
+    column-gap: 32px;
+    row-gap: 0;
+    align-items: center;
+    justify-items: center;
+    align-content: center;
+    width: min(94vw, 780px);
+  }
+  .scherm:has(.voortgangsbalk) .oefen-kaart:has(> :nth-child(2)):not(.muziek-kaart) > * { grid-column: 2; margin: 5px 0; }
+  .scherm:has(.voortgangsbalk) .oefen-kaart:has(> :nth-child(2)):not(.muziek-kaart) > :first-child { grid-column: 1; grid-row: 1 / span 6; }
+  .oefen-kaart__plaatje { width: clamp(96px, calc(100dvh - 250px), 150px); height: clamp(96px, calc(100dvh - 250px), 150px); }
+  /* Blokjes: sleuven en 3D-vlak wat lager, anders zakt de kaart onder de rand. De blokjes
+     schalen mee met de hoogte van het vlak (letterBlocks.ts). */
+  .blokken-canvas { height: 140px; }
+  .doel-sleuf { width: 54px; height: 54px; font-size: 1.6rem; }
+  .scherm:has(.voortgangsbalk) .oefen-kaart:has(> .blokken-canvas):not(.muziek-kaart) { padding-top: 10px; padding-bottom: 10px; }
+  .scherm:has(.voortgangsbalk) .oefen-kaart:has(> .blokken-canvas):not(.muziek-kaart) > * { margin: 3px 0; }
+  /* Bussom: de kleine bus van de staande telefoon. */
+  .bus-scene { align-items: center; gap: 6px; }
+  .bus { width: 196px; height: 112px; padding: 10px 34px 24px 10px; flex-shrink: 0; }
+  .bus::before, .bus::after { width: 30px; height: 30px; bottom: -16px; border-width: 5px; }
+  .bus::before { left: 26px; }
+  .bus::after { right: 34px; }
+  .bus-poppetje { width: 22px; height: 30px; }
+  .bus-scene { width: auto; }
+  .bus-halte { min-width: 0; }
+  .bus-halte__pijl { font-size: 2.4rem; }
+  .bus-halte__groep { max-width: 100px; }
+  .bus-halte__label { font-size: 1rem; text-align: center; }
+  .oefen-kaart__som { font-size: 2.4rem; }
+  /* Drie antwoorden naast een bus of een rij plaatjes: anders valt de derde knop
+     (88px) op een tweede rij en onder de rand. */
+  .keuze-rij { flex-wrap: nowrap; width: auto; }
+  .keuze-knop { min-width: 64px; min-height: 64px; padding: 8px 14px; }
+  .dubbele-dobbelsteen-rij { gap: 8px; }
+  .dubbele-dobbelsteen-rij .dobbelsteen { width: 100px; height: 100px; padding: 10px; gap: 4px; border-radius: 16px; }
+  .dubbele-dobbelsteen-rij .dobbelsteen__punt { width: 14px; height: 14px; }
+  .dobbelsteen { width: 110px; height: 110px; padding: 12px; }
+  .telplaatjes-rij__plaatje { width: 40px; height: 40px; }
+
+  /* Typen: plaatje, invoerveld en knop links, het toetsenbord rechts.
+     De :first-child-regel hierboven zet grid-row op span 6 en is specifieker dan
+     `> *`, dus die moet hier opnieuw. */
+  .scherm:has(.voortgangsbalk) .oefen-kaart:has(> .scherm-toetsenbord):not(.muziek-kaart) > * { grid-column: 1; grid-row: auto; }
+  .scherm:has(.voortgangsbalk) .oefen-kaart:has(> .scherm-toetsenbord):not(.muziek-kaart) > :first-child { grid-column: 1; grid-row: auto; }
+  .scherm:has(.voortgangsbalk) .oefen-kaart:has(> .scherm-toetsenbord):not(.muziek-kaart) > .scherm-toetsenbord { grid-column: 2; grid-row: 1 / span 6; width: min(52vw, 440px); }
+  .scherm-toetsenbord--cijfers { width: min(42vw, 300px); }
+  .reeks-invoer.reeks-invoer { width: 64px; height: 64px; min-width: 64px; font-size: 1.8rem; }
+  .scherm:has(.voortgangsbalk) .oefen-kaart:has(> .scherm-toetsenbord):not(.muziek-kaart) { padding-top: 10px; padding-bottom: 10px; }
+  .scherm:has(.voortgangsbalk) .oefen-kaart:has(> .scherm-toetsenbord):not(.muziek-kaart) > :not(.scherm-toetsenbord) { margin: 3px 0; }
+  .oefen-kaart:has(.scherm-toetsenbord) .oefen-kaart__plaatje { width: 72px; height: 72px; }
+  .oefen-kaart:has(.scherm-toetsenbord) .typen-invoer--scherm { min-height: 48px; padding-top: 4px; padding-bottom: 4px; }
+  .oefen-kaart:has(.scherm-toetsenbord) .typen-knop { min-height: 48px; padding-top: 8px; padding-bottom: 8px; }
+  .scherm-toets { height: 42px; }
+  .scherm-toetsenbord--cijfers .scherm-toets { height: 44px; }
+
+  /* Toetsuitslag: de witte kaart viel er onderaan net af. */
+  .profiel-vorm:has(> .resultaat-cijfer) { padding: 18px 32px; gap: 12px; }
+  .resultaat-cijfer { font-size: 3.2rem; }
+
+  /* Drie koppelen: plaatjes boven, woorden eronder (de lijnen lopen dan van boven naar
+     beneden, zie drieKoppelen.ts). */
+  .koppel-rijen { flex-direction: column; gap: 44px; }
+  .koppel-kolom { flex-direction: row; gap: 18px; justify-content: center; }
+  .koppel-plaatje { width: 76px; height: 76px; }
+  .koppel-woord { height: 76px; min-width: 96px; }
+
+  /* Schrijven: het voorbeeld links, het overtrekvlak rechts en zo hoog als het kan. */
+  .schrijf-kaart .overtrek__vlak { height: calc(100dvh - 190px); }
+  .schrijf-kaart .schrijf-hint { flex-direction: column; gap: 6px; }
+
+  /* Muziek: xylofoon en drums laag genoeg dat ze helemaal in beeld staan. */
+  .muziek-kaart { width: min(94vw, 780px); gap: 10px; }
+  .muziek-kaart .xylofoon { height: calc(100dvh - 215px); }
+  .muziek-kaart .xylofoon__staaf { max-width: 80px; }
+  .muziek-kaart--drums .drumstel { min-height: 0; }
+  .muziek-kaart .drum-pad--bas { width: 130px; height: 130px; }
+  .muziek-kaart .drum-pad--snare { width: 100px; height: 90px; }
+  .muziek-kaart .drum-pad--bekken { width: 110px; height: 110px; }
+  /* Speel na: de instrumentknoppen als smalle kolom rechts in de kaart, niet erboven. */
+  .muziek-instrumenten { position: absolute; top: 50%; right: 8px; transform: translateY(-50%); flex-direction: column; gap: 3px; margin: 0; }
+  .muziek-kaart:has(> .muziek-instrumenten) { padding-right: 60px; }
+  .muziek-instrumenten .muziek-wissel__knop, .muziek-instrumenten .muziek-winkel-knop { width: 34px; height: 34px; }
+  .muziek-instrumenten .muziek-wissel__knop > img:first-child { width: 24px; height: 24px; }
+}
+
+/* ---------- Tablet/laptop liggend (501–820px hoog) ---------- */
+/* Op 1024×768 (iPad liggend) liepen woord bouwen en typen net onder de rand. Alleen wat
+   lucht eruit en kleinere plaatjes; toetsen blijven tabletgroot. */
+@media (orientation: landscape) and (min-height: 501px) and (max-height: 820px) {
+  .scherm:has(.voortgangsbalk) { gap: 16px; }
+  /* Schrijven en muziek hebben een titel boven de instructie; die kost ~90px en de
+     instructie + luisterknop zeggen al wat er moet (zoals op de liggende telefoon). */
+  .scherm:has(.voortgangsbalk) .scherm-titel { display: none; }
+  .oefen-kaart:has(> .blokken-canvas) { gap: 16px; }
+  .oefen-kaart:has(> .blokken-canvas) .oefen-kaart__plaatje { width: 112px; height: 112px; }
+  .oefen-kaart:has(.scherm-toetsenbord) { gap: 8px; }
+  .oefen-kaart:has(.scherm-toetsenbord) .oefen-kaart__plaatje { width: 84px; height: 84px; }
+  /* Cijfer typen: bij 6–10 plaatjes staan die in twee rijen (vijfstructuur). */
+  .oefen-kaart:has(.scherm-toetsenbord--cijfers) { gap: 6px; padding-top: 12px; padding-bottom: 12px; }
+  .oefen-kaart:has(.scherm-toetsenbord--cijfers) .telplaatjes-rij__plaatje { width: 48px; height: 48px; }
+  .oefen-kaart:has(.scherm-toetsenbord) .reeks-invoer.reeks-invoer { width: 64px; min-width: 64px; height: 64px; }
+  .scherm-toetsenbord--cijfers .scherm-toets { height: 48px; }
+}
+
+/* Vangspel op een liggende telefoon: eerst draaien (het spel staat dan stil, zie
+   VangScreen.ts). Een telefoontje dat van liggend naar staand draait; geen leestekst nodig. */
+.vang-draai { display: none; }
+@media (orientation: landscape) and (max-height: 500px) and (pointer: coarse) {
+  .vang-draai {
+    position: absolute;
+    inset: 0;
+    z-index: 4;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 18px;
+    background: rgba(10, 15, 35, 0.8);
+    color: #fff;
+    font-size: 1.4rem;
+    font-weight: 800;
+  }
+  .vang-draai p { margin: 0; }
+  .vang-draai__telefoon {
+    width: 70px;
+    height: 120px;
+    border: 7px solid #fff;
+    border-radius: 16px;
+    position: relative;
+    animation: vang-draai 2.2s ease-in-out infinite;
+  }
+  .vang-draai__telefoon::after {
+    content: '';
+    position: absolute;
+    left: 50%;
+    bottom: 6px;
+    width: 14px;
+    height: 14px;
+    margin-left: -7px;
+    border-radius: 50%;
+    background: #fff;
+  }
+}
+@keyframes vang-draai {
+  0%, 15% { transform: rotate(-90deg); }
+  55%, 100% { transform: rotate(0deg); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .vang-draai__telefoon { animation: none; }
 }

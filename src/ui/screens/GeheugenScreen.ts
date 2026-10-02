@@ -2,7 +2,7 @@ import type { Screen, ScreenManager } from '../../engine/screenManager.ts';
 import { maakTerugKnop } from '../components/TerugKnop.ts';
 import { maakTopRechtsBalk } from '../components/TopRechtsBalk.ts';
 import { voegMuntenToe } from '../../engine/progressStore.ts';
-import { MUNTEN_TOETS_GOED, perGoed } from '../../engine/rewards.ts';
+import { MUNTEN_GEHEUGEN_BORD, MUNTEN_GEHEUGEN_PAAR, kleuterFactor } from '../../engine/rewards.ts';
 import { genereerGeheugenbord } from '../../engine/geheugenGenerator.ts';
 import { renderGeheugenSpel } from '../../games/geheugenSpel.ts';
 import { confetti } from '../../three/particles.ts';
@@ -34,6 +34,7 @@ export function GeheugenScreen(manager: ScreenManager, aantalParen = 4): Screen 
   let actief = true;
   let timer: number | undefined;
   let bordenKlaar = 0;
+  let verdiend = 0;
   // Wat er nog moest gebeuren toen het scherm (bv. voor de winkel) werd weggehaald.
   let wacht: (() => void) | null = null;
   let onderbroken = false;
@@ -44,8 +45,13 @@ export function GeheugenScreen(manager: ScreenManager, aantalParen = 4): Screen 
     const kaarten = genereerGeheugenbord(aantalParen);
     // Geen actief-check hier: een bord dat net klaar is terwijl het kind in de winkel zit,
     // telt gewoon mee; de volgende stap wacht dan tot het terug is (zie `wacht`).
-    opruimen = renderGeheugenSpel(oefenContainer, kaarten, () => {
-      voegMuntenToe(perGoed(MUNTEN_TOETS_GOED));
+    const betaal = (basis: number): void => {
+      const munten = kleuterFactor(basis);
+      voegMuntenToe(munten);
+      verdiend += munten;
+    };
+    opruimen = renderGeheugenSpel(oefenContainer, kaarten, () => betaal(MUNTEN_GEHEUGEN_PAAR), () => {
+      betaal(MUNTEN_GEHEUGEN_BORD);
       bordenKlaar++;
       if (bordenKlaar >= AANTAL_BORDEN) {
         wacht = () => {
@@ -54,7 +60,7 @@ export function GeheugenScreen(manager: ScreenManager, aantalParen = 4): Screen 
           opruimen?.();
           opruimen = null;
           instructie.style.display = 'none';
-          toonKlaarKaart(oefenContainer, () => manager.pop());
+          toonKlaarKaart(oefenContainer, () => manager.pop(), verdiend);
         };
         timer = window.setTimeout(wacht, 1000);
         return;

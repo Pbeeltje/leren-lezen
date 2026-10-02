@@ -68,22 +68,40 @@ export function stopAudio(): void {
 /**
  * Roept `fn` aan zodra wat er nu speelt (bv. "Goed gedaan!") klaar is, plus een korte
  * stilte, zodat het volgende woord niet meteen tegen de feedback aan plakt. Nooit langer
- * dan `maxMs` wachten, voor als een clipje hapert.
+ * dan `maxMs` wachten, voor als een clipje hapert, en nooit eerder dan `minMs` na de
+ * aanroep (ook zonder geluid, bv. gedempt, blijft de feedback even staan). Wordt het
+ * clipje gestopt (scherm weg, ander geluid), dan gaat het ook verder. Geeft een functie
+ * terug die het wachten afbreekt: roep die aan bij opruimen/unmount.
  */
-export function naHuidigeAudio(fn: () => void, stilteMs = 800, maxMs = 4000): void {
+export function naHuidigeAudio(fn: () => void, stilteMs = 800, maxMs = 4000, minMs = 0): () => void {
   const element = huidigAfspelend;
+  const start = performance.now();
   let klaar = false;
-  const verder = () => {
+  let vervolg: number | undefined;
+  const opruimen = () => {
+    window.clearTimeout(noodrem);
+    element?.removeEventListener('ended', verder);
+    element?.removeEventListener('pause', verder);
+    element?.removeEventListener('error', verder);
+  };
+  function verder(): void {
     if (klaar) return;
     klaar = true;
-    window.clearTimeout(noodrem);
-    element?.removeEventListener('ended', naEinde);
-    window.setTimeout(fn, stilteMs);
-  };
-  const naEinde = () => verder();
+    opruimen();
+    vervolg = window.setTimeout(fn, Math.max(stilteMs, minMs - (performance.now() - start)));
+  }
   const noodrem = window.setTimeout(verder, maxMs);
   if (!element || element.paused || element.ended) verder();
-  else element.addEventListener('ended', naEinde);
+  else {
+    element.addEventListener('ended', verder);
+    element.addEventListener('pause', verder);
+    element.addEventListener('error', verder);
+  }
+  return () => {
+    klaar = true;
+    opruimen();
+    window.clearTimeout(vervolg);
+  };
 }
 
 export function speelAf(pad: string | undefined): void {
