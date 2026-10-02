@@ -90,6 +90,168 @@
   transition: transform 0.7s cubic-bezier(0.3, 1.6, 0.5, 1) 0.9s;
 }
 
+/* Katten en honden op de zandlijn van het huis. Een ronde van 20 s: 30% slapen,
+   40% slenteren, 30% dartelen (klassen zet bouw.ts). */
+.bouw-dieren {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: calc(var(--bouw-grond) - 0.6vh);
+  height: 0;
+}
+.bouw-dier { position: absolute; bottom: 0; }
+.bouw-dier--poes { height: clamp(22px, 3.5vh, 36px); aspect-ratio: 70 / 46; }
+.bouw-dier--hond { height: clamp(26px, 4vh, 42px); aspect-ratio: 90 / 50; }
+.bouw-dier--klein.bouw-dier--poes { height: clamp(18px, 2.8vh, 28px); }
+.bouw-dier--klein.bouw-dier--hond { height: clamp(20px, 3.1vh, 32px); }
+.bouw-dier__hup { position: absolute; inset: 0; }
+.bouw-dier__lijf { inset: 0; width: 100%; height: 100%; overflow: visible; }
+.bouw-dier__schaduw {
+  position: absolute;
+  left: 16%;
+  right: 16%;
+  bottom: 1px;
+  height: 4px;
+  border-radius: 50%;
+  background: rgba(110, 68, 24, 0.28);
+}
+.bouw-dier__staart,
+.bouw-dier__kop,
+.bouw-dier__poten { transform-box: view-box; }
+.bouw-dier--poes .bouw-dier__staart { transform-origin: 16px 28px; }
+.bouw-dier--hond .bouw-dier__staart { transform-origin: 20px 26px; }
+.bouw-dier--poes .bouw-dier__kop { transform-origin: 46px 26px; }
+.bouw-dier--hond .bouw-dier__kop { transform-origin: 56px 28px; }
+.bouw-dier--poes .bouw-dier__poten { transform-origin: 34px 31px; }
+.bouw-dier--hond .bouw-dier__poten { transform-origin: 42px 33px; }
+.bouw-dier__oog { opacity: 1; }
+.bouw-dier__dicht,
+.bouw-dier__zzz { opacity: 0; }
+
+.bouw-dier.slaapt .bouw-dier__hup {
+  transform-origin: center bottom;
+  animation: bouw-adem var(--adem, 2.8s) ease-in-out infinite;
+  animation-delay: var(--pas, 0ms);
+}
+.bouw-dier.slaapt .bouw-dier__kop {
+  animation: bouw-dut var(--adem, 2.8s) ease-in-out infinite;
+  animation-delay: var(--pas, 0ms);
+}
+.bouw-dier.slaapt .bouw-dier__staart { animation: bouw-staart-slapen 4s ease-in-out infinite alternate; animation-delay: var(--pas, 0ms); }
+.bouw-dier.slaapt .bouw-dier__oog { opacity: 0; }
+.bouw-dier.slaapt .bouw-dier__dicht,
+.bouw-dier.slaapt .bouw-dier__zzz { opacity: 1; }
+.bouw-dier.slaapt .bouw-dier__tong { opacity: 0; }
+
+.bouw-dier.slentert .bouw-dier__hup {
+  animation: bouw-slenter var(--fase) ease-in-out forwards;
+  animation-delay: var(--pas, 0ms);
+}
+.bouw-dier.slentert .bouw-dier__poten--a { animation: bouw-stap var(--stap, 0.85s) ease-in-out infinite alternate; animation-delay: var(--pas, 0ms); }
+.bouw-dier.slentert .bouw-dier__poten--b { animation: bouw-stap var(--stap, 0.85s) ease-in-out infinite alternate-reverse; animation-delay: var(--pas, 0ms); }
+.bouw-dier.slentert .bouw-dier__staart { animation: bouw-staart 1.2s ease-in-out infinite alternate; animation-delay: var(--pas, 0ms); }
+.bouw-dier.slentert .bouw-dier__kop { animation: bouw-kop 1.6s ease-in-out infinite alternate; animation-delay: var(--pas, 0ms); }
+
+.bouw-dier.dartelt .bouw-dier__hup { animation: bouw-huppel var(--hup, 0.7s) ease-in-out infinite; animation-delay: var(--pas, 0ms); }
+.bouw-dier.dartelt .bouw-dier__schaduw { animation: bouw-schaduw var(--hup, 0.7s) ease-in-out infinite; animation-delay: var(--pas, 0ms); }
+.bouw-dier.dartelt .bouw-dier__poten--a { animation: bouw-stap calc(var(--stap, 0.85s) * 0.32) ease-in-out infinite alternate; animation-delay: var(--pas, 0ms); }
+.bouw-dier.dartelt .bouw-dier__poten--b { animation: bouw-stap calc(var(--stap, 0.85s) * 0.32) ease-in-out infinite alternate-reverse; animation-delay: var(--pas, 0ms); }
+.bouw-dier.dartelt .bouw-dier__staart { animation: bouw-staart 0.28s ease-in-out infinite alternate; animation-delay: var(--pas, 0ms); }
+.bouw-dier.dartelt .bouw-dier__kop { animation: bouw-kop 0.45s ease-in-out infinite alternate; animation-delay: var(--pas, 0ms); }
+
+/* Af en toe loopt er één het beeld uit, aan de dichtstbijzijnde kant, en komt terug. */
+.bouw-dier.weg-links { animation: bouw-weg-links var(--fase) linear forwards; }
+.bouw-dier.weg-rechts { animation: bouw-weg-rechts var(--fase) linear forwards; }
+.bouw-dier.weg-links .bouw-dier__hup,
+.bouw-dier.weg-rechts .bouw-dier__hup { animation: none; }
+.bouw-dier.weg-links .bouw-dier__poten--a,
+.bouw-dier.weg-rechts .bouw-dier__poten--a { animation: bouw-stap 0.42s ease-in-out infinite alternate; }
+.bouw-dier.weg-links .bouw-dier__poten--b,
+.bouw-dier.weg-rechts .bouw-dier__poten--b { animation: bouw-stap 0.42s ease-in-out infinite alternate-reverse; }
+.bouw-dier.weg-links .bouw-dier__staart,
+.bouw-dier.weg-rechts .bouw-dier__staart { animation: bouw-staart 0.55s ease-in-out infinite alternate; }
+@keyframes bouw-weg-links {
+  0% { left: var(--thuis); transform: scaleX(-1); }
+  38% { left: -25%; transform: scaleX(-1); }
+  38.1% { left: -25%; transform: scaleX(1); }
+  55% { left: -25%; transform: scaleX(1); }
+  100% { left: var(--thuis); transform: scaleX(1); }
+}
+@keyframes bouw-weg-rechts {
+  0% { left: var(--thuis); transform: scaleX(1); }
+  38% { left: 112%; transform: scaleX(1); }
+  38.1% { left: 112%; transform: scaleX(-1); }
+  55% { left: 112%; transform: scaleX(-1); }
+  100% { left: var(--thuis); transform: scaleX(-1); }
+}
+
+.bouw-dier__zzz {
+  position: absolute;
+  left: 62%;
+  bottom: 92%;
+  width: 18px;
+  height: 18px;
+}
+.bouw-dier__zzz span {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  font-size: 11px;
+  font-weight: 800;
+  color: #5c6b7a;
+  animation: bouw-zzz 2.6s ease-out infinite;
+}
+.bouw-dier__zzz span:nth-child(2) { animation-delay: 0.85s; font-size: 13px; }
+.bouw-dier__zzz span:nth-child(3) { animation-delay: 1.7s; font-size: 15px; }
+
+@keyframes bouw-adem {
+  from { transform: translateY(1px) scale(1, 0.96); }
+  to { transform: translateY(2px) scale(1, 0.93); }
+}
+@keyframes bouw-dut {
+  from { transform: rotate(7deg); }
+  to { transform: rotate(12deg); }
+}
+@keyframes bouw-staart-slapen {
+  from { transform: rotate(-3deg); }
+  to { transform: rotate(5deg); }
+}
+@keyframes bouw-slenter {
+  0% { transform: translate(0, 0); }
+  28% { transform: translate(calc(var(--gang, 30px) * 0.5), -1px); }
+  55% { transform: translate(var(--gang, 30px), 0); }
+  100% { transform: translate(0, 0); }
+}
+@keyframes bouw-huppel {
+  0%, 100% { transform: translate(0, 0) rotate(0deg); }
+  18% { transform: translate(4px, -3px) rotate(-3deg); }
+  36% { transform: translate(12px, -11px) rotate(6deg); }
+  52% { transform: translate(6px, 0) rotate(0deg); }
+  70% { transform: translate(-6px, -9px) rotate(-5deg); }
+  86% { transform: translate(0, 0) rotate(0deg); }
+}
+@keyframes bouw-schaduw {
+  0%, 18%, 52%, 86%, 100% { transform: scaleX(1); opacity: 0.85; }
+  36%, 70% { transform: scaleX(0.55); opacity: 0.35; }
+}
+@keyframes bouw-staart {
+  from { transform: rotate(-14deg); }
+  to { transform: rotate(16deg); }
+}
+@keyframes bouw-kop {
+  from { transform: rotate(-4deg); }
+  to { transform: rotate(5deg); }
+}
+@keyframes bouw-stap {
+  from { transform: rotate(-12deg); }
+  to { transform: rotate(12deg); }
+}
+@keyframes bouw-zzz {
+  0% { transform: translate(0, 0); opacity: 0; }
+  25% { opacity: 0.85; }
+  100% { transform: translate(7px, -14px); opacity: 0; }
+}
+
 /* De kiepwagen rijdt over het middelste stuk zand. */
 .bouw-kiepbaan { position: absolute; left: 0; right: 0; bottom: 6.2vh; height: 0; }
 .bouw-kiep {

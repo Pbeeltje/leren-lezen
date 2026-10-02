@@ -3,13 +3,14 @@ import { el, kortAan, plaatje, svgUitTekst } from './hulp.ts';
 
 // Bouwplaats: zonnige lucht boven een zandvlakte. Rechts een torenkraan naast een half
 // gebouwd huis in de steigers; de giek zwenkt een beetje en het dak hangt aan de haak
-// (de kraan beweegt via één rAF-lus, zodat het dak bij het feest precies landt). Links een
-// graafmachine met een zandberg, vooraan pionnen en een afzetting. Af en toe rijdt er een
-// kiepwagen heen of terug. Bij een goed antwoord schept de graafmachine zand en kiept het
-// weer uit; aan het eind van een sessie zet de kraan het dak op het huis, de steiger gaat
-// weg, de ramen gaan aan, de vlag gaat in de top en er vliegt confetti. Achter de
-// bouwplaats ligt de stad (twee rijen flats en torens, de achterste bleker) en af en toe
-// vliegt er rustig een helikopter over. Alles zelf getekend, behalve de helikopter (Fluent).
+// (de kraan beweegt via één rAF-lus, zodat het dak bij het feest precies landt). Op dezelfde
+// zandlijn zitten een paar kleine katten en honden: 30% slapen, 40% slenteren, de rest dartelt. Links een graafmachine met een
+// zandberg, vooraan pionnen en een afzetting. Af en toe rijdt er een kiepwagen heen of
+// terug. Bij een goed antwoord schept de graafmachine zand en kiept het weer uit; aan het
+// eind van een sessie zet de kraan het dak op het huis, de steiger gaat weg, de ramen gaan
+// aan, de vlag gaat in de top en er vliegt confetti. Achter de bouwplaats ligt de stad
+// (twee rijen flats en torens, de achterste bleker) en af en toe vliegt er rustig een
+// helikopter over. Alles zelf getekend, behalve de helikopter (Fluent).
 
 // De stad: gebouwen met een vaste "willekeur", zodat hij elke keer hetzelfde is.
 function skyline(rij: 'ver' | 'dichtbij'): string {
@@ -240,6 +241,67 @@ const AFZETTING = `
   <circle cx="60" cy="8" r="5" fill="#ffd23f" stroke="#c77d00" stroke-width="2"/>
 </svg>`;
 
+// Kleine dieren op de zandlijn van het huis. Kijken naar rechts; de baan spiegelt ze.
+function poes(vacht: string, lijn: string, streep: string): string {
+  return `
+<svg viewBox="0 0 70 46" aria-hidden="true">
+  <g class="bouw-dier__staart">
+    <path d="M16 28 C6 26 4 14 13 12" fill="none" stroke="${lijn}" stroke-width="3.2" stroke-linecap="round"/>
+  </g>
+  <g class="bouw-dier__poten bouw-dier__poten--a" stroke="${lijn}" stroke-width="3.2" stroke-linecap="round" fill="none">
+    <path d="M22 31 L19 43"/><path d="M44 31 L47 43"/>
+  </g>
+  <g class="bouw-dier__poten bouw-dier__poten--b" stroke="${streep}" stroke-width="3.2" stroke-linecap="round" fill="none">
+    <path d="M28 31 L31 43"/><path d="M38 31 L35 43"/>
+  </g>
+  <ellipse cx="34" cy="27" rx="16" ry="9" fill="${vacht}" stroke="${lijn}" stroke-width="2"/>
+  <path d="M24 23 H33 M26 29 H37" stroke="${streep}" stroke-width="1.7" stroke-linecap="round"/>
+  <g class="bouw-dier__kop">
+    <path d="M44 17 L42 7 L49 15 Z" fill="${vacht}" stroke="${lijn}" stroke-width="1.6" stroke-linejoin="round"/>
+    <path d="M54 15 L61 6 L58 17 Z" fill="${vacht}" stroke="${lijn}" stroke-width="1.6" stroke-linejoin="round"/>
+    <circle cx="52" cy="19" r="8.2" fill="${vacht}" stroke="${lijn}" stroke-width="2"/>
+    <path d="M46 15 L44.5 10 L49 15 Z" fill="#f6c4cb"/>
+    <path d="M55 15 L58 9 L58 16 Z" fill="#f6c4cb"/>
+    <g class="bouw-dier__oog">
+      <circle cx="55" cy="19" r="1.35" fill="#2a241f"/>
+      <circle cx="55.45" cy="18.55" r="0.4" fill="#fff"/>
+    </g>
+    <path class="bouw-dier__dicht" d="M53.2 19.4 Q55 20.6 56.8 19.4" fill="none" stroke="#2a241f" stroke-width="1.3" stroke-linecap="round"/>
+    <path d="M59 21 H65 M58 23 L63 25 M58 23 L62 21.2" stroke="${lijn}" stroke-width="1.2" stroke-linecap="round"/>
+  </g>
+</svg>`;
+}
+
+function hond(vacht: string, lijn: string, buik: string, vlek: string): string {
+  return `
+<svg viewBox="0 0 90 50" aria-hidden="true">
+  <g class="bouw-dier__staart">
+    <path d="M18 26 C8 18 10 8 18 11" fill="none" stroke="${lijn}" stroke-width="3.5" stroke-linecap="round"/>
+  </g>
+  <g class="bouw-dier__poten bouw-dier__poten--a" stroke="${lijn}" stroke-width="3.4" stroke-linecap="round" fill="none">
+    <path d="M28 33 L25 47"/><path d="M54 33 L57 47"/>
+  </g>
+  <g class="bouw-dier__poten bouw-dier__poten--b" stroke="${lijn}" stroke-width="3.4" stroke-linecap="round" fill="none">
+    <path d="M35 33 L38 47"/><path d="M48 33 L45 47"/>
+  </g>
+  <ellipse cx="42" cy="29" rx="18" ry="10" fill="${vacht}" stroke="${lijn}" stroke-width="2"/>
+  <ellipse cx="34" cy="27" rx="6" ry="4.5" fill="${vlek}"/>
+  <g class="bouw-dier__kop">
+    <path d="M52 18 C49 8 60 6 62 18 C60 27 52 26 52 18 Z" fill="${vlek}" stroke="${lijn}" stroke-width="1.6" stroke-linejoin="round"/>
+    <ellipse cx="62" cy="22" rx="9" ry="8" fill="${vacht}" stroke="${lijn}" stroke-width="2"/>
+    <ellipse cx="74" cy="25" rx="11" ry="6" fill="${buik}" stroke="${lijn}" stroke-width="1.8"/>
+    <circle cx="82" cy="24" r="2.1" fill="#3a2a22"/>
+    <path d="M56 27 H64" stroke="#e0393e" stroke-width="2.4" stroke-linecap="round"/>
+    <g class="bouw-dier__oog">
+      <circle cx="66" cy="19" r="1.4" fill="#2a241f"/>
+      <circle cx="66.45" cy="18.55" r="0.45" fill="#fff"/>
+    </g>
+    <path class="bouw-dier__dicht" d="M64.2 19.4 Q66 20.6 67.8 19.4" fill="none" stroke="#2a241f" stroke-width="1.3" stroke-linecap="round"/>
+    <path class="bouw-dier__tong" d="M71 28 Q74 33 77 28" fill="#e07070"/>
+  </g>
+</svg>`;
+}
+
 const KIEP_MS = 16000;
 const HELI_MS = 34000;
 const CONFETTI = ['#ff6b6b', '#ffd23f', '#4dabf7', '#69db7c', '#b197fc', '#ff922b'];
@@ -255,6 +317,36 @@ export function maakBouwDecor(): Decor {
 
   svgUitTekst(GROND, 'bouw-grond', root);
   const plaats = svgUitTekst(BOUWPLAATS, 'bouw-plaats', root);
+  // Zelfde laag als het huis: vóór de stad, achter graafmachine, kiepwagen en pionnen.
+  const dieren = el('div', 'bouw-dieren', root);
+  // Zelfde fase, maar niet dezelfde pas: ongelijke plek, eigen richting en een andere slaaphouding.
+  const EIGEN = [
+    { left: '18%', gang: '22px', pas: '-240ms', hup: '0.62s', stap: '0.74s', adem: '2.4s', slaap: 'scaleX(1) rotate(-12deg)', loop: 'scaleX(1)', dartel: 'scaleX(-1)' },
+    { left: '36%', gang: '44px', pas: '-680ms', hup: '0.86s', stap: '1.05s', adem: '3.3s', slaap: 'scaleX(-1) rotate(8deg)', loop: 'scaleX(-1)', dartel: 'scaleX(1)' },
+    { left: '47%', gang: '18px', pas: '-90ms', hup: '0.54s', stap: '0.82s', adem: '2.8s', slaap: 'scaleX(-1) rotate(-5deg)', loop: 'scaleX(1)', dartel: 'scaleX(-1)' },
+    { left: '67%', gang: '36px', pas: '-410ms', hup: '0.95s', stap: '0.93s', adem: '3.6s', slaap: 'scaleX(1) rotate(14deg)', loop: 'scaleX(-1)', dartel: 'scaleX(1)' },
+  ];
+  const dierElementen: HTMLElement[] = [];
+  const zetDier = (soort: 'poes' | 'hond', n: number, markup: string, klein: boolean, eigen: (typeof EIGEN)[number]) => {
+    const doos = el('div', `bouw-dier bouw-dier--${soort} bouw-dier--${n}${klein ? ' bouw-dier--klein' : ''}`, dieren);
+    doos.style.left = eigen.left;
+    doos.style.transform = eigen.slaap;
+    doos.style.setProperty('--gang', eigen.gang);
+    doos.style.setProperty('--pas', eigen.pas);
+    doos.style.setProperty('--hup', eigen.hup);
+    doos.style.setProperty('--stap', eigen.stap);
+    doos.style.setProperty('--adem', eigen.adem);
+    doos.style.setProperty('--thuis', eigen.left);
+    el('div', 'bouw-dier__schaduw', doos);
+    svgUitTekst(markup, 'bouw-dier__lijf', el('div', 'bouw-dier__hup', doos));
+    const zzz = el('div', 'bouw-dier__zzz', doos);
+    for (let i = 0; i < 3; i++) el('span', '', zzz).textContent = 'z';
+    dierElementen.push(doos);
+  };
+  zetDier('poes', 1, poes('#f4a04a', '#c45e18', '#e07a28'), false, EIGEN[0]);
+  zetDier('hond', 2, hond('#d4924e', '#8a5a32', '#f0d2a8', '#c4844a'), false, EIGEN[1]);
+  zetDier('poes', 3, poes('#b7bdc9', '#6d7482', '#8b93a2'), true, EIGEN[2]);
+  zetDier('hond', 4, hond('#f3e0c4', '#6e4b28', '#fff', '#e2c498'), true, EIGEN[3]);
   const giekArm = plaats.querySelector('.bouw-giek-arm') as SVGGElement;
   const kat = plaats.querySelector('.bouw-kat') as SVGGElement;
   const kabel = plaats.querySelector('.bouw-kabel') as SVGLineElement;
@@ -273,6 +365,42 @@ export function maakBouwDecor(): Decor {
   let timer: number | undefined;
   let resetTimer: number | undefined;
   let rafId = 0;
+  const gedragTimers: number[] = [];
+
+  // 30% slapen, 40% slenteren, 30% dartelen. Dezelfde fase, ieder zijn eigen kant op.
+  // Om de slenterbeurt loopt er één het scherm af en komt weer terug.
+  const RONDE = 20000;
+  const FASEN = [
+    ['slaapt', 0.3],
+    ['slentert', 0.4],
+    ['dartelt', 0.3],
+  ] as const;
+  let uitje = 0;
+  let wieWeg = -1;
+  const startGedrag = (dier: HTMLElement, n: number, eigen: (typeof EIGEN)[number]): void => {
+    if (stil) return;
+    const loop = (i: number): void => {
+      if (!levend) return;
+      const [naam, deel] = FASEN[i];
+      const vol = deel * RONDE;
+      dier.classList.remove('slaapt', 'slentert', 'dartelt', 'weg-links', 'weg-rechts');
+      dier.style.setProperty('--fase', `${vol}ms`);
+      dier.style.setProperty('--al', '0ms');
+      dier.style.transform = naam === 'slaapt' ? eigen.slaap : naam === 'slentert' ? eigen.loop : eigen.dartel;
+      if (naam === 'slentert' && n === 0) {
+        uitje++;
+        wieWeg = uitje % 2 === 0 ? Math.floor(Math.random() * dierElementen.length) : -1;
+      }
+      if (naam === 'slentert' && n === wieWeg) {
+        dier.classList.add(Number.parseFloat(eigen.left) < 50 ? 'weg-links' : 'weg-rechts');
+      }
+      dier.classList.add(naam);
+      window.clearTimeout(gedragTimers[n]);
+      gedragTimers[n] = window.setTimeout(() => loop((i + 1) % FASEN.length), vol);
+    };
+    loop(0);
+  };
+  dierElementen.forEach((dier, i) => startGedrag(dier, i, EIGEN[i]));
 
   // ---- De kraan: loopkat (kx), kabellengte (kl), zwenk (zw) en slingeren (hoek). ----
   const stand = { kx: HUIS_X + 50, kl: 70, zw: 1, hoek: 0 };
@@ -440,6 +568,7 @@ export function maakBouwDecor(): Decor {
     window.clearTimeout(timer);
     window.clearTimeout(heliTimer);
     window.clearTimeout(resetTimer);
+    gedragTimers.forEach((id) => window.clearTimeout(id));
     cancelAnimationFrame(rafId);
   };
   return { element: root, juich, feest, vernietig };
