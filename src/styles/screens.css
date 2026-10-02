@@ -2435,6 +2435,232 @@
   .pong-venster__figuur { width: 70px; height: 70px; }
 }
 
+/* ---------- Dieren voeren ---------- */
+.voer-scherm { position: fixed; inset: 0; }
+.voer-veld {
+  position: absolute;
+  inset: var(--veilig-boven) var(--veilig-rechts) var(--veilig-onder) var(--veilig-links);
+  overflow: hidden;
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
+}
+.voer-balk { top: 20px; }
+.voer-speler {
+  position: absolute;
+  left: max(12px, 5%);
+  bottom: 16px;
+  width: var(--voer-speler);
+  height: var(--voer-speler);
+  pointer-events: none;
+  transform-origin: center bottom;
+}
+.voer-speler--gooi { animation: voer-gooi 0.42s ease; }
+@keyframes voer-gooi {
+  0%, 100% { transform: none; }
+  35% { transform: rotate(-14deg) translateX(-6px); }
+  65% { transform: rotate(12deg) translateX(8px); }
+}
+/* Het dier loopt vooraan over de grond, boven het figuurtje langs. */
+.voer-dier {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: var(--voer-dier);
+  height: var(--voer-dier);
+  z-index: 2;
+  pointer-events: none;
+  will-change: transform;
+}
+.voer-dier__lijf { width: 100%; height: 100%; }
+.voer-dier__plaatje {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  object-position: bottom;
+  transform-origin: center bottom;
+  filter: drop-shadow(0 6px 4px rgba(0, 0, 0, 0.3));
+}
+.voer-dier__plaatje--loopt { animation: voer-waggel 0.32s ease-in-out infinite alternate; }
+@keyframes voer-waggel {
+  from { transform: rotate(-4deg) translateY(0); }
+  to { transform: rotate(4deg) translateY(-7%); }
+}
+.voer-dier__plaatje--blij { animation: voer-blij 0.5s ease-out 2; }
+@keyframes voer-blij {
+  0%, 100% { transform: translateY(0) scale(1, 1); }
+  15% { transform: translateY(0) scale(1.08, 0.9); }
+  50% { transform: translateY(-28%) scale(0.95, 1.06); }
+  85% { transform: translateY(0) scale(1.06, 0.94); }
+}
+.voer-dier__plaatje--boos { animation: voer-nee 0.3s ease-in-out 3; }
+@keyframes voer-nee {
+  0%, 100% { transform: rotate(0); }
+  25% { transform: rotate(-9deg); }
+  75% { transform: rotate(9deg); }
+}
+/* Pinguïn op zijn buik; staat na het glijden weer rechtop. */
+.voer-dier__plaatje { transition: transform 0.3s ease-out; }
+.voer-dier__plaatje--glijdt { transform: rotate(var(--glij-hoek, 0deg)) translateY(12%); transform-origin: center 70%; }
+/* Dino's: de grond dreunt een beetje mee. */
+.voer-veld--dreun { animation: voer-dreun 0.36s ease-in-out infinite; }
+@keyframes voer-dreun {
+  0%, 100% { transform: translateY(0); }
+  20% { transform: translateY(2px); }
+  40% { transform: translateY(-1px); }
+}
+/* Luiaard: hangt aan een liaan die tot boven uit het scherm loopt. */
+.voer-dier--liaan::before {
+  content: '';
+  position: absolute;
+  left: 50%;
+  bottom: 88%;
+  width: 6px;
+  height: 200vh;
+  margin-left: -3px;
+  border-radius: 3px;
+  background: linear-gradient(90deg, #558b2f, #7cb342, #558b2f);
+}
+.voer-dier--slaapt .voer-dier__plaatje { animation: voer-adem 2.4s ease-in-out infinite; }
+@keyframes voer-adem {
+  0%, 100% { transform: rotate(6deg) scale(1, 1); filter: brightness(0.92) drop-shadow(0 6px 4px rgba(0, 0, 0, 0.3)); }
+  50% { transform: rotate(8deg) scale(1.03, 0.95); filter: brightness(0.92) drop-shadow(0 6px 4px rgba(0, 0, 0, 0.3)); }
+}
+.voer-dier--slaapt .voer-ballon { color: #5c6bc0; font-style: italic; }
+/* Slak en schildpad: rekken langzaam uit en trekken weer in. */
+.voer-dier__plaatje--kruipt { animation: voer-kruip 1.2s ease-in-out infinite; transform-origin: 50% 100%; }
+@keyframes voer-kruip {
+  0%, 100% { transform: scale(1, 1); }
+  50% { transform: scale(1.07, 0.95); }
+}
+/* Slang: kronkelt heen en weer. */
+.voer-dier__plaatje--kronkelt { animation: voer-kronkel 0.6s ease-in-out infinite; transform-origin: 50% 100%; }
+@keyframes voer-kronkel {
+  0%, 100% { transform: skewX(-12deg) scale(1.04, 0.97); }
+  50% { transform: skewX(12deg) scale(0.97, 1.03); }
+}
+/* Apen wippen ongeduldig op en neer; de bij zweeft. */
+.voer-dier--wipt .voer-dier__plaatje { animation: voer-wip 0.7s ease-in-out infinite; }
+@keyframes voer-wip {
+  0%, 60%, 100% { transform: translateY(0) scale(1, 1); }
+  20% { transform: translateY(0) scale(1.06, 0.92); }
+  40% { transform: translateY(-16%) scale(0.96, 1.05); }
+}
+.voer-dier--zweeft .voer-dier__plaatje { animation: voer-zweef 1.1s ease-in-out infinite alternate; }
+@keyframes voer-zweef {
+  from { transform: translateY(-6%) rotate(-3deg); }
+  to { transform: translateY(6%) rotate(3deg); }
+}
+.voer-druppel {
+  position: absolute;
+  z-index: 3;
+  width: 18px;
+  height: 18px;
+  margin: -9px 0 0 -9px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 35%, #e1f5fe, #4fc3f7 60%, #0288d1);
+  pointer-events: none;
+}
+.voer-ballon {
+  position: absolute;
+  bottom: 96%;
+  left: -6%;
+  padding: 8px 16px;
+  border-radius: 22px;
+  background: #fff;
+  color: #263238;
+  font-size: clamp(1.3rem, calc(var(--voer-dier) * 0.13), 2.2rem);
+  font-weight: 800;
+  white-space: nowrap;
+  box-shadow: 0 4px 0 rgba(0, 0, 0, 0.18);
+  opacity: 0;
+  transform: scale(0.4);
+  transform-origin: 30% 100%;
+  transition: opacity 0.15s, transform 0.25s cubic-bezier(0.3, 1.6, 0.5, 1);
+}
+.voer-ballon::after {
+  content: '';
+  position: absolute;
+  left: 26px;
+  bottom: -12px;
+  border: 7px solid transparent;
+  border-top: 7px solid #fff;
+  border-left: 7px solid #fff;
+}
+.voer-ballon--hoog { margin-bottom: 2.3em; }
+.voer-ballon--zie { opacity: 1; transform: scale(1); }
+.voer-ballon--bah { color: var(--kleur-fout); }
+.voer-bak {
+  position: absolute;
+  top: 92px;
+  left: 50%;
+  display: flex;
+  gap: 14px;
+  transform: translateX(-50%);
+  transition: opacity 0.2s, transform 0.25s;
+}
+.voer-bak--weg { opacity: 0; transform: translateX(-50%) scale(0.6); pointer-events: none; }
+.voer-eten {
+  width: var(--voer-eten);
+  height: var(--voer-eten);
+  padding: calc(var(--voer-eten) * 0.1);
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.92);
+  box-shadow: 0 5px 0 rgba(0, 0, 0, 0.2);
+  touch-action: none;
+  /* Grote witte hand met zwarte rand, net zo groot als de pijl (zie body in global.css). */
+  cursor: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='60' height='60' viewBox='0 0 48 48'><defs><g id='h'><rect x='13' y='7' width='6.5' height='22' rx='3.25'/><rect x='19.5' y='3' width='6.5' height='24' rx='3.25'/><rect x='26' y='4' width='6.5' height='23' rx='3.25'/><rect x='32.5' y='9' width='6.5' height='19' rx='3.25'/><rect x='13' y='19' width='26' height='24' rx='9'/><rect x='5' y='21' width='6.5' height='16' rx='3.25' transform='rotate(-38 8 29)'/></g></defs><use href='%23h' stroke='black' stroke-width='6' stroke-linejoin='round'/><use href='%23h' fill='white'/></svg>") 30 25, grab;
+}
+/* Tijdens het slepen: een dichte hand die het eten vasthoudt. */
+.voer-scherm.voer-sleept,
+.voer-scherm.voer-sleept .voer-eten {
+  cursor: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='60' height='60' viewBox='0 0 48 48'><defs><g id='h'><rect x='13' y='14' width='6.5' height='12' rx='3.25'/><rect x='19.5' y='12' width='6.5' height='13' rx='3.25'/><rect x='26' y='12' width='6.5' height='13' rx='3.25'/><rect x='32.5' y='14' width='6.5' height='12' rx='3.25'/><rect x='13' y='19' width='26' height='24' rx='9'/><rect x='8' y='24' width='17' height='6.5' rx='3.25'/></g></defs><use href='%23h' stroke='black' stroke-width='6' stroke-linejoin='round'/><use href='%23h' fill='white'/></svg>") 30 30, grabbing;
+}
+.voer-eten img { width: 100%; height: 100%; pointer-events: none; }
+.voer-eten--weg, .voer-eten--leeg { visibility: hidden; }
+.voer-eten--leeg { pointer-events: none; }
+.voer-eten--nieuw { animation: voer-nieuw 0.35s cubic-bezier(0.3, 1.6, 0.5, 1); }
+@keyframes voer-nieuw {
+  from { transform: scale(0.3); opacity: 0; }
+}
+.voer-vlieg {
+  position: absolute;
+  left: 0;
+  top: 0;
+  z-index: 3;
+  padding: 0;
+  pointer-events: none;
+  filter: drop-shadow(0 6px 4px rgba(0, 0, 0, 0.3));
+}
+.voer-vlieg--sleep { filter: drop-shadow(0 14px 8px rgba(0, 0, 0, 0.35)); }
+.voer-spoor {
+  position: absolute;
+  z-index: 3;
+  pointer-events: none;
+  animation: voer-spoor 0.32s ease-out forwards;
+}
+@keyframes voer-spoor {
+  from { opacity: 0.45; transform: scale(0.9); }
+  to { opacity: 0; transform: scale(0.3); }
+}
+.voer-hartje {
+  position: absolute;
+  z-index: 3;
+  width: 44px;
+  height: 44px;
+  margin: -22px 0 0 -22px;
+  pointer-events: none;
+  animation: voer-hartje 1s ease-out forwards;
+}
+@keyframes voer-hartje {
+  from { opacity: 1; transform: translateY(0) scale(0.6); }
+  30% { transform: translateY(-20px) scale(1.2); }
+  to { opacity: 0; transform: translateY(-90px) scale(1); }
+}
+@media (orientation: landscape) and (max-height: 500px) {
+  .voer-bak { top: 76px; }
+}
+
 /* ---------- Tekenen en vrij spelen: zo groot mogelijk, zo min mogelijk knoppen ---------- */
 .scherm.teken-scherm {
   justify-content: flex-start;

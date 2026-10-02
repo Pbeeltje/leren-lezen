@@ -997,8 +997,47 @@ Children no longer pick an age but a group (`Groep = 'kleuter' | 'groep3'` in co
   colour follows the background (`.thema-* .pong-tafel` sets `--pong-tafel`/`--pong-rand`).
   No coins. Check: `node tests/tafeltennis.mjs <map> [mis-kans]` (auto-player follows the
   ball and logs how far it gets).
+- **Dieren voeren** (`ui/screens/VoerScreen.ts`, under Spelletjes, carrot icon
+  `icons/voeren.svg`): animals walk in from the right in the foreground (any background),
+  each with a speech bubble in Dutch ("Boe!", "Mèèèh!"). Drag food from the tray at the top
+  onto an animal; your own figure (bottom left) then throws it in an arc. Right = happy hop,
+  +1, heart, walks on to the left; wrong = "Bah!", shakes, turns and walks off right, −1 heart.
+  Three wrong = end; record per profile (`leren-lezen:voeren:<id>`), no coins, no timer.
+  - `DIEREN` has per animal `goed` (what it eats) and an explicit `fout` list (things it
+    certainly doesn't eat; only those are used as wrong options). `kijkt` (left/right/front)
+    mirrors the picture to the walking direction. `schaal` 0.8–1.2 is stretched by
+    `spreid()` (×1.75 around 1, min 0.4) so a mouse is really small and an elephant big;
+    a group that doesn't fit beside the figure shrinks evenly (`maten`). `mond` overrides
+    where thrown food lands (fraction of the displayed, left-facing picture).
+    `THEMA_DIEREN` favours animals that fit the background (75%).
+  - Entrances (`komt`): loopt, hupt, springt (cat, tiger, fox), valt (monkeys drop from the
+    sky, then hop in place `--wipt`), glijdt (penguin, seal), stampt (dinos shake the
+    screen), rent (dog runs back and forth once), zakt (sloth on a vine), vliegt (bee,
+    butterfly; hover `--zweeft`), kruipt (snail, turtle: a third of a body per second in),
+    kronkelt (snake). Extras: `slaapt` (lion, sloth fall asleep "Zzz…"), `spuit` (elephant
+    water fountain).
+  - Groups: 1 animal, from score 6 sometimes 2, groep 3 from 14 up to 3 (max 2 when width
+    < 560). Animals in a group never share a good food, and never stand next to their own
+    food (`PROOI`/`lust`: cat/snake–mouse, wolf–sheep, fox–chicken). `SAMEN`: monkeys, bees
+    and butterflies often come in 2–3 (only the first one talks). From score 4, 12% chance
+    of a family: mouse + 4 baby mice (`alleenFamilie`), a monkey troupe or a bee/butterfly
+    swarm.
+  - Hunters (`jager`: tiger, lion, T-rex, polar bear, wolf, fox): if a plant eater waits
+    next to one for 4 s unfed, the hunter chases it off ("GRRR!"/"Help!"), no heart lost.
+  - Tray: the unique wanted foods topped up to 3 with things none of them eat. Food stays
+    in the tray after a throw (drag it again for the next animal). Throws don't block:
+    you can drag the next food while one is still flying; the target animal leaves the
+    `wacht` state (`data-staat`) immediately so it can't be hit twice.
+  - Drop target: each waiting animal's box plus a margin; when margins overlap the nearest
+    animal centre wins. One chord (do-mi, + sol for three) when the tray appears.
+  - Extra pictures in `public/assets/voeren/`: Fluent dog, bone, meat, meat on bone, peanut,
+    worm, sauropod, butterfly; own drawing `zeewier.svg`. Drag shows a big white hand cursor
+    (open/closed, `.voer-sleept`) and a fading trail.
+  - Check: `node tests/voeren.mjs <map> [kleuter]`; special animals with forced groups
+    (dev hook `window.__voerGroepjes`): `node tests/voeren-dieren.mjs <map> [w] [h]`
+    (env `ALLEEN=n` runs only the first n groups).
 - **Spelletjes** (`id: 'spellen'`, both groups, `SpellenKiesScreen`): one topic tile
-  (Fluent joystick) that opens Vangspel, Tafeltennis, Geheugenspel and Tekenen. The Vangspel tile shows the
+  (Fluent joystick) that opens Vangspel, Tafeltennis, Dieren voeren, Geheugenspel and Tekenen. The Vangspel tile shows the
   profile's own figure, with `avatarFilter` for the picked tint — same on the in-game
   player and the start/end portrait. The figure stands at the bottom and follows the finger (or arrow
   keys). A tap (or space / arrow up / W) hops about half the figure's height (~0.4 s, no double
