@@ -848,27 +848,33 @@
   right: calc(12px + var(--veilig-rechts));
 }
 
-/* Mijn figuur: even groot als de winkelkaart, anders zijn de diertjes te klein. */
+/* Mijn figuur: dier en kleur even groot (tussen de oude 96 en 72). De maat blijft
+   smal genoeg voor 4 kleuren op een rij en laag genoeg voor 3 dierrijen + 2 kleurrijen
+   plus de winkelknop, anders scrolt het paneel op een telefoon. */
 .profiel-menu__paneel[data-weergave='figuur'] {
   width: min(760px, calc(100vw - 24px - var(--veilig-links) - var(--veilig-rechts)));
   max-height: calc(100dvh - 96px - var(--veilig-boven) - var(--veilig-onder));
   padding: 16px;
+  container-type: inline-size;
+  --keuze-gap: 8px;
+  --keuze: min(
+    84px,
+    calc((100cqi - 3 * var(--keuze-gap)) / 4),
+    calc((100dvh - 96px - var(--veilig-boven) - var(--veilig-onder) - 280px) / 5)
+  );
 }
 
-.profiel-menu__paneel[data-weergave='figuur'] .bladeraar__blad { gap: 12px; }
+.profiel-menu__paneel[data-weergave='figuur'] .bladeraar__blad { gap: 10px; }
 
-.profiel-menu__paneel[data-weergave='figuur'] .avatar-keuze {
-  width: min(100%, 96px);
-  height: auto;
-  aspect-ratio: 1;
-  padding: 10px;
-}
-
+.profiel-menu__paneel[data-weergave='figuur'] .avatar-keuze,
 .profiel-menu__paneel[data-weergave='figuur'] .kleur-keuze {
-  width: 72px;
-  height: 72px;
+  width: var(--keuze);
+  height: var(--keuze);
   padding: 8px;
+  border-width: 4px;
 }
+
+.profiel-menu__paneel[data-weergave='figuur'] .kleur-rij { gap: var(--keuze-gap); }
 
 .profiel-menu__paneel[data-weergave='figuur'] .profiel-menu__subtitel { font-size: 1.35rem; }
 .profiel-menu__paneel[data-weergave='figuur'] .profiel-menu__label { font-size: 1rem; }
