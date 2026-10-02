@@ -179,7 +179,8 @@ async function draai([id, w, h, soort]) {
   await stap('schrijven', async () => {
     await tik('.icoon-tegel', 'Schrijven'); await bekijk('schrijven-kies');
     await tik('.icoon-tegel', 'Letters'); await bekijk('schrijven-letter');
-    await page.locator('.terug-knop').first().click(); await page.waitForTimeout(500);
+    await terugNaarOnderwerpen();
+    await tik('.icoon-tegel', 'Spelletjes');
     await tik('.icoon-tegel', 'Tekenen'); await bekijk('tekenen');
     await terugNaarOnderwerpen();
   });

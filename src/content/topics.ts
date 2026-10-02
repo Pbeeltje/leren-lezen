@@ -53,15 +53,6 @@ export const TOPICS: Topic[] = [
     beschikbaar: true,
   },
   {
-    // Hetzelfde geheugenspel als bij Luisteren, maar met twee keer zoveel kaarten.
-    // Kleuters vinden het onder Luisteren (dat groep 3 niet heeft).
-    id: 'geheugen',
-    groepen: ['groep3'],
-    titel: 'Geheugenspel',
-    icoonPad: 'assets/icons/geheugenspel.svg',
-    beschikbaar: true,
-  },
-  {
     // Xylofoon, speel na en ritme; de klanken maakt de browser zelf (engine/muziek.ts).
     id: 'muziek',
     groepen: ['kleuter', 'groep3'],
@@ -70,11 +61,11 @@ export const TOPICS: Topic[] = [
     beschikbaar: true,
   },
   {
-    // Vangspel met je eigen figuurtje (de tegel toont het figuur van het profiel).
-    id: 'vangen',
+    // Vangspel en geheugenspel. De tegel van het vangspel toont het figuur van het profiel.
+    id: 'spellen',
     groepen: ['kleuter', 'groep3'],
-    titel: 'Vangspel',
-    icoonPad: 'assets/icons/meteoor.svg',
+    titel: 'Spelletjes',
+    icoonPad: 'assets/icons/joystick.svg',
     beschikbaar: true,
   },
 ];

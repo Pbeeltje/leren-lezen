@@ -17,6 +17,7 @@ for (const [bw, bh, tag] of [[390, 844, 'tel'], [844, 390, 'liggend']]) {
   await page.locator('.icoon-tegel', { hasText: 'Tim' }).click(); await w(700);
   console.log(tag, '| onderwerpen:', (await page.locator('.icoon-tegel__label').allTextContents()).join(', '));
   await page.screenshot({ path: OUT + tag + '-onderwerpen.png' });
+  await page.locator('.icoon-tegel', { hasText: 'Spelletjes' }).click(); await w(400);
   await page.locator('.icoon-tegel', { hasText: 'Vangspel' }).click(); await w(700);
   await page.screenshot({ path: OUT + tag + '-start.png' });
   await page.locator('.vang-venster__start').click();

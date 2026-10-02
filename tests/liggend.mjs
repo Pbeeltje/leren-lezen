@@ -78,12 +78,13 @@ for (const [w, h] of MATEN) {
   await stap('schrijven', async () => {
     await tik('.icoon-tegel', 'Schrijven'); await foto('schrijven-kies');
     for (const s of ['Letters', 'Woordjes']) { await tik('.icoon-tegel', s); await foto(`schrijven-${s}`); await terug(); }
-    await tik('.icoon-tegel', 'Tekenen'); await foto('tekenen');
     await naarOnderwerpen();
   }, 6);
   await stap('geheugen', async () => {
+    await tik('.icoon-tegel', 'Spelletjes'); await foto('spellen-kies');
     await tik('.icoon-tegel', 'Geheugenspel'); await foto('geheugen-1');
-    if (await page.locator('.icoon-tegel, .niveau-tegel').count()) { await tik('.icoon-tegel, .niveau-tegel'); await foto('geheugen-2'); }
+    await terug();
+    await tik('.icoon-tegel', 'Tekenen'); await foto('tekenen');
     await naarOnderwerpen();
   }, 6);
   await stap('muziek', async () => {
@@ -97,6 +98,7 @@ for (const [w, h] of MATEN) {
     await naarOnderwerpen();
   }, 6);
   await stap('vangspel', async () => {
+    await tik('.icoon-tegel', 'Spelletjes');
     await tik('.icoon-tegel', 'Vangspel'); await foto('vang-start');
     await tik('.vang-venster__start'); await wacht(3000); await foto('vang-spel');
     await naarOnderwerpen();
@@ -115,7 +117,7 @@ for (const [w, h] of MATEN) {
     if (await page.locator('.hoofdstuk-tegel').count()) await tik('.hoofdstuk-tegel');
     await loop('luisteren', 14);
   }, 4);
-  await stap('kleuter-geheugen', async () => { await tik('.icoon-tegel', 'Geheugenspel'); await foto('geheugen-kleuter'); }, 4);
+  await stap('kleuter-geheugen', async () => { await tik('.icoon-tegel', 'Spelletjes'); await tik('.icoon-tegel', 'Geheugenspel'); await foto('geheugen-kleuter'); }, 4);
   for (const s of ['Groot of klein', 'Meer of minder', 'Kleuren', 'Welke vorm']) await stap('ontdekken-' + s, async () => { await tik('.icoon-tegel', 'Ontdekken'); if (s === 'Groot of klein') await foto('ontdekken-kies'); await tik('.icoon-tegel', s); await loop('ontdekken', 6); }, 4);
   await stap('lijnen', async () => { await tik('.icoon-tegel', 'Schrijven'); await foto('schrijven-kleuter'); await tik('.icoon-tegel', 'Lijnen'); await foto('lijnen'); }, 4);
   for (const t of ['Leren lezen', 'Tellen']) await stap('kleuter-' + t, async () => { await tik('.icoon-tegel', t); await foto('kleuter-hoofdstukken-' + t); await tik('.kern-rij--klikbaar'); await tik('.hoofdstuk-tegel', 'Oefening 1'); await loop(`kleuter-${t}`, 12); }, 4);

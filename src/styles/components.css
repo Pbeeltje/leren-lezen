@@ -847,3 +847,29 @@
   top: calc(82px + var(--veilig-boven));
   right: calc(12px + var(--veilig-rechts));
 }
+
+/* Mijn figuur: even groot als de winkelkaart, anders zijn de diertjes te klein. */
+.profiel-menu__paneel[data-weergave='figuur'] {
+  width: min(760px, calc(100vw - 24px - var(--veilig-links) - var(--veilig-rechts)));
+  max-height: calc(100dvh - 96px - var(--veilig-boven) - var(--veilig-onder));
+  padding: 16px;
+}
+
+.profiel-menu__paneel[data-weergave='figuur'] .bladeraar__blad { gap: 12px; }
+
+.profiel-menu__paneel[data-weergave='figuur'] .avatar-keuze {
+  width: 100%;
+  height: auto;
+  aspect-ratio: 1;
+  padding: 10px;
+}
+
+.profiel-menu__paneel[data-weergave='figuur'] .kleur-keuze {
+  width: 72px;
+  height: 72px;
+  padding: 8px;
+}
+
+.profiel-menu__paneel[data-weergave='figuur'] .profiel-menu__subtitel { font-size: 1.35rem; }
+.profiel-menu__paneel[data-weergave='figuur'] .profiel-menu__label { font-size: 1rem; }
+.profiel-menu__paneel[data-weergave='figuur'] .profiel-menu__winkel { min-height: 56px; font-size: 1.05rem; }

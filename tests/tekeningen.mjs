@@ -15,7 +15,7 @@ for (const [bw, bh, tag] of [[360, 640, 'kleintel'], [844, 390, 'liggend'], [102
   });
   await page.reload(); await w(700);
   await page.locator('.icoon-tegel', { hasText: 'Anna' }).click(); await w(600);
-  await page.locator('.icoon-tegel', { hasText: 'Schrijven' }).click(); await w(500);
+  await page.locator('.icoon-tegel', { hasText: 'Spelletjes' }).click(); await w(500);
   await page.locator('.icoon-tegel', { hasText: 'Tekenen' }).click(); await w(600);
   const vak = await page.locator('.teken-canvas').boundingBox();
   const teken = async (n) => {
@@ -50,7 +50,7 @@ for (const [bw, bh, tag] of [[360, 640, 'kleintel'], [844, 390, 'liggend'], [102
   const grootte = await page.evaluate(() => localStorage.getItem('leren-lezen:tekeningen:a').length);
   await page.reload(); await w(800);
   if (await page.locator('.icoon-tegel', { hasText: 'Anna' }).count()) { await page.locator('.icoon-tegel', { hasText: 'Anna' }).click(); await w(600); }
-  await page.locator('.icoon-tegel', { hasText: 'Schrijven' }).click(); await w(500);
+  await page.locator('.icoon-tegel', { hasText: 'Spelletjes' }).click(); await w(500);
   await page.locator('.icoon-tegel', { hasText: 'Tekenen' }).click(); await w(600);
   await knop('mijn tekeningen').click(); await w(400);
   await page.screenshot({ path: OUT + tag + '-lijst.png' });

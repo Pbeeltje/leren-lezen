@@ -158,7 +158,11 @@ export function maakProfielMenu(manager: ScreenManager): { element: HTMLElement;
     });
     avatarKnoppen.push(optie);
   }
-  const avatarBlader = maakBladeraar(avatarKnoppen, { kolommen: 4, rijen: 2, klasse: 'avatar-grid--klein' });
+  const smal = window.innerWidth < 560;
+  const avatarBlader = maakBladeraar(avatarKnoppen, {
+    kolommen: smal ? 3 : 5,
+    rijen: window.innerHeight > 700 ? 3 : 2,
+  });
   figuur.appendChild(avatarBlader.element);
   const kleurLabel = maak('p', 'profiel-menu__label', figuur);
   kleurLabel.textContent = 'Kleur';

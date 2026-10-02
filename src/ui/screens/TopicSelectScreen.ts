@@ -11,12 +11,10 @@ import { ComingSoonScreen } from './ComingSoonScreen.ts';
 import { ProfileSelectScreen } from './ProfileSelectScreen.ts';
 import { LuisterenKiesScreen } from './LuisterenKiesScreen.ts';
 import { OntdekkenKiesScreen } from './OntdekkenKiesScreen.ts';
-import { GeheugenScreen } from './GeheugenScreen.ts';
 import { SchrijvenKiesScreen } from './SchrijvenKiesScreen.ts';
 import { BoekenkastScreen } from './BoekenkastScreen.ts';
 import { MuziekKiesScreen } from './MuziekKiesScreen.ts';
-import { VangScreen } from './VangScreen.ts';
-import { avatarFilter, avatarPad, haalActiefProfiel } from '../../engine/profielStore.ts';
+import { SpellenKiesScreen } from './SpellenKiesScreen.ts';
 
 export function TopicSelectScreen(manager: ScreenManager, groep: Groep): Screen {
   const el = document.createElement('div');
@@ -32,9 +30,8 @@ export function TopicSelectScreen(manager: ScreenManager, groep: Groep): Screen 
   el.appendChild(grid);
 
   for (const topic of topicsVoorGroep(groep)) {
-    const profiel = topic.id === 'vangen' ? haalActiefProfiel() : undefined;
     const tegel = maakIconTile({
-      icoonPad: profiel ? avatarPad(profiel.icoonId) : topic.icoonPad,
+      icoonPad: topic.icoonPad,
       label: topic.titel,
       beschikbaar: topic.beschikbaar,
       badge: topic.beschikbaar ? undefined : 'binnenkort',
@@ -55,19 +52,13 @@ export function TopicSelectScreen(manager: ScreenManager, groep: Groep): Screen 
           manager.push((m) => BoekenkastScreen(m));
         } else if (topic.id === 'schrijven') {
           manager.push((m) => SchrijvenKiesScreen(m));
-        } else if (topic.id === 'vangen') {
-          manager.push((m) => VangScreen(m));
-        } else if (topic.id === 'geheugen') {
-          manager.push((m) => GeheugenScreen(m, 8));
+        } else if (topic.id === 'spellen') {
+          manager.push((m) => SpellenKiesScreen(m));
         } else {
           manager.push((m) => ComingSoonScreen(m, topic.titel));
         }
       },
     });
-    if (profiel) {
-      const img = tegel.querySelector('img');
-      if (img) img.style.filter = avatarFilter(profiel.kleur);
-    }
     grid.appendChild(tegel);
   }
 

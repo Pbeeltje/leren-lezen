@@ -8,7 +8,7 @@ import {
   type Lijn,
 } from '../../engine/tekeningenStore.ts';
 
-// Vrij tekenen met de vinger (onder Schrijven). Zo groot mogelijk blad en alleen
+// Vrij tekenen met de vinger (onder Spelletjes). Zo groot mogelijk blad en alleen
 // tekenknoppen plus terug (in de balk): geen profielmenu of munten, want daar tikten de
 // kinderen per ongeluk op. Grote kleurvlakken, twee diktes, gum,
 // "terug" (laatste lijn weg) en een nieuw blad. Het hartje bewaart de tekening in een van

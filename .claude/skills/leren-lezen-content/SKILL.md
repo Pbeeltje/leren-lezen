@@ -696,8 +696,9 @@ correct pair locks green, a mismatch flips both back after ~900ms with no
 penalty or fout-feedback at all (deliberately gentler than a wrong guess
 elsewhere in the app — this is unstructured toddler play, not a quiz). A
 cleared board also fires `vuurwerk('klein')` and starts a fresh board.
-Groep 3 gets the same game as its own topic tile (`id: 'geheugen'` in
-`topics.ts`, groep3 only) via `GeheugenScreen(m, 8)`: 8 pairs = 16 cards.
+Both groups also open it from the Spelletjes topic (`id: 'spellen'`): kleuters
+4 pairs, groep 3 via `GeheugenScreen(m, 8)` (8 pairs = 16 cards). Kleuters
+still have the same tile under Luisteren.
 Boards with more than 4 pairs get `.geheugen-bord--groot` (4x4 portrait, 8x2
 landscape, cards shrink with the viewport so the board never scrolls). Check:
 `node tests/geheugen-groep3.mjs <map>`.
@@ -778,7 +779,8 @@ input when the keyboard is present, so everything fits on one phone screen.
 - Lijnen (all ages)
 - Letters (5-6)
 - Woordjes (6)
-- Tekenen (all ages)
+
+Free drawing (Tekenen) lives under Spelletjes, not here.
 
 **Letter shapes** live in `content/schrijven/letters.ts`:
 - Each letter is a list of strokes in writing order, built from `lijn()`/`boog()` and
@@ -918,7 +920,7 @@ creates `audio/boekjes/` by itself.
   - **herfst, winter, kermis, bouw, trein:** each has its own CSS file `styles/achtergrond-<id>.css` (imported in main.ts) and pictures with the prefix `<id>-` in `public/assets/achtergrond/`.
   - **Adding a theme:** add the id to `ThemaId`, plus an entry in `THEMAS` and `MAKERS`. The shop and profile menu pick it up automatically (200 coins). Fluent animals face left: mirror them with `.gespiegeld`. If `prefers-reduced-motion` is set, don't start JS schedulers. View a theme with `node tests/achtergronden.mjs <map> <id>` (rest/juich/feest on phone, pc and landscape).
 - **Shop** (`ui/screens/WinkelScreen.ts`): owned items come first (in the fixed order), then the rest. Backgrounds use compact cards: 6 columns (3 on phones) and up to 4 rows, so everything fits on one page. Check with `tests/winkel-rij.mjs`.
-- **Profile menu** (`ui/components/ProfielMenu.ts`): a header (figure + name), 4 tiles (Mijn figuur = animal + colour combined, Achtergrond, Geluid toggle, Wisselen = other profile / age). Submenus have a back arrow; picking an option keeps the menu open and marks the selection. Test driver: drive it by `.profiel-tegel` / `.profiel-keuze` / `.profiel-menu__terug`.
+- **Profile menu** (`ui/components/ProfielMenu.ts`): a header (figure + name), 4 tiles (Mijn figuur = animal + colour combined, Achtergrond, Geluid toggle, Wisselen = other profile / age). The main card stays narrow; Mijn figuur widens to the shop card (`min(760px, viewport)`) with the same 3×3 / 5-column grid as the figure shop, so the animals are readable. Submenus have a back arrow; picking an option keeps the menu open and marks the selection. Test driver: drive it by `.profiel-tegel` / `.profiel-keuze` / `.profiel-menu__terug`.
 - **Android/release:** see `C:\claude\leren-lezen-android-plan.md` (all raster images in `images/` are from third-party material and must be replaced before selling).
 
 ## Android/iPhone app (Capacitor 8)
@@ -982,9 +984,10 @@ Children no longer pick an age but a group (`Groep = 'kleuter' | 'groep3'` in co
 - **Leesboekjes hidden:** the topic has `groepen: []` (the owner isn't happy with the
   booklets yet). Code and audio stay; give it groups again to bring it back.
 - **Kleuter topic order:** `topicsVoorGroep('kleuter')` puts Luisteren first.
-- **Vangspel** (`ui/screens/VangScreen.ts`, topic `vangen`, both groups; the tile shows the
+- **Spelletjes** (`id: 'spellen'`, both groups, `SpellenKiesScreen`): one topic tile
+  (Fluent joystick) that opens Vangspel, Geheugenspel and Tekenen. The Vangspel tile shows the
   profile's own figure, with `avatarFilter` for the picked tint — same on the in-game
-  player and the start/end portrait): the figure stands at the bottom and follows the finger (or arrow
+  player and the start/end portrait. The figure stands at the bottom and follows the finger (or arrow
   keys). A tap (or space / arrow up / W) hops about half the figure's height (~0.4 s, no double
   jump); the catch zone rises with it. Catch falling food (+1) and the odd glowing star (+5); meteors cost one of 3
   hearts (1.2 s blinking afterwards). Speed and meteor share rise with time; kleuters
