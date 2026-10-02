@@ -858,7 +858,7 @@
 .profiel-menu__paneel[data-weergave='figuur'] .bladeraar__blad { gap: 12px; }
 
 .profiel-menu__paneel[data-weergave='figuur'] .avatar-keuze {
-  width: 100%;
+  width: min(100%, 96px);
   height: auto;
   aspect-ratio: 1;
   padding: 10px;

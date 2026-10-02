@@ -984,8 +984,21 @@ Children no longer pick an age but a group (`Groep = 'kleuter' | 'groep3'` in co
 - **Leesboekjes hidden:** the topic has `groepen: []` (the owner isn't happy with the
   booklets yet). Code and audio stay; give it groups again to bring it back.
 - **Kleuter topic order:** `topicsVoorGroep('kleuter')` puts Luisteren first.
+- **Tafeltennis** (`ui/screens/TafeltennisScreen.ts`, under Spelletjes, Fluent ping pong
+  icon): pong in portrait. Your figure + red bat at the bottom (finger/mouse x, arrows/A/D),
+  three random other avatars (random tint) at the top, one after another, getting better
+  (`NIVEAUS`: bat speed, reaction delay, aim error, whether it predicts wall bounces and
+  returns to the middle, ball speed). First to 3 wins: stars = your goals, hearts = their
+  goals left. Lose a match = retry that same opponent; beat all three = trophy + big
+  fireworks, then three new opponents. Ball speeds up 4.5% per hit (max 1.8x), the bounce
+  angle depends on where it hits the bat (max 55°). Kleuter: ball 0.8x, opponents 0.85x.
+  Windows are pictures only (you VS them, the ladder of 3, play button) and reuse the
+  `.vang-venster` styles; the "Draai je telefoon" overlay reuses `.vang-draai`. The table
+  colour follows the background (`.thema-* .pong-tafel` sets `--pong-tafel`/`--pong-rand`).
+  No coins. Check: `node tests/tafeltennis.mjs <map> [mis-kans]` (auto-player follows the
+  ball and logs how far it gets).
 - **Spelletjes** (`id: 'spellen'`, both groups, `SpellenKiesScreen`): one topic tile
-  (Fluent joystick) that opens Vangspel, Geheugenspel and Tekenen. The Vangspel tile shows the
+  (Fluent joystick) that opens Vangspel, Tafeltennis, Geheugenspel and Tekenen. The Vangspel tile shows the
   profile's own figure, with `avatarFilter` for the picked tint — same on the in-game
   player and the start/end portrait. The figure stands at the bottom and follows the finger (or arrow
   keys). A tap (or space / arrow up / W) hops about half the figure's height (~0.4 s, no double

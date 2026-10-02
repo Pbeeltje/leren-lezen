@@ -2303,6 +2303,138 @@
   .vang-venster__figuur { width: 80px; height: 80px; }
 }
 
+/* ---------- Tafeltennis ---------- */
+.pong-scherm { position: fixed; inset: 0; }
+.pong-veld {
+  position: absolute;
+  inset: var(--veilig-boven) var(--veilig-rechts) var(--veilig-onder) var(--veilig-links);
+  overflow: hidden;
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
+}
+/* De tafel krijgt rustig de kleuren van de achtergrond (body.thema-*); alleen een vlak en
+   een rand, zodat hij niet afleidt. */
+.pong-tafel {
+  --pong-tafel: #1f6fd1;
+  --pong-rand: #fff;
+  position: absolute;
+  border-radius: 14px;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.06), rgba(0, 0, 0, 0.06)), var(--pong-tafel);
+  border: 4px solid var(--pong-rand);
+  box-shadow: 0 8px 0 rgba(0, 0, 0, 0.25);
+  pointer-events: none;
+}
+.thema-ruimte .pong-tafel { --pong-tafel: #2f3480; --pong-rand: #c5cae9; }
+.thema-dino .pong-tafel { --pong-tafel: #3f7d3a; --pong-rand: #f1e3b6; }
+.thema-zee .pong-tafel { --pong-tafel: #1a8fa8; --pong-rand: #fff3d6; }
+.thema-onderwater .pong-tafel { --pong-tafel: #166a80; --pong-rand: #b2ebf2; }
+.thema-boerderij .pong-tafel { --pong-tafel: #4a8f3c; --pong-rand: #fff; }
+.thema-herfst .pong-tafel { --pong-tafel: #8d4a25; --pong-rand: #ffe0b2; }
+.thema-winter .pong-tafel { --pong-tafel: #4f8fc0; --pong-rand: #fff; }
+.thema-kasteel .pong-tafel { --pong-tafel: #5b3a8c; --pong-rand: #ffd54f; }
+.thema-kermis .pong-tafel { --pong-tafel: #a8385a; --pong-rand: #fff3e0; }
+.thema-bouw .pong-tafel { --pong-tafel: #4b5563; --pong-rand: #fbc02d; }
+.thema-trein .pong-tafel { --pong-tafel: #2e6b4f; --pong-rand: #fff; }
+.thema-savanne .pong-tafel { --pong-tafel: #a8742c; --pong-rand: #fff3d6; }
+.pong-tafel__lijn {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 50%;
+  width: 2px;
+  margin-left: -1px;
+  background: var(--pong-rand);
+  opacity: 0.6;
+}
+.pong-tafel__net {
+  position: absolute;
+  left: -8px;
+  right: -8px;
+  top: 50%;
+  height: 8px;
+  margin-top: -4px;
+  border-radius: 4px;
+  background: repeating-linear-gradient(90deg, #f5f5f5 0 6px, #cfd8dc 6px 9px);
+  box-shadow: 0 3px 0 rgba(0, 0, 0, 0.25);
+}
+.pong-figuur, .pong-bat, .pong-bal {
+  position: absolute;
+  left: 0;
+  top: 0;
+  pointer-events: none;
+  will-change: transform;
+}
+/* Witte rand: ook op een donkere of rode tafel blijven de batjes goed te zien. */
+.pong-bat { border-radius: 999px; border: 2px solid rgba(255, 255, 255, 0.85); box-shadow: 0 4px 0 rgba(0, 0, 0, 0.3); }
+.pong-bat--speler { background: #e53935; }
+.pong-bat--tegen { background: #263238; }
+.pong-bal {
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 30%, #fff 0 35%, #ffe0b2 100%);
+  box-shadow: 0 4px 4px rgba(0, 0, 0, 0.3);
+}
+.pong-bal[hidden] { display: none; }
+.pong-balk {
+  position: absolute;
+  top: calc(20px + var(--veilig-boven));
+  right: calc(16px + var(--veilig-rechts));
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 6px;
+  pointer-events: none;
+}
+.pong-ladder { display: flex; gap: 6px; }
+.pong-ladder__vak {
+  position: relative;
+  width: 38px;
+  height: 38px;
+  padding: 3px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.9);
+  border: 3px solid transparent;
+}
+.pong-ladder__vak img { width: 100%; height: 100%; object-fit: contain; }
+.pong-ladder__vak--nu { border-color: var(--kleur-secundair); transform: scale(1.12); }
+.pong-ladder__vak--klaar img { opacity: 0.4; }
+.pong-ladder__vak--klaar::after {
+  content: '✓';
+  position: absolute;
+  right: -4px;
+  bottom: -4px;
+  width: 18px;
+  height: 18px;
+  line-height: 18px;
+  text-align: center;
+  border-radius: 50%;
+  background: var(--kleur-succes);
+  color: #fff;
+  font-size: 0.75rem;
+  font-weight: 800;
+}
+.pong-stand { display: flex; gap: 8px; }
+.pong-pil {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 5px 10px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.92);
+  box-shadow: 0 3px 0 rgba(0, 0, 0, 0.18);
+}
+.pong-pil img { width: 24px; height: 24px; transition: opacity 0.3s, transform 0.3s; }
+.pong-pil .pong-pil--leeg { opacity: 0.2; filter: grayscale(1); transform: scale(0.8); }
+.pong-vs { display: flex; align-items: center; gap: 14px; }
+.pong-vs b { font-size: 1.8rem; font-weight: 800; color: var(--kleur-secundair); }
+.pong-venster__figuur { width: 96px; height: 96px; }
+.pong-venster__trofee { width: 110px; height: 110px; }
+.pong-vs--verloren .pong-venster__figuur:first-child { opacity: 0.55; transform: scale(0.85); }
+.vang-venster__doos .pong-ladder__vak { width: 46px; height: 46px; }
+@media (orientation: landscape) and (max-height: 500px) {
+  .pong-venster__figuur { width: 70px; height: 70px; }
+}
+
 /* ---------- Tekenen en vrij spelen: zo groot mogelijk, zo min mogelijk knoppen ---------- */
 .scherm.teken-scherm {
   justify-content: flex-start;
