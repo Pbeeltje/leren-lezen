@@ -3238,10 +3238,25 @@
   line-height: 1.2;
 }
 @media (max-width: 560px) {
-  .begrijpend-plaatjes img { width: 96px; height: 96px; }
-  .begrijpend-plaatjes--2 img, .begrijpend-plaatjes--3 img { width: 78px; height: 78px; }
-  .begrijpend-woord { font-size: 1.35rem; }
-  .begrijpend-vraag { font-size: 1.2rem; }
+  .begrijpend-scherm {
+    justify-content: flex-start;
+    gap: 8px;
+    padding-top: calc(96px + var(--veilig-boven));
+  }
+  .begrijpend-scherm .scherm-titel { font-size: 1.35rem; }
+  .begrijpend-scherm .instructie-tekst { font-size: 0.95rem; }
+  .begrijpend-kaart { gap: 6px; padding: 10px 12px; }
+  .begrijpend-plaatjes img,
+  .begrijpend-plaatjes--2 img,
+  .begrijpend-plaatjes--3 img { width: 64px; height: 64px; }
+  .begrijpend-woord { font-size: 1.15rem; line-height: 1.2; }
+  .begrijpend-vraag { font-size: 1.1rem; margin: 0; }
+  .begrijpend-kaart .keuze-knop {
+    min-height: 64px;
+    min-width: 0;
+    padding: 6px 8px;
+    font-size: 1.05rem;
+  }
 }
 @media (orientation: landscape) and (max-height: 500px) {
   .begrijpend-kaart {

@@ -33,6 +33,9 @@ export interface VoortgangData {
   gekocht?: string[];
   // Laatst gekozen melodie-instrument (Speel na en Vrij spelen openen ermee).
   instrument?: Instrument;
+  // Begrijpend lezen: welke vraag dit kind de vorige keer bij dat verhaal zag.
+  // De volgende keer dat het verhaal opengaat, komt de vraag erna.
+  begrijpendVraag?: Record<string, number>;
 }
 
 // Elk profiel heeft zijn eigen sleutel, zodat munten/voortgang niet tussen kinderen
@@ -175,6 +178,17 @@ export function markeerKernVoltooid(kernId: string, sterren: 0 | 1 | 2 | 3): voi
 
 export function haalKernVoortgang(kernId: string): KernVoortgang {
   return leesRuw().kernen[kernId] ?? legeKernVoortgang();
+}
+
+/** Index van de vraag die dit kind nu bij dit verhaal te zien krijgt. De volgende keer een andere. */
+export function volgendeBegrijpendVraag(verhaalId: string, aantal: number): number {
+  if (aantal < 1) throw new Error(`verhaal ${verhaalId} heeft geen vragen`);
+  const data = leesRuw();
+  const vorige = data.begrijpendVraag?.[verhaalId];
+  const index = typeof vorige === 'number' ? (vorige + 1) % aantal : 0;
+  data.begrijpendVraag = { ...data.begrijpendVraag, [verhaalId]: index };
+  schrijfRuw(data);
+  return index;
 }
 
 export function haalBlootstelling(woord: string): number {

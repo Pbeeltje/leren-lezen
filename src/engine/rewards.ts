@@ -13,6 +13,9 @@ import { haalGroep } from './progressStore.ts';
 export const MUNTEN_OEFENING_GOED = 2; // per goed antwoord (ook Luisteren, Ontdekken en Schrijven)
 export const MUNTEN_OEFENING_SET = 5; // aan het eind van een oefening
 
+// Begrijpend lezen (groep 3): één vraag per keer dat een verhaal opengaat.
+export const MUNTEN_BEGRIJPEND = 50;
+
 export const MUNTEN_TOETS_GOED = 2; // per goed antwoord
 export const MUNTEN_TOETS_VOLDOENDE = 10; // aan het eind, minstens de helft goed
 export const MUNTEN_TOETS_PERFECT = 20; // aan het eind, alles goed (in plaats van de 10, niet erbovenop)

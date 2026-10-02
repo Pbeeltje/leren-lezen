@@ -12,6 +12,14 @@ export const TOPICS: Topic[] = [
     beschikbaar: true,
   },
   {
+    // Kort verhaal, één meerkeuzevraag. Alleen groep 3: kleuters lezen dit nog niet.
+    id: 'begrijpend',
+    groepen: ['groep3'],
+    titel: 'Begrijpend lezen',
+    icoonPad: 'assets/icons/begrijpend.svg',
+    beschikbaar: true,
+  },
+  {
     id: 'tellen',
     // Kleuters zien alleen de eerste twee hoofdstukken (engine/leeftijdGrens.ts).
     groepen: ['kleuter', 'groep3'],

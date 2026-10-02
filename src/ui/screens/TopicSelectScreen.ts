@@ -15,6 +15,7 @@ import { SchrijvenKiesScreen } from './SchrijvenKiesScreen.ts';
 import { BoekenkastScreen } from './BoekenkastScreen.ts';
 import { MuziekKiesScreen } from './MuziekKiesScreen.ts';
 import { SpellenKiesScreen } from './SpellenKiesScreen.ts';
+import { BegrijpendKiesScreen } from './BegrijpendLezenScreen.ts';
 
 export function TopicSelectScreen(manager: ScreenManager, groep: Groep): Screen {
   const el = document.createElement('div');
@@ -40,6 +41,8 @@ export function TopicSelectScreen(manager: ScreenManager, groep: Groep): Screen 
         speelSchermOvergang();
         if (topic.id === 'lezen') {
           manager.push((m) => KernOverviewScreen(m));
+        } else if (topic.id === 'begrijpend') {
+          manager.push((m) => BegrijpendKiesScreen(m));
         } else if (topic.id === 'tellen') {
           manager.push((m) => RekenKernOverviewScreen(m));
         } else if (topic.id === 'luisteren') {
