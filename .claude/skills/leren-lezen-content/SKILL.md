@@ -1013,8 +1013,10 @@ Children no longer pick an age but a group (`Groep = 'kleuter' | 'groep3'` in co
   - Entrances (`komt`): loopt, hupt, springt (cat, tiger, fox), valt (monkeys drop from the
     sky, then hop in place `--wipt`), glijdt (penguin, seal), stampt (dinos shake the
     screen), rent (dog runs back and forth once), zakt (sloth on a vine), vliegt (bee,
-    butterfly; hover `--zweeft`), kruipt (snail, turtle: a third of a body per second in),
-    kronkelt (snake). Extras: `slaapt` (lion, sloth fall asleep "Zzz…"), `spuit` (elephant
+    butterfly; hover `--zweeft`), kruipt (snail, turtle: a third of a body per second, in
+    and out; nobody waits for them: the tray comes once the rest has arrived, and a leaving
+    crawler moves to `kruipers` so the next group already walks in past it), kronkelt
+    (snake). Extras: `slaapt` (lion, sloth fall asleep "Zzz…"), `spuit` (elephant
     water fountain).
   - Groups: 1 animal, from score 6 sometimes 2, groep 3 from 14 up to 3 (max 2 when width
     < 560). Animals in a group never share a good food, and never stand next to their own
