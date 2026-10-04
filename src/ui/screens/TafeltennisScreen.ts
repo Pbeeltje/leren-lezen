@@ -8,10 +8,10 @@ import { confetti } from '../../three/particles.ts';
 // Tafeltennis (pong): je eigen figuurtje staat onderaan met een batje en schuift mee met je
 // vinger (of de pijltjes). Bovenaan staan na elkaar drie willekeurige figuurtjes, elk een
 // stukje beter. Scoor je drie keer tegen een tegenstander, dan is die verslagen; scoort hij
-// drie keer tegen jou (drie hartjes), dan probeer je hem opnieuw. Geen munten: munten
-// verdien je met leren.
+// drie keer tegen jou, dan probeer je hem opnieuw. Zijn hartjes zijn blauw, die van jou rood.
+// Ze lopen leeg bij een punt en ploppen pas weer vol als de nieuwe tegenstander écht speelt,
+// niet al op het venster dat hem aankondigt. Geen munten: munten verdien je met leren.
 
-const STER = 'assets/images/woorden/ster.svg';
 const HART = 'assets/icons/bewaar.svg';
 const TROFEE = 'assets/icons/trofee.svg';
 const DOELEN = 3;
@@ -96,19 +96,19 @@ export function TafeltennisScreen(manager: ScreenManager): Screen {
   bal.hidden = true;
   veld.append(tegenFiguur, tegenBat, spelerFiguur, spelerBat, bal);
 
-  // Bovenaan rechts: de drie tegenstanders, en de stand (sterren = jouw doelpunten,
-  // hartjes = hoe vaak hij nog mag scoren).
+  // Bovenaan rechts: de drie tegenstanders, en de stand. Blauwe hartjes zijn van hem
+  // (bovenaan), rode van jou.
   const balk = document.createElement('div');
   balk.className = 'pong-balk';
   const ladder = document.createElement('div');
   ladder.className = 'pong-ladder';
   const stand = document.createElement('div');
   stand.className = 'pong-stand';
-  const sterren = document.createElement('div');
-  sterren.className = 'pong-pil';
-  const hartjes = document.createElement('div');
-  hartjes.className = 'pong-pil';
-  stand.append(sterren, hartjes);
+  const blauw = document.createElement('div');
+  blauw.className = 'pong-pil pong-pil--blauw';
+  const rood = document.createElement('div');
+  rood.className = 'pong-pil pong-pil--rood';
+  stand.append(blauw, rood);
   balk.append(ladder, stand);
   el.appendChild(balk);
 
@@ -201,25 +201,36 @@ export function TafeltennisScreen(manager: ScreenManager): Screen {
     bal.style.transform = `translate(${x0 + bx - straal}px, ${by - straal}px)`;
   }
 
-  function tekenStand(): void {
-    sterren.replaceChildren(
-      ...Array.from({ length: DOELEN }, (_, i) => {
-        const s = document.createElement('img');
-        s.src = STER;
-        s.alt = '';
-        if (i >= gescoord) s.className = 'pong-pil--leeg';
-        return s;
-      }),
-    );
-    hartjes.replaceChildren(
-      ...Array.from({ length: DOELEN }, (_, i) => {
+  // pop: hartjes ploppen vol (alleen als de wedstrijd start). knal: het hartje dat net weg is.
+  function tekenStand(pop = false, knal: 'blauw' | 'rood' | null = null): void {
+    const rij = (doel: HTMLElement, soort: 'blauw' | 'rood', kwijt: number): void => {
+      const kop = document.createElement('img');
+      kop.className = 'pong-pil__kop';
+      kop.alt = '';
+      if (soort === 'blauw') {
+        const t = tegenstanders[ronde];
+        kop.src = avatarPad(t.icoon);
+        kop.style.filter = avatarFilter(t.kleur);
+      } else {
+        kop.src = eigenPad;
+        if (eigenTint) kop.style.filter = eigenTint;
+      }
+      const harten = Array.from({ length: DOELEN }, (_, i) => {
         const h = document.createElement('img');
         h.src = HART;
         h.alt = '';
-        if (i >= DOELEN - tegen) h.className = 'pong-pil--leeg';
+        const leeg = i >= DOELEN - kwijt;
+        if (leeg) h.className = i === DOELEN - kwijt && knal === soort ? 'pong-pil--leeg pong-pil--knal' : 'pong-pil--leeg';
+        else if (pop) {
+          h.className = 'pong-pil--pop';
+          h.style.animationDelay = `${i * 0.08}s`;
+        }
         return h;
-      }),
-    );
+      });
+      doel.replaceChildren(kop, ...harten);
+    };
+    rij(blauw, 'blauw', gescoord);
+    rij(rood, 'rood', tegen);
     ladder.replaceChildren(
       ...tegenstanders.map((t, i) => {
         const vak = document.createElement('span');
@@ -309,15 +320,16 @@ export function TafeltennisScreen(manager: ScreenManager): Screen {
       speelNoot(TONEN[0]);
       speelNoot(TONEN[2], 0.08);
       speelNoot(TONEN[4], 0.16);
-      plop('⭐', tegenLijn + 40);
+      plop('💙', tegenLijn + 40);
     } else {
       tegen++;
       speelDrum('bas');
       spelerFiguur.classList.remove('vang-speler--au');
       void spelerFiguur.offsetWidth;
       spelerFiguur.classList.add('vang-speler--au');
+      plop('💔', spelerLijn - 36);
     }
-    tekenStand();
+    tekenStand(false, voorSpeler ? 'blauw' : 'rood');
     opslagNaarSpeler = !voorSpeler;
     if (gescoord >= DOELEN) {
       actief = false;
@@ -455,12 +467,15 @@ export function TafeltennisScreen(manager: ScreenManager): Screen {
   const losAlles = (): void => toetsen.clear();
 
   function startWedstrijd(): void {
+    // Hartjes blijven op het aankondigingsvenster zoals de vorige wedstrijd eindigde.
+    // Ze ploppen pas vol als deze tegenstander echt aan de beurt is.
+    const vulOp = gescoord > 0 || tegen > 0;
     overlay?.remove();
     overlay = null;
     gescoord = 0;
     tegen = 0;
     zetTegenstander();
-    tekenStand();
+    tekenStand(vulOp);
     spelerX = doelX = tegenX = tegenDoel = B / 2;
     tegenV = 0;
     // De eerste opslag gaat naar de tegenstander, zodat je eerst ziet hoe hij terugslaat.

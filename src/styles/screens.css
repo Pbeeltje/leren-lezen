@@ -2656,18 +2656,33 @@
   font-size: 0.75rem;
   font-weight: 800;
 }
-.pong-stand { display: flex; gap: 8px; }
+.pong-stand { display: flex; flex-direction: column; align-items: flex-end; gap: 6px; }
 .pong-pil {
   display: flex;
   align-items: center;
   gap: 4px;
-  padding: 5px 10px;
+  padding: 4px 8px 4px 4px;
   border-radius: 999px;
   background: rgba(255, 255, 255, 0.92);
   box-shadow: 0 3px 0 rgba(0, 0, 0, 0.18);
 }
-.pong-pil img { width: 24px; height: 24px; transition: opacity 0.3s, transform 0.3s; }
-.pong-pil .pong-pil--leeg { opacity: 0.2; filter: grayscale(1); transform: scale(0.8); }
+.pong-pil img { width: 28px; height: 28px; }
+.pong-pil__kop { width: 26px; height: 26px; object-fit: contain; }
+/* Zijn hartjes blauw, die van jou blijven rood. */
+.pong-pil--blauw > img:not(.pong-pil__kop) { filter: hue-rotate(235deg) saturate(2.1); }
+.pong-pil > img.pong-pil--leeg { opacity: 0.22; filter: grayscale(1); transform: scale(0.75); }
+.pong-pil--pop { animation: pong-hart-pop 0.48s cubic-bezier(0.2, 1.45, 0.4, 1) backwards; }
+@keyframes pong-hart-pop {
+  0% { transform: scale(0); }
+  62% { transform: scale(1.45); }
+  100% { transform: scale(1); }
+}
+.pong-pil--knal { animation: pong-hart-knal 0.4s ease forwards; }
+@keyframes pong-hart-knal {
+  0% { transform: scale(1); opacity: 1; }
+  35% { transform: scale(1.55); opacity: 1; }
+  100% { transform: scale(0.75); opacity: 0.22; }
+}
 .pong-vs { display: flex; align-items: center; gap: 14px; }
 .pong-vs b { font-size: 1.8rem; font-weight: 800; color: var(--kleur-secundair); }
 .pong-venster__figuur { width: 96px; height: 96px; }
@@ -3144,8 +3159,14 @@
   /* Schrijven en muziek hebben een titel boven de instructie; die kost ~90px en de
      instructie + luisterknop zeggen al wat er moet (zoals op de liggende telefoon). */
   .scherm:has(.voortgangsbalk) .scherm-titel { display: none; }
-  .oefen-kaart:has(> .blokken-canvas) { gap: 16px; }
-  .oefen-kaart:has(> .blokken-canvas) .oefen-kaart__plaatje { width: 112px; height: 112px; }
+  /* Woord bouwen: de kaart (plaatje + sleuven + blokjes) liep op een browservenster
+     van ~720px hoog onder de rand, zodat de onderste blokjes afgesneden werden.
+     Op een telefoon (hoger dan 820, of de liggende-telefoonregels hierboven) blijft
+     de grotere maat staan. */
+  .oefen-kaart:has(> .blokken-canvas) { gap: 10px; padding: 14px 20px; }
+  .oefen-kaart:has(> .blokken-canvas) .oefen-kaart__plaatje { width: 96px; height: 96px; }
+  .oefen-kaart:has(> .blokken-canvas) .blokken-canvas { height: 160px; }
+  .oefen-kaart:has(> .blokken-canvas) .doel-sleuf { width: 56px; height: 56px; }
   .oefen-kaart:has(.scherm-toetsenbord) { gap: 8px; }
   .oefen-kaart:has(.scherm-toetsenbord) .oefen-kaart__plaatje { width: 84px; height: 84px; }
   /* Cijfer typen: bij 6–10 plaatjes staan die in twee rijen (vijfstructuur). */

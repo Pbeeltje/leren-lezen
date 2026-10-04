@@ -55,6 +55,7 @@ export const AVATAR_ICONEN = [
   'trex',
   'dino',
   'stegosaurus',
+  'triceratops',
   'paard',
   'zebra',
   'giraf',
