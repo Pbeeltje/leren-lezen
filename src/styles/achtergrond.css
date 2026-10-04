@@ -8,6 +8,15 @@
   pointer-events: none;
 }
 
+/* Pagina op de achtergrond: CSS-animaties bevriezen op het huidige frame en lopen
+   verder zodra de klasse weer weg is. */
+#decor-laag.beweging-uit,
+#decor-laag.beweging-uit *,
+#decor-laag.beweging-uit *::before,
+#decor-laag.beweging-uit *::after {
+  animation-play-state: paused;
+}
+
 .decor {
   position: absolute;
   inset: 0;

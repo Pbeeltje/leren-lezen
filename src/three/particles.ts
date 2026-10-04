@@ -12,16 +12,23 @@ const KLEUREN = [0xffc93c, 0xff7a3d, 0x3dbdff, 0x3ecf6e, 0xff5d6c];
 
 class Confetti {
   private actief: ActieveBurst[] = [];
-  private klaar = false;
+  private afmelden: (() => void) | null = null;
 
-  private zorgVoorAnimatieLus(): void {
-    if (this.klaar) return;
-    this.klaar = true;
-    sceneManager.opAnimatie((delta) => this.tik(delta));
+  private koppel(): void {
+    if (this.afmelden) return;
+    this.afmelden = sceneManager.opAnimatie((delta) => this.tik(delta));
+    sceneManager.beginEffect();
+  }
+
+  private ontkoppel(): void {
+    if (!this.afmelden) return;
+    this.afmelden();
+    this.afmelden = null;
+    sceneManager.eindEffect();
   }
 
   burst(kleurIndex = 0, oorsprong: [number, number, number] = [0, -1, 2]): void {
-    this.zorgVoorAnimatieLus();
+    this.koppel();
 
     const aantal = 60;
     const posities = new Float32Array(aantal * 3);
@@ -84,6 +91,7 @@ class Confetti {
         this.actief.splice(i, 1);
       }
     }
+    if (this.actief.length === 0) this.ontkoppel();
   }
 
   /**

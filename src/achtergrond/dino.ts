@@ -1,4 +1,5 @@
 import type { Decor } from './achtergrond.ts';
+import { bijZichtbaarheid, paginaZichtbaar } from '../engine/zichtbaarheid.ts';
 import { HEUVELS, paardenstaarten, STEEN, varenPol, VERTE } from './dino-landschap.ts';
 import { BRACHIO, NEST, PTERO, STEGO, TREX } from './dino-tekening.ts';
 import { el, kortAan, plaatje, svgUitTekst, zetOpPad } from './hulp.ts';
@@ -204,7 +205,7 @@ export function maakDinoDecor(): Decor {
   };
 
   const stap = (nu: number) => {
-    if (!levend) return;
+    if (!levend || !paginaZichtbaar()) return;
     if (!geplaatst) {
       frame = requestAnimationFrame(stap);
       return;
@@ -235,10 +236,25 @@ export function maakDinoDecor(): Decor {
     }
     frame = requestAnimationFrame(stap);
   };
-  if (!stil) {
+  const afmeldZicht = bijZichtbaarheid((aan) => {
+    if (!levend || stil) return;
+    cancelAnimationFrame(frame);
+    if (!aan) return;
+    if (!loopGestart) startLopen();
+    else {
+      vorige = 0;
+      frame = requestAnimationFrame(stap);
+    }
+  });
+  let loopGestart = false;
+  const startLopen = () => {
+    if (loopGestart || !levend || stil) return;
+    loopGestart = true;
     loopVerder(performance.now());
+    vorige = 0;
     frame = requestAnimationFrame(stap);
-  }
+  };
+  if (paginaZichtbaar()) startLopen();
 
   // ---- Heel af en toe zweeft er een pteranodon hoog door de lucht. ----
   // Nooit twee tegelijk: de volgende wordt pas gepland als de vorige weg is.
@@ -297,6 +313,7 @@ export function maakDinoDecor(): Decor {
 
   const vernietig = () => {
     levend = false;
+    afmeldZicht();
     cancelAnimationFrame(frame);
     for (const t of timers) window.clearTimeout(t);
     timers.clear();

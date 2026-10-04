@@ -1,4 +1,5 @@
 import { isGedempt } from './audioManager.ts';
+import { bijZichtbaarheid, paginaZichtbaar } from './zichtbaarheid.ts';
 
 // Klanken voor Muziek, gemaakt met Web Audio (geen opnames nodig): een xylofoon (grondtoon
 // plus een paar boventonen die snel wegsterven, en een tikje van de stok) en een trommel
@@ -6,10 +7,27 @@ import { isGedempt } from './audioManager.ts';
 // laten pas geluid toe na een aanraking.
 
 let ctx: AudioContext | null = null;
+let hervatNaTonen = false;
+
+bijZichtbaarheid((aan) => {
+  if (!ctx) return;
+  if (!aan) {
+    if (ctx.state === 'running') hervatNaTonen = true;
+    void ctx.suspend();
+    return;
+  }
+  if (!hervatNaTonen) return;
+  hervatNaTonen = false;
+  if (!isGedempt() && ctx.state === 'suspended') void ctx.resume();
+});
 
 function context(): AudioContext | null {
   if (isGedempt()) return null;
   if (!ctx) ctx = new AudioContext();
+  if (!paginaZichtbaar()) {
+    hervatNaTonen = true;
+    return ctx;
+  }
   if (ctx.state === 'suspended') void ctx.resume();
   return ctx;
 }

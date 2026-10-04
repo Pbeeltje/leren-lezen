@@ -1,5 +1,6 @@
 import { events } from '../engine/events.ts';
 import { haalActiefProfielId } from '../engine/profielStore.ts';
+import { bijZichtbaarheid, paginaZichtbaar } from '../engine/zichtbaarheid.ts';
 import { maakRuimte, zetRuimteZichtbaar } from '../three/ruimte.ts';
 import { maakRuimteDecor } from './ruimte.ts';
 import { maakDinoDecor } from './dino.ts';
@@ -90,6 +91,9 @@ export function initAchtergrond(app: HTMLElement): void {
   laag = document.createElement('div');
   laag.id = 'decor-laag';
   app.prepend(laag);
+  const zetBeweging = (aan: boolean) => laag?.classList.toggle('beweging-uit', !aan);
+  zetBeweging(paginaZichtbaar());
+  bijZichtbaarheid(zetBeweging);
   maakRuimte();
   window.addEventListener('resize', () => huidig?.decor?.plaats?.());
   events.on('sessie-klaar', () => {

@@ -1,4 +1,5 @@
 import type { Decor } from './achtergrond.ts';
+import { bijZichtbaarheid, paginaZichtbaar } from '../engine/zichtbaarheid.ts';
 import { el, kortAan, maakRegenboog, plaatje, svgUitTekst } from './hulp.ts';
 
 // Zee met wisselend weer: zon (20 s) -> regen (15 s) -> onweer (15 s) -> weer zon, en als
@@ -127,7 +128,9 @@ export function maakZeeDecor(): Decor {
   let walvisGezien = false;
   let walvisTimer: number | undefined;
   let frame = 0;
+  let levend = true;
   const drijf = () => {
+    if (!levend || !paginaZichtbaar()) return;
     frame = requestAnimationFrame(drijf);
     const vak = boot.getBoundingClientRect();
     const golvenVak = golven.getBoundingClientRect();
@@ -155,13 +158,20 @@ export function maakZeeDecor(): Decor {
       walvisTimer = window.setTimeout(() => kortAan(walvis, 'duikt-op', 12000), 3500);
     }
   };
-  frame = requestAnimationFrame(drijf);
+  const afmeldZicht = bijZichtbaarheid((aan) => {
+    if (!levend) return;
+    cancelAnimationFrame(frame);
+    if (aan) frame = requestAnimationFrame(drijf);
+  });
+  if (paginaZichtbaar()) frame = requestAnimationFrame(drijf);
 
   const juich = () => {
     kortAan(toren, 'licht-aan', 2600);
     kortAan(straal, 'zwaait', 2600);
   };
   const vernietig = () => {
+    levend = false;
+    afmeldZicht();
     window.clearTimeout(weerTimer);
     window.clearTimeout(bliksemTimer);
     window.clearTimeout(regenboogTimer);

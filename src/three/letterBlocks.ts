@@ -1,4 +1,5 @@
 import * as THREE from 'three';
+import { bijZichtbaarheid, paginaZichtbaar } from '../engine/zichtbaarheid.ts';
 
 // Eigen, kleine three.js-scene (los van de gedeelde achtergrondlaag) speciaal voor
 // de woord-bouwen-oefening: klikbare houten letterblokken, zoals echte speelgoedblokken
@@ -91,6 +92,7 @@ export class LetterBlokkenScene {
   private actief = true;
   private onLetterGekozen: (letter: string, blokIndex: number) => void;
   private klikLuisteraar = (event: PointerEvent) => this.klik(event);
+  private afmeldZicht: () => void = () => {};
   // Bij de eerste vraag hangt de kaart nog niet in de pagina (breedte 0): volg de echte maat.
   private grootteWacht = new ResizeObserver(() => this.pasGrootteAan());
 
@@ -113,7 +115,11 @@ export class LetterBlokkenScene {
     this.scene.add(licht);
 
     this.pasGrootteAan();
-    this.renderer.setAnimationLoop((tijd) => this.tik(tijd));
+    this.afmeldZicht = bijZichtbaarheid((aan) => {
+      if (!this.actief) return;
+      this.renderer.setAnimationLoop(aan ? (tijd) => this.tik(tijd) : null);
+    });
+    if (paginaZichtbaar()) this.renderer.setAnimationLoop((tijd) => this.tik(tijd));
 
     this.renderer.domElement.addEventListener('pointerdown', this.klikLuisteraar);
     this.grootteWacht.observe(container);
@@ -251,6 +257,7 @@ export class LetterBlokkenScene {
   vernietig(): void {
     if (!this.actief) return;
     this.actief = false;
+    this.afmeldZicht();
     this.grootteWacht.disconnect();
     this.ruimOp();
     this.renderer.setAnimationLoop(null);

@@ -97,6 +97,11 @@ const groep = new THREE.Group();
 /** Laat de ruimte zien of verbergt hem (andere achtergronden tekenen hun eigen decor). */
 export function zetRuimteZichtbaar(zichtbaar: boolean): void {
   groep.visible = zichtbaar;
+  sceneManager.zetDoorlopend(zichtbaar);
+}
+
+export function isRuimteZichtbaar(): boolean {
+  return groep.visible;
 }
 
 export function maakRuimte(): void {

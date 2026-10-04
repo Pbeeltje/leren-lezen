@@ -1,18 +1,26 @@
 import * as THREE from 'three';
+import { bijZichtbaarheid, paginaZichtbaar } from '../engine/zichtbaarheid.ts';
 
 // Eén gedeelde laag achter de hele DOM-UI. Puur decoratief/reactief; blokkeert nooit
 // klikken (pointer-events: none staat al op #drie-laag in global.css).
+// De lus draait zolang de ruimte op het scherm staat (ook in menu's) of een kort effect
+// (confetti) de canvas nodig heeft, en stopt als de pagina naar de achtergrond gaat.
 
 class SceneManager {
   readonly scene = new THREE.Scene();
   readonly camera = new THREE.PerspectiveCamera(50, 1, 0.1, 100);
   private renderer?: THREE.WebGLRenderer;
+  private laag?: HTMLElement;
   private klok = new THREE.Timer();
   private animatieFuncties = new Set<(delta: number, verlopen: number) => void>();
+  private loopAan = false;
+  private doorlopend = true;
+  private effecten = 0;
 
   init(container: HTMLElement): void {
     if (this.renderer) return; // al geïnitialiseerd
 
+    this.laag = container;
     this.renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
     this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
     container.appendChild(this.renderer.domElement);
@@ -27,8 +35,34 @@ class SceneManager {
 
     this.pasGrootteAan();
     window.addEventListener('resize', () => this.pasGrootteAan());
+    bijZichtbaarheid(() => this.werkLoopBij());
+    this.werkLoopBij();
+  }
 
-    this.renderer.setAnimationLoop((tijd) => this.tik(tijd));
+  /** De ruimte-meshes staan op het scherm en moeten blijven animeren. */
+  zetDoorlopend(aan: boolean): void {
+    this.doorlopend = aan;
+    this.werkLoopBij();
+  }
+
+  /** Een kort effect (confetti) heeft de canvas even nodig, ook bij een ander thema. */
+  beginEffect(): void {
+    this.effecten++;
+    this.werkLoopBij();
+  }
+
+  eindEffect(): void {
+    this.effecten = Math.max(0, this.effecten - 1);
+    this.werkLoopBij();
+  }
+
+  private werkLoopBij(): void {
+    if (!this.renderer || !this.laag) return;
+    const aan = paginaZichtbaar() && (this.doorlopend || this.effecten > 0);
+    this.laag.hidden = !aan;
+    if (aan === this.loopAan) return;
+    this.loopAan = aan;
+    this.renderer.setAnimationLoop(aan ? (tijd) => this.tik(tijd) : null);
   }
 
   private pasGrootteAan(): void {

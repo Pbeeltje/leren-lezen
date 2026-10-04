@@ -1,4 +1,5 @@
 import type { Decor } from './achtergrond.ts';
+import { bijZichtbaarheid, paginaZichtbaar } from '../engine/zichtbaarheid.ts';
 import { el, kortAan, plaatje, svgUitTekst } from './hulp.ts';
 
 // Bouwplaats: zonnige lucht boven een zandvlakte. Rechts een torenkraan naast een half
@@ -424,13 +425,16 @@ export function maakBouwDecor(): Decor {
   // Rustig: de giek zwenkt een beetje, het katje rijdt heen en weer, de last schommelt.
   // De grenzen houden het dak boven het huis en weg van de toren.
   let vorige = 0;
+  let pauzeMs = 0;
+  let wegSinds = 0;
   const lus = (nu: number) => {
-    if (!levend) return;
-    const dt = Math.min(0.1, vorige ? (nu - vorige) / 1000 : 0);
-    vorige = nu;
-    const t = nu / 1000;
+    if (!levend || !paginaZichtbaar()) return;
+    const klok = nu - pauzeMs;
+    const dt = Math.min(0.1, vorige ? (klok - vorige) / 1000 : 0);
+    vorige = klok;
+    const t = klok / 1000;
     if (feestStart >= 0) {
-      const f = nu - feestStart;
+      const f = klok - feestStart;
       if (f < 1800) {
         const p = f / 1800;
         stand.kx = naar(feestVan.kx, HUIS_X, p);
@@ -458,7 +462,21 @@ export function maakBouwDecor(): Decor {
     rafId = requestAnimationFrame(lus);
   };
   teken();
-  if (!stil) rafId = requestAnimationFrame(lus);
+  const afmeldZicht = bijZichtbaarheid((aan) => {
+    if (!levend || stil) return;
+    if (!aan) {
+      cancelAnimationFrame(rafId);
+      wegSinds = performance.now();
+      return;
+    }
+    if (wegSinds) {
+      pauzeMs += performance.now() - wegSinds;
+      wegSinds = 0;
+    }
+    vorige = 0;
+    rafId = requestAnimationFrame(lus);
+  });
+  if (!stil && paginaZichtbaar()) rafId = requestAnimationFrame(lus);
 
   // ---- De kiepwagen rijdt af en toe heen of terug (nooit tijdens het feest). ----
   let naarRechts = Math.random() < 0.5;
@@ -560,11 +578,12 @@ export function maakBouwDecor(): Decor {
       return;
     }
     feestVan = { ...stand };
-    feestStart = performance.now();
+    feestStart = performance.now() - pauzeMs;
   };
 
   const vernietig = () => {
     levend = false;
+    afmeldZicht();
     window.clearTimeout(timer);
     window.clearTimeout(heliTimer);
     window.clearTimeout(resetTimer);

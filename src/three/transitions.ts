@@ -1,3 +1,4 @@
+import { isRuimteZichtbaar } from './ruimte.ts';
 import { sceneManager } from './sceneManager.ts';
 
 // Kleine camera-"punch" bij elke schermwissel. Bewust subtiel: de echte
@@ -19,6 +20,16 @@ function stap(delta: number): boolean {
 let afmelden: (() => void) | null = null;
 
 export function speelSchermOvergang(): void {
+  // Bij een CSS-thema is de camera gericht op een onzichtbare scene: niks te zien.
+  if (!isRuimteZichtbaar()) {
+    if (bezig) {
+      sceneManager.camera.position.z = BASIS_Z;
+      bezig = false;
+      afmelden?.();
+      afmelden = null;
+    }
+    return;
+  }
   tijd = 0;
   if (bezig) return;
   bezig = true;
