@@ -987,38 +987,60 @@ export function VoerScreen(manager: ScreenManager): Screen {
         return;
       }
       case 'spuit': {
-        spuitWater(g);
-        const hoek = (-110 * Math.PI) / 180;
-        const kracht = g.maat * 1.6;
+        // Straal uit de slurf naar links. De fontein valt op het lijf terug en lijkt op bloeden.
+        speelDrum('snare');
+        const kracht = g.maat * 2.6;
         const frames: Keyframe[] = [];
-        for (let s = 0; s <= 12; s++) {
-          const t = s / 12;
-          const x = Math.cos(hoek) * kracht * t;
-          const y = Math.sin(hoek) * kracht * t + g.maat * 2.2 * t * t;
+        for (let s = 0; s <= 10; s++) {
+          const t = s / 10;
+          const x = -kracht * t;
+          const y = -g.maat * 0.12 * t + g.maat * 0.2 * t * t;
           frames.push({
-            transform: `translate(${x0 + x}px, ${y0 + y}px) rotate(${t * 200}deg)`,
-            opacity: t < 0.75 ? 1 : (1 - t) / 0.25,
+            transform: `translate(${x0 + x}px, ${y0 + y}px) rotate(${-16 - t * 50}deg)`,
+            opacity: t < 0.82 ? 1 : (1 - t) / 0.18,
           });
         }
-        speelWeg(img, frames, 800);
+        speelWeg(img, frames, 520);
+        for (let i = 0; i < 16; i++) {
+          const d = document.createElement('div');
+          d.className = 'voer-druppel';
+          d.style.left = `${mond.x}px`;
+          d.style.top = `${mond.y}px`;
+          veld.appendChild(d);
+          const hoek = Math.PI + (Math.random() - 0.5) * 0.22;
+          const k = kracht * (0.55 + Math.random() * 0.5);
+          const drup: Keyframe[] = [];
+          for (let s = 0; s <= 8; s++) {
+            const t = s / 8;
+            const x = Math.cos(hoek) * k * t;
+            const y = Math.sin(hoek) * k * 0.22 * t + g.maat * 0.22 * t * t;
+            drup.push({ transform: `translate(${x}px, ${y}px) scale(${1 - t * 0.3})`, opacity: t < 0.72 ? 1 : (1 - t) / 0.28 });
+          }
+          d.animate(drup, { duration: 460 + Math.random() * 140, delay: i * 16, easing: 'linear', fill: 'both' }).onfinish = (): void => d.remove();
+        }
         return;
       }
       case 'plat': {
-        veld.classList.add('voer-veld--dreun');
+        const voetX = g.x - m / 2;
+        const grondY = grond() - m * 0.12;
         window.setTimeout(() => {
           if (mijn !== spel) return;
-          if (!gasten.some((x) => x.dier.komt === 'stampt' && x.staat === 'komt')) veld.classList.remove('voer-veld--dreun');
-        }, 720);
-        const grondY = grond() - m * 0.2;
+          veld.classList.add('voer-veld--stamp');
+          window.setTimeout(() => {
+            if (mijn === spel) veld.classList.remove('voer-veld--stamp');
+          }, 400);
+        }, 70);
         speelWeg(
           img,
           [
             { transform: `translate(${x0}px, ${y0}px) scale(1, 1)`, opacity: 1 },
-            { transform: `translate(${x0}px, ${grondY}px) scale(1.45, 0.16)`, opacity: 1, offset: 0.5 },
-            { transform: `translate(${x0}px, ${grondY}px) scale(1.55, 0.1)`, opacity: 0 },
+            { transform: `translate(${voetX}px, ${grondY}px) scale(1.05, 0.92)`, opacity: 1, offset: 0.22 },
+            { transform: `translate(${voetX}px, ${grondY}px) scale(1.85, 0.32)`, opacity: 1, offset: 0.36 },
+            { transform: `translate(${voetX}px, ${grondY}px) scale(1.7, 0.36)`, opacity: 1, offset: 0.72 },
+            { transform: `translate(${voetX}px, ${grondY}px) scale(1.55, 0.3)`, opacity: 0 },
           ],
-          500,
-          'ease-in',
+          460,
+          'ease-out',
         );
         return;
       }
@@ -1077,6 +1099,9 @@ export function VoerScreen(manager: ScreenManager): Screen {
     if (levens > 0) vulBak();
     // Los van het groepje vóór het wegstappen, anders wacht het volgende dier op het schudden.
     laatKruipen(g, true);
+    // Kort blijven staan zodat de reactie leesbaar is. Het volgende dier is al los.
+    await slaap(150);
+    if (mijn !== spel) return;
     kijk(g, 'rechts');
     if (!(await beweeg(g, breedte() + g.maat / 2 + 10, 'uit', { snel: kruipt(g) ? 1 : 0.75, schud: g.dier.reactie === 'in' ? 'in' : 'bah' }))) return;
     if (mijn !== spel) return;

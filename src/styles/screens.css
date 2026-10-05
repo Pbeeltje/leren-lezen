@@ -2767,6 +2767,11 @@
 .voer-dier__plaatje--glijdt { transform: rotate(var(--glij-hoek, 0deg)) translateY(12%); transform-origin: center 70%; }
 /* Dino's: de grond dreunt een beetje mee. */
 .voer-veld--dreun { animation: voer-dreun 0.36s ease-in-out infinite; }
+.voer-veld--stamp { animation: voer-stamp 0.2s ease-in-out 2; }
+@keyframes voer-stamp {
+  0%, 100% { transform: translateY(0); }
+  45% { transform: translateY(16px); }
+}
 @keyframes voer-dreun {
   0%, 100% { transform: translateY(0); }
   20% { transform: translateY(2px); }

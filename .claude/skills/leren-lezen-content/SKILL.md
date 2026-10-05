@@ -1025,7 +1025,7 @@ Children no longer pick an age but a group (`Groep = 'kleuter' | 'groep3'` in co
   +1, heart, walks on to the left; wrong = "Bah!", the food reacts (`reactie`: monkey throws
   it back and your figure shudders, frog/snake spit, elephant sprays, dinos squash it,
   hedgehog and shell animals bounce it, everyone else drops it), and the animal shudders
-  while it turns and walks off a bit slower (shell animals squash and keep crawl speed).
+  stands for 150ms, then shudders while it turns and walks off a bit slower (shell animals squash and keep crawl speed).
   It is moved to `kruipers` immediately, so the next group does not wait. −1 heart.
   Three wrong = end; record per profile (`leren-lezen:voeren:<id>`), no coins, no timer.
   - `DIEREN` has per animal `goed` (what it eats) and an explicit `fout` list (things it
