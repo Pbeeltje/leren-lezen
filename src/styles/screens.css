@@ -2236,6 +2236,121 @@
   z-index: 2;
 }
 .xylofoon--keyboard .xylofoon__staaf--aan { animation: toets-aan 0.35s ease-out; }
+/* Kikkerkoor: getekende vijver (vijver.ts), zelfde lagen als de dino-wei. De knoppen
+   liggen eroverheen: een lelieblad in de kleur van de toon, met een kikker erop. */
+.kikker-vijver { display: none; }
+.xylofoon.xylofoon--kikkerkoor {
+  position: relative;
+  overflow: hidden;
+  align-items: flex-end;
+  gap: 2px;
+  padding: 10px 8px 14px;
+  border-radius: 28px;
+  background: #1a6a48;
+  box-shadow: inset 0 -10px 0 rgba(0, 0, 0, 0.12);
+}
+.xylofoon--kikkerkoor .kikker-vijver { display: block; position: absolute; inset: 0; pointer-events: none; }
+.kikker-water { position: absolute; inset: 0; }
+.kikker-water svg { width: 100%; height: 100%; display: block; }
+.kikker-water .kikker-glans path { animation: kikker-glans 5.5s ease-in-out infinite; }
+.kikker-water .kikker-glans path:nth-child(2n) { animation-delay: -1.8s; }
+.kikker-water .kikker-glans path:nth-child(3n) { animation-delay: -3.4s; }
+@keyframes kikker-glans { 0%, 100% { opacity: 0.15; } 50% { opacity: 0.7; } }
+.kikker-bellen { position: absolute; left: 6%; right: 6%; top: 22%; height: 36%; animation: kikker-bellen 7s ease-in-out infinite alternate; }
+.kikker-bellen svg { width: 100%; height: 100%; display: block; }
+@keyframes kikker-bellen { from { transform: translateY(5px); } to { transform: translateY(-12px); } }
+.kikker-riet { position: absolute; bottom: 0; height: min(38%, 200px); }
+.kikker-riet svg { height: 100%; width: auto; display: block; }
+.kikker-riet__zwaai { height: 100%; transform-origin: 50% 100%; animation: kikker-wiebel 7s ease-in-out infinite; }
+.kikker-riet--achter { height: min(18%, 90px); bottom: 18%; opacity: 0.55; }
+.kikker-riet--a1 { left: 4%; }
+.kikker-riet--a2 { left: 22%; height: min(14%, 70px); }
+.kikker-riet--a3 { left: 46%; }
+.kikker-riet--a4 { left: 64%; height: min(15%, 76px); }
+.kikker-riet--a5 { right: 6%; }
+.kikker-voor { display: none; position: absolute; inset: 0; z-index: 2; pointer-events: none; }
+.xylofoon--kikkerkoor .kikker-voor { display: block; }
+.kikker-riet--links { left: -4px; height: min(46%, 240px); }
+.kikker-riet--rechts { right: -4px; transform: scaleX(-1); height: min(40%, 200px); }
+.kikker-riet--midden { left: 16%; height: min(32%, 160px); }
+.kikker-riet--ver { left: 70%; height: min(28%, 140px); }
+.kikker-riet--midden .kikker-riet__zwaai { animation-delay: -2s; }
+@media (orientation: portrait) and (max-width: 600px) {
+  .kikker-riet--links, .kikker-riet--rechts { height: min(26%, 150px); }
+  .kikker-riet--midden, .kikker-riet--ver { height: min(20%, 110px); }
+  .xylofoon--kikkerkoor .xylofoon__staaf::before { bottom: calc(36% + var(--pad, 0) * 0.5%); width: 92%; }
+  .xylofoon--kikkerkoor .kikker-pop { bottom: calc(36% + 10px + var(--pad, 0) * 0.5%); width: 120%; }
+}
+@keyframes kikker-wiebel { 0%, 100% { transform: rotate(-1.4deg); } 50% { transform: rotate(1.4deg); } }
+.xylofoon--kikkerkoor .xylofoon__staaf,
+.muziek-kaart .xylofoon--kikkerkoor .xylofoon__staaf,
+.muziek-vrij-scherm .muziek-kaart--vrij .xylofoon--kikkerkoor .xylofoon__staaf {
+  max-width: none;
+  height: 100%;
+  align-self: stretch;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+  z-index: 1;
+}
+/* Hoogte in % van de kolom rekt het blad tot een staaf (vrij spelen vult het scherm).
+   Daarom de maat van de breedte. */
+.xylofoon--kikkerkoor .xylofoon__staaf::before {
+  top: auto;
+  left: 50%;
+  height: auto;
+  aspect-ratio: 100 / 70;
+  margin: 0;
+  width: 92%;
+  transform: translateX(-50%);
+  bottom: calc(26% + var(--pad, 0) * 0.7%);
+  border-radius: 0;
+  background:
+    radial-gradient(ellipse at 38% 36%, color-mix(in srgb, var(--kleur) 25%, #e7f8c4), transparent 46%),
+    radial-gradient(ellipse at 50% 60%, color-mix(in srgb, var(--kleur) 55%, #8ed46c), color-mix(in srgb, var(--kleur) 82%, #1d5c28));
+  -webkit-mask: url("/assets/icons/lelieblad.svg") center / 100% 100% no-repeat;
+  mask: url("/assets/icons/lelieblad.svg") center / 100% 100% no-repeat;
+  filter: drop-shadow(0 3px 0 rgba(0, 0, 0, 0.22));
+}
+.xylofoon--kikkerkoor .xylofoon__staaf::after { content: none; }
+.kikker-pop { display: none; }
+.xylofoon--kikkerkoor .kikker-pop {
+  display: block;
+  position: absolute;
+  left: 50%;
+  bottom: calc(26% + 18px + var(--pad, 0) * 0.7%);
+  width: 138%;
+  height: auto;
+  aspect-ratio: 1;
+  margin: 0;
+  transform: translateX(-50%) scale(var(--groot, 1)) rotate(var(--draai, 0deg));
+  transform-origin: 50% 85%;
+  filter: hue-rotate(var(--tint, 0deg));
+  animation: kikker-adem var(--adem, 3s) ease-in-out infinite alternate;
+  pointer-events: none;
+}
+.xylofoon--kikkerkoor .kikker-pop svg { width: 100%; height: 100%; display: block; overflow: visible; }
+.kk-knipper {
+  transform-box: fill-box;
+  transform-origin: center;
+  transform: scaleY(0);
+  animation: kikker-knipper 4.8s ease-in-out infinite;
+  animation-delay: var(--knip, 0s);
+}
+@keyframes kikker-knipper {
+  0%, 86%, 94%, 100% { transform: scaleY(0); }
+  90% { transform: scaleY(1); }
+}
+@keyframes kikker-adem {
+  from { transform: translateX(-50%) scale(var(--groot, 1)) rotate(var(--draai, 0deg)); }
+  to { transform: translateX(-50%) scale(var(--groot, 1)) rotate(calc(var(--draai, 0deg) + 3deg)) translateY(-4px); }
+}
+.xylofoon--kikkerkoor .xylofoon__staaf--aan { animation: none; filter: none; }
+.xylofoon--kikkerkoor .xylofoon__staaf--aan .kikker-pop { animation: kikker-kwaak 0.32s ease-out; }
+@keyframes kikker-kwaak {
+  0% { transform: translateX(-50%) scale(calc(var(--groot, 1) * 1.12), calc(var(--groot, 1) * 0.88)) rotate(var(--draai, 0deg)); }
+  100% { transform: translateX(-50%) scale(var(--groot, 1)) rotate(var(--draai, 0deg)); }
+}
 @keyframes toets-aan {
   0% { transform: translateY(3px); background: color-mix(in srgb, var(--kleur) 30%, #fff); box-shadow: inset 0 -4px 0 #dcdcdc; }
   100% { transform: none; }
@@ -2246,6 +2361,11 @@
 @media (prefers-reduced-motion: reduce) {
   .xylofoon--harp .xylofoon__staaf--aan,
   .xylofoon--harp .xylofoon__staaf--aan::before { animation: none; }
+  .xylofoon--kikkerkoor .kikker-pop,
+  .kk-knipper,
+  .kikker-water .kikker-glans path,
+  .kikker-bellen,
+  .kikker-riet__zwaai { animation: none; }
 }
 @media (prefers-reduced-motion: reduce) {
   .drum-pad--bonk, .drum-pad--nieuw, .drum-pad--bekken.drum-pad--bonk { animation: none; }
@@ -2974,7 +3094,7 @@
 @media (max-width: 640px) {
   .muziek-vrij-scherm .muziek-wissel { align-self: flex-end; }
 }
-/* Vier instrumenten en de munt: alleen met namen erbij als er echt ruimte is. */
+/* Instrumenten en de munt: alleen met namen erbij als er echt ruimte is. */
 @media (max-width: 1099px) {
   .muziek-vrij-scherm .muziek-wissel__knop { width: 56px; height: 56px; padding: 0; justify-content: center; }
   .muziek-vrij-scherm .muziek-wissel__knop > span { display: none; }

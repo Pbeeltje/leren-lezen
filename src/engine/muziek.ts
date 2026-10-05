@@ -61,12 +61,13 @@ export function speelNoot(toon: number, wanneer = 0): void {
 
 // Melodie-instrumenten: de xylofoon is gratis, de rest koop je in de winkel. Ze spelen
 // dezelfde acht tonen (en dus dezelfde liedjes bij Speel na) met hun eigen klank.
-export type Instrument = 'xylofoon' | 'harp' | 'fluit' | 'keyboard';
+export type Instrument = 'xylofoon' | 'harp' | 'fluit' | 'keyboard' | 'kikkerkoor';
 export const INSTRUMENTEN: { id: Instrument; naam: string; icoon: string }[] = [
   { id: 'xylofoon', naam: 'Xylofoon', icoon: 'assets/icons/xylofoon.svg' },
   { id: 'harp', naam: 'Harp', icoon: 'assets/icons/harp.svg' },
   { id: 'fluit', naam: 'Fluit', icoon: 'assets/icons/fluit.svg' },
   { id: 'keyboard', naam: 'Keyboard', icoon: 'assets/icons/keyboard.svg' },
+  { id: 'kikkerkoor', naam: 'Kikkerkoor', icoon: 'assets/icons/kikker.svg' },
 ];
 
 // Harp: Karplus-Strong, een octaaf lager dan de xylofoon. Een kort stukje ruis dat
@@ -141,6 +142,10 @@ export function speelInstrument(instrument: Instrument, toon: number, wanneer = 
     speelSteel(c, toon, t);
     return;
   }
+  if (instrument === 'kikkerkoor') {
+    speelKikker(c, toon, t);
+    return;
+  }
   const freq = toon * HARP.octaaf;
   const bron = c.createBufferSource();
   bron.buffer = snaarBuffer(c, freq);
@@ -199,6 +204,43 @@ function speelSteel(c: AudioContext, toon: number, t: number): void {
   sine.connect(filter);
   drie.connect(drieG).connect(filter);
   naarUit(c, uit, 0.18);
+}
+
+// Kikkerkoor: de noot is de luidste kikker. Twee buren kwaken net later en iets
+// lager/hoger, anders is het één kikker. Een kwaak zakt in toonhoogte en heeft
+// een snufje ruis; een kale sinus klinkt als een piep.
+function speelKikker(c: AudioContext, toon: number, t: number): void {
+  const basis = toon * 0.5;
+  kwaak(c, basis, t, 0.32);
+  kwaak(c, basis * 0.93, t + 0.05, 0.13);
+  kwaak(c, basis * 1.07, t + 0.08, 0.09);
+}
+
+function kwaak(c: AudioContext, f: number, t: number, vol: number): void {
+  for (const start of [0, 0.085]) {
+    const osc = c.createOscillator();
+    osc.type = 'triangle';
+    osc.frequency.setValueAtTime(f * 1.65, t + start);
+    osc.frequency.exponentialRampToValueAtTime(Math.max(50, f * 0.85), t + start + 0.07);
+    const g = c.createGain();
+    g.gain.setValueAtTime(0.0001, t + start);
+    g.gain.exponentialRampToValueAtTime(vol, t + start + 0.006);
+    g.gain.exponentialRampToValueAtTime(0.0001, t + start + 0.075);
+    osc.connect(g).connect(c.destination);
+    osc.start(t + start);
+    osc.stop(t + start + 0.1);
+  }
+  const r = ruis(c, 0.16);
+  const bp = c.createBiquadFilter();
+  bp.type = 'bandpass';
+  bp.Q.value = 5;
+  bp.frequency.setValueAtTime(Math.min(2200, f * 3.5), t);
+  bp.frequency.exponentialRampToValueAtTime(Math.max(180, f * 1.2), t + 0.14);
+  const rg = c.createGain();
+  rg.gain.setValueAtTime(vol * 0.45, t);
+  rg.gain.exponentialRampToValueAtTime(0.0001, t + 0.14);
+  r.connect(bp).connect(rg).connect(c.destination);
+  r.start(t);
 }
 
 // Keyboard als een ouderwetse computer-MIDI (de FM-chip van een geluidskaart uit de jaren

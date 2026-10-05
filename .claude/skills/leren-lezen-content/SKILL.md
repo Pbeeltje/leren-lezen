@@ -882,10 +882,10 @@ The games:
 - The maker functions (`maakSpeelNaVragen()`) hold their own counter, so every time the
   game opens it starts short again.
 
-### Instruments: harp, fluit, keyboard (shop items)
+### Instruments: harp, fluit, keyboard, kikkerkoor (shop items)
 
 - `Instrument` / `INSTRUMENTEN` in `engine/muziek.ts`; `speelInstrument(instrument, toon, wanneer)`.
-  Xylofoon is free; the other three cost `INSTRUMENT_PRIJS` (200) as `WinkelSoort` `instrument`
+  Xylofoon is free; the others cost `INSTRUMENT_PRIJS` (200) as `WinkelSoort` `instrument`
   (keys `instrument:<id>` in `gekocht`). The choice is remembered per profile
   (`VoortgangData.instrument`, read via `huidigInstrument()` in `engine/winkel.ts`, which falls
   back to xylofoon when unset or not owned).
@@ -893,11 +893,14 @@ The games:
   `bronbestanden/harp.m4a`. Fluit keeps the last steel-synth (`speelSteel`: one voice,
   sine+triangle, short swell). Keyboard = 2-operator FM (`speelKeyboard`). Old shop key
   `instrument:steelgitaar` still counts as fluit. Banjo/gitaar were dropped.
+  Kikkerkoor (`speelKikker`): the note is the loud frog, two quieter neighbours croak a bit
+  later and slightly off pitch. Each croak is two falling pulses plus a little noise.
+  Look: `.xylofoon--kikkerkoor`, eight frogs (`kikker.svg`) on lily pads in `STAAF_KLEUREN`.
 - Keyboard look: white keys with a coloured patch, decorative black keys via
   `[data-zwart]::after` (set in `maakXylofoon` for do/re/fa/sol/la when the next key exists);
   tapping a black key plays the white key it belongs to. `xylofoon.svg` is now our own
   xylophone drawing (it used to be the Fluent piano emoji, which clashed with the keyboard).
-- `maakXylofoon(tonen, opTik, instrument)` is the component for all four: same buttons
+- `maakXylofoon(tonen, opTik, instrument)` is the component for all of them: same buttons
   (`.xylofoon__staaf`), `zetInstrument()` switches the look (`.xylofoon--<id>`, CSS in
   screens.css) and `speel(positie, wanneer)` plays with the current sound. Strings keep
   `STAAF_KLEUREN`, so the Speel na dots still match. Harp keys are ~120px wide (same as
@@ -910,7 +913,7 @@ The games:
   in the card (top right; a column on the right when the screen is ≤820px high);
   `maakSpeelNaVragen(niveau, naarWinkel)`.
 - Shop: third tab Instrumenten; on phones (≤600px) the tabs show only their icons.
-- Icons `harp.svg`, `harp-kast.svg`, `fluit.svg`, `keyboard.svg`, `xylofoon.svg` are our own drawings.
+- Icons `harp.svg`, `harp-kast.svg`, `fluit.svg`, `keyboard.svg`, `xylofoon.svg`, `kikker.svg` are our own drawings.
 - Check: `node tests/instrumenten.mjs <map>`.
 
 ## Recording list 5

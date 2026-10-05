@@ -8,7 +8,7 @@ import { speelSchermOvergang } from '../../three/transitions.ts';
 import { WinkelScreen } from './WinkelScreen.ts';
 
 // Vrij spelen: geen opdracht, geen goed of fout. Knoppen bovenaan wisselen tussen de
-// melodie-instrumenten (xylofoon, en wat je in de winkel kocht: harp, fluit, keyboard)
+// melodie-instrumenten (xylofoon, en wat je in de winkel kocht: harp, fluit, keyboard, kikkerkoor)
 // en het hele drumstel (grote trom, snaredrum, tom, bekken, crash). Daarnaast de munt naar
 // de instrumenten in de winkel. Geen profielmenu of muntenteller (kinderen tikten er per
 // ongeluk op), en het instrument vult de rest van het scherm.

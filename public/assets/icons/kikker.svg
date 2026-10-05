@@ -1,0 +1,35 @@
+<svg width="80" height="80" viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="kk-lijf" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#7dce6a"/>
+      <stop offset="1" stop-color="#2f9a3c"/>
+    </linearGradient>
+    <linearGradient id="kk-buik" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#f4ffd2"/>
+      <stop offset="1" stop-color="#d4ee8a"/>
+    </linearGradient>
+    <linearGradient id="kk-poot" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#5cba52"/>
+      <stop offset="1" stop-color="#247a32"/>
+    </linearGradient>
+  </defs>
+  <!-- Achterpoten: gladde zwemvoet, zonder teentjes. -->
+  <path d="M24 50 C12 52 6 58 8 64 C12 70 24 68 26 62 C28 56 28 51 24 50Z" fill="url(#kk-poot)" stroke="#145c28" stroke-width="2.2" stroke-linejoin="round"/>
+  <path d="M56 50 C68 52 74 58 72 64 C68 70 56 68 54 62 C52 56 52 51 56 50Z" fill="url(#kk-poot)" stroke="#145c28" stroke-width="2.2" stroke-linejoin="round"/>
+  <ellipse cx="40" cy="46" rx="17" ry="14.5" fill="url(#kk-lijf)" stroke="#145c28" stroke-width="2.4"/>
+  <ellipse cx="40" cy="50" rx="9.5" ry="7.5" fill="url(#kk-buik)" stroke="#2d7a34" stroke-width="1.5"/>
+  <!-- Korte armpjes, rond uiteinde, geen vingers. -->
+  <path d="M30 44 C24 47 23 53 27 55 C31 57 34 52 33 47Z" fill="url(#kk-poot)" stroke="#145c28" stroke-width="2" stroke-linejoin="round"/>
+  <path d="M50 44 C56 47 57 53 53 55 C49 57 46 52 47 47Z" fill="url(#kk-poot)" stroke="#145c28" stroke-width="2" stroke-linejoin="round"/>
+  <circle cx="26" cy="27" r="10" fill="url(#kk-lijf)" stroke="#145c28" stroke-width="2.2"/>
+  <circle cx="54" cy="27" r="10" fill="url(#kk-lijf)" stroke="#145c28" stroke-width="2.2"/>
+  <circle cx="26" cy="28" r="5.2" fill="#fff" stroke="#145c28" stroke-width="1.5"/>
+  <circle cx="54" cy="28" r="5.2" fill="#fff" stroke="#145c28" stroke-width="1.5"/>
+  <circle cx="27.4" cy="29.2" r="2.5" fill="#1a1a1a"/>
+  <circle cx="55.4" cy="29.2" r="2.5" fill="#1a1a1a"/>
+  <circle cx="28.6" cy="27.8" r="1" fill="#fff"/>
+  <circle cx="56.6" cy="27.8" r="1" fill="#fff"/>
+  <path d="M34 47 Q40 53 46 47" stroke="#145c28" stroke-width="2" stroke-linecap="round"/>
+  <circle cx="35" cy="44.5" r="1.1" fill="#145c28"/>
+  <circle cx="45" cy="44.5" r="1.1" fill="#145c28"/>
+</svg>

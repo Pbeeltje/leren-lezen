@@ -4,7 +4,7 @@ import { haalVoortgang } from '../../engine/progressStore.ts';
 import { events } from '../../engine/events.ts';
 import { THEMAS, huidigThema, kiesAchtergrond } from '../../achtergrond/achtergrond.ts';
 import { heeft, huidigInstrument, kiesInstrument, koop, prijsVan, type WinkelSoort } from '../../engine/winkel.ts';
-import { INSTRUMENTEN, speelNoot, TONEN, type Instrument } from '../../engine/muziek.ts';
+import { INSTRUMENTEN, speelInstrument, speelNoot, TONEN, type Instrument } from '../../engine/muziek.ts';
 import { confetti } from '../../three/particles.ts';
 import { maakTerugKnop } from '../components/TerugKnop.ts';
 import { maakBladeraar } from '../components/Bladeraar.ts';
@@ -145,7 +145,7 @@ export function WinkelScreen(manager: ScreenManager, start?: { soort: WinkelSoor
       soort === 'figuur'
         ? { kolommen: smal ? 3 : 5, rijen: hoog > 700 ? 3 : 2 }
         : soort === 'instrument'
-          ? { kolommen: smal ? 2 : 4, rijen: smal ? 2 : 1 }
+          ? { kolommen: smal ? 3 : 5, rijen: smal ? 2 : 1 }
           : // Kleine kaartjes, zodat alle achtergronden (en een paar nieuwe) op één bladzijde passen.
             { kolommen: smal ? 3 : 6, rijen: smal ? (hoog >= 700 ? 4 : 3) : hoog >= 620 ? 2 : 1 };
     const blader = maakBladeraar(artikelen.map(kaart), { ...opties, klasse: `winkel__blader winkel__blader--${soort}` });
@@ -201,7 +201,8 @@ export function WinkelScreen(manager: ScreenManager, start?: { soort: WinkelSoor
       ja.addEventListener('click', () => {
         if (!koop(a.soort, a.id)) return;
         sluitVenster();
-        [0, 2, 4, 7].forEach((t, i) => speelNoot(TONEN[t], i * 0.09)); // do-mi-sol-do
+        if (a.soort === 'instrument') [0, 2, 4, 7].forEach((t, i) => speelInstrument(a.id as Instrument, TONEN[t], i * 0.16));
+        else [0, 2, 4, 7].forEach((t, i) => speelNoot(TONEN[t], i * 0.09));
         confetti.vuurwerk('klein');
         kies(a);
       });
