@@ -2714,6 +2714,7 @@
   transform-origin: center bottom;
 }
 .voer-speler--gooi { animation: voer-gooi 0.42s ease; }
+.voer-speler--bah { animation: voer-nee 0.3s ease-in-out 3; }
 @keyframes voer-gooi {
   0%, 100% { transform: none; }
   35% { transform: rotate(-14deg) translateX(-6px); }
@@ -2751,7 +2752,11 @@
   50% { transform: translateY(-28%) scale(0.95, 1.06); }
   85% { transform: translateY(0) scale(1.06, 0.94); }
 }
-.voer-dier__plaatje--boos { animation: voer-nee 0.3s ease-in-out 3; }
+.voer-dier__plaatje--bah { animation: voer-bah 0.28s ease-in-out infinite; }
+@keyframes voer-bah {
+  0%, 100% { transform: rotate(-9deg) translateY(0); }
+  50% { transform: rotate(9deg) translateY(-6%); }
+}
 @keyframes voer-nee {
   0%, 100% { transform: rotate(0); }
   25% { transform: rotate(-9deg); }
@@ -2787,6 +2792,11 @@
 .voer-dier--slaapt .voer-ballon { color: #5c6bc0; font-style: italic; }
 /* Slak en schildpad: rekken langzaam uit en trekken weer in. */
 .voer-dier__plaatje--kruipt { animation: voer-kruip 1.2s ease-in-out infinite; transform-origin: 50% 100%; }
+.voer-dier__plaatje--in { animation: voer-in 0.45s ease-in-out infinite; transform-origin: 50% 80%; }
+@keyframes voer-in {
+  0%, 100% { transform: scale(1, 1); }
+  35%, 55% { transform: scale(0.7, 0.58); }
+}
 @keyframes voer-kruip {
   0%, 100% { transform: scale(1, 1); }
   50% { transform: scale(1.07, 0.95); }

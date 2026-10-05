@@ -9,8 +9,9 @@ import { huidigThema, type ThemaId } from '../../achtergrond/achtergrond.ts';
 // Dieren voeren: dieren lopen het scherm in (van rechts, vooraan, dus het past op elke
 // achtergrond). Elk roept om eten in een tekstballon ("Boe!", "Mèèèh!"). Sleep eten uit de
 // bak op een dier; je eigen figuurtje gooit het dan. Goed: het dier springt blij en loopt
-// door. Fout: het schudt nee, draait om en loopt weg, en dat kost een hartje. Drie keer
-// fout is klaar. Geen tijdsdruk. Record per profiel; geen munten.
+// door. Fout: het schudt terwijl het omdraait en wegstapt, en dat kost een hartje. Het
+// volgende dier wacht daar niet op. Drie keer fout is klaar. Geen tijdsdruk. Record per
+// profiel; geen munten.
 //
 // Eerst komt er één dier tegelijk, later twee (kleuters) of drie (groep 3). In de bak ligt
 // dan voor elk dier één goed ding plus één ding dat geen van hen eet. Dieren in één groepje
@@ -54,6 +55,8 @@ type Eten = keyof typeof ETEN;
 // hangen), vliegen (bij, vlinder: in golfjes, blijft zweven), heel langzaam kruipen (slak,
 // schildpad) of kronkelen (slang).
 type Komt = 'loopt' | 'hupt' | 'springt' | 'valt' | 'glijdt' | 'stampt' | 'rent' | 'zakt' | 'vliegt' | 'kruipt' | 'kronkelt';
+// Wat fout eten doet, bovenop het naschudden. Zonder reactie valt het op de grond.
+type Reactie = 'gooi' | 'spuug' | 'spuit' | 'plat' | 'stuiter' | 'in';
 
 interface Dier {
   id: string;
@@ -74,6 +77,7 @@ interface Dier {
   // hij hem weg.
   jager?: boolean;
   alleenFamilie?: boolean; // komt alleen mee met een ander dier (de muisjes)
+  reactie?: Reactie;
 }
 
 const PLANT_NEE: Eten[] = ['vis', 'kaas', 'bot', 'vlees', 'kluif', 'vlieg', 'worm', 'honing'];
@@ -90,31 +94,31 @@ const DIEREN: Dier[] = [
   // Een poes lust ook wel een muisje.
   { id: 'poes', plaatje: w('poes'), geluid: 'Miauw!', goed: ['vis', 'melk', 'muis'], fout: VLEES_NEE, kijkt: 'links', schaal: 0.88, komt: 'springt', tempo: 1 },
   { id: 'hond', plaatje: v('hond'), geluid: 'Woef woef!', goed: ['bot', 'vlees'], fout: ['gras', 'sla', 'banaan', 'vlieg', 'honing', 'mais'], kijkt: 'links', schaal: 0.95, komt: 'rent', tempo: 1.6 },
-  { id: 'aap', plaatje: w('aap'), geluid: 'Oe oe aa aa!', goed: ['banaan'], fout: ['vis', 'kaas', 'bot', 'vlees', 'gras', 'worm', 'melk'], kijkt: 'voor', schaal: 0.92, komt: 'valt', tempo: 1 },
-  { id: 'olifant', plaatje: w('olifant'), geluid: 'Toeteroe!', goed: ['blad'], fout: [...PLANT_NEE, 'melk'], kijkt: 'links', schaal: 1.2, komt: 'loopt', tempo: 0.7, spuit: true, mond: [0.07, 0.68] },
+  { id: 'aap', plaatje: w('aap'), geluid: 'Oe oe aa aa!', goed: ['banaan'], fout: ['vis', 'kaas', 'bot', 'vlees', 'gras', 'worm', 'melk'], kijkt: 'voor', schaal: 0.92, komt: 'valt', tempo: 1, reactie: 'gooi' },
+  { id: 'olifant', plaatje: w('olifant'), geluid: 'Toeteroe!', goed: ['blad'], fout: [...PLANT_NEE, 'melk'], kijkt: 'links', schaal: 1.2, komt: 'loopt', tempo: 0.7, spuit: true, mond: [0.07, 0.68], reactie: 'spuit' },
   { id: 'luiaard', plaatje: 'assets/icons/avatar-luiaard.svg', geluid: 'Gaaap!', goed: ['blad'], fout: [...PLANT_NEE, 'melk'], kijkt: 'voor', schaal: 0.95, komt: 'zakt', tempo: 1, slaapt: true, mond: [0.28, 0.45] },
-  { id: 'brachiosaurus', plaatje: v('brachiosaurus'), geluid: 'Hoeoeoem!', goed: ['blad'], fout: [...PLANT_NEE, 'melk'], kijkt: 'links', schaal: 1.2, komt: 'stampt', tempo: 0.55, mond: [0.2, 0.12] },
-  { id: 'stegosaurus', plaatje: 'assets/icons/avatar-stegosaurus.svg', geluid: 'Grommel!', goed: ['gras'], fout: [...PLANT_NEE, 'melk'], kijkt: 'links', schaal: 1.1, komt: 'stampt', tempo: 0.75, mond: [0.08, 0.6] },
+  { id: 'brachiosaurus', plaatje: v('brachiosaurus'), geluid: 'Hoeoeoem!', goed: ['blad'], fout: [...PLANT_NEE, 'melk'], kijkt: 'links', schaal: 1.2, komt: 'stampt', tempo: 0.55, mond: [0.2, 0.12], reactie: 'plat' },
+  { id: 'stegosaurus', plaatje: 'assets/icons/avatar-stegosaurus.svg', geluid: 'Grommel!', goed: ['gras'], fout: [...PLANT_NEE, 'melk'], kijkt: 'links', schaal: 1.1, komt: 'stampt', tempo: 0.75, mond: [0.08, 0.6], reactie: 'plat' },
   { id: 'giraf', plaatje: w('giraf'), geluid: 'Hmmm!', goed: ['blad'], fout: [...PLANT_NEE, 'melk'], kijkt: 'links', schaal: 1.2, komt: 'loopt', tempo: 0.9 },
   { id: 'zebra', plaatje: w('zebra'), geluid: 'Hihihi!', goed: ['gras'], fout: [...PLANT_NEE, 'melk'], kijkt: 'links', schaal: 1.1, komt: 'loopt', tempo: 1.4 },
   { id: 'tijger', plaatje: w('tijger'), geluid: 'Grrr!', goed: ['vlees'], fout: VLEES_NEE, kijkt: 'links', schaal: 1.1, komt: 'springt', tempo: 1 },
   { id: 'leeuw', plaatje: w('leeuw'), geluid: 'Grrroaar!', goed: ['vlees'], fout: VLEES_NEE, kijkt: 'voor', schaal: 1.05, komt: 'loopt', tempo: 1.2, slaapt: true },
-  { id: 'trex', plaatje: 'assets/icons/avatar-trex.svg', geluid: 'ROAAAR!', goed: ['kluif'], fout: VLEES_NEE, kijkt: 'links', schaal: 1.2, komt: 'stampt', tempo: 0.6 },
+  { id: 'trex', plaatje: 'assets/icons/avatar-trex.svg', geluid: 'ROAAAR!', goed: ['kluif'], fout: VLEES_NEE, kijkt: 'links', schaal: 1.2, komt: 'stampt', tempo: 0.6, reactie: 'plat' },
   { id: 'beer', plaatje: w('beer'), geluid: 'Brom brom!', goed: ['vis', 'honing'], fout: ['gras', 'kaas', 'melk', 'brood', 'bot'], kijkt: 'voor', schaal: 1.12, komt: 'loopt', tempo: 0.8 },
   { id: 'ijsbeer', plaatje: w('ijsbeer'), geluid: 'Brom!', goed: ['vis'], fout: [...VLEES_NEE, 'kaas'], kijkt: 'voor', schaal: 1.15, komt: 'loopt', tempo: 0.8 },
   { id: 'zeehond', plaatje: w('zeehond'), geluid: 'Ork ork!', goed: ['vis'], fout: [...VLEES_NEE, 'kaas'], kijkt: 'links', schaal: 1, komt: 'glijdt', tempo: 1 },
   { id: 'pinguin', plaatje: a('winter-pinguin'), geluid: 'Kwek kwek!', goed: ['vis'], fout: [...VLEES_NEE, 'kaas'], kijkt: 'voor', schaal: 0.9, komt: 'glijdt', tempo: 1 },
-  { id: 'egel', plaatje: w('egel'), geluid: 'Snuf snuf!', goed: ['worm'], fout: ['gras', 'sla', 'honing', 'bot', 'melk'], kijkt: 'links', schaal: 0.82, komt: 'loopt', tempo: 1.3 },
+  { id: 'egel', plaatje: w('egel'), geluid: 'Snuf snuf!', goed: ['worm'], fout: ['gras', 'sla', 'honing', 'bot', 'melk'], kijkt: 'links', schaal: 0.82, komt: 'loopt', tempo: 1.3, reactie: 'stuiter' },
   { id: 'eend', plaatje: w('eend'), geluid: 'Kwak kwak!', goed: ['brood'], fout: ['bot', 'vlees', 'kaas', 'honing', 'banaan', 'melk'], kijkt: 'links', schaal: 0.88, komt: 'loopt', tempo: 1 },
   { id: 'gans', plaatje: w('gans'), geluid: 'Gak gak!', goed: ['brood'], fout: ['bot', 'vlees', 'kaas', 'honing', 'banaan', 'melk', 'vis'], kijkt: 'links', schaal: 0.95, komt: 'loopt', tempo: 1.1 },
   { id: 'haan', plaatje: a('haan'), geluid: 'Kukeleku!', goed: ['mais', 'worm'], fout: ['bot', 'vlees', 'kaas', 'honing', 'melk'], kijkt: 'links', schaal: 0.9, komt: 'loopt', tempo: 1.2 },
   { id: 'kuiken', plaatje: a('kuiken'), geluid: 'Tjiep tjiep!', goed: ['mais', 'worm'], fout: ['bot', 'vlees', 'kaas', 'honing', 'melk'], kijkt: 'voor', schaal: 0.8, komt: 'hupt', tempo: 1 },
-  { id: 'kikker', plaatje: w('kikker'), geluid: 'Kwaak!', goed: ['vlieg'], fout: [...VLEES_NEE, 'kaas', 'brood', 'melk'], kijkt: 'voor', schaal: 0.8, komt: 'hupt', tempo: 1 },
+  { id: 'kikker', plaatje: w('kikker'), geluid: 'Kwaak!', goed: ['vlieg'], fout: [...VLEES_NEE, 'kaas', 'brood', 'melk'], kijkt: 'voor', schaal: 0.8, komt: 'hupt', tempo: 1, reactie: 'spuug' },
   { id: 'bij', plaatje: w('bij'), geluid: 'Zzzoem!', goed: ['bloem'], fout: ['vis', 'kaas', 'bot', 'vlees', 'kluif', 'worm', 'melk', 'brood'], kijkt: 'links', schaal: 0.8, komt: 'vliegt', tempo: 1 },
-  { id: 'slak', plaatje: w('slak'), geluid: 'Slurp…', goed: ['blad'], fout: [...PLANT_NEE, 'melk', 'brood'], kijkt: 'links', schaal: 0.8, komt: 'kruipt', tempo: 1, mond: [0.12, 0.8] },
-  { id: 'schildpad', plaatje: w('schildpad'), geluid: 'Hmmmm…', goed: ['zeewier'], fout: ['kaas', 'bot', 'vlees', 'kluif', 'honing', 'melk', 'pinda'], kijkt: 'links', schaal: 0.9, komt: 'kruipt', tempo: 1.3, mond: [0.1, 0.6] },
+  { id: 'slak', plaatje: w('slak'), geluid: 'Slurp…', goed: ['blad'], fout: [...PLANT_NEE, 'melk', 'brood'], kijkt: 'links', schaal: 0.8, komt: 'kruipt', tempo: 1, mond: [0.12, 0.8], reactie: 'in' },
+  { id: 'schildpad', plaatje: w('schildpad'), geluid: 'Hmmmm…', goed: ['zeewier'], fout: ['kaas', 'bot', 'vlees', 'kluif', 'honing', 'melk', 'pinda'], kijkt: 'links', schaal: 0.9, komt: 'kruipt', tempo: 1.3, mond: [0.1, 0.6], reactie: 'in' },
   { id: 'vlinder', plaatje: v('vlinder'), geluid: 'Fladder!', goed: ['bloem'], fout: ['vis', 'kaas', 'bot', 'vlees', 'kluif', 'worm', 'melk', 'brood'], kijkt: 'voor', schaal: 0.8, komt: 'vliegt', tempo: 0.8 },
-  { id: 'slang', plaatje: w('slang'), geluid: 'Sssss!', goed: ['muis'], fout: VLEES_NEE, kijkt: 'rechts', schaal: 0.95, komt: 'kronkelt', tempo: 1, mond: [0.18, 0.15] },
+  { id: 'slang', plaatje: w('slang'), geluid: 'Sssss!', goed: ['muis'], fout: VLEES_NEE, kijkt: 'rechts', schaal: 0.95, komt: 'kronkelt', tempo: 1, mond: [0.18, 0.15], reactie: 'spuug' },
   { id: 'wolf', plaatje: w('wolf'), geluid: 'Auuuuw!', goed: ['schaap'], fout: VLEES_NEE, kijkt: 'voor', schaal: 1.05, komt: 'loopt', tempo: 1.3 },
   { id: 'vos', plaatje: w('vos'), geluid: 'Kef kef!', goed: ['kip'], fout: VLEES_NEE, kijkt: 'voor', schaal: 0.9, komt: 'springt', tempo: 1 },
   { id: 'muisje', plaatje: w('muis'), geluid: 'Piep!', goed: ['kaas'], fout: ['vis', 'bot', 'vlees', 'gras'], kijkt: 'links', schaal: 0.5, komt: 'loopt', tempo: 1.9, alleenFamilie: true },
@@ -325,12 +329,13 @@ export function VoerScreen(manager: ScreenManager): Screen {
     return true;
   }
 
-  async function loop(g: Gast, naar: number, pxPerSec: number): Promise<boolean> {
+  async function loop(g: Gast, naar: number, pxPerSec: number, schud?: string): Promise<boolean> {
     const plaatje = plaatjeVan(g);
-    plaatje.style.animationDuration = `${0.32 / Math.max(0.6, g.dier.tempo)}s`;
-    plaatje.classList.add('voer-dier__plaatje--loopt');
+    const klasse = schud ?? 'voer-dier__plaatje--loopt';
+    if (!schud) plaatje.style.animationDuration = `${0.32 / Math.max(0.6, g.dier.tempo)}s`;
+    plaatje.classList.add(klasse);
     const ok = await speel(g, [{ transform: gastTransform(g, g.x) }, { transform: gastTransform(g, naar) }], (Math.abs(naar - g.x) / pxPerSec) * 1000, 'linear', naar);
-    plaatje.classList.remove('voer-dier__plaatje--loopt');
+    plaatje.classList.remove(klasse);
     plaatje.style.animationDuration = '';
     return ok;
   }
@@ -349,22 +354,36 @@ export function VoerScreen(manager: ScreenManager): Screen {
     return speel(g, frames, n * msPerHup, 'linear', naar);
   }
 
-  async function beweeg(g: Gast, naar: number, richting: 'in' | 'uit'): Promise<boolean> {
+  // `uit` alleen bij fout eten: iets langzamer weg, en schudden i.p.v. de gewone loop.
+  // Kruipers houden hun snelheid (snel 1); hun schudden is intrekken.
+  async function beweeg(g: Gast, naar: number, richting: 'in' | 'uit', uit?: { snel: number; schud: 'bah' | 'in' }): Promise<boolean> {
     const m = g.maat;
-    const v = Math.max(260, breedte() * 0.45) * (richting === 'uit' ? 1.3 : 1) * g.dier.tempo;
+    const snel = uit?.snel ?? 1;
+    const schud = uit ? `voer-dier__plaatje--${uit.schud}` : undefined;
+    const v = Math.max(260, breedte() * 0.45) * (richting === 'uit' ? 1.3 : 1) * g.dier.tempo * snel;
     const boven = -(grond() - g.zweef + 30); // net boven het scherm
+    const metSchud = async (werk: () => Promise<boolean>): Promise<boolean> => {
+      if (!schud) return werk();
+      const plaatje = plaatjeVan(g);
+      plaatje.classList.add(schud);
+      try {
+        return await werk();
+      } finally {
+        plaatje.classList.remove(schud);
+      }
+    };
     switch (g.dier.komt) {
       case 'hupt':
-        return hup(g, naar, m * 0.3, m * 0.7, 300);
+        return metSchud(() => hup(g, naar, m * 0.3, m * 0.7, 300 / snel));
       case 'springt':
-        return hup(g, naar, m * 0.6, m * 1.5, 480);
+        return metSchud(() => hup(g, naar, m * 0.6, m * 1.5, 480 / snel));
       case 'valt':
       case 'zakt': {
         const zakt = g.dier.komt === 'zakt';
         g.el.classList.toggle('voer-dier--liaan', zakt);
         if (richting === 'uit') {
           // Weer omhoog klimmen.
-          return speel(g, [{ transform: gastTransform(g, g.x) }, { transform: gastTransform(g, g.x, boven - m) }], zakt ? 1400 : 650, 'ease-in', g.x);
+          return metSchud(() => speel(g, [{ transform: gastTransform(g, g.x) }, { transform: gastTransform(g, g.x, boven - m) }], (zakt ? 1400 : 650) / snel, 'ease-in', g.x));
         }
         g.x = naar;
         if (zakt) return speel(g, [{ transform: gastTransform(g, naar, boven) }, { transform: gastTransform(g, naar) }], 2000, 'cubic-bezier(0.3, 0.6, 0.4, 1)', naar);
@@ -385,24 +404,24 @@ export function VoerScreen(manager: ScreenManager): Screen {
       }
       case 'glijdt': {
         // Op de buik: een pinguïn (van voren getekend) ligt op zijn kant, kop vooruit.
+        // Fout eten schudt in plaats daarvan; die transform past niet op het liggen.
         const plaatje = plaatjeVan(g);
+        const duur = (Math.abs(naar - g.x) / (v * 1.7)) * 1000;
+        const easing = richting === 'in' ? 'cubic-bezier(0.2, 0.75, 0.35, 1)' : 'cubic-bezier(0.6, 0, 0.9, 0.5)';
+        const frames = [{ transform: gastTransform(g, g.x) }, { transform: gastTransform(g, naar) }];
+        if (schud) return metSchud(() => speel(g, frames, duur, easing, naar));
         const hoek = g.dier.kijkt === 'voor' ? (naar < g.x ? -75 : 75) : 0;
         plaatje.style.setProperty('--glij-hoek', `${hoek}deg`);
         plaatje.classList.add('voer-dier__plaatje--glijdt');
-        const ok = await speel(
-          g,
-          [{ transform: gastTransform(g, g.x) }, { transform: gastTransform(g, naar) }],
-          (Math.abs(naar - g.x) / (v * 1.7)) * 1000,
-          richting === 'in' ? 'cubic-bezier(0.2, 0.75, 0.35, 1)' : 'cubic-bezier(0.6, 0, 0.9, 0.5)',
-          naar,
-        );
+        const ok = await speel(g, frames, duur, easing, naar);
         plaatje.classList.remove('voer-dier__plaatje--glijdt');
         return ok;
       }
       case 'stampt': {
-        veld.classList.add('voer-veld--dreun');
-        const ok = await loop(g, naar, v);
-        if (!gasten.some((x) => x !== g && x.dier.komt === 'stampt' && x.staat === 'komt')) veld.classList.remove('voer-veld--dreun');
+        // Fout eten dreunt kort via de reactie, niet de hele wegstap.
+        if (!schud) veld.classList.add('voer-veld--dreun');
+        const ok = await loop(g, naar, v, schud);
+        if (!schud && !gasten.some((x) => x !== g && x.dier.komt === 'stampt' && x.staat === 'komt')) veld.classList.remove('voer-veld--dreun');
         return ok;
       }
       case 'rent':
@@ -415,7 +434,7 @@ export function VoerScreen(manager: ScreenManager): Screen {
           if (!(await loop(g, rechts, v * 1.3))) return false;
           kijk(g, 'links');
         }
-        return loop(g, naar, v);
+        return loop(g, naar, v, schud);
       case 'vliegt': {
         // Golfjes op en neer; weg gaat ook schuin omhoog.
         const van = g.x;
@@ -427,25 +446,26 @@ export function VoerScreen(manager: ScreenManager): Screen {
           const t = i / 40;
           frames.push({ transform: gastTransform(g, van + (naar - van) * t, Math.sin(t * n * Math.PI * 2) * golf + omhoog * t) });
         }
-        return speel(g, frames, (Math.abs(naar - van) / (v * 1.1)) * 1000, 'ease-out', naar);
+        return metSchud(() => speel(g, frames, (Math.abs(naar - van) / (v * 1.1)) * 1000, 'ease-out', naar));
       }
       case 'kruipt':
       case 'kronkelt': {
         // Kruipen gaat heel langzaam (een derde lijf per seconde), ook weer weg: daar wacht
-        // niemand op. Een slang kronkelt in een rustig tempo.
+        // niemand op. Een slang kronkelt in een rustig tempo. `snel` uit `uit` zit al in `v`,
+        // maar een kruiper negeert dat.
         const traag = kruipt(g);
-        const klasse = `voer-dier__plaatje--${g.dier.komt}`;
+        const klasse = schud ?? `voer-dier__plaatje--${g.dier.komt}`;
         const plaatje = plaatjeVan(g);
         plaatje.classList.add(klasse);
-        plaatje.style.animationDuration = `${(traag ? 1.2 : 0.6) / g.dier.tempo}s`;
-        const snel = traag ? m * 0.33 * g.dier.tempo : v * 0.6;
-        const ok = await speel(g, [{ transform: gastTransform(g, g.x) }, { transform: gastTransform(g, naar) }], (Math.abs(naar - g.x) / snel) * 1000, 'linear', naar);
+        if (!schud) plaatje.style.animationDuration = `${(traag ? 1.2 : 0.6) / g.dier.tempo}s`;
+        const gang = traag ? m * 0.33 * g.dier.tempo : v * 0.6;
+        const ok = await speel(g, [{ transform: gastTransform(g, g.x) }, { transform: gastTransform(g, naar) }], (Math.abs(naar - g.x) / gang) * 1000, 'linear', naar);
         plaatje.classList.remove(klasse);
         plaatje.style.animationDuration = '';
         return ok;
       }
       default:
-        return loop(g, naar, v);
+        return loop(g, naar, v, schud);
     }
   }
 
@@ -910,20 +930,134 @@ export function VoerScreen(manager: ScreenManager): Screen {
     await vertrokken(g);
   }
 
-  async function bah(g: Gast, img: HTMLImageElement): Promise<void> {
+  function schudSpeler(): void {
+    speler.classList.remove('voer-speler--gooi', 'voer-speler--bah');
+    void speler.offsetWidth;
+    speler.classList.add('voer-speler--bah');
+    speler.addEventListener('animationend', () => speler.classList.remove('voer-speler--bah'), { once: true });
+  }
+
+  function boog(van: { x: number; y: number }, naar: { x: number; y: number }, m: number, hoog: number, draai: number): Keyframe[] {
+    const frames: Keyframe[] = [];
+    const stappen = 14;
+    for (let i = 0; i <= stappen; i++) {
+      const t = i / stappen;
+      const x = van.x + (naar.x - van.x) * t;
+      const y = van.y + (naar.y - van.y) * t - 4 * hoog * t * (1 - t);
+      frames.push({ transform: `translate(${x - m / 2}px, ${y - m / 2}px) rotate(${t * draai}deg)`, opacity: 1 });
+    }
+    return frames;
+  }
+
+  function speelWeg(img: HTMLImageElement, frames: Keyframe[], duur: number, easing = 'linear'): void {
+    const anim = img.animate(frames, { duration: duur, easing, fill: 'forwards' });
+    const ruim = (): void => {
+      if (img.isConnected) img.remove();
+    };
+    anim.onfinish = ruim;
+    anim.oncancel = ruim;
+  }
+
+  // Fout eten: meteen weggooien, niet afwachten. Het dier loopt intussen al weg.
+  function reactieVoer(g: Gast, img: HTMLImageElement): void {
     const mijn = spel;
-    // Het eten valt op de grond en verdwijnt.
     const mond = mondPunt(g);
     const m = img.offsetWidth;
-    const val = img.animate(
-      [
-        { transform: `translate(${mond.x - m / 2}px, ${mond.y - m / 2}px)`, opacity: 1 },
-        { transform: `translate(${mond.x - m / 2 - 30}px, ${grond() - m}px) rotate(-80deg)`, opacity: 1, offset: 0.6 },
-        { transform: `translate(${mond.x - m / 2 - 30}px, ${grond() - m}px) rotate(-80deg)`, opacity: 0 },
-      ],
-      { duration: 900, easing: 'ease-in', fill: 'forwards' },
-    );
-    void val.finished.then(() => img.remove()).catch(() => img.remove());
+    const x0 = mond.x - m / 2;
+    const y0 = mond.y - m / 2;
+    switch (g.dier.reactie) {
+      case 'gooi': {
+        const anim = img.animate(boog(mond, handPunt(), m, Math.min(hoogte() * 0.25, 160), -420), { duration: 560, easing: 'linear', fill: 'forwards' });
+        volgMetSpoor(img, anim);
+        anim.onfinish = (): void => {
+          if (!img.isConnected) return;
+          if (mijn === spel) schudSpeler();
+          img.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 180, fill: 'forwards' }).onfinish = (): void => img.remove();
+        };
+        anim.oncancel = (): void => {
+          if (img.isConnected) img.remove();
+        };
+        return;
+      }
+      case 'spuug': {
+        const hand = handPunt();
+        const frames = boog(mond, { x: -m, y: Math.min(mond.y - 10, hand.y - spelerMaat()) }, m, Math.min(hoogte() * 0.06, 36), 180);
+        frames[frames.length - 1].opacity = 0;
+        speelWeg(img, frames, 320);
+        return;
+      }
+      case 'spuit': {
+        spuitWater(g);
+        const hoek = (-110 * Math.PI) / 180;
+        const kracht = g.maat * 1.6;
+        const frames: Keyframe[] = [];
+        for (let s = 0; s <= 12; s++) {
+          const t = s / 12;
+          const x = Math.cos(hoek) * kracht * t;
+          const y = Math.sin(hoek) * kracht * t + g.maat * 2.2 * t * t;
+          frames.push({
+            transform: `translate(${x0 + x}px, ${y0 + y}px) rotate(${t * 200}deg)`,
+            opacity: t < 0.75 ? 1 : (1 - t) / 0.25,
+          });
+        }
+        speelWeg(img, frames, 800);
+        return;
+      }
+      case 'plat': {
+        veld.classList.add('voer-veld--dreun');
+        window.setTimeout(() => {
+          if (mijn !== spel) return;
+          if (!gasten.some((x) => x.dier.komt === 'stampt' && x.staat === 'komt')) veld.classList.remove('voer-veld--dreun');
+        }, 720);
+        const grondY = grond() - m * 0.2;
+        speelWeg(
+          img,
+          [
+            { transform: `translate(${x0}px, ${y0}px) scale(1, 1)`, opacity: 1 },
+            { transform: `translate(${x0}px, ${grondY}px) scale(1.45, 0.16)`, opacity: 1, offset: 0.5 },
+            { transform: `translate(${x0}px, ${grondY}px) scale(1.55, 0.1)`, opacity: 0 },
+          ],
+          500,
+          'ease-in',
+        );
+        return;
+      }
+      case 'stuiter':
+      case 'in': {
+        const grondY = grond() - m;
+        speelWeg(
+          img,
+          [
+            { transform: `translate(${x0}px, ${y0}px) rotate(0deg)`, opacity: 1 },
+            { transform: `translate(${x0 + 36}px, ${Math.min(y0, grondY - 46)}px) rotate(50deg)`, offset: 0.22 },
+            { transform: `translate(${x0 + 70}px, ${grondY}px) rotate(90deg)`, offset: 0.42 },
+            { transform: `translate(${x0 + 108}px, ${grondY - 26}px) rotate(150deg)`, offset: 0.68 },
+            { transform: `translate(${x0 + 140}px, ${grondY}px) rotate(210deg)`, opacity: 1, offset: 0.86 },
+            { transform: `translate(${x0 + 148}px, ${grondY}px) rotate(230deg)`, opacity: 0 },
+          ],
+          700,
+        );
+        return;
+      }
+      default: {
+        const grondY = grond() - m;
+        speelWeg(
+          img,
+          [
+            { transform: `translate(${x0}px, ${y0}px)`, opacity: 1 },
+            { transform: `translate(${x0 - 30}px, ${grondY}px) rotate(-80deg)`, opacity: 1, offset: 0.6 },
+            { transform: `translate(${x0 - 30}px, ${grondY}px) rotate(-80deg)`, opacity: 0 },
+          ],
+          900,
+          'ease-in',
+        );
+      }
+    }
+  }
+
+  async function bah(g: Gast, img: HTMLImageElement): Promise<void> {
+    const mijn = spel;
+    reactieVoer(g, img);
     levens = Math.max(0, levens - 1);
     tekenHartjes();
     speelDrum('bas');
@@ -938,24 +1072,21 @@ export function VoerScreen(manager: ScreenManager): Screen {
       for (const ander of gasten) if (ander.staat === 'wacht' || ander.staat === 'komt') zetStaat(ander, 'weg');
       bak.classList.add('voer-bak--weg');
     }
-    const plaatje = g.el.querySelector('.voer-dier__plaatje')!;
-    plaatje.classList.add('voer-dier__plaatje--boos');
-    await slaap(900);
-    if (mijn !== spel) return;
-    plaatje.classList.remove('voer-dier__plaatje--boos');
     ballon?.classList.remove('voer-ballon--zie');
     zetStaat(g, 'weg');
     if (levens > 0) vulBak();
-    laatKruipen(g);
+    // Los van het groepje vóór het wegstappen, anders wacht het volgende dier op het schudden.
+    laatKruipen(g, true);
     kijk(g, 'rechts');
-    if (!(await beweeg(g, breedte() + g.maat / 2 + 10, 'uit'))) return;
+    if (!(await beweeg(g, breedte() + g.maat / 2 + 10, 'uit', { snel: kruipt(g) ? 1 : 0.75, schud: g.dier.reactie === 'in' ? 'in' : 'bah' }))) return;
+    if (mijn !== spel) return;
     await vertrokken(g);
   }
 
-  // Een slak of schildpad die weggaat hoort niet meer bij het groepje: het volgende groepje
-  // komt gewoon al en loopt er (ervoor) langs.
-  function laatKruipen(g: Gast): void {
-    if (!kruipt(g) || levens <= 0) return;
+  // Weg bij het groepje: een slak of schildpad die wegkruipt, of iemand die fout eten kreeg
+  // en nog naschudt. Het volgende groepje komt al en loopt er (ervoor) langs.
+  function laatKruipen(g: Gast, altijd = false): void {
+    if ((!altijd && !kruipt(g)) || levens <= 0) return;
     gasten = gasten.filter((x) => x !== g);
     kruipers.push(g);
     if (!gasten.length) void volgende();
@@ -1036,6 +1167,7 @@ export function VoerScreen(manager: ScreenManager): Screen {
     kruipers = [];
     for (const x of veld.querySelectorAll('.voer-vlieg, .voer-spoor, .voer-hartje, .voer-druppel, .vang-plop')) x.remove();
     veld.classList.remove('voer-veld--dreun');
+    speler.classList.remove('voer-speler--bah', 'voer-speler--gooi');
     bak.classList.add('voer-bak--weg');
     bak.replaceChildren();
   }

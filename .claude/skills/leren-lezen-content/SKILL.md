@@ -1022,7 +1022,11 @@ Children no longer pick an age but a group (`Groep = 'kleuter' | 'groep3'` in co
   `icons/voeren.svg`): animals walk in from the right in the foreground (any background),
   each with a speech bubble in Dutch ("Boe!", "Mèèèh!"). Drag food from the tray at the top
   onto an animal; your own figure (bottom left) then throws it in an arc. Right = happy hop,
-  +1, heart, walks on to the left; wrong = "Bah!", shakes, turns and walks off right, −1 heart.
+  +1, heart, walks on to the left; wrong = "Bah!", the food reacts (`reactie`: monkey throws
+  it back and your figure shudders, frog/snake spit, elephant sprays, dinos squash it,
+  hedgehog and shell animals bounce it, everyone else drops it), and the animal shudders
+  while it turns and walks off a bit slower (shell animals squash and keep crawl speed).
+  It is moved to `kruipers` immediately, so the next group does not wait. −1 heart.
   Three wrong = end; record per profile (`leren-lezen:voeren:<id>`), no coins, no timer.
   - `DIEREN` has per animal `goed` (what it eats) and an explicit `fout` list (things it
     certainly doesn't eat; only those are used as wrong options). `kijkt` (left/right/front)
@@ -1036,7 +1040,8 @@ Children no longer pick an age but a group (`Groep = 'kleuter' | 'groep3'` in co
     screen), rent (dog runs back and forth once), zakt (sloth on a vine), vliegt (bee,
     butterfly; hover `--zweeft`), kruipt (snail, turtle: a third of a body per second, in
     and out; nobody waits for them: the tray comes once the rest has arrived, and a leaving
-    crawler moves to `kruipers` so the next group already walks in past it), kronkelt
+    crawler — or any animal walking off after wrong food — moves to `kruipers` so the next
+    group already walks in past it), kronkelt
     (snake). Extras: `slaapt` (lion, sloth fall asleep "Zzz…"), `spuit` (elephant
     water fountain).
   - Groups: 1 animal, from score 6 sometimes 2, groep 3 from 14 up to 3 (max 2 when width
