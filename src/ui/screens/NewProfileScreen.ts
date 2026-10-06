@@ -1,5 +1,6 @@
 import type { Screen, ScreenManager } from '../../engine/screenManager.ts';
 import { pasAchtergrondVanProfielToe } from '../../achtergrond/achtergrond.ts';
+import { pasSchriftVanProfielToe } from '../../engine/schrift.ts';
 import { maakTerugKnop } from '../components/TerugKnop.ts';
 import { GRATIS_FIGUREN } from '../../engine/winkel.ts';
 import { AVATAR_KLEUREN, avatarFilter, avatarPad, haalProfielen, maakProfiel, MAX_NAAM_LENGTE, zetActiefProfiel } from '../../engine/profielStore.ts';
@@ -113,6 +114,7 @@ export function NewProfileScreen(manager: ScreenManager): Screen {
     const profiel = maakProfiel(invoer.value, gekozenIcoon, gekozenKleur);
     zetActiefProfiel(profiel.id);
     pasAchtergrondVanProfielToe();
+    pasSchriftVanProfielToe();
     speelSchermOvergang();
     manager.replace((m) => GroepKiesScreen(m));
   });

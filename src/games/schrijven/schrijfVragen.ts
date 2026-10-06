@@ -2,10 +2,13 @@ import type { RondeVraag } from '../../ui/screens/RondeScreen.ts';
 import { instructieAudioPad } from '../../engine/audioManager.ts';
 import { toonGoedFeedback } from '../../ui/components/FeedbackOverlay.ts';
 import { LETTERS, LIJNEN, woordFiguur, type Figuur, type Punt } from '../../content/schrijven/letters.ts';
+import { woordFiguurAanElkaar } from '../../content/schrijven/aanElkaar.ts';
+import { huidigSchrift } from '../../engine/schrift.ts';
 import { maakOvertrekker } from './overtrekken.ts';
 import { kies } from '../kleuter/hulp.ts';
 
 // De drie schrijfspellen: lijnen (vanaf 3 jaar), letters (5-6) en woordjes (6).
+// Letters en woordjes volgen het schrift van het profiel: los of aan elkaar.
 
 // Woorden met een nieuw, eigen plaatje (emoji of zelf getekend) in plaats van de VLL-afbeelding.
 const W = (woord: string): string => `assets/images/woorden/${woord}.svg`;
@@ -134,7 +137,7 @@ export function maakLijnVraag(): RondeVraag {
 const vorigeLetter: { waarde?: (typeof LETTER_VOLGORDE)[number] } = {};
 export function maakLetterVraag(): RondeVraag {
   const item = kiesAnders(LETTER_VOLGORDE, vorigeLetter);
-  const figuur = LETTERS[item.letter];
+  const figuur = huidigSchrift() === 'aan-elkaar' ? woordFiguurAanElkaar(item.letter) : LETTERS[item.letter];
   return {
     instructie: `Schrijf de ${item.letter} van ${item.woord}`,
     // Per letter een eigen zinnetje ("Schrijf de m van maan"), met de klank van de letter.
@@ -159,7 +162,7 @@ export function maakLetterVraag(): RondeVraag {
 const vorigWoord: { waarde?: string } = {};
 export function maakWoordVraag(): RondeVraag {
   const woord = kiesAnders(WOORDJES, vorigWoord);
-  const figuur = woordFiguur(woord);
+  const figuur = huidigSchrift() === 'aan-elkaar' ? woordFiguurAanElkaar(woord) : woordFiguur(woord);
   return {
     instructie: 'Schrijf het woord na',
     audioPad: instructieAudioPad('schrijf-woord'),

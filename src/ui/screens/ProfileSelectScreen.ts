@@ -1,5 +1,6 @@
 import type { Screen, ScreenManager } from '../../engine/screenManager.ts';
 import { pasAchtergrondVanProfielToe } from '../../achtergrond/achtergrond.ts';
+import { pasSchriftVanProfielToe } from '../../engine/schrift.ts';
 import { maakIconTile } from '../components/IconTile.ts';
 import { haalProfielen, zetActiefProfiel, avatarPad, avatarFilter, type Profiel } from '../../engine/profielStore.ts';
 import { haalGroep } from '../../engine/progressStore.ts';
@@ -13,6 +14,7 @@ function kiesProfiel(manager: ScreenManager, profiel: Profiel): void {
   ontgrendelAudio();
   zetActiefProfiel(profiel.id);
   pasAchtergrondVanProfielToe();
+  pasSchriftVanProfielToe();
   speelSchermOvergang();
 
   const groep = haalGroep();

@@ -2631,9 +2631,15 @@
 .begrijpend-woord,
 .typen-invoer,
 .scherm-toets,
-.boekje-woord {
+.boekje-woord,
+.schrijf-hint__woord {
   font-family: var(--leeslettertype);
   font-weight: 700;
+}
+/* Aan elkaar (engine/schrift.ts): letterafstand zou de verbindingen tussen de letters
+   doorbreken. Playwrite NL heeft geen vet; een nagemaakt vet blijft beter leesbaar. */
+:root[data-schrift='aan-elkaar'] :is(.oefen-kaart__woord, .boekje-woord, .schrijf-hint__woord, .zin-tekst, .begrijpend-woord) {
+  letter-spacing: normal;
 }
 
 /* ---------- Vangspel ---------- */

@@ -59,6 +59,14 @@ Tracing, `games/schrijven/overtrekken.ts`: progress only moves forward, to point
 at most `VOORUIT_KIJKEN` ahead and within `tolerantie`; lifting keeps progress;
 straying pauses; the ink follows the guide path so it always looks neat.
 
+**Aan elkaar** (profile Schrift setting): Letters and Woordjes use
+`content/schrijven/aanElkaar.ts` instead. Each letter is one kern stroke (Catmull-Rom
+pieces through control points, corners between pieces where the pen reverses);
+`woordFiguurAanElkaar()` generates the joins (Bézier; low exit from the baseline,
+high exit after o b r v w), an aanhaal for a first non-round letter, and puts dots,
+the t-bar and the x-cross after the whole word. Result is resampled every 2 units.
+Preview all shapes: `npx tsx tests/aan-elkaar-voorbeeld.mts <out.html>`.
+
 Letters game: VLL letter order with a key word per letter ("de m van maan"),
 own clip `schrijf-letter-<letter>`, the voice says the sound, not the name.
 

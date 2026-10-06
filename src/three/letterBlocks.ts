@@ -48,7 +48,7 @@ function houtVlak(zaad: number, letter?: string, kader = true): THREE.CanvasText
   }
   if (letter) {
     g.fillStyle = '#1d1d1f';
-    g.font = `700 ${Math.round(VLAK_PX * 0.7)}px "Andika", "Baloo 2", sans-serif`;
+    g.font = `700 ${Math.round(VLAK_PX * 0.7)}px ${leesLettertype()}`;
     g.textAlign = 'center';
     g.textBaseline = 'alphabetic';
     // Midden van de letter zelf in het vak, ook bij een staartje (g, j, p) of stok (b, k).
@@ -62,9 +62,15 @@ function houtVlak(zaad: number, letter?: string, kader = true): THREE.CanvasText
   return t;
 }
 
+// Hetzelfde leeslettertype als de rest van de leestekst (Andika, of schoolschrift als het
+// profiel "aan elkaar" heeft gekozen: zie engine/schrift.ts).
+function leesLettertype(): string {
+  return getComputedStyle(document.documentElement).getPropertyValue('--leeslettertype').trim() || '"Andika", sans-serif';
+}
+
 async function laadLettertype(): Promise<void> {
   try {
-    await document.fonts.load(`700 100px "Andika"`);
+    await document.fonts.load(`700 100px ${leesLettertype()}`, 'abc');
   } catch {
     // Geen webfont (offline): dan tekent het canvas met de reservefont.
   }

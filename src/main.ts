@@ -18,6 +18,7 @@ import { ProfileSelectScreen } from './ui/screens/ProfileSelectScreen.ts';
 import { NewProfileScreen } from './ui/screens/NewProfileScreen.ts';
 import { haalProfielen } from './engine/profielStore.ts';
 import { initAchtergrond } from './achtergrond/achtergrond.ts';
+import { pasSchriftVanProfielToe } from './engine/schrift.ts';
 import { herstelEnSpiegelOpslag, koppelAppKnoppen } from './engine/native.ts';
 
 // Kinderen drukken per ongeluk op de terug/vooruit-knoppen van de muis (knop 4 en 5), en
@@ -52,6 +53,7 @@ function start(): void {
   app.appendChild(drieLaag);
   sceneManager.init(drieLaag);
   initAchtergrond(app);
+  pasSchriftVanProfielToe();
 
   const schermHouder = document.createElement('div');
   schermHouder.id = 'scherm-houder';

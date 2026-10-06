@@ -89,6 +89,17 @@ Andika (OFL, `src/assets/fonts/andika-latin-{400,700}.woff2`) via
 buttons, sentences, booklets, keys, 3D blocks). Baloo 2 stays for the UI. In
 heavy Baloo 2 the n and r looked alike.
 
+**Schrift: los or aan elkaar** (per profile, `engine/schrift.ts`, key
+`leren-lezen:schrift:<profielId>`, toggled by the Schrift tile in the profile
+menu). The choice sits on `<html data-schrift>`; with `aan-elkaar`, global.css
+points `--leeslettertype` at Playwrite NL (OFL, Dutch school script,
+`src/assets/fonts/playwrite-nl.woff2`, family `'Playwrite NL Schoolschrift'`).
+Its `@font-face` has a letters-only `unicode-range`, so digits, `+ =` and `€`
+fall back to Andika and math stays print — don't add digits to it. Letter-spacing
+is reset in cursive (it breaks the joins). The 3D blocks read the variable too
+(`leesLettertype()` in letterBlocks.ts). Instructions and buttons stay Baloo 2.
+Apply it next to `pasAchtergrondVanProfielToe()` (`pasSchriftVanProfielToe()`).
+
 ## On-screen keyboard (typing questions)
 
 A phone only opens its keyboard when an input is focused directly by a tap; our

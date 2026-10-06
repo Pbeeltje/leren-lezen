@@ -356,6 +356,24 @@
   box-shadow: 0 3px 0 #f4c4c4;
 }
 
+/* Schrift: een voorbeeldwoordje in het gekozen schrift in plaats van een icoon. */
+.profiel-tegel__schrift {
+  font-family: var(--leeslettertype);
+  font-weight: 700;
+  font-size: 1.9rem;
+  line-height: 46px;
+  height: 46px;
+  color: var(--kleur-secundair);
+}
+
+/* Vijfde tegel: Wisselen over de hele breedte, als lagere rij (icoon naast de tekst). */
+.profiel-tegel--wissel {
+  grid-column: 1 / -1;
+  flex-direction: row;
+  gap: 10px;
+  min-height: 64px;
+}
+
 /* Twee pijltjes in de hoek: dit is om te wisselen. */
 .profiel-tegel--wissel::after {
   content: '⇄';

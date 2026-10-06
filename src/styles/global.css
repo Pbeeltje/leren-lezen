@@ -26,6 +26,11 @@
   color-scheme: light;
 }
 
+/* Profiel met "aan elkaar" (engine/schrift.ts): alle leestekst in schoolschrift. */
+:root[data-schrift='aan-elkaar'] {
+  --leeslettertype: 'Playwrite NL Schoolschrift', 'Andika', 'Baloo 2', system-ui, sans-serif;
+}
+
 * {
   box-sizing: border-box;
   /* Zie de toelichting bij body's cursor-regel hieronder: <button> e.d. krijgen in

@@ -10,6 +10,7 @@ import {
 import { haalGroep } from '../../engine/progressStore.ts';
 import { speelSchermOvergang } from '../../three/transitions.ts';
 import { isGedempt, zetGedempt } from '../../engine/audioManager.ts';
+import { huidigSchrift, kiesSchrift } from '../../engine/schrift.ts';
 import { THEMAS, huidigThema, kiesAchtergrond } from '../../achtergrond/achtergrond.ts';
 import { eigenAchtergronden, eigenFiguren } from '../../engine/winkel.ts';
 import { maakBladeraar } from './Bladeraar.ts';
@@ -17,9 +18,10 @@ import { WinkelScreen } from '../screens/WinkelScreen.ts';
 import { GroepKiesScreen, groepIcoon } from '../screens/GroepKiesScreen.ts';
 import { ProfileSelectScreen } from '../screens/ProfileSelectScreen.ts';
 
-// Profielmenu als klein kaartje: bovenaan je eigen figuur met je naam, daaronder vier
-// plaatjestegels (Mijn figuur, Achtergrond, Geluid, Wisselen). Elke tegel behalve Geluid
-// opent een eigen submenu met een terugpijl; Geluid schakelt meteen om. Zo blijft het hoofdmenu kort
+// Profielmenu als klein kaartje: bovenaan je eigen figuur met je naam, daaronder vijf
+// plaatjestegels (Mijn figuur, Achtergrond, Geluid, Schrift, Wisselen). Mijn figuur,
+// Achtergrond en Wisselen openen een eigen submenu met een terugpijl; Geluid en Schrift
+// schakelen meteen om. Zo blijft het hoofdmenu kort
 // en kan een kind het zonder te lezen gebruiken (verzoek van de eigenaar: "te groot").
 
 type Weergave = 'hoofd' | 'figuur' | 'achtergrond' | 'wisselen';
@@ -108,6 +110,22 @@ export function maakProfielMenu(manager: ScreenManager): { element: HTMLElement;
     geluidTegel.knop.classList.toggle('profiel-tegel--uit', gedempt);
   }
   werkGeluidBij();
+
+  // Schrift: ook een schakelaar (losse letters ↔ aan elkaar). In plaats van een icoon een
+  // voorbeeldwoordje in het gekozen schrift, zodat je het verschil meteen ziet.
+  const schriftTegel = tegel('Schrift', '', () => {
+    kiesSchrift(huidigSchrift() === 'los' ? 'aan-elkaar' : 'los');
+    werkSchriftBij();
+  });
+  const schriftVoorbeeld = maak('span', 'profiel-tegel__schrift');
+  schriftVoorbeeld.textContent = 'aap';
+  schriftTegel.img.replaceWith(schriftVoorbeeld);
+  function werkSchriftBij(): void {
+    const aanElkaar = huidigSchrift() === 'aan-elkaar';
+    schriftTegel.tekst.textContent = aanElkaar ? 'Aan elkaar' : 'Los';
+    schriftTegel.knop.setAttribute('aria-label', aanElkaar ? 'Losse letters' : 'Letters aan elkaar');
+  }
+  werkSchriftBij();
 
   const groepIcoonPad = groepIcoon(haalGroep());
   const wisselTegel = tegel('Wisselen', groepIcoonPad, () => toon('wisselen'));
