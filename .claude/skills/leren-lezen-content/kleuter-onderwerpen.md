@@ -65,6 +65,11 @@ pieces through control points, corners between pieces where the pen reverses);
 `woordFiguurAanElkaar()` generates the joins (Bézier; low exit from the baseline,
 high exit after o b r v w), an aanhaal for a first non-round letter, and puts dots,
 the t-bar and the x-cross after the whole word. Result is resampled every 2 units.
+Cursive is harder, so its tracing area is bigger (screens.css, after the
+overtrek rules): the card's wrapper takes the remaining height (`flex: 1`, max
+760px) and the area fills it; landscape tablets put the hint beside it. Landscape
+phones (≤500px high) keep the normal layout. Check across sizes: nothing may run
+off the bottom.
 Preview all shapes: `npx tsx tests/aan-elkaar-voorbeeld.mts <out.html>`.
 
 Letters game: VLL letter order with a key word per letter ("de m van maan"),

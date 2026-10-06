@@ -1582,6 +1582,30 @@
   .schrijf-hint__woord { font-size: 1.6rem; }
   .overtrek__vlak { height: min(42vh, 300px); }
 }
+/* Aan elkaar (engine/schrift.ts) is lastiger: het overtrekvlak zo groot als er ruimte is.
+   De kaart vult de hoogte onder de instructie (tot een maximum) en het vlak groeit mee.
+   Liggend staat het voorbeeld ernaast (hoogte is daar de grens), staand erboven.
+   Liggende telefoons houden hun eigen indeling, die al de hele hoogte gebruikt. */
+:root[data-schrift='aan-elkaar'] .schrijf-kaart { width: min(96vw, 1000px); }
+@media (min-height: 501px) {
+  :root[data-schrift='aan-elkaar'] .scherm > div:has(> .schrijf-kaart) {
+    flex: 1 1 0;
+    min-height: 0;
+    max-height: 760px;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  :root[data-schrift='aan-elkaar'] .schrijf-kaart { flex: 1 1 auto; min-height: 0; padding: 20px 12px; }
+  :root[data-schrift='aan-elkaar'] .schrijf-kaart .overtrek { flex: 1 1 0; min-height: 240px; }
+  :root[data-schrift='aan-elkaar'] .schrijf-kaart .overtrek__vlak { height: 100%; }
+}
+@media (orientation: landscape) and (min-height: 501px) {
+  :root[data-schrift='aan-elkaar'] .schrijf-kaart { flex-direction: row; padding: 20px 24px; gap: 20px; }
+  :root[data-schrift='aan-elkaar'] .schrijf-kaart .schrijf-hint { flex: none; flex-direction: column; gap: 6px; }
+  :root[data-schrift='aan-elkaar'] .schrijf-kaart .overtrek { min-width: 0; min-height: 0; align-self: stretch; }
+}
 
 /* ---------- Eigen toetsenbord op aanraakschermen ---------- */
 .typen-invoer--scherm { caret-color: transparent; }
