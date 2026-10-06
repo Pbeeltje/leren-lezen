@@ -67,8 +67,14 @@ export const LUISTER_HOOFDSTUKKEN: LuisterHoofdstuk[] = [
   },
   {
     id: 'speelgoed',
-    titel: 'Speelgoed & vervoer',
+    titel: 'Speelgoed',
     icoonWoord: 'bal',
-    woorden: ['bal', 'ballon', 'vlieger', 'knuffel', 'trommel', 'gitaar', 'puzzel', 'robot', 'raket', 'step', 'auto', 'bus', 'fiets', 'trein', 'boot', 'vliegtuig', 'helikopter', 'taxi', 'schip', 'tram', 'slee', 'spook', 'voetbal', 'ski', 'piano', 'radio'],
+    woorden: ['bal', 'voetbal', 'ballon', 'vlieger', 'knuffel', 'trommel', 'gitaar', 'piano', 'puzzel', 'robot', 'blok', 'dobbelsteen', 'kegel', 'schommel', 'slee', 'schaats', 'ski', 'spook', 'radio'],
+  },
+  {
+    id: 'vervoer',
+    titel: 'Vervoer',
+    icoonWoord: 'auto',
+    woorden: ['auto', 'bus', 'fiets', 'step', 'trein', 'tram', 'taxi', 'motor', 'vrachtwagen', 'tractor', 'ambulance', 'brandweerauto', 'boot', 'schip', 'vliegtuig', 'helikopter', 'raket'],
   },
 ];
