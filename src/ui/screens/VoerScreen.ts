@@ -134,7 +134,7 @@ const DIEREN: Dier[] = [
   { id: 'papegaai', plaatje: w('papegaai'), geluid: 'Lorre!', goed: ['pinda'], fout: ['vis', 'kaas', 'bot', 'vlees', 'kluif', 'worm', 'melk', 'gras'], kijkt: 'links', schaal: 0.85, komt: 'vliegt', tempo: 1 },
   { id: 'kip', plaatje: w('kip'), geluid: 'Tok tok!', goed: ['mais', 'worm'], fout: ['bot', 'vlees', 'kaas', 'honing', 'melk'], kijkt: 'links', schaal: 0.88, komt: 'hupt', tempo: 0.9, mond: [0.2, 0.25] },
   { id: 'geit', plaatje: w('geit'), geluid: 'Mèh!', goed: ALLES, fout: [], kijkt: 'links', schaal: 1, komt: 'loopt', tempo: 1.1, allesEter: true, mond: [0.12, 0.3] },
-  { id: 'lam', plaatje: v('lam'), geluid: 'Bèh!', goed: ['melk'], fout: PLANT_NEE, kijkt: 'links', schaal: 0.75, komt: 'hupt', tempo: 1.1 },
+  { id: 'lam', plaatje: w('lam'), geluid: 'Bèh!', goed: ['melk'], fout: PLANT_NEE, kijkt: 'links', schaal: 0.75, komt: 'hupt', tempo: 1.1 },
   { id: 'kangoeroe', plaatje: w('kangoeroe'), geluid: 'Boing!', goed: ['gras'], fout: [...PLANT_NEE, 'melk'], kijkt: 'links', schaal: 1.05, komt: 'springt', tempo: 1 },
   { id: 'nijlpaard', plaatje: w('nijlpaard'), geluid: 'Bwoah!', goed: ['gras'], fout: [...PLANT_NEE, 'melk'], kijkt: 'links', schaal: 1.2, komt: 'loopt', tempo: 0.7, mond: [0.12, 0.5] },
   { id: 'uil', plaatje: w('uil'), geluid: 'Oehoe!', goed: ['muis'], fout: VLEES_NEE, kijkt: 'voor', schaal: 0.85, komt: 'vliegt', tempo: 0.9 },

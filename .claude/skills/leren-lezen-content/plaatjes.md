@@ -27,6 +27,9 @@ nothing) — use flat colours.
 
 ## Own drawings, notes
 
+- `lam.svg`: hand-written SVG of a newborn lamb (smooth coat, floppy ears, long
+  legs). It used to be a copy of `schaap.svg`; reading, Luisteren and Dieren voeren
+  all use it.
 - `voet.svg`: skin-coloured footprint (Fluent "Footprints", one foot, recoloured);
   `teen.svg` embeds it (`inbed(..., bron=WOORDEN)` in teken-woorden.py) with a red
   circle round the big toe.
