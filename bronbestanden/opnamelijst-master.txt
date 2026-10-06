@@ -1,6 +1,6 @@
 Master-opnamelijst (gegenereerd, niet met de hand wijzigen).
 Herbouw: node bronbestanden/maak-opnamelijst-master.mjs
-Delen: opnamelijst-2-deel-1, opnamelijst-2-deel-2, opnamelijst-2-deel-3, opnamelijst-3-deel-1, opnamelijst-4-deel-1, opnamelijst-5-deel-1, opnamelijst-5-deel-2, opnamelijst-6-deel-1, opnamelijst-7-deel-1, opnamelijst-7-deel-2, opnamelijst-8-deel-1, opnamelijst-9-deel-1.
+Delen: opnamelijst-2-deel-1, opnamelijst-2-deel-2, opnamelijst-2-deel-3, opnamelijst-3-deel-1, opnamelijst-4-deel-1, opnamelijst-5-deel-1, opnamelijst-5-deel-2, opnamelijst-6-deel-1, opnamelijst-7-deel-1, opnamelijst-7-deel-2, opnamelijst-8-deel-1, opnamelijst-9-deel-1, opnamelijst-10-deel-1.
 
 --- lijst 2 deel 1 (63 regels) ---
 1. ik
@@ -425,3 +425,17 @@ Delen: opnamelijst-2-deel-1, opnamelijst-2-deel-2, opnamelijst-2-deel-3, opnamel
 398. ufo
 399. frisbee
 400. pinguïn
+
+--- lijst 10 deel 1 (12 regels) ---
+401. spijker
+402. schroevendraaier
+403. plakband
+404. pan
+405. zaag
+406. moersleutel
+407. haak
+408. zaklamp
+409. liniaal
+410. batterij
+411. gereedschapskist
+412. tang

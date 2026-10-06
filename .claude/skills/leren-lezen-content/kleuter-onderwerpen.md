@@ -17,8 +17,8 @@ word there too. A word in a list that isn't in a reading bank (or is
 (parachute, skateboard, shampoo, diplodocus, tyrannosaurus, octopus, politieauto,
 scooter, ufo, frisbee, pinguin). Those join the pool with picture
 `woorden/<woord>.svg` once recorded. Chapters: Boerderij, Dierentuin, Nog meer
-dieren, Eten, Mijn lijf, Kleren & spullen, Buiten, Speelgoed, Vervoer, Dino's &
-draken (`dinos`).
+dieren, Eten, Mijn lijf, Kleren & spullen, Buiten, Speelgoed, Vervoer, Gereedschap,
+Dino's & draken (`dinos`).
 
 **Luister & wijs** (`LuisterenScreen.ts`, `games/luisterKiezen.ts`): hear a word,
 tap the matching picture from 3. Rounds of 5 (`RONDE_LENGTE`) with a

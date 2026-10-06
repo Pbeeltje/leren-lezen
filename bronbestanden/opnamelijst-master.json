@@ -3198,5 +3198,101 @@
     "slug": "pinguin",
     "text": "pinguïn",
     "path": "public/assets/audio/woorden/pinguin.mp3"
+  },
+  {
+    "n": 401,
+    "lijst": 10,
+    "deel": 1,
+    "slug": "spijker",
+    "text": "spijker",
+    "path": "public/assets/audio/woorden/spijker.mp3"
+  },
+  {
+    "n": 402,
+    "lijst": 10,
+    "deel": 1,
+    "slug": "schroevendraaier",
+    "text": "schroevendraaier",
+    "path": "public/assets/audio/woorden/schroevendraaier.mp3"
+  },
+  {
+    "n": 403,
+    "lijst": 10,
+    "deel": 1,
+    "slug": "plakband",
+    "text": "plakband",
+    "path": "public/assets/audio/woorden/plakband.mp3"
+  },
+  {
+    "n": 404,
+    "lijst": 10,
+    "deel": 1,
+    "slug": "pan",
+    "text": "pan",
+    "path": "public/assets/audio/woorden/pan.mp3"
+  },
+  {
+    "n": 405,
+    "lijst": 10,
+    "deel": 1,
+    "slug": "zaag",
+    "text": "zaag",
+    "path": "public/assets/audio/woorden/zaag.mp3"
+  },
+  {
+    "n": 406,
+    "lijst": 10,
+    "deel": 1,
+    "slug": "moersleutel",
+    "text": "moersleutel",
+    "path": "public/assets/audio/woorden/moersleutel.mp3"
+  },
+  {
+    "n": 407,
+    "lijst": 10,
+    "deel": 1,
+    "slug": "haak",
+    "text": "haak",
+    "path": "public/assets/audio/woorden/haak.mp3"
+  },
+  {
+    "n": 408,
+    "lijst": 10,
+    "deel": 1,
+    "slug": "zaklamp",
+    "text": "zaklamp",
+    "path": "public/assets/audio/woorden/zaklamp.mp3"
+  },
+  {
+    "n": 409,
+    "lijst": 10,
+    "deel": 1,
+    "slug": "liniaal",
+    "text": "liniaal",
+    "path": "public/assets/audio/woorden/liniaal.mp3"
+  },
+  {
+    "n": 410,
+    "lijst": 10,
+    "deel": 1,
+    "slug": "batterij",
+    "text": "batterij",
+    "path": "public/assets/audio/woorden/batterij.mp3"
+  },
+  {
+    "n": 411,
+    "lijst": 10,
+    "deel": 1,
+    "slug": "gereedschapskist",
+    "text": "gereedschapskist",
+    "path": "public/assets/audio/woorden/gereedschapskist.mp3"
+  },
+  {
+    "n": 412,
+    "lijst": 10,
+    "deel": 1,
+    "slug": "tang",
+    "text": "tang",
+    "path": "public/assets/audio/woorden/tang.mp3"
   }
 ]

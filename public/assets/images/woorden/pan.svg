@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120">
+  <!-- Een koekenpan, zelf getekend voor leren-lezen. -->
+  <rect x="70" y="56" width="46" height="12" rx="6" fill="#5d4037" stroke="#3e2723" stroke-width="3" transform="rotate(-8 70 62)"/>
+  <ellipse cx="44" cy="66" rx="40" ry="30" fill="#37474f" stroke="#263238" stroke-width="3"/>
+  <ellipse cx="44" cy="62" rx="32" ry="22" fill="#546e7a"/>
+  <path d="M24 56 C30 48 44 46 54 48" fill="none" stroke="#90a4ae" stroke-width="4" stroke-linecap="round"/>
+</svg>

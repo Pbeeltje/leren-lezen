@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120">
+  <!-- Een rol plakband in een houder, zelf getekend voor leren-lezen. -->
+  <path d="M14 96 L106 96 L100 108 L20 108 Z" fill="#e53935" stroke="#b71c1c" stroke-width="3" stroke-linejoin="round"/>
+  <path d="M30 96 C30 70 40 64 60 64 C80 64 90 70 90 96 Z" fill="#ef5350" stroke="#b71c1c" stroke-width="3"/>
+  <circle cx="58" cy="56" r="34" fill="#e0f7fa" fill-opacity="0.85" stroke="#4dd0e1" stroke-width="3"/>
+  <circle cx="58" cy="56" r="26" fill="none" stroke="#b2ebf2" stroke-width="4"/>
+  <circle cx="58" cy="56" r="17" fill="#fff8e1" stroke="#8d6e63" stroke-width="3"/>
+  <path d="M90 62 L110 72 L106 84 L88 74 Z" fill="#e0f7fa" fill-opacity="0.9" stroke="#4dd0e1" stroke-width="2.5" stroke-linejoin="round"/>
+  <path d="M104 70 L112 66 L110 74 L114 78 L106 84" fill="#cfd8dc" stroke="#607d8b" stroke-width="2" stroke-linejoin="round"/>
+</svg>

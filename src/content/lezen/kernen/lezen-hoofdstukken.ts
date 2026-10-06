@@ -91,6 +91,8 @@ const sla = w('sla'), ski = w('ski'), baard = w('baard'), berg = w('berg'), mais
 const hagedis = w('hagedis'), stegosaurus = w('stegosaurus'), eenhoorn = w('eenhoorn'), kreeft = w('kreeft'), vlinder = w('vlinder'), eekhoorn = w('eekhoorn');
 const vleermuis = w('vleermuis'), walvis = w('walvis'), mammoet = w('mammoet'), draak = w('draak'), rups = w('rups'), kwal = w('kwal');
 const parasol = w('parasol'), borstel = w('borstel'), kam = w('kam'), onderbroek = w('onderbroek'), zeilboot = w('zeilboot'), kano = w('kano');
+const spijker = w('spijker'), schroevendraaier = w('schroevendraaier'), plakband = w('plakband'), pan = w('pan'), zaag = w('zaag'), moersleutel = w('moersleutel');
+const haak = w('haak'), zaklamp = w('zaklamp'), liniaal = w('liniaal'), batterij = w('batterij'), gereedschapskist = w('gereedschapskist'), tang = w('tang');
 const glijbaan = w('glijbaan'), toverstaf = w('toverstaf'), jojo = w('jojo'), kabelbaan = w('kabelbaan'), trompet = w('trompet'), magneet = w('magneet');
 
 // Het eerste getal is de id (lezen-NN, daar hangt de voortgang aan) en verandert nooit.
@@ -326,6 +328,17 @@ export const LEZEN_HOOFDSTUKKEN: Kern[] = [
       zin('Ik trek een schone ___ aan.', onderbroek, magneet, zeilboot),
       zin('Met de ___ gaan we hoog de berg op.', kabelbaan, borstel, jojo),
       zin('De ___ vaart met de wind over het water.', zeilboot, kam, toverstaf),
+    ]),
+  hoofdstuk(27, 'Zaag en spijker', [],
+    [spijker, schroevendraaier, plakband, pan, zaag, moersleutel, haak, zaklamp, liniaal, batterij, gereedschapskist, tang], [
+      zin('Papa slaat met de hamer op de ___.', spijker, pan, liniaal),
+      zin('Met de ___ zaag ik een plank door.', zaag, haak, batterij),
+      zin('Ik bak een ei in de ___.', pan, tang, plakband),
+      zin('In het donker schijnt de ___.', zaklamp, moersleutel, spijker),
+      zin('Ik plak de tekening op met ___.', plakband, zaag, gereedschapskist),
+      zin('Met de ___ trek ik een rechte streep.', liniaal, haak, pan),
+      zin('De auto van speelgoed rijdt niet. De ___ is leeg.', batterij, tang, zaklamp),
+      zin('Alle hamers en zagen gaan in de ___.', gereedschapskist, plakband, liniaal),
     ]),
   hoofdstuk(22, 'Een of meer', ['en'],
     [bomen, jassen, schoenen, blokken, sokken, boeken, katten, kippen, ballen, huizen, apen, benen], [

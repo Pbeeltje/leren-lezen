@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120">
+  <!-- Een tang, zelf getekend voor leren-lezen. -->
+  <g stroke-linejoin="round" stroke-width="3">
+  <path d="M54 58 C48 76 38 94 30 112 C26 116 18 112 20 106 C28 88 40 70 50 52 Z" fill="#e53935" stroke="#b71c1c"/>
+  <path d="M66 58 C72 76 82 94 90 112 C94 116 102 112 100 106 C92 88 80 70 70 52 Z" fill="#e53935" stroke="#b71c1c"/>
+  <path d="M46 56 C44 40 48 22 56 10 L64 10 C72 22 76 40 74 56 Z" fill="#90a4ae" stroke="#455a64"/>
+  </g>
+  <path d="M60 12 L60 40" stroke="#455a64" stroke-width="2.5"/>
+  <g stroke="#607d8b" stroke-width="2" stroke-linecap="round">
+    <path d="M53 24 L67 24"/><path d="M52 30 L68 30"/><path d="M51 36 L69 36"/>
+  </g>
+  <circle cx="60" cy="50" r="7" fill="#cfd8dc" stroke="#455a64" stroke-width="3"/>
+</svg>

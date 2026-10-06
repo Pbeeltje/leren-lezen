@@ -87,6 +87,12 @@ export const LUISTER_HOOFDSTUKKEN: LuisterHoofdstuk[] = [
     woorden: ['auto', 'bus', 'fiets', 'step', 'trein', 'tram', 'taxi', 'motor', 'vrachtwagen', 'tractor', 'ambulance', 'brandweerauto', 'boot', 'schip', 'vliegtuig', 'helikopter', 'raket', 'parachute', 'skateboard', 'kano', 'zeilboot', 'politieauto', 'scooter', 'kabelbaan', 'ufo'],
   },
   {
+    id: 'gereedschap',
+    titel: 'Gereedschap',
+    icoonWoord: 'hamer',
+    woorden: ['hamer', 'spijker', 'zaag', 'schroevendraaier', 'moersleutel', 'tang', 'schaar', 'plakband', 'kwast', 'verf', 'ladder', 'emmer', 'pan', 'bijl', 'touw', 'haak', 'zaklamp', 'liniaal', 'batterij', 'gereedschapskist', 'potlood', 'magneet'],
+  },
+  {
     id: 'dinos',
     titel: "Dino's & draken",
     icoonWoord: 'tyrannosaurus',
