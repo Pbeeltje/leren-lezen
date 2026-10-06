@@ -10,7 +10,7 @@ import { ProfileSelectScreen } from './ProfileSelectScreen.ts';
 
 // Groep kiezen (vroeger: leeftijd 3/4/5/6). Kleuterschool krijgt alles wat voor 3-5 jaar
 // was, groep 3 wat voor 6 jaar was.
-const GROEPEN: Groep[] = ['kleuter', 'groep3'];
+export const GROEPEN: Groep[] = ['kleuter', 'groep3'];
 
 export const groepIcoon = (groep: Groep | undefined): string => `assets/icons/groep-${groep ?? 'groep3'}.svg`;
 

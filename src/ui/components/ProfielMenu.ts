@@ -7,7 +7,8 @@ import {
   wijzigProfielIcoon,
   wijzigProfielKleur,
 } from '../../engine/profielStore.ts';
-import { haalGroep } from '../../engine/progressStore.ts';
+import { haalGroep, zetGroep } from '../../engine/progressStore.ts';
+import { GROEP_NAAM } from '../../content/types.ts';
 import { speelSchermOvergang } from '../../three/transitions.ts';
 import { isGedempt, zetGedempt } from '../../engine/audioManager.ts';
 import { huidigSchrift, kiesSchrift } from '../../engine/schrift.ts';
@@ -15,16 +16,17 @@ import { THEMAS, huidigThema, kiesAchtergrond } from '../../achtergrond/achtergr
 import { eigenAchtergronden, eigenFiguren } from '../../engine/winkel.ts';
 import { maakBladeraar } from './Bladeraar.ts';
 import { WinkelScreen } from '../screens/WinkelScreen.ts';
-import { GroepKiesScreen, groepIcoon } from '../screens/GroepKiesScreen.ts';
+import { GROEPEN, groepIcoon } from '../screens/GroepKiesScreen.ts';
+import { TopicSelectScreen } from '../screens/TopicSelectScreen.ts';
 import { ProfileSelectScreen } from '../screens/ProfileSelectScreen.ts';
 
-// Profielmenu als klein kaartje: bovenaan je eigen figuur met je naam, daaronder vijf
-// plaatjestegels (Mijn figuur, Achtergrond, Geluid, Schrift, Wisselen). Mijn figuur,
-// Achtergrond en Wisselen openen een eigen submenu met een terugpijl; Geluid en Schrift
-// schakelen meteen om. Zo blijft het hoofdmenu kort
+// Profielmenu als klein kaartje: bovenaan je eigen figuur met je naam (tik = ander profiel),
+// daaronder plaatjestegels (Mijn figuur, Achtergrond, Geluid, Schrift) en een rij met de
+// groepen. Mijn figuur en Achtergrond openen een eigen submenu met een terugpijl; Geluid en
+// Schrift schakelen meteen om, een groep kiezen gaat meteen. Zo blijft het hoofdmenu kort
 // en kan een kind het zonder te lezen gebruiken (verzoek van de eigenaar: "te groot").
 
-type Weergave = 'hoofd' | 'figuur' | 'achtergrond' | 'wisselen';
+type Weergave = 'hoofd' | 'figuur' | 'achtergrond';
 
 function maak<K extends keyof HTMLElementTagNameMap>(tag: K, klasse: string, ouder?: HTMLElement): HTMLElementTagNameMap[K] {
   const e = document.createElement(tag);
@@ -69,7 +71,7 @@ export function maakProfielMenu(manager: ScreenManager): { element: HTMLElement;
 
   // ---- Hoofdweergave ----
   const hoofd = maak('div', 'profiel-menu__weergave', paneel);
-  // Tik op je naam: naar het profielenscherm (net als Wisselen → Ander profiel).
+  // Tik op je naam: naar het profielenscherm.
   const kop = maak('button', 'profiel-menu__kop', hoofd);
   kop.setAttribute('aria-label', 'Ander profiel kiezen');
   kop.addEventListener('click', () => {
@@ -127,9 +129,19 @@ export function maakProfielMenu(manager: ScreenManager): { element: HTMLElement;
   }
   werkSchriftBij();
 
-  const groepIcoonPad = groepIcoon(haalGroep());
-  const wisselTegel = tegel('Wisselen', groepIcoonPad, () => toon('wisselen'));
-  wisselTegel.knop.classList.add('profiel-tegel--wissel');
+  // Groepen staan meteen in het menu (geen tussenmenu meer): de huidige is gemarkeerd, een
+  // tik gaat naar de onderwerpen van die groep. Ander profiel kies je via je naam bovenaan.
+  const huidigeGroep = haalGroep();
+  for (const groep of GROEPEN) {
+    const groepTegel = tegel(GROEP_NAAM[groep], groepIcoon(groep), () => {
+      zetGroep(groep);
+      sluitPaneel();
+      speelSchermOvergang();
+      manager.replace((m) => TopicSelectScreen(m, groep));
+    });
+    groepTegel.knop.classList.add('profiel-tegel--groep');
+    groepTegel.knop.classList.toggle('geselecteerd', groep === huidigeGroep);
+  }
 
   // ---- Submenu's: elk met een kopregel (terugpijl + titel) ----
   function submenu(titel: string): HTMLElement {
@@ -222,22 +234,7 @@ export function maakProfielMenu(manager: ScreenManager): { element: HTMLElement;
 
   winkelKnop(achtergrond);
 
-  const wisselen = submenu('Wisselen');
-  const wisselRij = maak('div', 'profiel-menu__keuzes', wisselen);
-  function groteKeuze(label: string, src: string, opKlik: () => void): void {
-    const k = maak('button', 'profiel-keuze', wisselRij);
-    plaatje(src, '', k);
-    k.append(label);
-    k.addEventListener('click', () => {
-      sluitPaneel();
-      speelSchermOvergang();
-      opKlik();
-    });
-  }
-  groteKeuze('Ander profiel', 'assets/icons/avatar-panda.svg', () => manager.replace((m) => ProfileSelectScreen(m)));
-  groteKeuze('Groep', groepIcoonPad, () => manager.replace((m) => GroepKiesScreen(m)));
-
-  const weergaven: Record<Weergave, HTMLElement> = { hoofd, figuur, achtergrond, wisselen };
+  const weergaven: Record<Weergave, HTMLElement> = { hoofd, figuur, achtergrond };
 
   function markeer(): void {
     for (const k of avatarKnoppen) k.classList.toggle('geselecteerd', k.dataset.icoon === icoonId());
