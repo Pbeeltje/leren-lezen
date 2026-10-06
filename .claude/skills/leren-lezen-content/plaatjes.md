@@ -31,6 +31,8 @@ nothing) — use flat colours.
   circle round the big toe.
 - `heet.svg`: red thermometer with heat waves (no longer a copy of `vuur.svg`).
 - `bloem` is a daisy; plurals are 2–3 copies of the singular.
+- `veer.svg`: Fluent "Feather" (copy in `icons/veer.svg`), with its darker band layer
+  removed because it showed as a hard square at large size.
 - Verify a picture reads as the intended word to a child; when it doesn't, change the
   word rather than fight the picture.
 - Check crops/drawings at real size, not only in a small contact sheet (a sliver of a

@@ -80,11 +80,6 @@ HAK = '''  <path d="M18 52 H78 C96 52 104 64 100 78 H28 Z" fill="#ec407a" stroke
   <path d="M78 78 L96 108 H108 L86 76 Z" fill="#ad1457" stroke="#880e4f" stroke-width="3"/>
   <ellipse cx="50" cy="50" rx="18" ry="8" fill="#f8bbd0"/>'''
 
-VEER = '''  <path d="M20 100 C28 40 70 10 104 16 C88 28 74 50 70 100 Z" fill="#90caf9" stroke="#1565c0" stroke-width="3" stroke-linejoin="round"/>
-  <path d="M70 100 C66 60 80 28 104 16" fill="none" stroke="#1565c0" stroke-width="3"/>
-  <g stroke="#e3f2fd" stroke-width="2" stroke-linecap="round">
-    <path d="M64 36 L48 28 M62 50 L42 44 M60 64 L40 62 M58 78 L44 80"/>
-  </g>'''
 
 KAST = '''  <rect x="18" y="14" width="84" height="96" rx="6" fill="#d7a86e" stroke="#6d4c41" stroke-width="3"/>
   <path d="M60 14 V110" stroke="#6d4c41" stroke-width="3"/>
@@ -200,6 +195,7 @@ def main() -> None:
     kopieer(WOORDEN / 'bloem.svg', 'tulp')
     schrijf('bloem', svg(DAISY, 'Een madeliefje'))
     kopieer(ICONS / 'kom.svg', 'kom')
+    kopieer(ICONS / 'veer.svg', 'veer')
     kopieer(ICONS / 'potlood.svg', 'potlood')
     kopieer(ICONS / 'avatar-fee.svg', 'fee')
     kopieer(ICONS / 'avatar-egel.svg', 'egel')
@@ -207,7 +203,7 @@ def main() -> None:
     eigen = {
         'mes': (MES, 'Een mes'), 'kok': (KOK, 'Een kok met koksmuts'), 'blok': (BLOK, 'Eén blok'),
         'dag': (DAG, 'Zon en een dag op de kalender'), 'dak': (DAK, 'Een huis met een dak'),
-        'hak': (HAK, 'Een schoen met hak'), 'veer': (VEER, 'Een veer'), 'kast': (KAST, 'Een kast'),
+        'hak': (HAK, 'Een schoen met hak'), 'kast': (KAST, 'Een kast'),
         'verf': (VERF, 'Een pot verf'), 'kwast': (KWAST, 'Een kwast'), 'molen': (MOLEN, 'Een molen'),
         'kegel': (KEGEL, 'Een kegel'), 'ketting': (KETTING, 'Een ketting'), 'kijk': (KIJK, 'Een oog dat kijkt'),
         'schaats': (SCHAATS, 'Een schaats'), 'schuim': (SCHUIM, 'Schuim met belletjes'),
