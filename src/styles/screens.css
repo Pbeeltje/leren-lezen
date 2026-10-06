@@ -99,14 +99,21 @@
   height: 48px;
   flex-shrink: 0;
   border-radius: 50%;
-  background: rgba(255, 255, 255, 0.9);
-  color: var(--kleur-tekst);
-  font-size: 1.8rem;
-  font-weight: 800;
-  box-shadow: 0 4px 0 rgba(0, 0, 0, 0.15);
+  /* Fel oranje met witte rand en slagschaduw: valt op tegen elke achtergrond. */
+  background: var(--kleur-primair);
+  border: 3px solid #fff;
+  color: #fff;
+  font-size: 2rem;
+  font-weight: 900;
+  box-shadow: 0 4px 0 var(--kleur-primair-donker), 0 4px 12px rgba(0, 0, 0, 0.35);
   line-height: 1;
 }
-.kern-paginas__pijl:disabled { opacity: 0.3; box-shadow: none; }
+.kern-paginas__pijl:disabled {
+  background: rgba(255, 255, 255, 0.85);
+  color: var(--kleur-tekst);
+  opacity: 0.35;
+  box-shadow: none;
+}
 .kern-paginas__pijl:active:not(:disabled) { transform: translateY(3px); }
 .kern-paginas__stippen {
   display: flex;
