@@ -4,7 +4,11 @@
 
 Reading chapters live in `content/lezen/kernen/lezen-hoofdstukken.ts`: 24
 chapters × 12 words (ids `lezen-01` … `lezen-24`). Difficulty order: CVC → long
-vowels → clusters → diphthongs → sch/eeuw → themed review → plurals → leftovers (23, 24). Each word
+vowels → clusters (incl. review chapter 10 *Laars en krant*) → diphthongs →
+sch/eeuw → themed review → plurals → leftovers. **The id is fixed (progress is
+keyed on it); the displayed number (`volgnummer`) is the position in the array.**
+So insert a new chapter where it belongs difficulty-wise, give it the next unused
+id (`lezen-24` sits at position 10), and never renumber ids. Each word
 sits in exactly one chapter; the toets is the whole bank (12). The list and
 picture/audio notes are in `C:\Claude\leren-lezen-hoofdstukken-plan.md`. New
 pictures: `bronbestanden/teken-lezen-nieuw.py` (plurals are 2–3 copies). The

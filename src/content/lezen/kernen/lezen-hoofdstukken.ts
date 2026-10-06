@@ -89,6 +89,9 @@ const kers = w('kers'), gras = w('gras'), kerk = w('kerk'), kraan = w('kraan'), 
 const arm = w('arm'), gans = w('gans'), krant = w('krant'), spons = w('spons'), laars = w('laars'), spook = w('spook');
 const sla = w('sla'), ski = w('ski'), baard = w('baard'), berg = w('berg'), mais = w('mais'), aan = w('aan', true);
 
+// Het eerste getal is de id (lezen-NN, daar hangt de voortgang aan) en verandert nooit.
+// Het nummer op het scherm (volgnummer) volgt de volgorde van deze lijst, zodat een
+// nieuw hoofdstuk op de juiste moeilijkheidsplek kan zonder dat sterren verschuiven.
 export const LEZEN_HOOFDSTUKKEN: Kern[] = [
   hoofdstuk(1, 'Kip en vis', ['m', 's', 'v', 'r', 'k', 'p', 'n', 't', 'i', 'o', 'e'],
     [vis, sok, pen, kip, vos, pet, pot, ik, en, kom, mes, kok], [
@@ -172,6 +175,21 @@ export const LEZEN_HOOFDSTUKKEN: Kern[] = [
       zin('Ik ga naar school op de ___.', fiets, slee, stoel),
       zin('De was is ___. Hij kan de kast in.', droog, bloem, broek),
       zin('In de sloot zwemt een ___.', eend, paard, bloem),
+    ]),
+  hoofdstuk(24, 'Laars en krant', [],
+    [laars, krant, gans, arm, spons, spook, sla, ski, baard, berg, mais, aan], [
+      zin('Het regent. Ik trek mijn ___ aan.', laars, krant, spook),
+      zin('Opa leest het nieuws in de ___.', krant, berg, sla),
+      zin('Op de boerderij snatert een grote ___.', gans, spons, baard),
+      zin('Ik til de tas op met mijn ___.', arm, ski, mais),
+      zin('Ik was de auto met een ___.', spons, gans, berg),
+      zin('Met een laken over je hoofd ben je een ___.', spook, laars, krant),
+      zin('Bij het eten krijg ik ___ met tomaat.', sla, arm, ski),
+      zin('Ik glij de besneeuwde berg af op een ___.', ski, spons, baard),
+      zin('Opa heeft een lange grijze ___.', baard, mais, laars),
+      zin('We klimmen helemaal naar de top van de ___.', berg, gans, spook),
+      zin('De kip pikt de gele korrels ___.', mais, arm, krant),
+      zin('Het is donker. Doe het licht maar ___.', aan, ski, sla),
     ]),
   hoofdstuk(10, 'Kikker en ladder', ['kk', 'dd', 'mm', 'pp', 'll'],
     [kikker, ladder, emmer, appel, trommel, puzzel, knuffel, wortel, varken, potlood, kalkoen, dobbelsteen], [
@@ -301,19 +319,4 @@ export const LEZEN_HOOFDSTUKKEN: Kern[] = [
       zin('Achter het huis ligt een ___.', tuin, kerk, trui),
       zin('De ___ huilt in het bos.', wolf, uil, zwaan),
     ]),
-  hoofdstuk(24, 'Laars en krant', [],
-    [laars, krant, gans, arm, spons, spook, sla, ski, baard, berg, mais, aan], [
-      zin('Het regent. Ik trek mijn ___ aan.', laars, krant, spook),
-      zin('Opa leest het nieuws in de ___.', krant, berg, sla),
-      zin('Op de boerderij snatert een grote ___.', gans, spons, baard),
-      zin('Ik til de tas op met mijn ___.', arm, ski, mais),
-      zin('Ik was de auto met een ___.', spons, gans, berg),
-      zin('Met een laken over je hoofd ben je een ___.', spook, laars, krant),
-      zin('Bij het eten krijg ik ___ met tomaat.', sla, arm, ski),
-      zin('Ik glij de besneeuwde berg af op een ___.', ski, spons, baard),
-      zin('Opa heeft een lange grijze ___.', baard, mais, laars),
-      zin('We klimmen helemaal naar de top van de ___.', berg, gans, spook),
-      zin('De kip pikt de gele korrels ___.', mais, arm, krant),
-      zin('Het is donker. Doe het licht maar ___.', aan, ski, sla),
-    ]),
-];
+].map((kern, i) => ({ ...kern, volgnummer: i + 1 }));
