@@ -103,7 +103,8 @@ next group doesn't wait. −1 heart; three wrong = end. Record per profile
   waiting animal's box plus a margin; overlaps go to the nearest centre. One chord
   (do-mi, + sol for three) when the tray appears.
 - Pictures in `public/assets/voeren/` (Fluent dog, bone, meat, peanut, worm,
-  sauropod, butterfly, chipmunk `eekhoorn`; own `zeewier.svg`, `bamboe.svg`, and
+  sauropod, butterfly, chipmunk `eekhoorn`; own `zeewier.svg`, `bamboe.svg`, `lam.svg` (newborn lamb; `woorden/lam.svg` is a
+  copy of the sheep), and
   `zeeschildpad.svg` = the Fluent turtle with its legs swapped for own flippers). Dragging shows a big white hand cursor
   (`.voer-sleept`) and a fading trail.
 - Check: `node tests/voeren.mjs <map> [kleuter]`; forced groups via dev hook
