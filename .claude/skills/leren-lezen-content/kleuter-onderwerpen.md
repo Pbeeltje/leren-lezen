@@ -15,10 +15,10 @@ word there too. A word in a list that isn't in a reading bank (or is
 `vereistTekst`, e.g. `hagel`) silently never appears, unless it is in
 `ALLEEN_LUISTEREN` (same file): listen-only words that are too irregular to read
 (parachute, skateboard, shampoo, diplodocus, tyrannosaurus, octopus, politieauto,
-scooter, ufo, frisbee, pinguin). Those join the pool with picture
+scooter, ufo, frisbee, pinguin, saxofoon, accordeon, banjo, xylofoon, microfoon). Those join the pool with picture
 `woorden/<woord>.svg` once recorded. Chapters: Boerderij, Dierentuin, Nog meer
 dieren, Eten, Mijn lijf, Kleren & spullen, Buiten, Speelgoed, Vervoer, Gereedschap,
-Dino's & draken (`dinos`).
+Muziek, Dino's & draken (`dinos`).
 
 **Luister & wijs** (`LuisterenScreen.ts`, `games/luisterKiezen.ts`): hear a word,
 tap the matching picture from 3. Rounds of 5 (`RONDE_LENGTE`) with a

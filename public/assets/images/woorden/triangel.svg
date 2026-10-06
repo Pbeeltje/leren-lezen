@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120">
+  <!-- Een triangel, zelf getekend voor leren-lezen. -->
+  <path d="M60 8 L60 22" stroke="#e53935" stroke-width="3" stroke-linecap="round"/>
+  <path d="M42 104 L16 104 L60 24 L104 104 L52 104" fill="none" stroke="#90a4ae" stroke-width="8" stroke-linejoin="round" stroke-linecap="round"/>
+  <path d="M42 104 L16 104 L60 24 L104 104 L52 104" fill="none" stroke="#eceff1" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/>
+  <path d="M84 36 L112 18" stroke="#78909c" stroke-width="5" stroke-linecap="round"/>
+  <g stroke="#ffb300" stroke-width="2.5" stroke-linecap="round" fill="none">
+    <path d="M14 44 C8 50 8 60 14 66"/><path d="M9 38 C3 48 3 62 9 72"/>
+  </g>
+</svg>

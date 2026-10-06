@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120">
+  <!-- Een drumstel, zelf getekend voor leren-lezen. -->
+  <g stroke-linecap="round">
+    <path d="M18 44 L18 104 M8 104 L28 104" stroke="#78909c" stroke-width="3"/>
+    <path d="M102 40 L102 104 M92 104 L112 104" stroke="#78909c" stroke-width="3"/>
+  </g>
+  <ellipse cx="18" cy="42" rx="17" ry="4" fill="#ffca28" stroke="#f57f17" stroke-width="2"/>
+  <ellipse cx="102" cy="38" rx="17" ry="4" fill="#ffca28" stroke="#f57f17" stroke-width="2"/>
+  <rect x="30" y="34" width="24" height="18" rx="3" fill="#1e88e5" stroke="#0d47a1" stroke-width="2.5"/>
+  <rect x="66" y="34" width="24" height="18" rx="3" fill="#1e88e5" stroke="#0d47a1" stroke-width="2.5"/>
+  <circle cx="60" cy="80" r="30" fill="#1e88e5" stroke="#0d47a1" stroke-width="3"/>
+  <circle cx="60" cy="80" r="22" fill="#e3f2fd" stroke="#90caf9" stroke-width="2.5"/>
+  <circle cx="60" cy="80" r="6" fill="#90caf9"/>
+  <rect x="80" y="92" width="26" height="14" rx="3" fill="#1e88e5" stroke="#0d47a1" stroke-width="2.5"/>
+  <path d="M84 92 L84 106 M102 92 L102 106" stroke="#bbdefb" stroke-width="2"/>
+</svg>

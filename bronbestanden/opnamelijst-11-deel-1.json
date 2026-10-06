@@ -1,0 +1,104 @@
+[
+ {
+  "n": 1,
+  "slug": "triangel",
+  "text": "triangel",
+  "path": "public/assets/audio/woorden/triangel.mp3"
+ },
+ {
+  "n": 2,
+  "slug": "fluit",
+  "text": "fluit",
+  "path": "public/assets/audio/woorden/fluit.mp3"
+ },
+ {
+  "n": 3,
+  "slug": "viool",
+  "text": "viool",
+  "path": "public/assets/audio/woorden/viool.mp3"
+ },
+ {
+  "n": 4,
+  "slug": "harp",
+  "text": "harp",
+  "path": "public/assets/audio/woorden/harp.mp3"
+ },
+ {
+  "n": 5,
+  "slug": "sambaballen",
+  "text": "sambaballen",
+  "path": "public/assets/audio/woorden/sambaballen.mp3"
+ },
+ {
+  "n": 6,
+  "slug": "koptelefoon",
+  "text": "koptelefoon",
+  "path": "public/assets/audio/woorden/koptelefoon.mp3"
+ },
+ {
+  "n": 7,
+  "slug": "tamboerijn",
+  "text": "tamboerijn",
+  "path": "public/assets/audio/woorden/tamboerijn.mp3"
+ },
+ {
+  "n": 8,
+  "slug": "hoorn",
+  "text": "hoorn",
+  "path": "public/assets/audio/woorden/hoorn.mp3"
+ },
+ {
+  "n": 9,
+  "slug": "luidspreker",
+  "text": "luidspreker",
+  "path": "public/assets/audio/woorden/luidspreker.mp3"
+ },
+ {
+  "n": 10,
+  "slug": "drumstel",
+  "text": "drumstel",
+  "path": "public/assets/audio/woorden/drumstel.mp3"
+ },
+ {
+  "n": 11,
+  "slug": "gong",
+  "text": "gong",
+  "path": "public/assets/audio/woorden/gong.mp3"
+ },
+ {
+  "n": 12,
+  "slug": "megafoon",
+  "text": "megafoon",
+  "path": "public/assets/audio/woorden/megafoon.mp3"
+ },
+ {
+  "n": 13,
+  "slug": "saxofoon",
+  "text": "saxofoon",
+  "path": "public/assets/audio/woorden/saxofoon.mp3"
+ },
+ {
+  "n": 14,
+  "slug": "accordeon",
+  "text": "accordeon",
+  "path": "public/assets/audio/woorden/accordeon.mp3"
+ },
+ {
+  "n": 15,
+  "slug": "banjo",
+  "text": "banjo",
+  "path": "public/assets/audio/woorden/banjo.mp3"
+ },
+ {
+  "n": 16,
+  "slug": "xylofoon",
+  "text": "xylofoon",
+  "path": "public/assets/audio/woorden/xylofoon.mp3"
+ },
+ {
+  "n": 17,
+  "slug": "microfoon",
+  "text": "microfoon",
+  "path": "public/assets/audio/woorden/microfoon.mp3"
+ }
+]

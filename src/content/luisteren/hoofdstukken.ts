@@ -18,6 +18,7 @@ export interface LuisterHoofdstuk {
 export const ALLEEN_LUISTEREN: string[] = [
   'parachute', 'skateboard', 'shampoo', 'diplodocus', 'tyrannosaurus', 'octopus',
   'politieauto', 'scooter', 'ufo', 'frisbee', 'pinguin',
+  'saxofoon', 'accordeon', 'banjo', 'xylofoon', 'microfoon',
 ];
 
 export const LUISTER_HOOFDSTUKKEN: LuisterHoofdstuk[] = [
@@ -91,6 +92,12 @@ export const LUISTER_HOOFDSTUKKEN: LuisterHoofdstuk[] = [
     titel: 'Gereedschap',
     icoonWoord: 'hamer',
     woorden: ['hamer', 'spijker', 'zaag', 'schroevendraaier', 'moersleutel', 'tang', 'schaar', 'plakband', 'kwast', 'verf', 'ladder', 'emmer', 'pan', 'bijl', 'touw', 'haak', 'zaklamp', 'liniaal', 'batterij', 'gereedschapskist', 'potlood', 'magneet'],
+  },
+  {
+    id: 'muziek',
+    titel: 'Muziek',
+    icoonWoord: 'gitaar',
+    woorden: ['gitaar', 'piano', 'trommel', 'trompet', 'triangel', 'fluit', 'viool', 'harp', 'xylofoon', 'saxofoon', 'accordeon', 'banjo', 'sambaballen', 'tamboerijn', 'hoorn', 'drumstel', 'gong', 'bel', 'microfoon', 'koptelefoon', 'luidspreker', 'megafoon', 'radio'],
   },
   {
     id: 'dinos',

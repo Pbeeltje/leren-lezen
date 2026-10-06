@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120">
+  <!-- Een gong, zelf getekend voor leren-lezen. -->
+  <path d="M14 112 L22 14 M106 112 L98 14 M16 18 L104 18" stroke="#8d6e63" stroke-width="7" stroke-linecap="round"/>
+  <path d="M46 18 L48 30 M74 18 L72 30" stroke="#5d4037" stroke-width="2.5"/>
+  <circle cx="60" cy="64" r="36" fill="#ffb300" stroke="#e65100" stroke-width="3"/>
+  <circle cx="60" cy="64" r="26" fill="none" stroke="#ffe082" stroke-width="3"/>
+  <circle cx="60" cy="64" r="11" fill="#ffca28" stroke="#ef6c00" stroke-width="2.5"/>
+  <path d="M44 48 C48 44 54 42 58 42" fill="none" stroke="#fff8e1" stroke-width="3" stroke-linecap="round"/>
+</svg>

@@ -6,6 +6,7 @@
 - borstel: een haarborstel
 - stegosaurus: groene dino met platen op de rug en stekels aan de staart
 - spijker, plakband (rolletje in houder), pan (koekenpan), tang
+- triangel, tamboerijn, drumstel, gong
 """
 from pathlib import Path
 
@@ -124,7 +125,62 @@ def tang() -> str:
   <circle cx="60" cy="50" r="7" fill="#cfd8dc" stroke="#455a64" stroke-width="3"/>'''
 
 
+def triangel() -> str:
+    # Driehoek met een opening linksonder, aan een touwtje, met een stokje ernaast.
+    return '''  <path d="M60 8 L60 22" stroke="#e53935" stroke-width="3" stroke-linecap="round"/>
+  <path d="M42 104 L16 104 L60 24 L104 104 L52 104" fill="none" stroke="#90a4ae" stroke-width="8" stroke-linejoin="round" stroke-linecap="round"/>
+  <path d="M42 104 L16 104 L60 24 L104 104 L52 104" fill="none" stroke="#eceff1" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/>
+  <path d="M84 36 L112 18" stroke="#78909c" stroke-width="5" stroke-linecap="round"/>
+  <g stroke="#ffb300" stroke-width="2.5" stroke-linecap="round" fill="none">
+    <path d="M14 44 C8 50 8 60 14 66"/><path d="M9 38 C3 48 3 62 9 72"/>
+  </g>'''
+
+
+def tamboerijn() -> str:
+    # Houten ring met vel en belletjes (koperen schijfjes) rondom.
+    import math
+    schijfjes = '\n'.join(
+        f'    <ellipse cx="{60 + 47 * math.cos(math.radians(a)):.1f}" cy="{60 + 47 * math.sin(math.radians(a)):.1f}" rx="8" ry="5" transform="rotate({a + 90} {60 + 47 * math.cos(math.radians(a)):.1f} {60 + 47 * math.sin(math.radians(a)):.1f})"/>'
+        for a in range(0, 360, 60)
+    )
+    return f'''  <circle cx="60" cy="60" r="50" fill="#d7a86e" stroke="#8d6e63" stroke-width="3"/>
+  <circle cx="60" cy="60" r="40" fill="#fff3e0" stroke="#bcaaa4" stroke-width="2.5"/>
+  <circle cx="60" cy="60" r="18" fill="none" stroke="#ef9a9a" stroke-width="4"/>
+  <g fill="#ffca28" stroke="#f57f17" stroke-width="2">
+{schijfjes}
+  </g>'''
+
+
+def drumstel() -> str:
+    return '''  <g stroke-linecap="round">
+    <path d="M18 44 L18 104 M8 104 L28 104" stroke="#78909c" stroke-width="3"/>
+    <path d="M102 40 L102 104 M92 104 L112 104" stroke="#78909c" stroke-width="3"/>
+  </g>
+  <ellipse cx="18" cy="42" rx="17" ry="4" fill="#ffca28" stroke="#f57f17" stroke-width="2"/>
+  <ellipse cx="102" cy="38" rx="17" ry="4" fill="#ffca28" stroke="#f57f17" stroke-width="2"/>
+  <rect x="30" y="34" width="24" height="18" rx="3" fill="#1e88e5" stroke="#0d47a1" stroke-width="2.5"/>
+  <rect x="66" y="34" width="24" height="18" rx="3" fill="#1e88e5" stroke="#0d47a1" stroke-width="2.5"/>
+  <circle cx="60" cy="80" r="30" fill="#1e88e5" stroke="#0d47a1" stroke-width="3"/>
+  <circle cx="60" cy="80" r="22" fill="#e3f2fd" stroke="#90caf9" stroke-width="2.5"/>
+  <circle cx="60" cy="80" r="6" fill="#90caf9"/>
+  <rect x="80" y="92" width="26" height="14" rx="3" fill="#1e88e5" stroke="#0d47a1" stroke-width="2.5"/>
+  <path d="M84 92 L84 106 M102 92 L102 106" stroke="#bbdefb" stroke-width="2"/>'''
+
+
+def gong() -> str:
+    return '''  <path d="M14 112 L22 14 M106 112 L98 14 M16 18 L104 18" stroke="#8d6e63" stroke-width="7" stroke-linecap="round"/>
+  <path d="M46 18 L48 30 M74 18 L72 30" stroke="#5d4037" stroke-width="2.5"/>
+  <circle cx="60" cy="64" r="36" fill="#ffb300" stroke="#e65100" stroke-width="3"/>
+  <circle cx="60" cy="64" r="26" fill="none" stroke="#ffe082" stroke-width="3"/>
+  <circle cx="60" cy="64" r="11" fill="#ffca28" stroke="#ef6c00" stroke-width="2.5"/>
+  <path d="M44 48 C48 44 54 42 58 42" fill="none" stroke="#fff8e1" stroke-width="3" stroke-linecap="round"/>'''
+
+
 def main() -> None:
+    schrijf('triangel', svg(triangel(), 'Een triangel'))
+    schrijf('tamboerijn', svg(tamboerijn(), 'Een tamboerijn'))
+    schrijf('drumstel', svg(drumstel(), 'Een drumstel'))
+    schrijf('gong', svg(gong(), 'Een gong'))
     schrijf('spijker', svg(spijker(), 'Een spijker'))
     schrijf('plakband', svg(plakband(), 'Een rol plakband in een houder'))
     schrijf('pan', svg(pan(), 'Een koekenpan'))

@@ -93,6 +93,8 @@ const vleermuis = w('vleermuis'), walvis = w('walvis'), mammoet = w('mammoet'), 
 const parasol = w('parasol'), borstel = w('borstel'), kam = w('kam'), onderbroek = w('onderbroek'), zeilboot = w('zeilboot'), kano = w('kano');
 const spijker = w('spijker'), schroevendraaier = w('schroevendraaier'), plakband = w('plakband'), pan = w('pan'), zaag = w('zaag'), moersleutel = w('moersleutel');
 const haak = w('haak'), zaklamp = w('zaklamp'), liniaal = w('liniaal'), batterij = w('batterij'), gereedschapskist = w('gereedschapskist'), tang = w('tang');
+const triangel = w('triangel'), fluit = w('fluit'), viool = w('viool'), harp = w('harp'), sambaballen = w('sambaballen'), koptelefoon = w('koptelefoon');
+const tamboerijn = w('tamboerijn'), hoorn = w('hoorn'), luidspreker = w('luidspreker'), drumstel = w('drumstel'), gong = w('gong'), megafoon = w('megafoon');
 const glijbaan = w('glijbaan'), toverstaf = w('toverstaf'), jojo = w('jojo'), kabelbaan = w('kabelbaan'), trompet = w('trompet'), magneet = w('magneet');
 
 // Het eerste getal is de id (lezen-NN, daar hangt de voortgang aan) en verandert nooit.
@@ -339,6 +341,17 @@ export const LEZEN_HOOFDSTUKKEN: Kern[] = [
       zin('Met de ___ trek ik een rechte streep.', liniaal, haak, pan),
       zin('De auto van speelgoed rijdt niet. De ___ is leeg.', batterij, tang, zaklamp),
       zin('Alle hamers en zagen gaan in de ___.', gereedschapskist, plakband, liniaal),
+    ]),
+  hoofdstuk(28, 'Viool en fluit', [],
+    [triangel, fluit, viool, harp, sambaballen, koptelefoon, tamboerijn, hoorn, luidspreker, drumstel, gong, megafoon], [
+      zin('Ik tik met een stokje op de ___. Ting!', triangel, harp, koptelefoon),
+      zin('Ik blaas op mijn ___.', fluit, drumstel, viool),
+      zin('Met een strijkstok speel ik ___.', viool, gong, sambaballen),
+      zin('Ik schud met de ___. Ritsel ritsel!', sambaballen, hoorn, luidspreker),
+      zin('Met mijn ___ op hoor ik de muziek heel zacht.', koptelefoon, tamboerijn, megafoon),
+      zin('De ___ heeft heel veel snaren.', harp, fluit, gong),
+      zin('Ik sla met twee stokken op het ___.', drumstel, viool, triangel),
+      zin('De juf roept door de ___: iedereen naar binnen!', megafoon, harp, sambaballen),
     ]),
   hoofdstuk(22, 'Een of meer', ['en'],
     [bomen, jassen, schoenen, blokken, sokken, boeken, katten, kippen, ballen, huizen, apen, benen], [

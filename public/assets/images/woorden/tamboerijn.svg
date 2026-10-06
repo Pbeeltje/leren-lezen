@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120">
+  <!-- Een tamboerijn, zelf getekend voor leren-lezen. -->
+  <circle cx="60" cy="60" r="50" fill="#d7a86e" stroke="#8d6e63" stroke-width="3"/>
+  <circle cx="60" cy="60" r="40" fill="#fff3e0" stroke="#bcaaa4" stroke-width="2.5"/>
+  <circle cx="60" cy="60" r="18" fill="none" stroke="#ef9a9a" stroke-width="4"/>
+  <g fill="#ffca28" stroke="#f57f17" stroke-width="2">
+    <ellipse cx="107.0" cy="60.0" rx="8" ry="5" transform="rotate(90 107.0 60.0)"/>
+    <ellipse cx="83.5" cy="100.7" rx="8" ry="5" transform="rotate(150 83.5 100.7)"/>
+    <ellipse cx="36.5" cy="100.7" rx="8" ry="5" transform="rotate(210 36.5 100.7)"/>
+    <ellipse cx="13.0" cy="60.0" rx="8" ry="5" transform="rotate(270 13.0 60.0)"/>
+    <ellipse cx="36.5" cy="19.3" rx="8" ry="5" transform="rotate(330 36.5 19.3)"/>
+    <ellipse cx="83.5" cy="19.3" rx="8" ry="5" transform="rotate(390 83.5 19.3)"/>
+  </g>
+</svg>
