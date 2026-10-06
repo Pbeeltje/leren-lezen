@@ -23,15 +23,9 @@ relaunching, or you'll hit `EADDRINUSE`.
 
 ## Driving it in a browser (no chromium-cli here)
 
-This environment does not have `chromium-cli` installed. Instead:
-
-```bash
-mkdir -p <scratchpad>/playwright-test && cd <scratchpad>/playwright-test
-npm init -y && npm install playwright
-npx playwright install chromium --with-deps   # one-time, ~120MB download
-```
-
-Then write a `.mjs` driver script and run it with plain `node`, e.g.:
+This environment does not have `chromium-cli` installed. Playwright is a devDependency of
+the repo, so put driver scripts in `tests/_tmp/` (a script in the scratchpad fails with
+`Cannot find package 'playwright'`). Write a `.mjs` driver script and run it with plain `node`, e.g.:
 
 ```js
 import { chromium } from 'playwright';
@@ -101,7 +95,9 @@ It is served from the `/leren-lezen/` subfolder, so:
 - `vite.config.ts` uses `base: './'`;
 - **every asset path in code must be relative**: `'assets/images/...'`, never
   `'/assets/...'`. A leading slash works in `npm run dev` but breaks on Pages.
-  Check with `grep -rnE "[\"'\`]/assets/" src` (it should return nothing).
+  Check with `grep -rnE "[\"'\`]/assets/" src --include=*.ts` (it should return nothing).
+  **CSS is the exception:** in `url()` a file from `public/` must be `/assets/...` (Vite
+  rewrites it for the base); a relative url ends up as `dist/assets/assets/...`.
 - Source media (worksheets, raw `.m4a` recordings) are git-ignored in `bronbestanden/`
   and were removed from history on purpose; never commit them (the repo is public).
 To test the subfolder setup locally: copy `dist/` to `<tmp>/leren-lezen/`, run

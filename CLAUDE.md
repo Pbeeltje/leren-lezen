@@ -32,7 +32,15 @@ Dutch learning app for the owner's children (kleuterschool and groep 3): reading
   - Profiles are put in localStorage first.
   - `formaten.mjs` is the layout sweep over 24 phone and tablet sizes.
   - `android.mjs` tests the APK on the emulator.
+  - Throwaway scripts go in `tests/_tmp/`, never the scratchpad: `playwright` only resolves inside the repo.
+  - For animated scenes use `page.screenshot({ clip })`. `locator.screenshot` waits for stillness and times out.
+  - Screenshots at `deviceScaleFactor: 1` and clipped to what you check: every image stays in context.
 - **Android build:** see `C:\claude\leren-lezen-preview\README.md`.
   - Tools are portable in `C:\claude\tools`.
   - The upload key is in `C:\claude\leren-lezen-sleutels` (outside git, never commit it).
 - **iPhone build:** the GitHub Actions workflow `iOS-prototype`; see `C:\claude\leren-lezen-iphone-plan.md`.
+
+## Known pitfalls
+
+- **Asset paths:** in TS write `assets/...` (no leading slash). In CSS `url()`, a file from `public/` needs `/assets/...`; a relative one points at `dist/assets/assets/` after the build (harp frame, 2 Oct).
+- **Multi-line edits:** use Edit/Write. Long `python - <<'EOF'` heredocs in Bash failed on quoting six times.

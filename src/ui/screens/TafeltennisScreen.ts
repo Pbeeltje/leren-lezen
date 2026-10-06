@@ -170,10 +170,13 @@ export function TafeltennisScreen(manager: ScreenManager): Screen {
     const boven = 104;
     tegenLijn = boven + figuurMaat * 0.85;
     spelerLijn = h - 8 - figuurMaat * 0.85;
-    B = Math.min(w - 24, Math.max(300, (spelerLijn - tegenLijn) * 0.8), 640);
+    const lengte = spelerLijn - tegenLijn;
+    // Liggend (iPad) is de rally korter dan het scherm breed is. De tafel volgt dan de
+    // breedte, anders blijft hij een smalle strook. Staand blijft hij hoog en smal.
+    B = w > h ? Math.max(300, w - 48) : Math.min(w - 24, Math.max(300, lengte * 0.8), 640);
     x0 = (w - B) / 2;
-    batBreedte = Math.round(Math.min(150, Math.max(78, B * 0.24)));
-    straal = Math.round(Math.min(18, Math.max(11, B * 0.032)));
+    batBreedte = Math.round(Math.max(78, B * 0.24));
+    straal = Math.round(Math.min(32, Math.max(11, B * 0.032)));
     tafel.style.left = `${x0}px`;
     tafel.style.top = `${tegenLijn - 14}px`;
     tafel.style.width = `${B}px`;

@@ -9,12 +9,15 @@ import { huidigThema, type ThemaId } from '../../achtergrond/achtergrond.ts';
 // Vangspel: je eigen figuurtje staat onderaan en schuift mee met je vinger (of de
 // pijltjestoetsen). Een tik op het scherm (of spatie / pijl omhoog) geeft een klein
 // sprongetje, zodat je net iets hoger kunt vangen. Vang het lekkers dat naar beneden
-// valt, ontwijk de meteoren. Drie
-// hartjes; elke meteoor kost er één. Het wordt langzaam moeilijker: alles valt sneller en
-// vaker, er komen meer meteoren en die worden ook steeds groter. Na 40 seconden valt er
-// één grote vijand (te ontwijken) en daarna een grote ster. Vang je de ster of valt hij
-// van het scherm, dan is het spel af. Eindig je met alle drie de hartjes, dan +10.
-// Missen van lekkers kost niets. Geen munten: munten verdien je met leren. Wel een record per profiel.
+// valt, ontwijk de meteoren. Drie hartjes; elke meteoor kost er één, de grote vijand
+// aan het eind meteen alle. Hartjes gaan nooit onder nul. Vangen op rij levert steeds
+// één punt meer op (1, daarna 2, 3, …); een klap of een gemist lekker ding zet die
+// reeks terug. Een gewone ster blijft 5. Het wordt langzaam moeilijker: alles valt
+// sneller en vaker, er komen meer meteoren en die worden ook steeds groter. Na 40
+// seconden valt er één grote vijand (te ontwijken) en daarna een grote ster van 10
+// punten. Vang je de ster of valt hij van het scherm, dan is het spel af. Eindig je
+// met alle drie de hartjes, dan +10. Missen van lekkers kost geen hartje. Geen munten:
+// munten verdien je met leren. Wel een record per profiel.
 
 // Wat er valt hangt af van de gekozen achtergrond: goede dingen om te vangen en één ding
 // om te ontwijken. Dat gevaar is rood gekleurd (behalve de meteoor, die is al gevaarlijk
@@ -54,6 +57,7 @@ const HART = 'assets/icons/bewaar.svg';
 const LEVENS = 3;
 const EINDE_NA = 40; // seconden, daarna de grote vijand
 const HEEL_BONUS = 10;
+const EIND_STER = 10;
 
 interface Ding {
   el: HTMLImageElement;
@@ -98,9 +102,12 @@ export function VangScreen(manager: ScreenManager): Screen {
   const scoreEl = document.createElement('div');
   scoreEl.className = 'vang-score';
   scoreEl.innerHTML = `<img src="${STER}" alt=""><span>0</span>`;
+  const reeksEl = document.createElement('div');
+  reeksEl.className = 'vang-reeks';
+  reeksEl.hidden = true;
   const hartjes = document.createElement('div');
   hartjes.className = 'vang-hartjes';
-  balk.append(scoreEl, hartjes);
+  balk.append(scoreEl, reeksEl, hartjes);
   el.appendChild(balk);
 
   // Liggende telefoon: te weinig hoogte om de dingen op tijd te zien vallen. Dan vraagt een
@@ -138,6 +145,7 @@ export function VangScreen(manager: ScreenManager): Screen {
   let geraakt = 0; // tot wanneer de speler knippert (onkwetsbaar)
   let gevaarGezien = false; // binnen 2 s valt er altijd een gevaar, zodat je ziet wat je moet ontwijken
   let noot = 0;
+  let reeks = 0;
   let fase: 'spel' | 'vijand' | 'ster' | 'uit' = 'spel';
   let heelGebleven = false;
   // Gezet tijdens de filter-stap; afhandelen pas erna, anders valt het nieuwe stuk
@@ -173,6 +181,16 @@ export function VangScreen(manager: ScreenManager): Screen {
   function zetScore(n: number): void {
     score = n;
     scoreEl.querySelector('span')!.textContent = String(score);
+  }
+
+  function tekenReeks(): void {
+    reeksEl.hidden = reeks < 1;
+    reeksEl.textContent = `×${reeks}`;
+    reeksEl.classList.toggle('vang-reeks--hoog', reeks >= 5);
+    if (reeks < 1) return;
+    reeksEl.classList.remove('vang-reeks--pop');
+    void reeksEl.offsetWidth;
+    reeksEl.classList.add('vang-reeks--pop');
   }
 
   function plaatsSpeler(): void {
@@ -256,8 +274,13 @@ export function VangScreen(manager: ScreenManager): Screen {
   function vang(d: Ding): void {
     d.el.remove();
     if (d.soort === 'gevaar') {
-      if (tijd >= geraakt) {
-        levens--;
+      if (levens <= 0) return;
+      // Grote vijand negeert de korte onkwetsbaarheid na een gewone klap.
+      const instant = d.slot === 'vijand';
+      if (instant || tijd >= geraakt) {
+        levens = instant ? 0 : levens - 1;
+        reeks = 0;
+        tekenReeks();
         geraakt = tijd + 1.2;
         speelDrum('bas');
         speelDrum('bekken', 0.05);
@@ -266,16 +289,18 @@ export function VangScreen(manager: ScreenManager): Screen {
         speler.classList.add('vang-speler--au');
         tekenHartjes();
       }
-      if (d.slot === 'vijand' && levens > 0) hierna = 'ster';
       if (levens <= 0) klaar();
       return;
     }
-    zetScore(score + (d.soort === 'ster' ? 5 : 1));
+    reeks++;
+    const punten = d.slot === 'ster' ? EIND_STER : d.soort === 'ster' ? 5 : reeks;
+    zetScore(score + punten);
+    tekenReeks();
     // Toonladder omhoog bij elke vangst, en weer opnieuw na de hoge do.
     speelNoot(TONEN[noot % TONEN.length]);
     if (d.soort === 'ster') speelNoot(TONEN[7], 0.08);
     noot++;
-    toonPlop(d.x, d.y, d.soort === 'ster' ? '+5' : '+1');
+    toonPlop(d.x, d.y, `+${punten}`);
     if (d.slot === 'ster') hierna = 'einde';
   }
 
@@ -399,6 +424,10 @@ export function VangScreen(manager: ScreenManager): Screen {
       }
       if (d.y - dm / 2 > hoogte()) {
         d.el.remove();
+        if (d.soort !== 'gevaar' && reeks !== 0) {
+          reeks = 0;
+          tekenReeks();
+        }
         if (d.slot === 'vijand') hierna = 'ster';
         else if (d.slot === 'ster') hierna = 'einde';
         return false;
@@ -423,6 +452,8 @@ export function VangScreen(manager: ScreenManager): Screen {
     geraakt = 0;
     gevaarGezien = false;
     noot = 0;
+    reeks = 0;
+    tekenReeks();
     fase = 'spel';
     heelGebleven = false;
     hierna = null;
@@ -489,6 +520,8 @@ export function VangScreen(manager: ScreenManager): Screen {
     if (fase === 'uit') return;
     fase = 'uit';
     bezig = false;
+    reeks = 0;
+    tekenReeks();
     cancelAnimationFrame(frame);
     window.setTimeout(() => {
       for (const d of dingen) d.el.remove();

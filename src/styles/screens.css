@@ -2655,7 +2655,7 @@
   align-items: center;
   pointer-events: none;
 }
-.vang-score, .vang-hartjes {
+.vang-score, .vang-hartjes, .vang-reeks {
   display: flex;
   align-items: center;
   gap: 6px;
@@ -2663,6 +2663,20 @@
   border-radius: 999px;
   padding: 6px 14px;
   box-shadow: 0 3px 0 rgba(0, 0, 0, 0.18);
+}
+.vang-reeks {
+  padding: 6px 12px;
+  font-size: 1.45rem;
+  font-weight: 800;
+  color: #e25a00;
+  font-variant-numeric: tabular-nums;
+}
+.vang-reeks[hidden] { display: none; }
+.vang-reeks--hoog { color: #c41212; background: #ffe08a; }
+.vang-reeks--pop { animation: vang-reeks 0.28s ease; }
+@keyframes vang-reeks {
+  from { transform: scale(1.4); }
+  to { transform: scale(1); }
 }
 .vang-score img { width: 34px; height: 34px; }
 .vang-score span { font-size: 1.6rem; font-weight: 800; min-width: 1.4em; text-align: center; }
@@ -2783,7 +2797,8 @@
 }
 @media (max-width: 420px) {
   .vang-balk { gap: 8px; }
-  .vang-score, .vang-hartjes { padding: 5px 10px; }
+  .vang-score, .vang-hartjes, .vang-reeks { padding: 5px 10px; }
+  .vang-reeks { font-size: 1.2rem; }
   .vang-hartjes img { width: 24px; height: 24px; }
 }
 @media (orientation: landscape) and (max-height: 500px) {
