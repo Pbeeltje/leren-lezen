@@ -1,6 +1,6 @@
 Master-opnamelijst (gegenereerd, niet met de hand wijzigen).
 Herbouw: node bronbestanden/maak-opnamelijst-master.mjs
-Delen: opnamelijst-2-deel-1, opnamelijst-2-deel-2, opnamelijst-2-deel-3, opnamelijst-3-deel-1, opnamelijst-4-deel-1, opnamelijst-5-deel-1, opnamelijst-5-deel-2, opnamelijst-6-deel-1, opnamelijst-7-deel-1, opnamelijst-7-deel-2.
+Delen: opnamelijst-2-deel-1, opnamelijst-2-deel-2, opnamelijst-2-deel-3, opnamelijst-3-deel-1, opnamelijst-4-deel-1, opnamelijst-5-deel-1, opnamelijst-5-deel-2, opnamelijst-6-deel-1, opnamelijst-7-deel-1, opnamelijst-7-deel-2, opnamelijst-8-deel-1, opnamelijst-9-deel-1.
 
 --- lijst 2 deel 1 (63 regels) ---
 1. ik
@@ -381,3 +381,47 @@ Delen: opnamelijst-2-deel-1, opnamelijst-2-deel-2, opnamelijst-2-deel-3, opnamel
 358. wolven
 359. rozen
 360. muizen
+
+--- lijst 8 deel 1 (5 regels) ---
+361. Hoeveel is de som?
+362. Welk getal hoort bij welke som?
+363. Typ het antwoord
+364. Hoeveel geld is dit?
+365. Hoeveel geld is dit? Typ het in
+
+--- lijst 9 deel 1 (35 regels) ---
+366. hagedis
+367. stegosaurus
+368. eenhoorn
+369. kreeft
+370. vlinder
+371. eekhoorn
+372. vleermuis
+373. walvis
+374. mammoet
+375. draak
+376. rups
+377. kwal
+378. parasol
+379. borstel
+380. kam
+381. onderbroek
+382. zeilboot
+383. kano
+384. glijbaan
+385. toverstaf
+386. jojo
+387. kabelbaan
+388. trompet
+389. magneet
+390. parachute
+391. skateboard
+392. shampoo
+393. diplodocus
+394. tyrannosaurus
+395. octopus
+396. politieauto
+397. scooter
+398. ufo
+399. frisbee
+400. pinguïn

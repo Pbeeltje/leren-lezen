@@ -11,6 +11,15 @@ export interface LuisterHoofdstuk {
   plaatjes?: Record<string, string>;
 }
 
+// Woorden die alleen in Luisteren (en Geheugenspel) zitten, niet in een leeshoofdstuk:
+// hun spelling is niet klankzuiver (parachute, skateboard, diplodocus ...), dus te moeilijk
+// om te lezen. Plaatje: assets/images/woorden/<woord>.svg. pinguin zonder trema: het is
+// alleen een bestandsnaam, deze spellen tonen geen tekst.
+export const ALLEEN_LUISTEREN: string[] = [
+  'parachute', 'skateboard', 'shampoo', 'diplodocus', 'tyrannosaurus', 'octopus',
+  'politieauto', 'scooter', 'ufo', 'frisbee', 'pinguin',
+];
+
 export const LUISTER_HOOFDSTUKKEN: LuisterHoofdstuk[] = [
   {
     id: 'boerderij',
@@ -28,7 +37,7 @@ export const LUISTER_HOOFDSTUKKEN: LuisterHoofdstuk[] = [
     id: 'dieren',
     titel: 'Nog meer dieren',
     icoonWoord: 'vos',
-    woorden: ['vos', 'wolf', 'egel', 'das', 'mol', 'bij', 'vis', 'uil', 'duif', 'pauw', 'geit', 'slak', 'mier', 'vlieg', 'haai', 'zwaan', 'ijsbeer', 'lam', 'kikker', 'dolfijn', 'spin', 'krab', 'schildpad', 'lieveheersbeestje', 'vogel', 'leeuw'],
+    woorden: ['vos', 'wolf', 'egel', 'das', 'mol', 'bij', 'vis', 'uil', 'duif', 'pauw', 'geit', 'slak', 'mier', 'vlieg', 'haai', 'zwaan', 'ijsbeer', 'lam', 'kikker', 'dolfijn', 'spin', 'krab', 'schildpad', 'lieveheersbeestje', 'vogel', 'leeuw', 'octopus', 'walvis', 'pinguin', 'vlinder', 'rups', 'eekhoorn', 'vleermuis', 'kwal', 'kreeft', 'hagedis'],
   },
   {
     id: 'eten',
@@ -46,7 +55,7 @@ export const LUISTER_HOOFDSTUKKEN: LuisterHoofdstuk[] = [
     id: 'spullen',
     titel: 'Kleren & spullen',
     icoonWoord: 'sok',
-    woorden: ['pet', 'sok', 'trui', 'kous', 'muts', 'tas', 'jas', 'riem', 'pen', 'vaas', 'pot', 'bel', 'wiel', 'deur', 'raam', 'boek', 'bed', 'stoel', 'lamp', 'klok', 'bril', 'schaar', 'lepel', 'kopje', 'sleutel', 'laars', 'kroon', 'schoen', 'ring', 'broek', 'strik', 'emmer', 'hamer', 'ladder', 'fles', 'spons', 'krant', 'bank', 'kraan'],
+    woorden: ['pet', 'sok', 'trui', 'kous', 'muts', 'tas', 'jas', 'riem', 'pen', 'vaas', 'pot', 'bel', 'wiel', 'deur', 'raam', 'boek', 'bed', 'stoel', 'lamp', 'klok', 'bril', 'schaar', 'lepel', 'kopje', 'sleutel', 'laars', 'kroon', 'schoen', 'ring', 'broek', 'strik', 'emmer', 'hamer', 'ladder', 'fles', 'spons', 'krant', 'bank', 'kraan', 'paraplu', 'parasol', 'shampoo', 'kam', 'borstel', 'onderbroek', 'magneet'],
   },
   {
     id: 'buiten',
@@ -69,12 +78,18 @@ export const LUISTER_HOOFDSTUKKEN: LuisterHoofdstuk[] = [
     id: 'speelgoed',
     titel: 'Speelgoed',
     icoonWoord: 'bal',
-    woorden: ['bal', 'voetbal', 'ballon', 'vlieger', 'knuffel', 'trommel', 'gitaar', 'piano', 'puzzel', 'robot', 'blok', 'dobbelsteen', 'kegel', 'schommel', 'slee', 'schaats', 'ski', 'spook', 'radio'],
+    woorden: ['bal', 'voetbal', 'ballon', 'vlieger', 'knuffel', 'trommel', 'gitaar', 'piano', 'puzzel', 'robot', 'blok', 'dobbelsteen', 'kegel', 'schommel', 'slee', 'schaats', 'ski', 'spook', 'radio', 'jojo', 'glijbaan', 'toverstaf', 'frisbee', 'trompet'],
   },
   {
     id: 'vervoer',
     titel: 'Vervoer',
     icoonWoord: 'auto',
-    woorden: ['auto', 'bus', 'fiets', 'step', 'trein', 'tram', 'taxi', 'motor', 'vrachtwagen', 'tractor', 'ambulance', 'brandweerauto', 'boot', 'schip', 'vliegtuig', 'helikopter', 'raket'],
+    woorden: ['auto', 'bus', 'fiets', 'step', 'trein', 'tram', 'taxi', 'motor', 'vrachtwagen', 'tractor', 'ambulance', 'brandweerauto', 'boot', 'schip', 'vliegtuig', 'helikopter', 'raket', 'parachute', 'skateboard', 'kano', 'zeilboot', 'politieauto', 'scooter', 'kabelbaan', 'ufo'],
+  },
+  {
+    id: 'dinos',
+    titel: "Dino's & draken",
+    icoonWoord: 'tyrannosaurus',
+    woorden: ['tyrannosaurus', 'stegosaurus', 'diplodocus', 'mammoet', 'draak', 'eenhoorn', 'hagedis', 'krokodil'],
   },
 ];

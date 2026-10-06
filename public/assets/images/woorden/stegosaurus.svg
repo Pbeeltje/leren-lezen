@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120">
+  <!-- Een stegosaurus, zelf getekend voor leren-lezen. -->
+  <g fill="#ff8a65" stroke="#d84315" stroke-width="2.5" stroke-linejoin="round">
+    <path d="M28 56 L34 40 L40 56 Z"/>
+    <path d="M38 50 L44 29 L50 50 Z"/>
+    <path d="M49 47 L55 22 L61 47 Z"/>
+    <path d="M60 47 L66 22 L72 47 Z"/>
+    <path d="M71 50 L77 29 L83 50 Z"/>
+    <path d="M81 56 L87 40 L93 56 Z"/>
+  </g>
+  <g fill="#e64a19" stroke="#bf360c" stroke-width="2" stroke-linejoin="round">
+    <path d="M104 64 L114 52 L108 66 Z"/>
+    <path d="M108 70 L119 62 L111 73 Z"/>
+  </g>
+  <path d="M8 66 C8 58 16 54 24 58 C34 44 80 40 96 56 C102 60 108 64 112 70 C104 74 98 74 92 74 C80 84 40 86 26 74 C18 74 8 74 8 66 Z"
+        fill="#7cb342" stroke="#33691e" stroke-width="3" stroke-linejoin="round"/>
+  <path d="M30 72 C44 80 76 80 88 72" fill="none" stroke="#c5e1a5" stroke-width="5" stroke-linecap="round"/>
+  <g fill="#689f38" stroke="#33691e" stroke-width="3" stroke-linejoin="round">
+    <rect x="30" y="74" width="11" height="24" rx="4"/>
+    <rect x="46" y="76" width="11" height="22" rx="4"/>
+    <rect x="68" y="76" width="11" height="22" rx="4"/>
+    <rect x="82" y="72" width="11" height="26" rx="4"/>
+  </g>
+  <circle cx="15" cy="63" r="2.6" fill="#1b1b1b"/>
+  <path d="M9 69 Q13 71 17 69" fill="none" stroke="#33691e" stroke-width="2" stroke-linecap="round"/>
+</svg>

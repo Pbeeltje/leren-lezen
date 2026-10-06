@@ -1,5 +1,6 @@
 import type { Woord } from '../content/types.ts';
 import { KERNEN } from '../content/lezen/kernen/kernen.index.ts';
+import { ALLEEN_LUISTEREN } from '../content/luisteren/hoofdstukken.ts';
 
 export interface LuisterVraag {
   doel: Woord;
@@ -43,7 +44,16 @@ function bouwWoordenpool(): Woord[] {
       pool.push(woord);
     }
   }
+  for (const naam of ALLEEN_LUISTEREN) {
+    if (!WOORDEN_MET_AUDIO.has(naam) || gezien.has(naam)) continue;
+    gezien.add(naam);
+    pool.push(alleenLuisterWoord(naam));
+  }
   return pool;
+}
+
+function alleenLuisterWoord(naam: string): Woord {
+  return { woord: naam, afbeeldingPad: `assets/images/woorden/${naam}.svg` };
 }
 
 let poolCache: Woord[] | null = null;
@@ -94,5 +104,5 @@ export function plaatjeVan(naam: string): string | undefined {
     const w = kern.woordenbank.find((x) => x.woord === naam);
     if (w) return w.afbeeldingPad;
   }
-  return undefined;
+  return ALLEEN_LUISTEREN.includes(naam) ? alleenLuisterWoord(naam).afbeeldingPad : undefined;
 }

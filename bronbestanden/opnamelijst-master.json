@@ -2878,5 +2878,325 @@
     "slug": "muizen",
     "text": "muizen",
     "path": "public/assets/audio/woorden/muizen.mp3"
+  },
+  {
+    "n": 361,
+    "lijst": 8,
+    "deel": 1,
+    "slug": "som-keuze",
+    "text": "Hoeveel is de som?",
+    "path": "public/assets/audio/instructies/som-keuze.mp3"
+  },
+  {
+    "n": 362,
+    "lijst": 8,
+    "deel": 1,
+    "slug": "som-koppelen",
+    "text": "Welk getal hoort bij welke som?",
+    "path": "public/assets/audio/instructies/som-koppelen.mp3"
+  },
+  {
+    "n": 363,
+    "lijst": 8,
+    "deel": 1,
+    "slug": "som-typen",
+    "text": "Typ het antwoord",
+    "path": "public/assets/audio/instructies/som-typen.mp3"
+  },
+  {
+    "n": 364,
+    "lijst": 8,
+    "deel": 1,
+    "slug": "geld-keuze",
+    "text": "Hoeveel geld is dit?",
+    "path": "public/assets/audio/instructies/geld-keuze.mp3"
+  },
+  {
+    "n": 365,
+    "lijst": 8,
+    "deel": 1,
+    "slug": "geld-typen",
+    "text": "Hoeveel geld is dit? Typ het in",
+    "path": "public/assets/audio/instructies/geld-typen.mp3"
+  },
+  {
+    "n": 366,
+    "lijst": 9,
+    "deel": 1,
+    "slug": "hagedis",
+    "text": "hagedis",
+    "path": "public/assets/audio/woorden/hagedis.mp3"
+  },
+  {
+    "n": 367,
+    "lijst": 9,
+    "deel": 1,
+    "slug": "stegosaurus",
+    "text": "stegosaurus",
+    "path": "public/assets/audio/woorden/stegosaurus.mp3"
+  },
+  {
+    "n": 368,
+    "lijst": 9,
+    "deel": 1,
+    "slug": "eenhoorn",
+    "text": "eenhoorn",
+    "path": "public/assets/audio/woorden/eenhoorn.mp3"
+  },
+  {
+    "n": 369,
+    "lijst": 9,
+    "deel": 1,
+    "slug": "kreeft",
+    "text": "kreeft",
+    "path": "public/assets/audio/woorden/kreeft.mp3"
+  },
+  {
+    "n": 370,
+    "lijst": 9,
+    "deel": 1,
+    "slug": "vlinder",
+    "text": "vlinder",
+    "path": "public/assets/audio/woorden/vlinder.mp3"
+  },
+  {
+    "n": 371,
+    "lijst": 9,
+    "deel": 1,
+    "slug": "eekhoorn",
+    "text": "eekhoorn",
+    "path": "public/assets/audio/woorden/eekhoorn.mp3"
+  },
+  {
+    "n": 372,
+    "lijst": 9,
+    "deel": 1,
+    "slug": "vleermuis",
+    "text": "vleermuis",
+    "path": "public/assets/audio/woorden/vleermuis.mp3"
+  },
+  {
+    "n": 373,
+    "lijst": 9,
+    "deel": 1,
+    "slug": "walvis",
+    "text": "walvis",
+    "path": "public/assets/audio/woorden/walvis.mp3"
+  },
+  {
+    "n": 374,
+    "lijst": 9,
+    "deel": 1,
+    "slug": "mammoet",
+    "text": "mammoet",
+    "path": "public/assets/audio/woorden/mammoet.mp3"
+  },
+  {
+    "n": 375,
+    "lijst": 9,
+    "deel": 1,
+    "slug": "draak",
+    "text": "draak",
+    "path": "public/assets/audio/woorden/draak.mp3"
+  },
+  {
+    "n": 376,
+    "lijst": 9,
+    "deel": 1,
+    "slug": "rups",
+    "text": "rups",
+    "path": "public/assets/audio/woorden/rups.mp3"
+  },
+  {
+    "n": 377,
+    "lijst": 9,
+    "deel": 1,
+    "slug": "kwal",
+    "text": "kwal",
+    "path": "public/assets/audio/woorden/kwal.mp3"
+  },
+  {
+    "n": 378,
+    "lijst": 9,
+    "deel": 1,
+    "slug": "parasol",
+    "text": "parasol",
+    "path": "public/assets/audio/woorden/parasol.mp3"
+  },
+  {
+    "n": 379,
+    "lijst": 9,
+    "deel": 1,
+    "slug": "borstel",
+    "text": "borstel",
+    "path": "public/assets/audio/woorden/borstel.mp3"
+  },
+  {
+    "n": 380,
+    "lijst": 9,
+    "deel": 1,
+    "slug": "kam",
+    "text": "kam",
+    "path": "public/assets/audio/woorden/kam.mp3"
+  },
+  {
+    "n": 381,
+    "lijst": 9,
+    "deel": 1,
+    "slug": "onderbroek",
+    "text": "onderbroek",
+    "path": "public/assets/audio/woorden/onderbroek.mp3"
+  },
+  {
+    "n": 382,
+    "lijst": 9,
+    "deel": 1,
+    "slug": "zeilboot",
+    "text": "zeilboot",
+    "path": "public/assets/audio/woorden/zeilboot.mp3"
+  },
+  {
+    "n": 383,
+    "lijst": 9,
+    "deel": 1,
+    "slug": "kano",
+    "text": "kano",
+    "path": "public/assets/audio/woorden/kano.mp3"
+  },
+  {
+    "n": 384,
+    "lijst": 9,
+    "deel": 1,
+    "slug": "glijbaan",
+    "text": "glijbaan",
+    "path": "public/assets/audio/woorden/glijbaan.mp3"
+  },
+  {
+    "n": 385,
+    "lijst": 9,
+    "deel": 1,
+    "slug": "toverstaf",
+    "text": "toverstaf",
+    "path": "public/assets/audio/woorden/toverstaf.mp3"
+  },
+  {
+    "n": 386,
+    "lijst": 9,
+    "deel": 1,
+    "slug": "jojo",
+    "text": "jojo",
+    "path": "public/assets/audio/woorden/jojo.mp3"
+  },
+  {
+    "n": 387,
+    "lijst": 9,
+    "deel": 1,
+    "slug": "kabelbaan",
+    "text": "kabelbaan",
+    "path": "public/assets/audio/woorden/kabelbaan.mp3"
+  },
+  {
+    "n": 388,
+    "lijst": 9,
+    "deel": 1,
+    "slug": "trompet",
+    "text": "trompet",
+    "path": "public/assets/audio/woorden/trompet.mp3"
+  },
+  {
+    "n": 389,
+    "lijst": 9,
+    "deel": 1,
+    "slug": "magneet",
+    "text": "magneet",
+    "path": "public/assets/audio/woorden/magneet.mp3"
+  },
+  {
+    "n": 390,
+    "lijst": 9,
+    "deel": 1,
+    "slug": "parachute",
+    "text": "parachute",
+    "path": "public/assets/audio/woorden/parachute.mp3"
+  },
+  {
+    "n": 391,
+    "lijst": 9,
+    "deel": 1,
+    "slug": "skateboard",
+    "text": "skateboard",
+    "path": "public/assets/audio/woorden/skateboard.mp3"
+  },
+  {
+    "n": 392,
+    "lijst": 9,
+    "deel": 1,
+    "slug": "shampoo",
+    "text": "shampoo",
+    "path": "public/assets/audio/woorden/shampoo.mp3"
+  },
+  {
+    "n": 393,
+    "lijst": 9,
+    "deel": 1,
+    "slug": "diplodocus",
+    "text": "diplodocus",
+    "path": "public/assets/audio/woorden/diplodocus.mp3"
+  },
+  {
+    "n": 394,
+    "lijst": 9,
+    "deel": 1,
+    "slug": "tyrannosaurus",
+    "text": "tyrannosaurus",
+    "path": "public/assets/audio/woorden/tyrannosaurus.mp3"
+  },
+  {
+    "n": 395,
+    "lijst": 9,
+    "deel": 1,
+    "slug": "octopus",
+    "text": "octopus",
+    "path": "public/assets/audio/woorden/octopus.mp3"
+  },
+  {
+    "n": 396,
+    "lijst": 9,
+    "deel": 1,
+    "slug": "politieauto",
+    "text": "politieauto",
+    "path": "public/assets/audio/woorden/politieauto.mp3"
+  },
+  {
+    "n": 397,
+    "lijst": 9,
+    "deel": 1,
+    "slug": "scooter",
+    "text": "scooter",
+    "path": "public/assets/audio/woorden/scooter.mp3"
+  },
+  {
+    "n": 398,
+    "lijst": 9,
+    "deel": 1,
+    "slug": "ufo",
+    "text": "ufo",
+    "path": "public/assets/audio/woorden/ufo.mp3"
+  },
+  {
+    "n": 399,
+    "lijst": 9,
+    "deel": 1,
+    "slug": "frisbee",
+    "text": "frisbee",
+    "path": "public/assets/audio/woorden/frisbee.mp3"
+  },
+  {
+    "n": 400,
+    "lijst": 9,
+    "deel": 1,
+    "slug": "pinguin",
+    "text": "pinguïn",
+    "path": "public/assets/audio/woorden/pinguin.mp3"
   }
 ]

@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120">
+  <!-- Een kam, zelf getekend voor leren-lezen. -->
+  <g transform="rotate(-12 60 60)">
+  <g fill="#ec407a" stroke="#ad1457" stroke-width="2">
+    <rect x="16" y="58" width="5" height="34" rx="2.5"/>
+    <rect x="24" y="58" width="5" height="30" rx="2.5"/>
+    <rect x="32" y="58" width="5" height="30" rx="2.5"/>
+    <rect x="40" y="58" width="5" height="30" rx="2.5"/>
+    <rect x="48" y="58" width="5" height="34" rx="2.5"/>
+    <rect x="56" y="58" width="5" height="30" rx="2.5"/>
+    <rect x="64" y="58" width="5" height="30" rx="2.5"/>
+    <rect x="72" y="58" width="5" height="30" rx="2.5"/>
+    <rect x="80" y="58" width="5" height="34" rx="2.5"/>
+    <rect x="88" y="58" width="5" height="30" rx="2.5"/>
+    <rect x="96" y="58" width="5" height="30" rx="2.5"/>
+  </g>
+  <rect x="10" y="38" width="100" height="24" rx="8" fill="#f06292" stroke="#ad1457" stroke-width="3"/>
+  <rect x="18" y="43" width="60" height="5" rx="2.5" fill="#f8bbd0"/>
+  </g>
+</svg>

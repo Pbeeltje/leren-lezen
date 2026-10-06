@@ -2,7 +2,8 @@
 
 **Only Fluent Emoji (MIT) or our own drawings.** No VLL, juf-milou or worksheet
 images (the app will be sold). Own drawings come from scripts in `bronbestanden/`:
-`teken-woorden.py`, `teken-weer.py`, `teken-lezen-nieuw.py`, `teken-kasteel.py`,
+`teken-woorden.py`, `teken-weer.py`, `teken-lezen-nieuw.py`, `teken-lange-woorden.py`,
+`teken-kasteel.py`,
 and inline SVG in the background/game code. Exception still in the repo:
 `woorden/was.svg` (game-icons clothesline, CC BY 3.0, listed in `ATTRIBUTIONS.md`
 — keep that file up to date if anything non-MIT is ever added).
@@ -18,7 +19,7 @@ Fetch `.../assets/<Emoji Name>/metadata.json` first for the exact name (spaces a
 `%20`). **Gotcha**: emoji with skin tones (people, body parts) live under
 `<name>/Default/Color/<snake>_color_default.svg`. If a `Color/` fetch 404s, list the
 folder via `api.github.com/repos/microsoft/fluentui-emoji/contents/...` rather than
-guessing.
+guessing. Folder names aren't always title case: T-Rex is `T-rex/Color/t-rex_color.svg`.
 
 Fluent animals face left; mirror with `.gespiegeld`. For an SVG used through
 `url(#id)` gradients, don't put the defs in a display:none SVG (Chrome draws

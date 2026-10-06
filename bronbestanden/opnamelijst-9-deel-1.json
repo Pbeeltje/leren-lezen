@@ -1,0 +1,212 @@
+[
+ {
+  "n": 1,
+  "slug": "hagedis",
+  "text": "hagedis",
+  "path": "public/assets/audio/woorden/hagedis.mp3"
+ },
+ {
+  "n": 2,
+  "slug": "stegosaurus",
+  "text": "stegosaurus",
+  "path": "public/assets/audio/woorden/stegosaurus.mp3"
+ },
+ {
+  "n": 3,
+  "slug": "eenhoorn",
+  "text": "eenhoorn",
+  "path": "public/assets/audio/woorden/eenhoorn.mp3"
+ },
+ {
+  "n": 4,
+  "slug": "kreeft",
+  "text": "kreeft",
+  "path": "public/assets/audio/woorden/kreeft.mp3"
+ },
+ {
+  "n": 5,
+  "slug": "vlinder",
+  "text": "vlinder",
+  "path": "public/assets/audio/woorden/vlinder.mp3"
+ },
+ {
+  "n": 6,
+  "slug": "eekhoorn",
+  "text": "eekhoorn",
+  "path": "public/assets/audio/woorden/eekhoorn.mp3"
+ },
+ {
+  "n": 7,
+  "slug": "vleermuis",
+  "text": "vleermuis",
+  "path": "public/assets/audio/woorden/vleermuis.mp3"
+ },
+ {
+  "n": 8,
+  "slug": "walvis",
+  "text": "walvis",
+  "path": "public/assets/audio/woorden/walvis.mp3"
+ },
+ {
+  "n": 9,
+  "slug": "mammoet",
+  "text": "mammoet",
+  "path": "public/assets/audio/woorden/mammoet.mp3"
+ },
+ {
+  "n": 10,
+  "slug": "draak",
+  "text": "draak",
+  "path": "public/assets/audio/woorden/draak.mp3"
+ },
+ {
+  "n": 11,
+  "slug": "rups",
+  "text": "rups",
+  "path": "public/assets/audio/woorden/rups.mp3"
+ },
+ {
+  "n": 12,
+  "slug": "kwal",
+  "text": "kwal",
+  "path": "public/assets/audio/woorden/kwal.mp3"
+ },
+ {
+  "n": 13,
+  "slug": "parasol",
+  "text": "parasol",
+  "path": "public/assets/audio/woorden/parasol.mp3"
+ },
+ {
+  "n": 14,
+  "slug": "borstel",
+  "text": "borstel",
+  "path": "public/assets/audio/woorden/borstel.mp3"
+ },
+ {
+  "n": 15,
+  "slug": "kam",
+  "text": "kam",
+  "path": "public/assets/audio/woorden/kam.mp3"
+ },
+ {
+  "n": 16,
+  "slug": "onderbroek",
+  "text": "onderbroek",
+  "path": "public/assets/audio/woorden/onderbroek.mp3"
+ },
+ {
+  "n": 17,
+  "slug": "zeilboot",
+  "text": "zeilboot",
+  "path": "public/assets/audio/woorden/zeilboot.mp3"
+ },
+ {
+  "n": 18,
+  "slug": "kano",
+  "text": "kano",
+  "path": "public/assets/audio/woorden/kano.mp3"
+ },
+ {
+  "n": 19,
+  "slug": "glijbaan",
+  "text": "glijbaan",
+  "path": "public/assets/audio/woorden/glijbaan.mp3"
+ },
+ {
+  "n": 20,
+  "slug": "toverstaf",
+  "text": "toverstaf",
+  "path": "public/assets/audio/woorden/toverstaf.mp3"
+ },
+ {
+  "n": 21,
+  "slug": "jojo",
+  "text": "jojo",
+  "path": "public/assets/audio/woorden/jojo.mp3"
+ },
+ {
+  "n": 22,
+  "slug": "kabelbaan",
+  "text": "kabelbaan",
+  "path": "public/assets/audio/woorden/kabelbaan.mp3"
+ },
+ {
+  "n": 23,
+  "slug": "trompet",
+  "text": "trompet",
+  "path": "public/assets/audio/woorden/trompet.mp3"
+ },
+ {
+  "n": 24,
+  "slug": "magneet",
+  "text": "magneet",
+  "path": "public/assets/audio/woorden/magneet.mp3"
+ },
+ {
+  "n": 25,
+  "slug": "parachute",
+  "text": "parachute",
+  "path": "public/assets/audio/woorden/parachute.mp3"
+ },
+ {
+  "n": 26,
+  "slug": "skateboard",
+  "text": "skateboard",
+  "path": "public/assets/audio/woorden/skateboard.mp3"
+ },
+ {
+  "n": 27,
+  "slug": "shampoo",
+  "text": "shampoo",
+  "path": "public/assets/audio/woorden/shampoo.mp3"
+ },
+ {
+  "n": 28,
+  "slug": "diplodocus",
+  "text": "diplodocus",
+  "path": "public/assets/audio/woorden/diplodocus.mp3"
+ },
+ {
+  "n": 29,
+  "slug": "tyrannosaurus",
+  "text": "tyrannosaurus",
+  "path": "public/assets/audio/woorden/tyrannosaurus.mp3"
+ },
+ {
+  "n": 30,
+  "slug": "octopus",
+  "text": "octopus",
+  "path": "public/assets/audio/woorden/octopus.mp3"
+ },
+ {
+  "n": 31,
+  "slug": "politieauto",
+  "text": "politieauto",
+  "path": "public/assets/audio/woorden/politieauto.mp3"
+ },
+ {
+  "n": 32,
+  "slug": "scooter",
+  "text": "scooter",
+  "path": "public/assets/audio/woorden/scooter.mp3"
+ },
+ {
+  "n": 33,
+  "slug": "ufo",
+  "text": "ufo",
+  "path": "public/assets/audio/woorden/ufo.mp3"
+ },
+ {
+  "n": 34,
+  "slug": "frisbee",
+  "text": "frisbee",
+  "path": "public/assets/audio/woorden/frisbee.mp3"
+ },
+ {
+  "n": 35,
+  "slug": "pinguin",
+  "text": "pinguïn",
+  "path": "public/assets/audio/woorden/pinguin.mp3"
+ }
+]

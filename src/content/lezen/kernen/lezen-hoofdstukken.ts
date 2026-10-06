@@ -88,6 +88,10 @@ const uil = w('uil'), duif = w('duif'), trui = w('trui'), fruit = w('fruit'), tu
 const kers = w('kers'), gras = w('gras'), kerk = w('kerk'), kraan = w('kraan'), vlieg = w('vlieg'), zwaan = w('zwaan');
 const arm = w('arm'), gans = w('gans'), krant = w('krant'), spons = w('spons'), laars = w('laars'), spook = w('spook');
 const sla = w('sla'), ski = w('ski'), baard = w('baard'), berg = w('berg'), mais = w('mais'), aan = w('aan', true);
+const hagedis = w('hagedis'), stegosaurus = w('stegosaurus'), eenhoorn = w('eenhoorn'), kreeft = w('kreeft'), vlinder = w('vlinder'), eekhoorn = w('eekhoorn');
+const vleermuis = w('vleermuis'), walvis = w('walvis'), mammoet = w('mammoet'), draak = w('draak'), rups = w('rups'), kwal = w('kwal');
+const parasol = w('parasol'), borstel = w('borstel'), kam = w('kam'), onderbroek = w('onderbroek'), zeilboot = w('zeilboot'), kano = w('kano');
+const glijbaan = w('glijbaan'), toverstaf = w('toverstaf'), jojo = w('jojo'), kabelbaan = w('kabelbaan'), trompet = w('trompet'), magneet = w('magneet');
 
 // Het eerste getal is de id (lezen-NN, daar hangt de voortgang aan) en verandert nooit.
 // Het nummer op het scherm (volgnummer) volgt de volgorde van deze lijst, zodat een
@@ -300,6 +304,28 @@ export const LEZEN_HOOFDSTUKKEN: Kern[] = [
       zin('Het ___ is rood met zwarte stippen.', lieveheersbeestje, ijsbeer, paddenstoel),
       zin('Ik ben jarig. Ik voel me ___.', vrolijk, eiland, kopje),
       zin('De ___ woont op het ijs.', ijsbeer, paddenstoel, lieveheersbeestje),
+    ]),
+  hoofdstuk(25, 'Dino en hagedis', [],
+    [hagedis, stegosaurus, eenhoorn, kreeft, vlinder, eekhoorn, vleermuis, walvis, mammoet, draak, rups, kwal], [
+      zin('De ___ heeft platen op zijn rug.', stegosaurus, walvis, vlinder),
+      zin('De ___ ligt op een warme steen in de zon.', hagedis, kwal, walvis),
+      zin('De ___ spuit water uit zijn kop.', walvis, mammoet, eekhoorn),
+      zin('De ___ heeft een hoorn op zijn hoofd.', eenhoorn, rups, kreeft),
+      zin('De ___ eet een blad. Later wordt hij een vlinder.', rups, draak, hagedis),
+      zin('De ___ spuwt vuur.', draak, kwal, eekhoorn),
+      zin('De ___ hangt in de nacht aan een tak.', vleermuis, mammoet, kreeft),
+      zin('De ___ eet een noot in de boom.', eekhoorn, stegosaurus, walvis),
+    ]),
+  hoofdstuk(26, 'Parasol en borstel', [],
+    [parasol, borstel, kam, onderbroek, zeilboot, kano, glijbaan, toverstaf, jojo, kabelbaan, trompet, magneet], [
+      zin('Op het strand zit ik onder een ___.', parasol, trompet, magneet),
+      zin('Ik doe mijn haar netjes met een ___.', kam, jojo, kano),
+      zin('Ik roei met de ___ over het meer.', kano, glijbaan, borstel),
+      zin('De fee tovert met haar ___.', toverstaf, onderbroek, kabelbaan),
+      zin('Ik ga van de ___ af. Wiel!', glijbaan, parasol, trompet),
+      zin('Ik trek een schone ___ aan.', onderbroek, magneet, zeilboot),
+      zin('Met de ___ gaan we hoog de berg op.', kabelbaan, borstel, jojo),
+      zin('De ___ vaart met de wind over het water.', zeilboot, kam, toverstaf),
     ]),
   hoofdstuk(22, 'Een of meer', ['en'],
     [bomen, jassen, schoenen, blokken, sokken, boeken, katten, kippen, ballen, huizen, apen, benen], [

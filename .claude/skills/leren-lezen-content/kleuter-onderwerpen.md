@@ -12,7 +12,13 @@ Pool: `engine/luisterenGenerator.ts` `woordenpool()` walks every reading
 reading word joins it automatically. **Luister & wijs does not**: its chapters
 (`content/luisteren/hoofdstukken.ts`) are hand-written word lists, so add a new
 word there too. A word in a list that isn't in a reading bank (or is
-`vereistTekst`, e.g. `hagel`) silently never appears.
+`vereistTekst`, e.g. `hagel`) silently never appears, unless it is in
+`ALLEEN_LUISTEREN` (same file): listen-only words that are too irregular to read
+(parachute, skateboard, shampoo, diplodocus, tyrannosaurus, octopus, politieauto,
+scooter, ufo, frisbee, pinguin). Those join the pool with picture
+`woorden/<woord>.svg` once recorded. Chapters: Boerderij, Dierentuin, Nog meer
+dieren, Eten, Mijn lijf, Kleren & spullen, Buiten, Speelgoed, Vervoer, Dino's &
+draken (`dinos`).
 
 **Luister & wijs** (`LuisterenScreen.ts`, `games/luisterKiezen.ts`): hear a word,
 tap the matching picture from 3. Rounds of 5 (`RONDE_LENGTE`) with a

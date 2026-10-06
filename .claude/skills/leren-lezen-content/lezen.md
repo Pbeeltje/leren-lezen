@@ -2,16 +2,20 @@
 
 ## Word bank and chapters
 
-Reading chapters live in `content/lezen/kernen/lezen-hoofdstukken.ts`: 24
-chapters × 12 words (ids `lezen-01` … `lezen-24`). Difficulty order: CVC → long
+Reading chapters live in `content/lezen/kernen/lezen-hoofdstukken.ts`: 26
+chapters × 12 words (ids `lezen-01` … `lezen-26`). Difficulty order: CVC → long
 vowels → clusters (incl. review chapter 10 *Laars en krant*) → diphthongs →
-sch/eeuw → themed review → plurals → leftovers. **The id is fixed (progress is
+sch/eeuw → themed review → long words (*Lange woorden*, then `lezen-25` *Dino en
+hagedis* and `lezen-26` *Parasol en borstel*) → plurals → leftovers. Long words in
+a reading chapter must be phonetically regular; words like parachute, skateboard or
+diplodocus go in `ALLEEN_LUISTEREN` instead (see kleuter-onderwerpen.md). **The id is fixed (progress is
 keyed on it); the displayed number (`volgnummer`) is the position in the array.**
 So insert a new chapter where it belongs difficulty-wise, give it the next unused
-id (`lezen-24` sits at position 10), and never renumber ids. Each word
+id (`lezen-24` sits at position 10, next free is `lezen-27`), and never renumber ids. Each word
 sits in exactly one chapter; the toets is the whole bank (12). The list and
 picture/audio notes are in `C:\Claude\leren-lezen-hoofdstukken-plan.md`. New
-pictures: `bronbestanden/teken-lezen-nieuw.py` (plurals are 2–3 copies). The
+pictures: `bronbestanden/teken-lezen-nieuw.py` (plurals are 2–3 copies) and
+`teken-lange-woorden.py` (kam, borstel, stegosaurus). The
 old `vll-kern-*` / `kern-0*` ids are gone.
 
 `KLANKEN` in oefeningGenerator lists longer groups first ('aai' before 'aa',
