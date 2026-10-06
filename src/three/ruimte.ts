@@ -85,6 +85,68 @@ function streepjesTextuur(kleuren: string[]): THREE.Texture {
   return t;
 }
 
+// Zonnepaneel: donkerblauwe cellen met lichte voegen en een randje.
+function paneelTextuur(): THREE.Texture {
+  const c = document.createElement('canvas');
+  c.width = 128;
+  c.height = 64;
+  const g = c.getContext('2d')!;
+  g.fillStyle = '#c9d2e3';
+  g.fillRect(0, 0, 128, 64);
+  for (let x = 0; x < 4; x++) {
+    for (let y = 0; y < 2; y++) {
+      const cx = 4 + x * 31;
+      const cy = 4 + y * 29;
+      const v = g.createLinearGradient(cx, cy, cx + 28, cy + 26);
+      v.addColorStop(0, '#3f6fd8');
+      v.addColorStop(1, '#1d3a8a');
+      g.fillStyle = v;
+      g.fillRect(cx, cy, 28, 26);
+    }
+  }
+  const t = new THREE.CanvasTexture(c);
+  t.colorSpace = THREE.SRGBColorSpace;
+  return t;
+}
+
+/** Satelliet: goudkleurige romp, twee zonnepanelen, een schoteltje en een knipperlicht. */
+function maakSatelliet(stip: THREE.Texture): { satelliet: THREE.Group; lampje: THREE.Sprite } {
+  const satelliet = new THREE.Group();
+  const romp = new THREE.Mesh(
+    new THREE.BoxGeometry(0.26, 0.2, 0.2),
+    new THREE.MeshStandardMaterial({ color: 0xe0b04c, metalness: 0.35, roughness: 0.45 }),
+  );
+  satelliet.add(romp);
+  const paneelMat = new THREE.MeshStandardMaterial({ map: paneelTextuur(), roughness: 0.5, side: THREE.DoubleSide });
+  const armMat = new THREE.MeshStandardMaterial({ color: 0xb8c0cf, roughness: 0.6 });
+  for (const kant of [-1, 1]) {
+    const paneel = new THREE.Mesh(new THREE.PlaneGeometry(0.5, 0.24), paneelMat);
+    paneel.position.x = kant * 0.43;
+    satelliet.add(paneel);
+    const arm = new THREE.Mesh(new THREE.CylinderGeometry(0.012, 0.012, 0.1, 6), armMat);
+    arm.rotation.z = Math.PI / 2;
+    arm.position.x = kant * 0.16;
+    satelliet.add(arm);
+  }
+  const schotel = new THREE.Mesh(
+    new THREE.SphereGeometry(0.1, 20, 8, 0, Math.PI * 2, 0, Math.PI / 3),
+    new THREE.MeshStandardMaterial({ color: 0xf2f4f8, roughness: 0.7, side: THREE.DoubleSide }),
+  );
+  schotel.rotation.x = Math.PI; // bolle kant naar de romp
+  schotel.position.y = 0.2;
+  satelliet.add(schotel);
+  const antenne = new THREE.Mesh(new THREE.CylinderGeometry(0.008, 0.008, 0.16, 6), armMat);
+  antenne.position.set(0.07, -0.17, 0);
+  satelliet.add(antenne);
+  const lampje = new THREE.Sprite(
+    new THREE.SpriteMaterial({ map: stip, color: 0xff5a4a, transparent: true, opacity: 0, depthWrite: false, blending: THREE.AdditiveBlending }),
+  );
+  lampje.position.set(0.07, -0.26, 0.02);
+  lampje.scale.setScalar(0.22);
+  satelliet.add(lampje);
+  return { satelliet, lampje };
+}
+
 // Afstand vanaf de camera -> halve zichtbare breedte/hoogte op die diepte.
 function zichtveld(diepte: number): { b: number; h: number } {
   const cam = sceneManager.camera;
@@ -109,8 +171,9 @@ export function maakRuimte(): void {
   sceneManager.scene.add(groep);
   const stip = zachteStipTextuur();
 
-  // Drie sterrenlagen met eigen kleur, grootte en twinkeltempo.
-  const lagen: { punten: THREE.Points; tempo: number; basis: number }[] = [];
+  // Drie sterrenlagen met eigen kleur, grootte en twinkeltempo. Elke ster twinkelt op
+  // haar eigen moment (helderheid per punt via de vertexkleur).
+  const lagen: { punten: THREE.Points; tempo: number; fasen: Float32Array; helder: THREE.BufferAttribute }[] = [];
   const soorten = [
     { kleur: 0xffffff, grootte: 0.16, aantal: 160, tempo: 0.9, basis: 0.75 },
     { kleur: 0xbfd8ff, grootte: 0.22, aantal: 60, tempo: 0.6, basis: 0.6 },
@@ -125,10 +188,14 @@ export function maakRuimte(): void {
     }
     const geo = new THREE.BufferGeometry();
     geo.setAttribute('position', new THREE.BufferAttribute(posities, 3));
+    const helder = new THREE.BufferAttribute(new Float32Array(s.aantal * 3).fill(1), 3);
+    geo.setAttribute('color', helder);
+    const fasen = new Float32Array(s.aantal).map(() => Math.random() * Math.PI * 2);
     const mat = new THREE.PointsMaterial({
       color: s.kleur,
       size: s.grootte,
       map: stip,
+      vertexColors: true,
       transparent: true,
       opacity: s.basis,
       depthWrite: false,
@@ -136,7 +203,42 @@ export function maakRuimte(): void {
     });
     const punten = new THREE.Points(geo, mat);
     scene.add(punten);
-    lagen.push({ punten, tempo: s.tempo, basis: s.basis });
+    lagen.push({ punten, tempo: s.tempo, fasen, helder });
+  }
+
+  // Melkweg: een zwakke schuine band van piepkleine sterretjes met een vleugje gloed,
+  // van linksboven naar rechts.
+  {
+    const aantal = 420;
+    const posities = new Float32Array(aantal * 3);
+    const hoek = -0.38;
+    const [cos, sin] = [Math.cos(hoek), Math.sin(hoek)];
+    for (let i = 0; i < aantal; i++) {
+      const langs = (Math.random() - 0.5) * 40;
+      // Opgehoopt naar het midden van de band (som van twee randoms ~ driehoek).
+      const dwars = (Math.random() + Math.random() - 1) * 2.2;
+      posities[i * 3] = langs * cos - dwars * sin;
+      posities[i * 3 + 1] = 2.5 + langs * sin + dwars * cos;
+      posities[i * 3 + 2] = -19 - Math.random() * 2;
+    }
+    const geo = new THREE.BufferGeometry();
+    geo.setAttribute('position', new THREE.BufferAttribute(posities, 3));
+    scene.add(
+      new THREE.Points(
+        geo,
+        new THREE.PointsMaterial({ color: 0xdfe6ff, size: 0.1, map: stip, transparent: true, opacity: 0.45, depthWrite: false, blending: THREE.AdditiveBlending }),
+      ),
+    );
+    for (let i = 0; i < 6; i++) {
+      const langs = -15 + i * 6 + Math.random() * 2;
+      const gloed = new THREE.Sprite(
+        new THREE.SpriteMaterial({ map: stip, color: i % 2 ? 0x9fb4ff : 0xc7a8ff, transparent: true, opacity: 0.05, depthWrite: false, blending: THREE.AdditiveBlending }),
+      );
+      gloed.position.set(langs * cos, 2.5 + langs * sin, -20);
+      gloed.scale.set(9, 5, 1);
+      gloed.material.rotation = hoek;
+      scene.add(gloed);
+    }
   }
 
   // Nevel: een paar grote, heel zwakke gekleurde gloeiwolken ver weg.
@@ -171,7 +273,27 @@ export function maakRuimte(): void {
   ring.rotation.x = 1.15; // schuin, zodat de ring als ellips zichtbaar is
   planeet.add(ring);
   planeet.rotation.z = 0.35;
+  // Zachte warme gloed rond de planeet (dampkring).
+  const dampkring = new THREE.Sprite(
+    new THREE.SpriteMaterial({ map: stip, color: 0xffa060, transparent: true, opacity: 0.22, depthWrite: false, blending: THREE.AdditiveBlending }),
+  );
+  dampkring.scale.setScalar(5.4);
+  dampkring.position.z = -0.5;
+  planeet.add(dampkring);
+  // Een maantje dat in het vlak van de ring om de planeet draait (gaat erachter langs).
+  const ringvlak = new THREE.Group();
+  ringvlak.rotation.x = ring.rotation.x;
+  planeet.add(ringvlak);
+  const planeetMaantje = new THREE.Mesh(
+    new THREE.SphereGeometry(0.17, 20, 14),
+    new THREE.MeshStandardMaterial({ color: 0xbfc6d4, roughness: 1 }),
+  );
+  ringvlak.add(planeetMaantje);
   scene.add(planeet);
+
+  const { satelliet, lampje } = maakSatelliet(stip);
+  satelliet.visible = false;
+  scene.add(satelliet);
 
   // Klein maantje rechtsboven.
   const maan = new THREE.Mesh(
@@ -235,16 +357,55 @@ export function maakRuimte(): void {
   plaats();
   window.addEventListener('resize', plaats);
 
+  // Satelliet: een langzame halve boog met het middelpunt rechtsonder (onder de
+  // maanbodem). Komt links/onder het beeld in, gaat over de bovenkant en zakt rechts weg.
+  // Daarna een rustpauze voor de volgende ronde.
+  const SAT_DIEPTE = -7;
+  const SAT_DUUR = 85;
+  let satT = -8; // seconden: negatief is wachten
+  function satWacht(): number {
+    return 25 + Math.random() * 35;
+  }
+
   sceneManager.opAnimatie((delta, verlopen) => {
     bol.rotation.y += delta * 0.05;
     maan.rotation.y += delta * 0.03;
     if (rustigeBeweging || !groep.visible) return;
 
     lagen.forEach((laag, i) => {
-      const mat = laag.punten.material as THREE.PointsMaterial;
-      mat.opacity = laag.basis * (0.75 + 0.25 * Math.sin(verlopen * laag.tempo + i * 2));
+      const kleur = laag.helder.array as Float32Array;
+      for (let j = 0; j < laag.fasen.length; j++) {
+        const s = Math.sin(verlopen * laag.tempo + laag.fasen[j]);
+        const h = 0.55 + 0.45 * s * s * s; // meestal rustig, af en toe even helder of zwak
+        kleur[j * 3] = kleur[j * 3 + 1] = kleur[j * 3 + 2] = h;
+      }
+      laag.helder.needsUpdate = true;
       laag.punten.rotation.y = verlopen * (0.004 + i * 0.002);
     });
     planeet.position.y += Math.sin(verlopen * 0.4) * delta * 0.03;
+    const baan = verlopen * 0.16;
+    planeetMaantje.position.set(Math.cos(baan) * 3.5, Math.sin(baan) * 3.5, 0);
+
+    satT += delta;
+    if (satT < 0) {
+      satelliet.visible = false;
+    } else if (satT > SAT_DUUR) {
+      satelliet.visible = false;
+      satT = -satWacht();
+    } else {
+      const z = zichtveld(SAT_DIEPTE);
+      const staand = sceneManager.camera.aspect < 1;
+      const mx = z.b * (staand ? 0.55 : 0.7);
+      const my = -z.h * 1.1;
+      const straal = z.h * (staand ? 1.55 : 1.7);
+      // Van iets voorbij links (190°) tot iets voorbij rechts (-10°), met de klok mee.
+      const a = THREE.MathUtils.degToRad(190 - (satT / SAT_DUUR) * 200);
+      satelliet.visible = true;
+      satelliet.position.set(mx + Math.cos(a) * straal, my + Math.sin(a) * straal, SAT_DIEPTE);
+      satelliet.rotation.set(0.35, verlopen * 0.15, a - Math.PI / 2 + 0.3);
+      // Zacht knipperlicht: elke 2,2 s een korte, zachte puls.
+      const p = (verlopen % 2.2) / 2.2;
+      (lampje.material as THREE.SpriteMaterial).opacity = p < 0.25 ? Math.sin((p / 0.25) * Math.PI) * 0.95 : 0;
+    }
   });
 }

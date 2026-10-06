@@ -29,6 +29,13 @@
 - **ruimte** (`ruimte.ts`): moon surface bottom right; one scheduler for shooting
   stars (`.valster`, random position) and the slow diagonal `.raket` (22%), never
   two at once, ≥ 5 s rest; `juich` only fires when the sky is free.
+  In `three/ruimte.ts`: each star twinkles on its own phase (vertex colours, updated
+  per frame), a faint diagonal Milky Way band (`-19…-21` depth), a warm glow sprite
+  around the ringed planet plus a moonlet orbiting in the ring plane (`ringvlak`),
+  and a satellite (`maakSatelliet`, depth -7) that flies a slow half circle
+  (190° → -10°, 85 s) centred below the bottom-right edge, with a soft red pulse every
+  2.2 s, then waits 25–60 s. It is independent of the DOM scheduler. Hidden under
+  reduced motion.
 - **kasteel:** own castle `kasteel-eigen.svg` from `bronbestanden/teken-kasteel.py`
   (pastel pink towers, coloured cone roofs with flags; also the shop picture). Day
   25 s / night 20 s (`data-tijd`), `.valster` shooting stars at night. New parts in
