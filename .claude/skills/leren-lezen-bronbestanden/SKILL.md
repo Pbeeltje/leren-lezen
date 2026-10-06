@@ -49,7 +49,7 @@ source (site or publisher) for the kern file's comment.
 
 ### 3. Pick the kern (reading)
 Words must be klankzuiver and use only letters and sounds taught up to that
-kern (see "Reading-specific" in the `leren-lezen-content` skill). If a themed
+kern (see `lezen.md` in the `leren-lezen-content` skill). If a themed
 set needs letters taught later, keep the set together as a new sequel kern
 placed after its last dependency (like `kern-08-weer-2` and `kern-09-kerst`).
 Don't scatter the words or break the letter order. Add new sounds to `KLANKEN`
@@ -109,7 +109,7 @@ part as its own file. **Only after a part is split and verified, rename its json
 only use those words, so a manifest listing unrecorded words would make them play
 silence. Tell the user which words are still
 silent. Splitting and **transcription verification** are covered under
-"Audio" in `leren-lezen-content`.
+the `leren-lezen-audio` skill.
 
 ### 9. Test
 `npx tsc --noEmit`, then drive the app (see `leren-lezen-run`): see the new

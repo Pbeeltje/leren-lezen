@@ -3,7 +3,7 @@
 Dutch learning app for the owner's children (kleuterschool and groep 3): reading, counting, listening, writing, reading booklets and music. It uses Vite, TypeScript and three.js with a vanilla DOM and has no backend. Pushing to `main` deploys to GitHub Pages (repo Pbeeltje/leren-lezen, public). The Android and iPhone app is a Capacitor 8 wrapper around the same code.
 
 **Detailed documentation:**
-- **`.claude/skills/leren-lezen-content/SKILL.md`** — how everything works. Read the relevant section before changing anything.
+- **`.claude/skills/leren-lezen-content/SKILL.md`** — how everything works. It is an index: read only the topic file you need before changing anything, and update that file with the change.
 - **Other skills:** `leren-lezen-audio` (recordings), `leren-lezen-bronbestanden` and `leren-lezen-run`.
 - **Open items:** `OVERDRACHT.md`.
 
