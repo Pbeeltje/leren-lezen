@@ -20,6 +20,7 @@ Dutch learning app for the owner's children (kleuterschool and groep 3): reading
 - **Keep the big custom cursor.**
 - **Pictures:** only Fluent Emoji (MIT) or drawings of our own (`bronbestanden/teken-woorden.py`, `teken-weer.py`). No VLL, juf-milou or worksheet images: the app will be sold. Avoid the name "Veilig Leren Lezen" anywhere users can see it.
 - **Commits:** Dutch commit messages, pushed straight to `main`. Before committing new audio, run `git rm -r -q --cached public/assets && git add public/assets`.
+- **End every response with the git status of the work:** the last words say whether the changes are committed and pushed, or what is still uncommitted.
 
 ## Working
 
