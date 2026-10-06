@@ -2236,8 +2236,9 @@
   z-index: 2;
 }
 .xylofoon--keyboard .xylofoon__staaf--aan { animation: toets-aan 0.35s ease-out; }
-/* Kikkerkoor: getekende vijver (vijver.ts), zelfde lagen als de dino-wei. De knoppen
-   liggen eroverheen: een lelieblad in de kleur van de toon, met een kikker erop. */
+/* Kikkerkoor: getekende vijver (vijver.ts). Elke knop is een kikker (kikker.ts) op een
+   lelieblad in de kleur van de toon. Is de vijver smal (telefoon rechtop), dan staan de
+   kikkers in twee rijen om en om, zodat ze twee keer zo groot kunnen. */
 .kikker-vijver { display: none; }
 .xylofoon.xylofoon--kikkerkoor {
   position: relative;
@@ -2246,8 +2247,9 @@
   gap: 2px;
   padding: 10px 8px 14px;
   border-radius: 28px;
-  background: #1a6a48;
+  background: #146b48;
   box-shadow: inset 0 -10px 0 rgba(0, 0, 0, 0.12);
+  container: vijver / size;
 }
 .xylofoon--kikkerkoor .kikker-vijver { display: block; position: absolute; inset: 0; pointer-events: none; }
 .kikker-water { position: absolute; inset: 0; }
@@ -2259,28 +2261,55 @@
 .kikker-bellen { position: absolute; left: 6%; right: 6%; top: 22%; height: 36%; animation: kikker-bellen 7s ease-in-out infinite alternate; }
 .kikker-bellen svg { width: 100%; height: 100%; display: block; }
 @keyframes kikker-bellen { from { transform: translateY(5px); } to { transform: translateY(-12px); } }
+.kikker-wolk, .kikker-bos { position: absolute; pointer-events: none; }
+.kikker-wolk svg, .kikker-bos svg { width: 100%; height: 100%; display: block; }
+.kikker-wolk { aspect-ratio: 120 / 50; animation: kikker-wolk 40s ease-in-out infinite alternate; }
+.kikker-wolk--1 { left: 4%; top: 5%; width: 15%; opacity: 0.9; }
+.kikker-wolk--2 { left: 19%; top: 12%; width: 9%; opacity: 0.65; animation-delay: -12s; }
+.kikker-wolk--3 { left: 58%; top: 3%; width: 17%; opacity: 0.85; animation-delay: -25s; }
+.kikker-wolk--4 { left: 80%; top: 11%; width: 10%; opacity: 0.6; animation-delay: -6s; }
+@keyframes kikker-wolk { from { transform: translateX(-12px); } to { transform: translateX(12px); } }
+/* Struiken staan met hun onderkant op de oever (de bovenrand van het water ligt rond 35%). */
+.kikker-bos { top: 36%; aspect-ratio: 2; transform: translateY(-88%); }
+.kikker-bos--1 { left: 0; width: 11%; }
+.kikker-bos--2 { left: 9%; width: 6%; }
+.kikker-bos--3 { left: 24%; width: 8%; }
+.kikker-bos--4 { left: 41%; width: 12%; top: 34%; }
+.kikker-bos--5 { left: 64%; width: 8%; top: 37%; }
+.kikker-bos--6 { left: 84%; width: 13%; }
+.kikker-verpad { position: absolute; width: 8%; aspect-ratio: 84 / 64; pointer-events: none; }
+.kikker-verpad svg { width: 100%; height: 100%; display: block; }
+.kikker-verpad--1 { left: 6%; top: 44%; transform: rotate(-12deg); }
+.kikker-verpad--2 { left: 27%; top: 49%; width: 6.5%; transform: rotate(10deg); }
+.kikker-verpad--3 { left: 55%; top: 43%; transform: rotate(6deg); }
+.kikker-verpad--4 { left: 78%; top: 48%; width: 7%; transform: rotate(-16deg); }
+.kikker-libel { position: absolute; width: clamp(54px, 9%, 90px); left: 8%; top: 12%; animation: kikker-libel 14s ease-in-out infinite alternate; }
+.kikker-libel svg { width: 100%; height: auto; display: block; }
+.kikker-vleugel { transform-box: fill-box; transform-origin: center; animation: kikker-vleugel 0.12s ease-in-out infinite alternate; }
+@keyframes kikker-libel {
+  0% { left: 6%; top: 12%; }
+  45% { left: 40%; top: 22%; }
+  55% { left: 46%; top: 21%; }
+  100% { left: 78%; top: 14%; }
+}
+@keyframes kikker-vleugel { from { transform: scaleY(1); } to { transform: scaleY(0.55); } }
 .kikker-riet { position: absolute; bottom: 0; height: min(38%, 200px); }
 .kikker-riet svg { height: 100%; width: auto; display: block; }
 .kikker-riet__zwaai { height: 100%; transform-origin: 50% 100%; animation: kikker-wiebel 7s ease-in-out infinite; }
-.kikker-riet--achter { height: min(18%, 90px); bottom: 18%; opacity: 0.55; }
-.kikker-riet--a1 { left: 4%; }
+.kikker-riet--achter { height: min(18%, 90px); bottom: 50%; opacity: 0.6; }
+.kikker-riet--a1 { left: 3%; }
 .kikker-riet--a2 { left: 22%; height: min(14%, 70px); }
-.kikker-riet--a3 { left: 46%; }
-.kikker-riet--a4 { left: 64%; height: min(15%, 76px); }
-.kikker-riet--a5 { right: 6%; }
-.kikker-voor { display: none; position: absolute; inset: 0; z-index: 2; pointer-events: none; }
-.xylofoon--kikkerkoor .kikker-voor { display: block; }
-.kikker-riet--links { left: -4px; height: min(46%, 240px); }
-.kikker-riet--rechts { right: -4px; transform: scaleX(-1); height: min(40%, 200px); }
-.kikker-riet--midden { left: 16%; height: min(32%, 160px); }
-.kikker-riet--ver { left: 70%; height: min(28%, 140px); }
+.kikker-riet--a3 { left: 47%; }
+.kikker-riet--a4 { left: 66%; height: min(15%, 76px); }
+.kikker-riet--a5 { right: 4%; }
+/* Riet vooraan blijft laag en aan de randen: het mag de kikkers niet bedekken. */
+.kikker-voor { display: none; position: absolute; inset: 0; pointer-events: none; }
+.xylofoon--kikkerkoor .kikker-voor { display: block; z-index: 30; }
+.kikker-riet--links { left: -30px; height: min(30%, 150px); }
+.kikker-riet--rechts { right: -30px; transform: scaleX(-1); height: min(26%, 130px); }
+.kikker-riet--midden { left: 30%; height: min(12%, 60px); }
+.kikker-riet--ver { left: 64%; height: min(10%, 50px); }
 .kikker-riet--midden .kikker-riet__zwaai { animation-delay: -2s; }
-@media (orientation: portrait) and (max-width: 600px) {
-  .kikker-riet--links, .kikker-riet--rechts { height: min(26%, 150px); }
-  .kikker-riet--midden, .kikker-riet--ver { height: min(20%, 110px); }
-  .xylofoon--kikkerkoor .xylofoon__staaf::before { bottom: calc(36% + var(--pad, 0) * 0.5%); width: 92%; }
-  .xylofoon--kikkerkoor .kikker-pop { bottom: calc(36% + 10px + var(--pad, 0) * 0.5%); width: 120%; }
-}
 @keyframes kikker-wiebel { 0%, 100% { transform: rotate(-1.4deg); } 50% { transform: rotate(1.4deg); } }
 .xylofoon--kikkerkoor .xylofoon__staaf,
 .muziek-kaart .xylofoon--kikkerkoor .xylofoon__staaf,
@@ -2291,48 +2320,71 @@
   border-radius: 0;
   background: transparent;
   box-shadow: none;
-  z-index: 1;
+  z-index: var(--kz, calc(8 - var(--pad, 0)));
 }
-/* Hoogte in % van de kolom rekt het blad tot een staaf (vrij spelen vult het scherm).
-   Daarom de maat van de breedte. */
-.xylofoon--kikkerkoor .xylofoon__staaf::before {
-  top: auto;
-  left: 50%;
-  height: auto;
-  aspect-ratio: 100 / 70;
-  margin: 0;
-  width: 92%;
-  transform: translateX(-50%);
-  bottom: calc(26% + var(--pad, 0) * 0.7%);
-  border-radius: 0;
-  background:
-    radial-gradient(ellipse at 38% 36%, color-mix(in srgb, var(--kleur) 25%, #e7f8c4), transparent 46%),
-    radial-gradient(ellipse at 50% 60%, color-mix(in srgb, var(--kleur) 55%, #8ed46c), color-mix(in srgb, var(--kleur) 82%, #1d5c28));
-  -webkit-mask: url("/assets/icons/lelieblad.svg") center / 100% 100% no-repeat;
-  mask: url("/assets/icons/lelieblad.svg") center / 100% 100% no-repeat;
-  filter: drop-shadow(0 3px 0 rgba(0, 0, 0, 0.22));
-}
+.xylofoon--kikkerkoor .xylofoon__staaf::before,
 .xylofoon--kikkerkoor .xylofoon__staaf::after { content: none; }
-.kikker-pop { display: none; }
+/* De zitting (blad + kikker) neemt de maat van de breedte van de kolom: een hoogte in %
+   rekt het blad tot een staaf. */
+.kikker-zitting, .kikker-pop, .kikker-noot { display: none; }
+.xylofoon--kikkerkoor .kikker-zitting {
+  display: block;
+  position: absolute;
+  left: 50%;
+  bottom: calc(10% + var(--pad, 0) * 0.9%);
+  width: min(112%, 210px);
+  aspect-ratio: 140 / 132;
+  transform: translateX(-50%);
+  animation: kikker-drijf var(--adem, 3s) ease-in-out infinite alternate;
+  pointer-events: none;
+}
+@keyframes kikker-drijf {
+  from { transform: translateX(-50%); }
+  to { transform: translateX(-50%) translateY(-5px); }
+}
+.xylofoon--kikkerkoor .kikker-blad {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 68%;
+  transform: rotate(var(--blad, 0deg));
+  filter: drop-shadow(0 4px 0 rgba(0, 40, 20, 0.2));
+  pointer-events: none;
+}
+.xylofoon--kikkerkoor .kikker-blad svg { width: 100%; height: 100%; display: block; overflow: visible; }
+.kikker-blad__dik, .kikker-blad__blad { fill-rule: evenodd; }
+.kikker-blad__dik { fill: color-mix(in srgb, var(--kleur) 78%, #143c1e); }
+.kikker-blad__blad {
+  fill: color-mix(in srgb, var(--kleur) 70%, #d4f0a8);
+  stroke: color-mix(in srgb, var(--kleur) 40%, #143c1e);
+  stroke-width: 2.4;
+  stroke-linejoin: round;
+}
+.kikker-blad__nerf {
+  fill: none;
+  stroke: color-mix(in srgb, var(--kleur) 18%, #145c28);
+  stroke-width: 1.5;
+  stroke-linecap: round;
+  opacity: 0.5;
+}
+.kikker-blad__glans { fill: #fff; opacity: 0.38; }
 .xylofoon--kikkerkoor .kikker-pop {
   display: block;
   position: absolute;
   left: 50%;
-  bottom: calc(26% + 18px + var(--pad, 0) * 0.7%);
-  width: 138%;
-  height: auto;
+  bottom: 22%;
+  width: 80%;
   aspect-ratio: 1;
-  margin: 0;
   transform: translateX(-50%) scale(var(--groot, 1)) rotate(var(--draai, 0deg));
-  transform-origin: 50% 85%;
-  filter: hue-rotate(var(--tint, 0deg));
+  transform-origin: 50% 90%;
   animation: kikker-adem var(--adem, 3s) ease-in-out infinite alternate;
   pointer-events: none;
 }
 .xylofoon--kikkerkoor .kikker-pop svg { width: 100%; height: 100%; display: block; overflow: visible; }
+.kk-knipper, .kk-keel { transform-box: fill-box; }
 .kk-knipper {
-  transform-box: fill-box;
-  transform-origin: center;
+  transform-origin: 50% 0;
   transform: scaleY(0);
   animation: kikker-knipper 4.8s ease-in-out infinite;
   animation-delay: var(--knip, 0s);
@@ -2343,13 +2395,81 @@
 }
 @keyframes kikker-adem {
   from { transform: translateX(-50%) scale(var(--groot, 1)) rotate(var(--draai, 0deg)); }
-  to { transform: translateX(-50%) scale(var(--groot, 1)) rotate(calc(var(--draai, 0deg) + 3deg)) translateY(-4px); }
+  to { transform: translateX(-50%) scale(var(--groot, 1)) rotate(calc(var(--draai, 0deg) + 2deg)) translateY(-3px); }
 }
-.xylofoon--kikkerkoor .xylofoon__staaf--aan { animation: none; filter: none; }
-.xylofoon--kikkerkoor .xylofoon__staaf--aan .kikker-pop { animation: kikker-kwaak 0.32s ease-out; }
+/* De keelzak zit weg onder de kin en blaast bij een kwaak op, mee met het geratel. */
+.kk-keel { transform-origin: 50% 15%; transform: scale(0.2); opacity: 0; }
+.xylofoon--kikkerkoor .xylofoon__staaf--aan { animation: none; filter: none; --kz: 20; }
+.xylofoon--kikkerkoor .xylofoon__staaf--aan .kikker-pop { animation: kikker-kwaak 0.4s ease-out; }
+.xylofoon--kikkerkoor .xylofoon__staaf--aan .kikker-blad { animation: kikker-blad-aan 0.4s ease-out; }
+.xylofoon--kikkerkoor .xylofoon__staaf--aan .kk-keel { animation: kikker-keel 0.4s ease-out; }
+.xylofoon--kikkerkoor .xylofoon__staaf--aan .kikker-noot { animation: kikker-noot 0.8s ease-out; }
 @keyframes kikker-kwaak {
-  0% { transform: translateX(-50%) scale(calc(var(--groot, 1) * 1.12), calc(var(--groot, 1) * 0.88)) rotate(var(--draai, 0deg)); }
+  0% { transform: translateX(-50%) scale(calc(var(--groot, 1) * 1.1), calc(var(--groot, 1) * 0.88)) rotate(var(--draai, 0deg)); }
+  35% { transform: translateX(-50%) scale(calc(var(--groot, 1) * 0.97), calc(var(--groot, 1) * 1.06)) rotate(var(--draai, 0deg)) translateY(-4%); }
   100% { transform: translateX(-50%) scale(var(--groot, 1)) rotate(var(--draai, 0deg)); }
+}
+@keyframes kikker-keel {
+  0% { transform: scale(0.3); opacity: 1; }
+  14% { transform: scale(1.08); }
+  30% { transform: scale(0.86); }
+  46% { transform: scale(1.04); }
+  62% { transform: scale(0.9); opacity: 1; }
+  100% { transform: scale(0.2); opacity: 0; }
+}
+@keyframes kikker-blad-aan {
+  0% { filter: drop-shadow(0 4px 0 rgba(0, 40, 20, 0.2)) brightness(1.4); }
+  100% { filter: drop-shadow(0 4px 0 rgba(0, 40, 20, 0.2)); }
+}
+.xylofoon--kikkerkoor .kikker-noot {
+  display: block;
+  position: absolute;
+  left: 68%;
+  bottom: 70%;
+  width: 22%;
+  color: var(--kleur);
+  opacity: 0;
+  pointer-events: none;
+}
+.kikker-noot svg { width: 100%; height: auto; display: block; }
+@keyframes kikker-noot {
+  0% { opacity: 1; transform: translate(0, 10%) scale(0.5) rotate(-8deg); }
+  60% { opacity: 1; }
+  100% { opacity: 0; transform: translate(40%, -110%) scale(1) rotate(10deg); }
+}
+/* Smalle vijver: twee rijen om en om (do mi sol si voor, re fa la do achter), die
+   oplopen van links naar rechts. Dan raak je de kikker zelf, niet de smalle kolom. */
+@container vijver (max-width: 560px) and (min-height: 200px) {
+  .xylofoon__staaf { pointer-events: none; --kz: calc(10 - var(--rij, 0) * 5); }
+  /* Naar het midden geschoven, anders steken do en de hoge do buiten de vijver. */
+  .xylofoon--kikkerkoor .kikker-zitting {
+    left: calc(50% + (3.5 - var(--stap, 0)) * 14%);
+    width: 200%;
+    bottom: calc(3% + var(--rij, 0) * min(38%, 120px) + var(--stap, 0) * 1.2%);
+    pointer-events: auto;
+  }
+  .xylofoon--kikkerkoor .kikker-noot { width: 18%; }
+  .kikker-voor { visibility: hidden; }
+}
+@container vijver (max-width: 560px) and (min-height: 420px) {
+  .kikker-water { top: -24%; }
+  .kikker-bos { top: 20%; }
+  .kikker-bos--2, .kikker-bos--5 { display: none; }
+  .kikker-bos--1 { width: 18%; }
+  .kikker-bos--3 { width: 15%; }
+  .kikker-bos--4 { width: 20%; left: 46%; }
+  .kikker-bos--6 { width: 20%; }
+  .kikker-verpad { width: 16%; }
+  .kikker-verpad--1 { top: 32%; }
+  .kikker-verpad--2 { top: 38%; left: 34%; }
+  .kikker-verpad--3 { top: 31%; left: 60%; }
+  .kikker-verpad--4 { top: 40%; left: 80%; }
+  .kikker-wolk { width: 26%; }
+  .kikker-wolk--2, .kikker-wolk--4 { width: 16%; }
+  .kikker-libel { width: 64px; }
+  .kikker-riet--achter { bottom: 66%; height: min(9%, 60px); }
+  .kikker-riet--a2, .kikker-riet--a4 { display: none; }
+  .xylofoon--kikkerkoor .kikker-zitting { bottom: calc(4% + var(--rij, 0) * 21% + var(--stap, 0) * 1.6%); }
 }
 @keyframes toets-aan {
   0% { transform: translateY(3px); background: color-mix(in srgb, var(--kleur) 30%, #fff); box-shadow: inset 0 -4px 0 #dcdcdc; }
@@ -2362,9 +2482,15 @@
   .xylofoon--harp .xylofoon__staaf--aan,
   .xylofoon--harp .xylofoon__staaf--aan::before { animation: none; }
   .xylofoon--kikkerkoor .kikker-pop,
+  .xylofoon--kikkerkoor .kikker-zitting,
+  .xylofoon--kikkerkoor .xylofoon__staaf--aan .kikker-pop,
+  .xylofoon--kikkerkoor .xylofoon__staaf--aan .kikker-noot,
   .kk-knipper,
   .kikker-water .kikker-glans path,
   .kikker-bellen,
+  .kikker-wolk,
+  .kikker-libel,
+  .kikker-vleugel,
   .kikker-riet__zwaai { animation: none; }
 }
 @media (prefers-reduced-motion: reduce) {

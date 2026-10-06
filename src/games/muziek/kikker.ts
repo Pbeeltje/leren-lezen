@@ -1,37 +1,80 @@
-// Eén kikker voor het koor. houding verschuift alleen de ogen; grootte, draai en
-// kleur komen uit CSS. Geen voorpoten. Oogleden kunnen knipperen (.kk-knipper).
+// Eén kikker voor het koor, van voren: grote ogen bovenop de kop, achterpoten opzij,
+// voorpootjes op het blad. Elke kikker heeft een eigen groen (n % 8); houding zet de blik.
+// Bij een kwaak blaast de keelzak op (.kk-keel), de oogleden knipperen (.kk-knipper).
+// Vlakke kleuren, geen verlopen: een url(#id) naar een SVG die op display:none staat
+// (een ander instrument) tekent in Chrome niets.
+
+const HUIDEN: [huid: string, schaduw: string, rand: string][] = [
+  ['#86d65a', '#56a83c', '#1f5a1e'],
+  ['#62c66c', '#349649', '#164f26'],
+  ['#acd84c', '#77a72c', '#3a5614'],
+  ['#55c290', '#26926b', '#0e5038'],
+  ['#7ccb58', '#4b9a36', '#1d531c'],
+  ['#98de70', '#5aad46', '#225d21'],
+  ['#60bd5c', '#378c3d', '#16491c'],
+  ['#bcdd5e', '#84aa37', '#425f17'],
+];
+
+// Silhouet: eerst alles dik in de randkleur, dan de vulling erover. Zo krijgen kop, lijf
+// en poten samen één buitenrand, zonder naden ertussen.
+const POTEN = `
+  <path d="M14 88 C6 89 1 93 3 96 C8 97.5 20 97 26 94 Z"/>
+  <path d="M86 88 C94 89 99 93 97 96 C92 97.5 80 97 74 94 Z"/>
+  <path d="M32 70 C16 66 6 76 9 86 C12 94 28 95 36 88 Z"/>
+  <path d="M68 70 C84 66 94 76 91 86 C88 94 72 95 64 88 Z"/>`;
+const LIJF = `
+  <path d="M50 42 C30 42 22 62 26 80 C29 92 40 96 50 96 C60 96 71 92 74 80 C78 62 70 42 50 42 Z"/>
+  <ellipse cx="50" cy="47" rx="31" ry="20"/>
+  <circle cx="34" cy="30" r="12"/>
+  <circle cx="66" cy="30" r="12"/>`;
+const HANDEN = `
+  <circle cx="39" cy="90" r="5"/><circle cx="34.5" cy="93.5" r="2.7"/><circle cx="39" cy="95.6" r="2.7"/><circle cx="43.5" cy="94" r="2.7"/>
+  <circle cx="61" cy="90" r="5"/><circle cx="56.5" cy="94" r="2.7"/><circle cx="61" cy="95.6" r="2.7"/><circle cx="65.5" cy="93.5" r="2.7"/>`;
 
 export function kikkerSvg(n: number, houding: 0 | 1 | 2 | 3): string {
-  const id = `kk${n}`;
-  const oogY = houding === 3 ? 24 : houding === 1 ? 29 : 27;
-  const pupilY = oogY + 1.2;
+  const [huid, schaduw, rand] = HUIDEN[n % HUIDEN.length];
+  const kijkX = houding === 2 ? -2 : houding === 0 ? 1.8 : 0;
+  const kijkY = houding === 3 ? -2 : houding === 1 ? 1.6 : 0.4;
+  const oog = (x: number) => `
+    <circle cx="${x}" cy="29" r="8.6" fill="#fff"/>
+    <circle cx="${x + kijkX}" cy="${29 + kijkY}" r="4.9" fill="#1d1d1d"/>
+    <circle cx="${x + kijkX + 1.9}" cy="${29 + kijkY - 2}" r="1.9" fill="#fff"/>
+    <circle cx="${x + kijkX - 1.6}" cy="${29 + kijkY + 2}" r="0.9" fill="#fff" opacity="0.8"/>
+    <circle class="kk-knipper" cx="${x}" cy="29" r="9" fill="${huid}"/>`;
   return `
-<svg viewBox="0 0 80 80" aria-hidden="true">
-  <defs>
-    <linearGradient id="${id}-lijf" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0" stop-color="#7dce6a"/><stop offset="1" stop-color="#2f9a3c"/>
-    </linearGradient>
-    <linearGradient id="${id}-buik" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0" stop-color="#f4ffd2"/><stop offset="1" stop-color="#d4ee8a"/>
-    </linearGradient>
-    <linearGradient id="${id}-poot" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0" stop-color="#5cba52"/><stop offset="1" stop-color="#247a32"/>
-    </linearGradient>
-  </defs>
-  <path d="M24 50 C12 52 6 58 8 64 C12 70 24 68 26 62 C28 56 28 51 24 50Z" fill="url(#${id}-poot)" stroke="#145c28" stroke-width="2.2" stroke-linejoin="round"/>
-  <path d="M56 50 C68 52 74 58 72 64 C68 70 56 68 54 62 C52 56 52 51 56 50Z" fill="url(#${id}-poot)" stroke="#145c28" stroke-width="2.2" stroke-linejoin="round"/>
-  <ellipse cx="40" cy="48" rx="23" ry="17" fill="url(#${id}-lijf)" stroke="#145c28" stroke-width="2.4"/>
-  <ellipse cx="40" cy="52" rx="13" ry="9.5" fill="url(#${id}-buik)" stroke="#2d7a34" stroke-width="1.5"/>
-  <circle cx="26" cy="${oogY}" r="10" fill="url(#${id}-lijf)" stroke="#145c28" stroke-width="2.2"/>
-  <circle cx="54" cy="${oogY}" r="10" fill="url(#${id}-lijf)" stroke="#145c28" stroke-width="2.2"/>
-  <circle cx="26" cy="${oogY + 1}" r="5.2" fill="#fff" stroke="#145c28" stroke-width="1.5"/>
-  <circle cx="54" cy="${oogY + 1}" r="5.2" fill="#fff" stroke="#145c28" stroke-width="1.5"/>
-  <circle cx="27.4" cy="${pupilY}" r="2.5" fill="#1a1a1a"/>
-  <circle cx="55.4" cy="${pupilY}" r="2.5" fill="#1a1a1a"/>
-  <circle cx="28.6" cy="${pupilY - 1.4}" r="1" fill="#fff"/>
-  <circle cx="56.6" cy="${pupilY - 1.4}" r="1" fill="#fff"/>
-  <ellipse class="kk-knipper" cx="26" cy="${oogY + 1}" rx="5.6" ry="5.6" fill="#3aaa44"/>
-  <ellipse class="kk-knipper" cx="54" cy="${oogY + 1}" rx="5.6" ry="5.6" fill="#3aaa44"/>
-  <path d="M34 47 Q40 53 46 47" stroke="#145c28" stroke-width="2" stroke-linecap="round"/>
+<svg viewBox="0 0 100 100" aria-hidden="true">
+  <g class="kk-lijf">
+    <g fill="${rand}" stroke="${rand}" stroke-width="5" stroke-linejoin="round">${POTEN}${LIJF}</g>
+    <g fill="${schaduw}">${POTEN}</g>
+    <g fill="${huid}">${LIJF}</g>
+    <ellipse cx="40" cy="37" rx="11" ry="4" fill="#fff" opacity="0.28"/>
+    <ellipse cx="24" cy="80" rx="5" ry="3.4" fill="${schaduw}" opacity="0.8"/>
+    <ellipse cx="78" cy="84" rx="4" ry="2.8" fill="${schaduw}" opacity="0.8"/>
+    <ellipse cx="50" cy="31" rx="3.6" ry="2.4" fill="${schaduw}" opacity="0.7"/>
+    <ellipse cx="50" cy="80" rx="16" ry="14" fill="#f3f8c8"/>
+    ${oog(34)}${oog(66)}
+    <ellipse cx="25" cy="55" rx="4.6" ry="2.7" fill="#ff8fa8" opacity="0.6"/>
+    <ellipse cx="75" cy="55" rx="4.6" ry="2.7" fill="#ff8fa8" opacity="0.6"/>
+    <circle cx="46" cy="42" r="1.2" fill="${rand}"/>
+    <circle cx="54" cy="42" r="1.2" fill="${rand}"/>
+    <g class="kk-keel">
+      <ellipse cx="50" cy="65" rx="14" ry="10.5" fill="#fbeaa8" stroke="${rand}" stroke-width="1.8"/>
+      <ellipse cx="44.5" cy="61" rx="4.4" ry="2.6" fill="#fff" opacity="0.75"/>
+    </g>
+    <path class="kk-mond" d="M27 52 Q50 66 73 52" fill="none" stroke="${rand}" stroke-width="2.8" stroke-linecap="round"/>
+    <g fill="${rand}" stroke="${rand}" stroke-width="3.2">${HANDEN}</g>
+    <g fill="${huid}">${HANDEN}</g>
+  </g>
 </svg>`;
 }
+
+// Muzieknootje dat bij een kwaak omhoog zweeft, in de kleur van het blad (currentColor).
+const NOOT_VORM = `
+  <rect x="12.5" y="6" width="4" height="26"/>
+  <path d="M12.5 6 L28 1.5 V10 L16.5 13.5 Z"/>
+  <ellipse cx="9" cy="31.5" rx="7.5" ry="5.8" transform="rotate(-18 9 31.5)"/>`;
+export const NOOT = `
+<svg viewBox="-3 -2 36 44" aria-hidden="true">
+  <g fill="#fff" stroke="#fff" stroke-width="5" stroke-linejoin="round">${NOOT_VORM}</g>
+  <g fill="currentColor">${NOOT_VORM}</g>
+</svg>`;

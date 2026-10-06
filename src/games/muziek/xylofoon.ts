@@ -1,6 +1,6 @@
 import { STAAF_KLEUREN, TONEN, speelInstrument, type Instrument } from '../../engine/muziek.ts';
-import { kikkerSvg } from './kikker.ts';
-import { BELLEN, RIET, WATER } from './vijver.ts';
+import { NOOT, kikkerSvg } from './kikker.ts';
+import { BELLEN, LIBEL, STRUIK, WATER, WOLK, lelieSvg, rietSvg, verPadSvg } from './vijver.ts';
 
 // Een xylofoon van gekleurde staven, lang (laag) naar kort (hoog). Tikken speelt een toon;
 // met de vinger eroverheen glijden speelt ze allemaal (glissando). tonen = indexen in TONEN.
@@ -22,10 +22,18 @@ export function maakXylofoon(
   const el = document.createElement('div');
   const vijver = document.createElement('div');
   vijver.className = 'kikker-vijver';
-  const pol = (extra: string) => `<div class="kikker-riet ${extra}"><div class="kikker-riet__zwaai">${RIET}</div></div>`;
+  const pol = (extra: string, lis = false) =>
+    `<div class="kikker-riet ${extra}"><div class="kikker-riet__zwaai">${rietSvg(lis)}</div></div>`;
   vijver.innerHTML =
     `<div class="kikker-water">${WATER}</div>` +
+    [1, 2, 3, 4].map((n) => `<div class="kikker-wolk kikker-wolk--${n}">${WOLK}</div>`).join('') +
+    [1, 2, 3, 4, 5, 6].map((n) => `<div class="kikker-bos kikker-bos--${n}">${STRUIK}</div>`).join('') +
+    `<div class="kikker-verpad kikker-verpad--1">${verPadSvg(false)}</div>` +
+    `<div class="kikker-verpad kikker-verpad--2">${verPadSvg(true)}</div>` +
+    `<div class="kikker-verpad kikker-verpad--3">${verPadSvg(false)}</div>` +
+    `<div class="kikker-verpad kikker-verpad--4">${verPadSvg(true)}</div>` +
     `<div class="kikker-bellen">${BELLEN}</div>` +
+    `<div class="kikker-libel">${LIBEL}</div>` +
     pol('kikker-riet--achter kikker-riet--a1') +
     pol('kikker-riet--achter kikker-riet--a2') +
     pol('kikker-riet--achter kikker-riet--a3') +
@@ -35,10 +43,10 @@ export function maakXylofoon(
   const voor = document.createElement('div');
   voor.className = 'kikker-voor';
   voor.innerHTML =
-    pol('kikker-riet--links') +
+    pol('kikker-riet--links', true) +
     pol('kikker-riet--midden') +
     pol('kikker-riet--ver') +
-    pol('kikker-riet--rechts');
+    pol('kikker-riet--rechts', true);
   let huidig = instrument;
   let actief = true;
   let ingedrukt = false;
@@ -56,13 +64,24 @@ export function maakXylofoon(
     staaf.style.setProperty('--pad', ['0', '5', '2', '7', '1', '6', '3', '4'][i]);
     staaf.style.setProperty('--draai', ['-7', '5', '-2', '8', '-5', '6', '-3', '2'][i] + 'deg');
     staaf.style.setProperty('--groot', ['1.12', '0.98', '1.06', '1', '1.14', '0.96', '1.04', '1.08'][i]);
-    staaf.style.setProperty('--tint', ['-12', '16', '32', '-20', '6', '40', '-4', '22'][i] + 'deg');
     staaf.style.setProperty('--knip', ['0s', '-1.4s', '-3.1s', '-0.6s', '-2.2s', '-4.4s', '-1.8s', '-2.9s'][i]);
     staaf.style.setProperty('--adem', ['3.2s', '3.8s', '2.6s', '4.2s', '3.4s', '2.5s', '3.9s', '2.9s'][i]);
+    staaf.style.setProperty('--rij', String(positie % 2));
+    staaf.style.setProperty('--stap', String(positie));
+    staaf.style.setProperty('--blad', ['-18', '14', '4', '-10', '20', '-16', '8', '-4'][i] + 'deg');
+    const zit = document.createElement('span');
+    zit.className = 'kikker-zitting';
+    const blad = document.createElement('span');
+    blad.className = 'kikker-blad';
+    blad.innerHTML = lelieSvg();
     const pop = document.createElement('span');
     pop.className = 'kikker-pop';
     pop.innerHTML = kikkerSvg(positie, (i % 4) as 0 | 1 | 2 | 3);
-    staaf.appendChild(pop);
+    const noot = document.createElement('span');
+    noot.className = 'kikker-noot';
+    noot.innerHTML = NOOT;
+    zit.append(blad, pop, noot);
+    staaf.appendChild(zit);
     staaf.dataset.positie = String(positie);
     // Keyboard: een zwarte toets (alleen versiering) rechts van do, re, fa, sol en la, als
     // de volgende witte toets er ook is.
@@ -71,9 +90,7 @@ export function maakXylofoon(
     staaf.addEventListener('animationend', (e) => {
       if (e.target === staaf) staaf.classList.remove('xylofoon__staaf--aan');
     });
-    pop.addEventListener('animationend', (e) => {
-      if (e.animationName === 'kikker-kwaak') staaf.classList.remove('xylofoon__staaf--aan');
-    });
+    noot.addEventListener('animationend', () => staaf.classList.remove('xylofoon__staaf--aan'));
     el.appendChild(staaf);
     return staaf;
   });

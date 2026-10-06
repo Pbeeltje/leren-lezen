@@ -893,9 +893,16 @@ The games:
   `bronbestanden/harp.m4a`. Fluit keeps the last steel-synth (`speelSteel`: one voice,
   sine+triangle, short swell). Keyboard = 2-operator FM (`speelKeyboard`). Old shop key
   `instrument:steelgitaar` still counts as fluit. Banjo/gitaar were dropped.
-  Kikkerkoor (`speelKikker`): the note is the loud frog, two quieter neighbours croak a bit
-  later and slightly off pitch. Each croak is two falling pulses plus a little noise.
-  Look: `.xylofoon--kikkerkoor`, eight frogs (`kikker.svg`) on lily pads in `STAAF_KLEUREN`.
+  Kikkerkoor (`speelKikker`): one tap = one frog = one croak. A sawtooth on the note (an
+  octave down) is chopped by a pulse LFO (the rattle, 21-47 Hz) and sent through a "mouth"
+  bandpass that opens and closes (k-wa-ak), plus a noise tick for the k. `KWAKEN` gives each
+  of the eight notes its own rattle speed, length and mouth (low do = big bullfrog).
+  Look: `.xylofoon--kikkerkoor`; the frog is `kikkerSvg()` in `games/muziek/kikker.ts` (flat
+  colours, no gradients: a `url(#id)` into a display:none SVG draws nothing in Chrome), the pond
+  in `vijver.ts`. A croak inflates the throat sac (`.kk-keel`) and floats a note (`.kikker-noot`).
+  The pond is a size container (`vijver`): when it is narrower than 560px the frogs sit in two
+  staggered rows and the frog itself is the tap target (the columns get `pointer-events: none`).
+  `kikker.svg` (shop icon) is generated from `kikkerSvg(0, 0)` without eyelids and throat sac.
 - Keyboard look: white keys with a coloured patch, decorative black keys via
   `[data-zwart]::after` (set in `maakXylofoon` for do/re/fa/sol/la when the next key exists);
   tapping a black key plays the white key it belongs to. `xylofoon.svg` is now our own
