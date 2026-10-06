@@ -6,7 +6,7 @@
 - borstel: een haarborstel
 - stegosaurus: groene dino met platen op de rug en stekels aan de staart
 - spijker, plakband (rolletje in houder), pan (koekenpan), tang
-- triangel, tamboerijn, drumstel, gong
+- triangel, tamboerijn, drumstel, gong, tuba, orgel
 """
 from pathlib import Path
 
@@ -176,7 +176,52 @@ def gong() -> str:
   <path d="M44 48 C48 44 54 42 58 42" fill="none" stroke="#fff8e1" stroke-width="3" stroke-linecap="round"/>'''
 
 
+def tuba() -> str:
+    # Grote koperen tuba: brede beker omhoog, ronde gekrulde buis onderaan,
+    # drie ventielen opzij en een mondstuk.
+    return '''  <ellipse cx="60" cy="86" rx="30" ry="22" fill="none" stroke="#e65100" stroke-width="18"/>
+  <ellipse cx="60" cy="86" rx="30" ry="22" fill="none" stroke="#ffb300" stroke-width="12"/>
+  <path d="M42 70 C44 62 50 56 56 54" fill="none" stroke="#ffe082" stroke-width="3" stroke-linecap="round"/>
+  <path d="M60 64 L60 50 C60 40 48 26 34 16 L106 16 C92 26 80 40 80 50 L80 64 Z"
+        fill="#ffc107" stroke="#e65100" stroke-width="3" stroke-linejoin="round"/>
+  <ellipse cx="70" cy="16" rx="36" ry="8" fill="#ffe082" stroke="#e65100" stroke-width="3"/>
+  <ellipse cx="70" cy="16" rx="28" ry="5" fill="#ffb300"/>
+  <path d="M66 50 C66 42 60 34 52 28" fill="none" stroke="#fff8e1" stroke-width="3" stroke-linecap="round"/>
+  <g fill="#cfd8dc" stroke="#607d8b" stroke-width="2.5">
+    <rect x="22" y="44" width="7" height="24" rx="2"/><rect x="31" y="44" width="7" height="24" rx="2"/><rect x="40" y="44" width="7" height="24" rx="2"/>
+    <ellipse cx="25.5" cy="42" rx="5" ry="3"/><ellipse cx="34.5" cy="42" rx="5" ry="3"/><ellipse cx="43.5" cy="42" rx="5" ry="3"/>
+  </g>
+  <path d="M22 56 L8 46" stroke="#e65100" stroke-width="5" stroke-linecap="round"/>
+  <path d="M22 56 L8 46" stroke="#ffca28" stroke-width="2" stroke-linecap="round"/>'''
+
+
+def orgel() -> str:
+    # Orgel: rij zilveren pijpen (midden het hoogst) op een houten kast met toetsen.
+    pijpen = []
+    hoogtes = [30, 40, 50, 60, 50, 40, 30]
+    for i, h in enumerate(hoogtes):
+        x = 22 + i * 11
+        pijpen.append(f'    <rect x="{x}" y="{70 - h}" width="9" height="{h}" rx="2"/>')
+        pijpen.append(f'    <path d="M{x + 2} {66} L{x + 7} {66} L{x + 4.5} {61} Z" fill="#37474f" stroke="none"/>')
+    pijp_svg = '\n'.join(pijpen)
+    toetsen = '\n'.join(f'    <rect x="{24 + i * 9}" y="82" width="8" height="12" rx="1"/>' for i in range(8))
+    zwart = '\n'.join(f'    <rect x="{30 + i * 9}" y="82" width="4" height="7"/>' for i in (0, 1, 3, 4, 5))
+    return f'''  <g fill="#cfd8dc" stroke="#607d8b" stroke-width="2">
+{pijp_svg}
+  </g>
+  <rect x="14" y="68" width="92" height="44" rx="4" fill="#8d6e63" stroke="#4e342e" stroke-width="3"/>
+  <rect x="20" y="78" width="80" height="20" rx="2" fill="#5d4037"/>
+  <g fill="#fafafa" stroke="#9e9e9e" stroke-width="1">
+{toetsen}
+  </g>
+  <g fill="#212121">
+{zwart}
+  </g>'''
+
+
 def main() -> None:
+    schrijf('tuba', svg(tuba(), 'Een tuba'))
+    schrijf('orgel', svg(orgel(), 'Een orgel'))
     schrijf('triangel', svg(triangel(), 'Een triangel'))
     schrijf('tamboerijn', svg(tamboerijn(), 'Een tamboerijn'))
     schrijf('drumstel', svg(drumstel(), 'Een drumstel'))

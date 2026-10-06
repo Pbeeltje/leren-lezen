@@ -25,9 +25,9 @@
  },
  {
   "n": 5,
-  "slug": "sambaballen",
-  "text": "sambaballen",
-  "path": "public/assets/audio/woorden/sambaballen.mp3"
+  "slug": "tuba",
+  "text": "tuba",
+  "path": "public/assets/audio/woorden/tuba.mp3"
  },
  {
   "n": 6,
@@ -43,9 +43,9 @@
  },
  {
   "n": 8,
-  "slug": "hoorn",
-  "text": "hoorn",
-  "path": "public/assets/audio/woorden/hoorn.mp3"
+  "slug": "orgel",
+  "text": "orgel",
+  "path": "public/assets/audio/woorden/orgel.mp3"
  },
  {
   "n": 9,

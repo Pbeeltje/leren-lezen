@@ -15,7 +15,7 @@ id (`lezen-24` sits at position 10, next free is `lezen-29`), and never renumber
 sits in exactly one chapter; the toets is the whole bank (12). The list and
 picture/audio notes are in `C:\Claude\leren-lezen-hoofdstukken-plan.md`. New
 pictures: `bronbestanden/teken-lezen-nieuw.py` (plurals are 2–3 copies) and
-`teken-lange-woorden.py` (kam, borstel, stegosaurus, spijker, plakband, pan, tang, triangel, tamboerijn, drumstel, gong).
+`teken-lange-woorden.py` (kam, borstel, stegosaurus, spijker, plakband, pan, tang, triangel, tamboerijn, drumstel, gong, tuba, orgel).
 `harp.svg`/`xylofoon.svg` are copies of the shop icons. The
 old `vll-kern-*` / `kern-0*` ids are gone.
 

@@ -445,10 +445,10 @@ Delen: opnamelijst-2-deel-1, opnamelijst-2-deel-2, opnamelijst-2-deel-3, opnamel
 414. fluit
 415. viool
 416. harp
-417. sambaballen
+417. tuba
 418. koptelefoon
 419. tamboerijn
-420. hoorn
+420. orgel
 421. luidspreker
 422. drumstel
 423. gong

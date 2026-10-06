@@ -97,7 +97,7 @@ export const LUISTER_HOOFDSTUKKEN: LuisterHoofdstuk[] = [
     id: 'muziek',
     titel: 'Muziek',
     icoonWoord: 'gitaar',
-    woorden: ['gitaar', 'piano', 'trommel', 'trompet', 'triangel', 'fluit', 'viool', 'harp', 'xylofoon', 'saxofoon', 'accordeon', 'banjo', 'sambaballen', 'tamboerijn', 'hoorn', 'drumstel', 'gong', 'bel', 'microfoon', 'koptelefoon', 'luidspreker', 'megafoon', 'radio'],
+    woorden: ['gitaar', 'piano', 'trommel', 'trompet', 'triangel', 'fluit', 'viool', 'harp', 'xylofoon', 'saxofoon', 'accordeon', 'banjo', 'tuba', 'tamboerijn', 'orgel', 'drumstel', 'gong', 'bel', 'microfoon', 'koptelefoon', 'luidspreker', 'megafoon', 'radio'],
   },
   {
     id: 'dinos',
