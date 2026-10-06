@@ -10,6 +10,8 @@ countable icons. Screens get the chapter list from `rekenKernen()` in
 - `hoeveelheid-typen` — same picture, type the numeral.
 - `cijfer-naar-hoeveelheid` — see a numeral, pick the group with that many.
 - `dobbelsteen-naar-cijfer` — 1–6 dice pips (`ui/components/Dobbelsteen.ts`, pure CSS).
+- `vingers-naar-cijfer` (`games/vingersNaarCijfer.ts`) — a hand showing N fingers
+  (own drawings `images/vingers/vinger-N.svg` from `teken-woorden.py`), pick the numeral.
 - `dubbele-dobbelsteen-naar-cijfer` — two ordinary dice added, sum ≤ 10. An earlier
   "one pip means ten" version was rejected: don't bring back conventions that
   need explaining.
@@ -30,7 +32,7 @@ which once let kern-01 pick up optellen. `oefeningVolgorde` pins oefening 1/2/3
 
 ## Chapters (groep 3)
 
-- 01 (1–6), 02 (1–10): counting types. 03 (11–20): `reeks-aanvullen`,
+- 01 (1–6), 02 (1–10): counting types including dice and fingers. 03 (11–20): `reeks-aanvullen`,
   `dubbele-dobbelsteen-naar-cijfer`. 04: `optellen` only. 05: bussommen.
 - `reken-kern-06` Plus tot 10 (`somTeken: '+'`, terms ≥ 1, sum 2–10), `07` Min tot 10
   (minuend 1–10, result ≥ 0), `08` Plus tot 20 (sums 11–20), `09` Min tot 20
