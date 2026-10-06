@@ -88,11 +88,23 @@ KAST = '''  <rect x="18" y="14" width="84" height="96" rx="6" fill="#d7a86e" str
   <circle cx="48" cy="70" r="4" fill="#f9a825"/><circle cx="72" cy="70" r="4" fill="#f9a825"/>
   <path d="M18 110 H102" stroke="#5d4037" stroke-width="6" stroke-linecap="round"/>'''
 
-VERF = '''  <rect x="30" y="38" width="60" height="64" rx="8" fill="#eceff1" stroke="#546e7a" stroke-width="3"/>
-  <path d="M30 54 H90" stroke="#546e7a" stroke-width="3"/>
-  <ellipse cx="60" cy="38" rx="30" ry="10" fill="#42a5f5" stroke="#1565c0" stroke-width="3"/>
-  <path d="M38 70 H82" stroke="#90caf9" stroke-width="8" stroke-linecap="round"/>
-  <circle cx="50" cy="28" r="8" fill="#ef5350"/><circle cx="70" cy="24" r="7" fill="#66bb6a"/>'''
+# Grote open pot blauwe verf met hengsel, druppels over de rand, een plas eromheen
+# en een kwast die er schuin in staat.
+VERF = '''  <path d="M6 104 C4 94 18 90 30 92 C44 86 80 86 94 92 C108 90 118 96 114 104 C118 112 100 116 88 113 C72 118 44 118 30 114 C16 116 4 112 6 104 Z"
+        fill="#42a5f5" stroke="#1565c0" stroke-width="3" stroke-linejoin="round"/>
+  <ellipse cx="34" cy="100" rx="7" ry="2.5" fill="#90caf9"/>
+  <path d="M20 42 C20 14 100 14 100 42" fill="none" stroke="#78909c" stroke-width="3.5" stroke-linecap="round"/>
+  <path d="M22 44 L26 98 C26 104 94 104 94 98 L98 44 Z" fill="#eceff1" stroke="#546e7a" stroke-width="3" stroke-linejoin="round"/>
+  <path d="M24 62 C40 66 80 66 96 62" fill="none" stroke="#b0bec5" stroke-width="3"/>
+  <path d="M26 46 L26 58 C26 64 32 64 32 58 L32 50 L44 52 L44 72 C44 78 51 78 51 72 L51 52 L76 52 L76 64 C76 70 83 70 83 64 L83 50 L96 46 Z"
+        fill="#42a5f5" stroke="#1565c0" stroke-width="2.5" stroke-linejoin="round"/>
+  <ellipse cx="60" cy="44" rx="38" ry="10" fill="#42a5f5" stroke="#546e7a" stroke-width="3"/>
+  <ellipse cx="60" cy="44" rx="31" ry="6" fill="#1e88e5"/>
+  <g transform="rotate(24 66 40)">
+    <rect x="61" y="4" width="10" height="28" rx="4" fill="#8d6e63" stroke="#5d4037" stroke-width="3"/>
+    <rect x="58" y="30" width="16" height="9" rx="2" fill="#f9a825" stroke="#f57f17" stroke-width="2.5"/>
+  </g>
+  <ellipse cx="67" cy="41.5" rx="11" ry="4" fill="#1e88e5"/>'''
 
 KWAST = '''  <path d="M52 8 H68 L64 58 H56 Z" fill="#8d6e63" stroke="#5d4037" stroke-width="3"/>
   <rect x="48" y="52" width="24" height="14" rx="3" fill="#f9a825" stroke="#f57f17" stroke-width="2.5"/>
