@@ -7,8 +7,12 @@ Topic `luisteren`, no text on screen. Picking it opens
 (`LuisterenKiesScreen`) is gone because Geheugenspel lives under Spelletjes.
 Not built on the kern/chapter machinery (no letters, no progression, no stars).
 Pool: `engine/luisterenGenerator.ts` `woordenpool()` walks every reading
-`woordenbank` minus `vereistTekst` words — **any new reading word is
-automatically in Luisteren and Geheugenspel**.
+`woordenbank` minus `vereistTekst` words, keeping only words with a recording in
+`bronbestanden/audio-manifest*.json`. Geheugenspel uses the whole pool, so a new
+reading word joins it automatically. **Luister & wijs does not**: its chapters
+(`content/luisteren/hoofdstukken.ts`) are hand-written word lists, so add a new
+word there too. A word in a list that isn't in a reading bank (or is
+`vereistTekst`, e.g. `hagel`) silently never appears.
 
 **Luister & wijs** (`LuisterenScreen.ts`, `games/luisterKiezen.ts`): hear a word,
 tap the matching picture from 3. Rounds of 5 (`RONDE_LENGTE`) with a

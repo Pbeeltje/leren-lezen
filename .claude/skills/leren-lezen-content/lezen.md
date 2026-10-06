@@ -2,9 +2,9 @@
 
 ## Word bank and chapters
 
-Reading chapters live in `content/lezen/kernen/lezen-hoofdstukken.ts`: 23
-chapters × 12 words (ids `lezen-01` … `lezen-23`). Difficulty order: CVC → long
-vowels → clusters → diphthongs → sch/eeuw → themed review → plurals. Each word
+Reading chapters live in `content/lezen/kernen/lezen-hoofdstukken.ts`: 24
+chapters × 12 words (ids `lezen-01` … `lezen-24`). Difficulty order: CVC → long
+vowels → clusters → diphthongs → sch/eeuw → themed review → plurals → leftovers (23, 24). Each word
 sits in exactly one chapter; the toets is the whole bank (12). The list and
 picture/audio notes are in `C:\Claude\leren-lezen-hoofdstukken-plan.md`. New
 pictures: `bronbestanden/teken-lezen-nieuw.py` (plurals are 2–3 copies). The
@@ -20,7 +20,7 @@ to the chapter's `woordenbank`, optionally a `zinnen` entry. **Verify the
 picture is unambiguous** to a child (real bug: "mars" + a chocolate-bar icon read
 as "chocolade" — fixed by swapping the *word*). Reusing an existing picture for
 another word is fine when it genuinely fits (`cp` it to `woorden/<woord>.svg`).
-Every reading word automatically joins the Luisteren pool (unless `vereistTekst`).
+Every reading word with a recording joins the Geheugenspel pool (unless `vereistTekst`); for Luister & wijs also add it to a chapter list, see [kleuter-onderwerpen.md](kleuter-onderwerpen.md).
 
 **Adjectives (`koud`, `droog`, `heet`, `nat`, ...) need `vereistTekst: true`.**
 A picture can't disambiguate a quality word. With the flag,

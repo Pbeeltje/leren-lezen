@@ -86,6 +86,8 @@ const bomen = w('bomen'), jassen = w('jassen'), schoenen = w('schoenen'), blokke
 const katten = w('katten'), kippen = w('kippen'), ballen = w('ballen'), huizen = w('huizen'), apen = w('apen'), benen = w('benen');
 const uil = w('uil'), duif = w('duif'), trui = w('trui'), fruit = w('fruit'), tuin = w('tuin'), wolf = w('wolf');
 const kers = w('kers'), gras = w('gras'), kerk = w('kerk'), kraan = w('kraan'), vlieg = w('vlieg'), zwaan = w('zwaan');
+const arm = w('arm'), gans = w('gans'), krant = w('krant'), spons = w('spons'), laars = w('laars'), spook = w('spook');
+const sla = w('sla'), ski = w('ski'), baard = w('baard'), berg = w('berg'), mais = w('mais'), aan = w('aan', true);
 
 export const LEZEN_HOOFDSTUKKEN: Kern[] = [
   hoofdstuk(1, 'Kip en vis', ['m', 's', 'v', 'r', 'k', 'p', 'n', 't', 'i', 'o', 'e'],
@@ -298,5 +300,20 @@ export const LEZEN_HOOFDSTUKKEN: Kern[] = [
       zin('In de schaal ligt lekker ___.', fruit, gras, kers),
       zin('Achter het huis ligt een ___.', tuin, kerk, trui),
       zin('De ___ huilt in het bos.', wolf, uil, zwaan),
+    ]),
+  hoofdstuk(24, 'Laars en krant', [],
+    [laars, krant, gans, arm, spons, spook, sla, ski, baard, berg, mais, aan], [
+      zin('Het regent. Ik trek mijn ___ aan.', laars, krant, spook),
+      zin('Opa leest het nieuws in de ___.', krant, berg, sla),
+      zin('Op de boerderij snatert een grote ___.', gans, spons, baard),
+      zin('Ik til de tas op met mijn ___.', arm, ski, mais),
+      zin('Ik was de auto met een ___.', spons, gans, berg),
+      zin('Met een laken over je hoofd ben je een ___.', spook, laars, krant),
+      zin('Bij het eten krijg ik ___ met tomaat.', sla, arm, ski),
+      zin('Ik glij de besneeuwde berg af op een ___.', ski, spons, baard),
+      zin('Opa heeft een lange grijze ___.', baard, mais, laars),
+      zin('We klimmen helemaal naar de top van de ___.', berg, gans, spook),
+      zin('De kip pikt de gele korrels ___.', mais, arm, krant),
+      zin('Het is donker. Doe het licht maar ___.', aan, ski, sla),
     ]),
 ];
