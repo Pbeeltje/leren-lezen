@@ -1,0 +1,17 @@
+<svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+<!-- Eigen tekening: twee bamboestengels met knopen en blaadjes (eten van de panda). -->
+<path d="M18.5 9.5C20.5 6.5 23.5 5 27 5.2C25 7.6 22.2 9.4 18.5 9.5Z" fill="#7CB342"/>
+<path d="M13.5 13.5C11 11 7.8 10.2 4.6 11C6.6 13.2 9.8 14.2 13.5 13.5Z" fill="#8BC34A"/>
+<path d="M18.5 19C21.2 17.4 24.4 17.4 27.2 18.8C24.6 20.4 21.6 20.6 18.5 19Z" fill="#7CB342"/>
+<rect x="10.5" y="4" width="5" height="26" rx="2.2" fill="#9CCC65"/>
+<rect x="10.5" y="4" width="1.6" height="26" rx="0.8" fill="#C5E1A5"/>
+<rect x="16.8" y="8" width="4.4" height="22" rx="2" fill="#7CB342"/>
+<rect x="16.8" y="8" width="1.4" height="22" rx="0.7" fill="#AED581"/>
+<rect x="10" y="11" width="6" height="1.6" rx="0.8" fill="#558B2F"/>
+<rect x="10" y="19" width="6" height="1.6" rx="0.8" fill="#558B2F"/>
+<rect x="10" y="26.5" width="6" height="1.6" rx="0.8" fill="#558B2F"/>
+<rect x="16.3" y="15" width="5.4" height="1.6" rx="0.8" fill="#33691E"/>
+<rect x="16.3" y="23" width="5.4" height="1.6" rx="0.8" fill="#33691E"/>
+<rect x="10.8" y="3.6" width="4.4" height="1.4" rx="0.7" fill="#689F38"/>
+<rect x="17.1" y="7.6" width="3.8" height="1.3" rx="0.65" fill="#558B2F"/>
+</svg>

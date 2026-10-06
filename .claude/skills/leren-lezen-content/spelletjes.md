@@ -72,20 +72,30 @@ next group doesn't wait. −1 heart; three wrong = end. Record per profile
   direction. `schaal` 0.8–1.2 is stretched by `spreid()` (×1.75 around 1, min 0.4)
   so a mouse is small and an elephant big; a group that doesn't fit shrinks evenly
   (`maten`). `mond` sets where thrown food lands. `THEMA_DIEREN` favours animals
-  that fit the background (75%).
-- Entrances (`komt`): loopt, hupt, springt (cat, tiger, fox), valt (monkeys drop,
-  then `--wipt`), glijdt (penguin, seal), stampt (dinos shake the screen), rent
-  (dog), zakt (sloth on a vine), vliegt (bee, butterfly; `--zweeft`), kruipt (snail,
-  turtle: a third of a body per second; nobody waits for them, the tray comes once
-  the rest has arrived), kronkelt (snake). Extras: `slaapt` (lion, sloth "Zzz…"),
-  `spuit` (elephant fountain).
+  that fit the background (75%). `water` animals (dolphin, shark, sea turtle,
+  tropical fish) only come on zee/onderwater. `draai` rotates the body (the
+  crocodile is drawn from above, turned 90°).
+- The goat (`allesEter`) eats everything except live animals (`ALLES`): it always
+  comes alone, its tray is 3 random foods, all right, and it says "Mjam!".
+- The land turtle (schildpad) eats gras/blad; the seaweed eaters are the sea turtle,
+  tropical fish (`visje`) and crab (crab throws wrong food back, `gooi`).
+- Entrances (`komt`): loopt, hupt, springt (cat, tiger, fox, kangaroo), valt
+  (monkeys drop, then `--wipt`), glijdt (penguin, seal), stampt (dinos shake the
+  screen), rent (dog), zakt (sloth on a vine; spider on a thin thread via
+  `[data-dier='spin']`), vliegt (bee, butterfly, parrot, owl; `--zweeft`), zwemt
+  (water animals: like vliegt, lower and calmer), kruipt (snail, turtle: a third
+  of a body per second; nobody waits for them, the tray comes once the rest has
+  arrived), kronkelt (snake), graaft (mole rises out of the ground with
+  clip-path, dirt clods `.voer-druppel--aarde`, sinks back to leave). Extras:
+  `slaapt` (lion, sloth "Zzz…"), `spuit` (elephant fountain).
 - Groups: 1 animal, from score 6 sometimes 2, groep 3 from 14 up to 3 (max 2 when
   width < 560). Animals in a group never share a good food and never stand next to
-  their prey (`PROOI`/`lust`: cat/snake–mouse, wolf–sheep, fox–chicken). `SAMEN`:
+  their prey (`PROOI`/`lust`: cat/snake/owl–mouse, wolf–sheep/lamb, fox–chicken/hen,
+  fish eaters–tropical fish). `SAMEN`:
   monkeys, bees, butterflies often come in 2–3 (only the first talks). From score
   4, 12% chance of a family (mouse + 4 babies `alleenFamilie`, monkey troupe,
   swarm).
-- Hunters (`jager`: tiger, lion, T-rex, polar bear, wolf, fox): if a plant eater
+- Hunters (`jager`: tiger, lion, T-rex, polar bear, wolf, fox, crocodile, shark): if a plant eater
   waits next to one for 4 s unfed, the hunter chases it off, no heart lost.
 - Tray: the unique wanted foods topped up to 3 with things none of them eat. Food
   stays in the tray after a throw. Throws don't block; the target leaves the
@@ -93,7 +103,8 @@ next group doesn't wait. −1 heart; three wrong = end. Record per profile
   waiting animal's box plus a margin; overlaps go to the nearest centre. One chord
   (do-mi, + sol for three) when the tray appears.
 - Pictures in `public/assets/voeren/` (Fluent dog, bone, meat, peanut, worm,
-  sauropod, butterfly; own `zeewier.svg`). Dragging shows a big white hand cursor
+  sauropod, butterfly, chipmunk `eekhoorn`; own `zeewier.svg`, `bamboe.svg`, and
+  `zeeschildpad.svg` = the Fluent turtle with its legs swapped for own flippers). Dragging shows a big white hand cursor
   (`.voer-sleept`) and a fading trail.
 - Check: `node tests/voeren.mjs <map> [kleuter]`; forced groups via dev hook
   `window.__voerGroepjes`: `node tests/voeren-dieren.mjs <map> [w] [h]`

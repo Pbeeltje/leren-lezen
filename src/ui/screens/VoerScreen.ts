@@ -45,6 +45,8 @@ const ETEN = {
   zeewier: v('zeewier'),
   schaap: w('schaap'),
   kip: w('kip'),
+  noot: w('noot'),
+  bamboe: v('bamboe'),
 } as const;
 type Eten = keyof typeof ETEN;
 
@@ -52,9 +54,10 @@ type Eten = keyof typeof ETEN;
 // grote boogsprongen), uit de lucht vallen (aap; weg = weer omhoog klimmen), op de buik
 // glijden (pinguïn), stampen (dino's: het scherm trilt een beetje), rennen (hond: eerst
 // een keer heen en weer over het halve scherm) of aan een liaan zakken (luiaard, die blijft
-// hangen), vliegen (bij, vlinder: in golfjes, blijft zweven), heel langzaam kruipen (slak,
-// schildpad) of kronkelen (slang).
-type Komt = 'loopt' | 'hupt' | 'springt' | 'valt' | 'glijdt' | 'stampt' | 'rent' | 'zakt' | 'vliegt' | 'kruipt' | 'kronkelt';
+// hangen; de spin aan een draadje), vliegen (bij, vlinder, uil: in golfjes, blijft zweven),
+// zwemmen (dolfijn, haai: net zo, maar lager), heel langzaam kruipen (slak, schildpad),
+// kronkelen (slang) of uit de grond omhoog komen (mol).
+type Komt = 'loopt' | 'hupt' | 'springt' | 'valt' | 'glijdt' | 'stampt' | 'rent' | 'zakt' | 'vliegt' | 'zwemt' | 'kruipt' | 'kronkelt' | 'graaft';
 // Wat fout eten doet, bovenop het naschudden. Zonder reactie valt het op de grond.
 type Reactie = 'gooi' | 'spuug' | 'spuit' | 'plat' | 'stuiter' | 'in';
 
@@ -78,10 +81,16 @@ interface Dier {
   jager?: boolean;
   alleenFamilie?: boolean; // komt alleen mee met een ander dier (de muisjes)
   reactie?: Reactie;
+  draai?: number; // graden; de krokodil is van boven getekend en ligt zo op zijn zij
+  water?: boolean; // komt alleen bij de zee en onder water (dolfijn, haai)
+  // De geit eet alles: komt altijd alleen, en alles in de bak is goed.
+  allesEter?: boolean;
 }
 
 const PLANT_NEE: Eten[] = ['vis', 'kaas', 'bot', 'vlees', 'kluif', 'vlieg', 'worm', 'honing'];
-const VLEES_NEE: Eten[] = ['gras', 'sla', 'wortel', 'banaan', 'mais', 'appel', 'honing', 'zeewier'];
+const VLEES_NEE: Eten[] = ['gras', 'sla', 'wortel', 'banaan', 'mais', 'appel', 'honing', 'zeewier', 'noot', 'bamboe'];
+// Geen levende dieren voor de geit.
+const ALLES: Eten[] = (Object.keys(ETEN) as Eten[]).filter((e) => !['muis', 'schaap', 'kip'].includes(e));
 
 const DIEREN: Dier[] = [
   { id: 'koe', plaatje: w('koe'), geluid: 'Boe!', goed: ['gras'], fout: PLANT_NEE, kijkt: 'links', schaal: 1.15, komt: 'loopt', tempo: 0.85 },
@@ -116,18 +125,37 @@ const DIEREN: Dier[] = [
   { id: 'kikker', plaatje: w('kikker'), geluid: 'Kwaak!', goed: ['vlieg'], fout: [...VLEES_NEE, 'kaas', 'brood', 'melk'], kijkt: 'voor', schaal: 0.8, komt: 'hupt', tempo: 1, reactie: 'spuug' },
   { id: 'bij', plaatje: w('bij'), geluid: 'Zzzoem!', goed: ['bloem'], fout: ['vis', 'kaas', 'bot', 'vlees', 'kluif', 'worm', 'melk', 'brood'], kijkt: 'links', schaal: 0.8, komt: 'vliegt', tempo: 1 },
   { id: 'slak', plaatje: w('slak'), geluid: 'Slurp…', goed: ['blad'], fout: [...PLANT_NEE, 'melk', 'brood'], kijkt: 'links', schaal: 0.8, komt: 'kruipt', tempo: 1, mond: [0.12, 0.8], reactie: 'in' },
-  { id: 'schildpad', plaatje: w('schildpad'), geluid: 'Hmmmm…', goed: ['zeewier'], fout: ['kaas', 'bot', 'vlees', 'kluif', 'honing', 'melk', 'pinda'], kijkt: 'links', schaal: 0.9, komt: 'kruipt', tempo: 1.3, mond: [0.1, 0.6], reactie: 'in' },
+  { id: 'schildpad', plaatje: w('schildpad'), geluid: 'Hmmmm…', goed: ['gras', 'blad'], fout: ['kaas', 'bot', 'vlees', 'kluif', 'honing', 'melk', 'pinda', 'vis'], kijkt: 'links', schaal: 0.9, komt: 'kruipt', tempo: 1.3, mond: [0.1, 0.6], reactie: 'in' },
   { id: 'vlinder', plaatje: v('vlinder'), geluid: 'Fladder!', goed: ['bloem'], fout: ['vis', 'kaas', 'bot', 'vlees', 'kluif', 'worm', 'melk', 'brood'], kijkt: 'voor', schaal: 0.8, komt: 'vliegt', tempo: 0.8 },
   { id: 'slang', plaatje: w('slang'), geluid: 'Sssss!', goed: ['muis'], fout: VLEES_NEE, kijkt: 'rechts', schaal: 0.95, komt: 'kronkelt', tempo: 1, mond: [0.18, 0.15], reactie: 'spuug' },
   { id: 'wolf', plaatje: w('wolf'), geluid: 'Auuuuw!', goed: ['schaap'], fout: VLEES_NEE, kijkt: 'voor', schaal: 1.05, komt: 'loopt', tempo: 1.3 },
   { id: 'vos', plaatje: w('vos'), geluid: 'Kef kef!', goed: ['kip'], fout: VLEES_NEE, kijkt: 'voor', schaal: 0.9, komt: 'springt', tempo: 1 },
   { id: 'muisje', plaatje: w('muis'), geluid: 'Piep!', goed: ['kaas'], fout: ['vis', 'bot', 'vlees', 'gras'], kijkt: 'links', schaal: 0.5, komt: 'loopt', tempo: 1.9, alleenFamilie: true },
+  { id: 'papegaai', plaatje: w('papegaai'), geluid: 'Lorre!', goed: ['pinda'], fout: ['vis', 'kaas', 'bot', 'vlees', 'kluif', 'worm', 'melk', 'gras'], kijkt: 'links', schaal: 0.85, komt: 'vliegt', tempo: 1 },
+  { id: 'kip', plaatje: w('kip'), geluid: 'Tok tok!', goed: ['mais', 'worm'], fout: ['bot', 'vlees', 'kaas', 'honing', 'melk'], kijkt: 'links', schaal: 0.88, komt: 'hupt', tempo: 0.9, mond: [0.2, 0.25] },
+  { id: 'geit', plaatje: w('geit'), geluid: 'Mèh!', goed: ALLES, fout: [], kijkt: 'links', schaal: 1, komt: 'loopt', tempo: 1.1, allesEter: true, mond: [0.12, 0.3] },
+  { id: 'lam', plaatje: w('lam'), geluid: 'Bèh!', goed: ['melk'], fout: PLANT_NEE, kijkt: 'links', schaal: 0.85, komt: 'hupt', tempo: 1.1 },
+  { id: 'kangoeroe', plaatje: w('kangoeroe'), geluid: 'Boing!', goed: ['gras'], fout: [...PLANT_NEE, 'melk'], kijkt: 'links', schaal: 1.05, komt: 'springt', tempo: 1 },
+  { id: 'nijlpaard', plaatje: w('nijlpaard'), geluid: 'Bwoah!', goed: ['gras'], fout: [...PLANT_NEE, 'melk'], kijkt: 'links', schaal: 1.2, komt: 'loopt', tempo: 0.7, mond: [0.12, 0.5] },
+  { id: 'uil', plaatje: w('uil'), geluid: 'Oehoe!', goed: ['muis'], fout: VLEES_NEE, kijkt: 'voor', schaal: 0.85, komt: 'vliegt', tempo: 0.9 },
+  { id: 'spin', plaatje: w('spin'), geluid: 'Tik tik!', goed: ['vlieg'], fout: [...VLEES_NEE, 'kaas', 'brood', 'melk'], kijkt: 'voor', schaal: 0.8, komt: 'zakt', tempo: 1 },
+  { id: 'krokodil', plaatje: w('krokodil'), geluid: 'Hap hap!', goed: ['vis', 'vlees'], fout: VLEES_NEE, kijkt: 'links', draai: 90, schaal: 1.1, komt: 'loopt', tempo: 0.8, mond: [0.1, 0.5] },
+  { id: 'dolfijn', plaatje: w('dolfijn'), geluid: 'Iek iek!', goed: ['vis'], fout: [...VLEES_NEE, 'kaas'], kijkt: 'links', schaal: 1, komt: 'zwemt', tempo: 1.3, water: true, mond: [0.15, 0.3] },
+  { id: 'haai', plaatje: w('haai'), geluid: 'Hap!', goed: ['vis'], fout: [...VLEES_NEE, 'kaas'], kijkt: 'links', schaal: 1.15, komt: 'zwemt', tempo: 1, water: true, mond: [0.1, 0.4] },
+  { id: 'mol', plaatje: w('mol'), geluid: 'Snuf!', goed: ['worm'], fout: ['gras', 'sla', 'honing', 'bot', 'melk'], kijkt: 'voor', schaal: 0.85, komt: 'graaft', tempo: 1 },
+  { id: 'eekhoorn', plaatje: v('eekhoorn'), geluid: 'Knabbel!', goed: ['noot'], fout: ['vis', 'kaas', 'bot', 'vlees', 'kluif', 'melk'], kijkt: 'links', schaal: 0.82, komt: 'hupt', tempo: 1.3, mond: [0.2, 0.35] },
+  { id: 'panda', plaatje: w('panda'), geluid: 'Mmmm!', goed: ['bamboe'], fout: [...PLANT_NEE, 'melk'], kijkt: 'voor', schaal: 0.9, komt: 'loopt', tempo: 0.8, mond: [0.5, 0.65] },
+  // Zeewier-eters. De zeeschildpad is de Fluent-schildpad met zwemvliezen (eigen bewerking).
+  { id: 'zeeschildpad', plaatje: v('zeeschildpad'), geluid: 'Blub blub!', goed: ['zeewier'], fout: ['kaas', 'bot', 'vlees', 'kluif', 'honing', 'melk', 'pinda', 'gras'], kijkt: 'links', schaal: 1, komt: 'zwemt', tempo: 0.8, water: true, mond: [0.1, 0.6] },
+  { id: 'visje', plaatje: a('vis-tropisch'), geluid: 'Blub!', goed: ['zeewier'], fout: ['kaas', 'bot', 'vlees', 'kluif', 'honing', 'melk', 'gras', 'brood'], kijkt: 'links', schaal: 0.8, komt: 'zwemt', tempo: 1.4, water: true, mond: [0.05, 0.5] },
+  { id: 'krab', plaatje: w('krab'), geluid: 'Knip knip!', goed: ['zeewier'], fout: ['kaas', 'honing', 'melk', 'gras', 'brood', 'bot'], kijkt: 'voor', schaal: 0.82, komt: 'loopt', tempo: 1.5, reactie: 'gooi' },
 ];
-for (const id of ['tijger', 'leeuw', 'trex', 'ijsbeer', 'wolf', 'vos']) DIEREN.find((d) => d.id === id)!.jager = true;
+for (const id of ['tijger', 'leeuw', 'trex', 'ijsbeer', 'wolf', 'vos', 'krokodil', 'haai']) DIEREN.find((d) => d.id === id)!.jager = true;
 // Eten dat ook als dier langs kan komen: die staan nooit samen met wie ze opeet.
-const PROOI: Partial<Record<Eten, string[]>> = { muis: ['muis', 'muisje'], schaap: ['schaap'], kip: ['haan', 'kuiken'] };
+const PROOI: Partial<Record<Eten, string[]>> = { muis: ['muis', 'muisje'], schaap: ['schaap', 'lam'], kip: ['haan', 'kuiken', 'kip'], vis: ['visje'] };
 const lust = (p: Dier, q: Dier): boolean => p.goed.some((e) => PROOI[e]?.includes(q.id));
-const PLANTEN: Eten[] = ['gras', 'sla', 'wortel', 'appel', 'banaan', 'mais', 'brood', 'blad', 'pinda', 'bloem', 'zeewier'];
+const PLANTEN: Eten[] = ['gras', 'sla', 'wortel', 'appel', 'banaan', 'mais', 'brood', 'blad', 'pinda', 'bloem', 'zeewier', 'noot', 'bamboe'];
+const WATER: ThemaId[] = ['zee', 'onderwater'];
 const kruipt = (g: { dier: Dier }): boolean => g.dier.komt === 'kruipt';
 const eetPlanten = (d: Dier): boolean => d.goed.every((e) => PLANTEN.includes(e));
 // Apen en bijen komen vaak met z'n tweeën of drieën; soms komt de muis met vier muisjes.
@@ -144,18 +172,18 @@ const FAMILIE_KANS = 0.12;
 
 // Bij een achtergrond horen vooral de dieren die daar wonen (75%); de rest komt soms langs.
 const THEMA_DIEREN: Record<ThemaId, string[]> = {
-  boerderij: ['koe', 'schaap', 'paard', 'ezel', 'varken', 'haan', 'kuiken', 'eend', 'gans', 'konijn', 'hond', 'poes', 'muis', 'bij', 'vlinder', 'vos'],
-  savanne: ['olifant', 'zebra', 'giraf', 'aap', 'tijger', 'leeuw', 'luiaard', 'slang'],
-  dino: ['trex', 'brachiosaurus', 'stegosaurus', 'kikker', 'bij', 'schildpad', 'slak', 'slang'],
-  zee: ['zeehond', 'pinguin', 'eend', 'gans', 'hond', 'schildpad'],
-  onderwater: ['zeehond', 'pinguin', 'ijsbeer', 'kikker', 'schildpad'],
-  winter: ['pinguin', 'zeehond', 'ijsbeer', 'konijn', 'hond', 'wolf', 'vos'],
-  herfst: ['egel', 'konijn', 'muis', 'eend', 'beer', 'bij', 'slak', 'vos', 'wolf', 'vlinder'],
-  ruimte: ['aap', 'hond', 'muis', 'poes'],
-  kasteel: ['paard', 'ezel', 'hond', 'poes', 'muis', 'haan', 'gans', 'wolf', 'vlinder'],
-  kermis: ['olifant', 'aap', 'leeuw', 'tijger', 'paard', 'zeehond'],
-  bouw: ['hond', 'poes', 'muis', 'egel', 'haan', 'ezel', 'slak'],
-  trein: ['koe', 'schaap', 'paard', 'varken', 'eend', 'hond', 'poes'],
+  boerderij: ['koe', 'schaap', 'paard', 'ezel', 'varken', 'haan', 'kuiken', 'eend', 'gans', 'konijn', 'hond', 'poes', 'muis', 'bij', 'vlinder', 'vos', 'kip', 'geit', 'lam'],
+  savanne: ['olifant', 'zebra', 'giraf', 'aap', 'tijger', 'leeuw', 'luiaard', 'slang', 'papegaai', 'kangoeroe', 'nijlpaard', 'krokodil', 'panda'],
+  dino: ['trex', 'brachiosaurus', 'stegosaurus', 'kikker', 'bij', 'schildpad', 'slak', 'slang', 'krokodil'],
+  zee: ['zeehond', 'pinguin', 'eend', 'gans', 'hond', 'krab', 'dolfijn', 'haai', 'zeeschildpad', 'visje'],
+  onderwater: ['zeehond', 'pinguin', 'ijsbeer', 'kikker', 'krab', 'dolfijn', 'haai', 'zeeschildpad', 'visje'],
+  winter: ['pinguin', 'zeehond', 'ijsbeer', 'konijn', 'hond', 'wolf', 'vos', 'uil'],
+  herfst: ['egel', 'konijn', 'muis', 'eend', 'beer', 'bij', 'slak', 'vos', 'wolf', 'vlinder', 'uil', 'spin', 'mol', 'eekhoorn', 'panda', 'schildpad'],
+  ruimte: ['aap', 'hond', 'muis', 'poes', 'kangoeroe', 'papegaai'],
+  kasteel: ['paard', 'ezel', 'hond', 'poes', 'muis', 'haan', 'gans', 'wolf', 'vlinder', 'uil', 'spin', 'geit'],
+  kermis: ['olifant', 'aap', 'leeuw', 'tijger', 'paard', 'zeehond', 'papegaai', 'nijlpaard'],
+  bouw: ['hond', 'poes', 'muis', 'egel', 'haan', 'ezel', 'slak', 'mol', 'spin', 'kip'],
+  trein: ['koe', 'schaap', 'paard', 'varken', 'eend', 'hond', 'poes', 'kip', 'geit', 'lam'],
 };
 
 const STER = w('ster');
@@ -212,7 +240,8 @@ interface Gast {
 
 export function VoerScreen(manager: ScreenManager): Screen {
   const kleuter = haalGroep() === 'kleuter';
-  const themaPoel = THEMA_DIEREN[huidigThema()];
+  const thema = huidigThema();
+  const themaPoel = THEMA_DIEREN[thema];
   const el = document.createElement('div');
   el.className = 'voer-scherm';
 
@@ -309,7 +338,7 @@ export function VoerScreen(manager: ScreenManager): Screen {
   function kijk(g: Gast, richting: 'links' | 'rechts'): void {
     const lijf = g.el.querySelector<HTMLElement>('.voer-dier__lijf')!;
     const spiegel = g.dier.kijkt !== 'voor' && g.dier.kijkt !== richting;
-    lijf.style.transform = spiegel ? 'scaleX(-1)' : '';
+    lijf.style.transform = [spiegel ? 'scaleX(-1)' : '', g.dier.draai ? `rotate(${g.dier.draai}deg)` : ''].join(' ').trim();
   }
 
   const plaatjeVan = (g: Gast): HTMLElement => g.el.querySelector<HTMLElement>('.voer-dier__plaatje')!;
@@ -435,12 +464,13 @@ export function VoerScreen(manager: ScreenManager): Screen {
           kijk(g, 'links');
         }
         return loop(g, naar, v, schud);
-      case 'vliegt': {
-        // Golfjes op en neer; weg gaat ook schuin omhoog.
+      case 'vliegt':
+      case 'zwemt': {
+        // Golfjes op en neer; weg gaat ook schuin omhoog. Zwemmen golft rustiger.
         const van = g.x;
-        const golf = m * 0.3;
+        const golf = m * (g.dier.komt === 'zwemt' ? 0.15 : 0.3);
         const n = Math.max(2, Math.round(Math.abs(naar - van) / (m * 1.6)));
-        const omhoog = richting === 'uit' ? -(grond() * 0.5) : 0;
+        const omhoog = richting === 'uit' ? -(grond() * (g.dier.komt === 'zwemt' ? 0.15 : 0.5)) : 0;
         const frames: Keyframe[] = [];
         for (let i = 0; i <= 40; i++) {
           const t = i / 40;
@@ -463,6 +493,43 @@ export function VoerScreen(manager: ScreenManager): Screen {
         plaatje.classList.remove(klasse);
         plaatje.style.animationDuration = '';
         return ok;
+      }
+      case 'graaft': {
+        // Mol: komt op zijn plek uit de grond omhoog (de molshoop zit in het plaatje) en zakt
+        // er weer in. Wat onder de grond zit wordt weggeknipt; de ballon erboven niet.
+        const knip = (onder: number): string => `inset(-200% -100% ${Math.max(0, onder)}px -100%)`;
+        if (richting === 'uit') {
+          const ok = await metSchud(() =>
+            speel(
+              g,
+              [
+                { transform: gastTransform(g, g.x), clipPath: knip(0) },
+                { transform: gastTransform(g, g.x, m), clipPath: knip(m) },
+              ],
+              600,
+              'ease-in',
+              g.x,
+            ),
+          );
+          if (ok) {
+            g.el.style.visibility = 'hidden';
+            g.x = naar;
+          }
+          return ok;
+        }
+        g.x = naar;
+        gooiAarde(g);
+        return speel(
+          g,
+          [
+            { transform: gastTransform(g, naar, m), clipPath: knip(m) },
+            { transform: gastTransform(g, naar, -m * 0.08), clipPath: knip(0), offset: 0.75 },
+            { transform: gastTransform(g, naar), clipPath: knip(0) },
+          ],
+          800,
+          'ease-out',
+          naar,
+        );
       }
       default:
         return loop(g, naar, v, schud);
@@ -542,6 +609,28 @@ export function VoerScreen(manager: ScreenManager): Screen {
     }
   }
 
+  // Mol: kluitjes aarde vliegen opzij als hij boven komt.
+  function gooiAarde(g: Gast): void {
+    const x0 = g.x;
+    const y0 = grond() - g.maat * 0.1;
+    for (let i = 0; i < 12; i++) {
+      const d = document.createElement('div');
+      d.className = 'voer-druppel voer-druppel--aarde';
+      d.style.left = `${x0 + (Math.random() - 0.5) * g.maat * 0.4}px`;
+      d.style.top = `${y0}px`;
+      veld.appendChild(d);
+      const kant = i % 2 ? 1 : -1;
+      const wijd = g.maat * (0.3 + Math.random() * 0.4) * kant;
+      const hoog = g.maat * (0.3 + Math.random() * 0.35);
+      const frames: Keyframe[] = [];
+      for (let s = 0; s <= 8; s++) {
+        const t = s / 8;
+        frames.push({ transform: `translate(${wijd * t}px, ${-4 * hoog * t * (1 - t)}px)`, opacity: t < 0.75 ? 1 : (1 - t) / 0.25 });
+      }
+      d.animate(frames, { duration: 550 + Math.random() * 200, delay: 120 + i * 20, easing: 'linear', fill: 'both' }).onfinish = (): void => d.remove();
+    }
+  }
+
   // Leeuw en luiaard doezelen weg als je ze laat wachten; eten maakt ze weer wakker.
   function laatInslapen(g: Gast): void {
     const mijn = spel;
@@ -580,7 +669,7 @@ export function VoerScreen(manager: ScreenManager): Screen {
       if (r < 0.7) return Array<Dier>(Math.random() < SAMEN.aap.drie ? 3 : 2).fill(dier('aap'));
       return Array<Dier>(breedte() < 560 ? 3 : 4).fill(dier(Math.random() < 0.5 ? 'bij' : 'vlinder'));
     }
-    const vrij = DIEREN.filter((d) => !d.alleenFamilie);
+    const vrij = DIEREN.filter((d) => !d.alleenFamilie && (!d.water || WATER.includes(thema)));
     const poel = Math.random() < 0.75 ? vrij.filter((d) => themaPoel.includes(d.id)) : vrij;
     const gekozen: Dier[] = [];
     for (let poging = 0; poging < 60 && gekozen.length < n; poging++) {
@@ -589,7 +678,9 @@ export function VoerScreen(manager: ScreenManager): Screen {
       if (gekozen.includes(kandidaat)) continue;
       if (n === 1 && vorigeDieren.includes(kandidaat.id) && poging < 20) continue;
       if (gekozen.some((d) => d.goed.some((e) => kandidaat.goed.includes(e)))) continue;
-      if (!afleiders([...gekozen, kandidaat]).length) continue;
+      // De geit eet alles en heeft dus geen afleiders; hij komt alleen (niemand anders eet
+      // iets dat hij niet lust, dus er past ook niemand bij).
+      if (!(kandidaat.allesEter && !gekozen.length) && !afleiders([...gekozen, kandidaat]).length) continue;
       // Niemand staat naast zijn eigen eten (poes en muis, wolf en schaap, vos en haan).
       if (gekozen.some((d) => lust(d, kandidaat) || lust(kandidaat, d))) continue;
       gekozen.push(kandidaat);
@@ -624,7 +715,9 @@ export function VoerScreen(manager: ScreenManager): Screen {
             ? Math.min(maat * 0.7, hoogte() * 0.18)
             : dier.komt === 'vliegt'
               ? Math.min(maat * 1.1, hoogte() * 0.22) * (slot % 2 ? 0.55 : 1)
-              : 0,
+              : dier.komt === 'zwemt'
+                ? Math.min(maat * 0.35, hoogte() * 0.1)
+                : 0,
         maat,
         slot,
         stil,
@@ -663,7 +756,7 @@ export function VoerScreen(manager: ScreenManager): Screen {
         plaatjeVan(g).style.animationDelay = `${-Math.random()}s`;
         g.el.classList.add('voer-dier--wipt');
       }
-      if (g.dier.komt === 'vliegt') {
+      if (g.dier.komt === 'vliegt' || g.dier.komt === 'zwemt') {
         plaatjeVan(g).style.animationDelay = `${-Math.random()}s`;
         g.el.classList.add('voer-dier--zweeft');
       }
@@ -699,7 +792,11 @@ export function VoerScreen(manager: ScreenManager): Screen {
     }
     if (!nieuw) return;
     const gewild = [...new Set(gasten.map((g) => g.wil))];
-    const anders = schud(afleiders(gasten.map((g) => g.dier))).slice(0, Math.max(1, KEUZES - gewild.length));
+    // Bij de geit is alles goed: dan liggen er gewoon drie willekeurige dingen.
+    const geit = gasten.find((g) => g.dier.allesEter);
+    const anders = geit
+      ? schud(geit.dier.goed.filter((e) => !gewild.includes(e))).slice(0, KEUZES - gewild.length)
+      : schud(afleiders(gasten.map((g) => g.dier))).slice(0, Math.max(1, KEUZES - gewild.length));
     bak.replaceChildren(...schud([...gewild, ...anders]).map(maakEtenKnop));
     bak.classList.remove('voer-bak--weg');
   }
@@ -916,7 +1013,12 @@ export function VoerScreen(manager: ScreenManager): Screen {
     toonPlop(mond.x, mond.y - 20, '+1');
     toonHartje(mond.x, mond.y);
     if (score % 5 === 0) confetti.vuurwerk('klein');
-    g.el.querySelector('.voer-ballon')?.classList.remove('voer-ballon--zie');
+    const ballon = g.el.querySelector('.voer-ballon');
+    if (g.dier.allesEter && ballon) {
+      // De geit vindt alles lekker, ook een bot of een vis.
+      ballon.textContent = 'Mjam!';
+      toonBallon(g);
+    } else ballon?.classList.remove('voer-ballon--zie');
     const plaatje = g.el.querySelector('.voer-dier__plaatje')!;
     plaatje.classList.add('voer-dier__plaatje--blij');
     await slaap(1000);

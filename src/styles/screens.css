@@ -3080,6 +3080,14 @@
   border-radius: 3px;
   background: linear-gradient(90deg, #558b2f, #7cb342, #558b2f);
 }
+/* De spin zakt aan een dun draadje. */
+.voer-dier--liaan[data-dier='spin']::before {
+  bottom: 60%;
+  width: 2px;
+  margin-left: -1px;
+  background: rgba(240, 240, 240, 0.85);
+  box-shadow: 0 0 2px rgba(0, 0, 0, 0.35);
+}
 .voer-dier--slaapt .voer-dier__plaatje { animation: voer-adem 2.4s ease-in-out infinite; }
 @keyframes voer-adem {
   0%, 100% { transform: rotate(6deg) scale(1, 1); filter: brightness(0.92) drop-shadow(0 6px 4px rgba(0, 0, 0, 0.3)); }
@@ -3125,6 +3133,7 @@
   background: radial-gradient(circle at 35% 35%, #e1f5fe, #4fc3f7 60%, #0288d1);
   pointer-events: none;
 }
+.voer-druppel--aarde { border-radius: 40%; background: radial-gradient(circle at 35% 35%, #a1887f, #6d4c41 60%, #4e342e); }
 .voer-ballon {
   position: absolute;
   bottom: 96%;
