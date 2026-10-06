@@ -226,6 +226,19 @@ export const LEZEN_HOOFDSTUKKEN: Kern[] = [
       zin('De bijen maken ___.', honing, slang, bank),
       zin('Ik maak een ___ van de kat.', tekening, ketting, tong),
     ]),
+  // Herhaling met korte woorden die ook in de lange-woordenhoofdstukken staan; alle
+  // klanken zijn hier al bekend (t/m ng). Een woord in twee hoofdstukken is prima.
+  hoofdstuk(29, 'Kam en pan', [],
+    [kam, pan, zaag, haak, viool, harp, rups, kwal, draak, kreeft, tang, gong], [
+      zin('Ik bak een pannenkoek in de ___.', pan, kam, gong),
+      zin('Met de ___ maak ik mijn haar mooi.', kam, haak, tang),
+      zin('In de zee zwemt een ___. Au, die prikt!', kwal, rups, harp),
+      zin('De ___ eet een groen blad.', rups, draak, viool),
+      zin('De ___ heeft rode scharen.', kreeft, kwal, zaag),
+      zin('Ik hang mijn jas aan de ___.', haak, pan, kreeft),
+      zin('Bong! Ik sla op de ___.', gong, harp, kam),
+      zin('De ___ in het boek spuwt vuur.', draak, rups, tang),
+    ]),
   hoofdstuk(13, 'Muis in huis', ['ui', 'eu', 'ou', 'au'],
     [buik, muis, huis, ui, neus, deur, reus, hout, kous, zout, duim, pauw], [
       zin('De ___ piept en eet een stukje kaas.', muis, huis, reus),

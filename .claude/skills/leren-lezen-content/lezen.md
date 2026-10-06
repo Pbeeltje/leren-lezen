@@ -2,17 +2,20 @@
 
 ## Word bank and chapters
 
-Reading chapters live in `content/lezen/kernen/lezen-hoofdstukken.ts`: 28
-chapters × 12 words (ids `lezen-01` … `lezen-28`). Difficulty order: CVC → long
-vowels → clusters (incl. review chapter 10 *Laars en krant*) → diphthongs →
+Reading chapters live in `content/lezen/kernen/lezen-hoofdstukken.ts`: 29
+chapters × 12 words (ids `lezen-01` … `lezen-29`). Difficulty order: CVC → long
+vowels → clusters (incl. review chapter 10 *Laars en krant*) → ng/nk → review chapter 14
+*Kam en pan* (`lezen-29`) → diphthongs →
 sch/eeuw → themed review → long words (*Lange woorden*, then `lezen-25` *Dino en
 hagedis*, `lezen-26` *Parasol en borstel* `lezen-27` *Zaag en spijker* and `lezen-28` *Viool en fluit*) → plurals → leftovers. Long words in
 a reading chapter must be phonetically regular; words like parachute, skateboard or
 diplodocus go in `ALLEEN_LUISTEREN` instead (see kleuter-onderwerpen.md). **The id is fixed (progress is
 keyed on it); the displayed number (`volgnummer`) is the position in the array.**
 So insert a new chapter where it belongs difficulty-wise, give it the next unused
-id (`lezen-24` sits at position 10, next free is `lezen-29`), and never renumber ids. Each word
-sits in exactly one chapter; the toets is the whole bank (12). The list and
+id (`lezen-24` sits at position 10, next free is `lezen-30`), and never renumber ids. Each word
+sits in one chapter, except *Kam en pan*: a review of short words that also
+sit in the long-word chapters (fine: sessions only draw from their own bank and
+the Luisteren pool dedups); the toets is the whole bank (12). The list and
 picture/audio notes are in `C:\Claude\leren-lezen-hoofdstukken-plan.md`. New
 pictures: `bronbestanden/teken-lezen-nieuw.py` (plurals are 2–3 copies) and
 `teken-lange-woorden.py` (kam, borstel, stegosaurus, spijker, plakband, pan, tang, triangel, tamboerijn, drumstel, gong, tuba, orgel).
