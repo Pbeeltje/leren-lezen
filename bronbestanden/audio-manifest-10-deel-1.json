@@ -1,0 +1,74 @@
+[
+  {
+    "n": 1,
+    "slug": "spijker",
+    "text": "spijker",
+    "path": "public/assets/audio/woorden/spijker.mp3"
+  },
+  {
+    "n": 2,
+    "slug": "schroevendraaier",
+    "text": "schroevendraaier",
+    "path": "public/assets/audio/woorden/schroevendraaier.mp3"
+  },
+  {
+    "n": 3,
+    "slug": "plakband",
+    "text": "plakband",
+    "path": "public/assets/audio/woorden/plakband.mp3"
+  },
+  {
+    "n": 4,
+    "slug": "pan",
+    "text": "pan",
+    "path": "public/assets/audio/woorden/pan.mp3"
+  },
+  {
+    "n": 5,
+    "slug": "zaag",
+    "text": "zaag",
+    "path": "public/assets/audio/woorden/zaag.mp3"
+  },
+  {
+    "n": 6,
+    "slug": "moersleutel",
+    "text": "moersleutel",
+    "path": "public/assets/audio/woorden/moersleutel.mp3"
+  },
+  {
+    "n": 7,
+    "slug": "haak",
+    "text": "haak",
+    "path": "public/assets/audio/woorden/haak.mp3"
+  },
+  {
+    "n": 8,
+    "slug": "zaklamp",
+    "text": "zaklamp",
+    "path": "public/assets/audio/woorden/zaklamp.mp3"
+  },
+  {
+    "n": 9,
+    "slug": "liniaal",
+    "text": "liniaal",
+    "path": "public/assets/audio/woorden/liniaal.mp3"
+  },
+  {
+    "n": 10,
+    "slug": "batterij",
+    "text": "batterij",
+    "path": "public/assets/audio/woorden/batterij.mp3"
+  },
+  {
+    "n": 11,
+    "slug": "gereedschapskist",
+    "text": "gereedschapskist",
+    "path": "public/assets/audio/woorden/gereedschapskist.mp3"
+  },
+  {
+    "n": 12,
+    "slug": "tang",
+    "text": "tang",
+    "path": "public/assets/audio/woorden/tang.mp3"
+  }
+]
