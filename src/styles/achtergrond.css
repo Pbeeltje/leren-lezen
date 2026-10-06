@@ -1174,6 +1174,8 @@ svg.dino__lijf {
 /* Rij bomen op de horizon (y 96 = 68% van onderen): rondjes in twee tinten groen. */
 .boerderij-bomen {
   position: absolute;
+  left: 0;
+  right: 0;
   bottom: 67.6%;
   height: calc(var(--land) * 0.1);
   background:
@@ -1181,8 +1183,6 @@ svg.dino__lijf {
     radial-gradient(circle closest-side at 50% 60%, #6fae52 94%, transparent 100%) calc(var(--land) * 0.05) 100% / calc(var(--land) * 0.11) 100% repeat-x,
     linear-gradient(#5d9b49, #5d9b49) 0 100% / 100% 18% no-repeat;
 }
-.boerderij-bomen--links { left: 0; width: 30%; }
-.boerderij-bomen--rechts { left: 58%; width: 26%; }
 .boerderij-dorp {
   position: absolute;
   right: 7%;

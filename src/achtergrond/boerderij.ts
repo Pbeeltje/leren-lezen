@@ -314,8 +314,7 @@ export function maakBoerderijDecor(): Decor {
 
   // De polder: alles hierin staat in % van de polderhoogte, net als de getekende akkers.
   const polder = el('div', 'boerderij-polder', root);
-  el('div', 'boerderij-bomen boerderij-bomen--links', polder);
-  el('div', 'boerderij-bomen boerderij-bomen--rechts', polder);
+  el('div', 'boerderij-bomen', polder);
   svgUitTekst(DORP, 'boerderij-dorp', polder);
   svgUitTekst(maakPolder(), 'boerderij-akkers', polder);
   const molen = el('div', 'boerderij-molen', polder);
