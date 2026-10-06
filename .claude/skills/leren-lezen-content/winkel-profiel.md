@@ -11,17 +11,19 @@ coin counter opens the shop (see "Shop during an activity" in
 
 ## Profile menu (`ui/components/ProfielMenu.ts`)
 
-Header (figure + name; tap the name to switch profile), 4 tiles: Mijn figuur
+Header (figure + name; tap the name to switch profile), 5 tiles: Mijn figuur
 (animal + colour combined, panel widens to `min(760px, viewport)` with the same
 grid as the figure shop; animal and colour equally big so a phone doesn't scroll),
 Achtergrond, Geluid (toggle, keeps the menu open), Schrift (toggle Los / Aan
 elkaar, shows "aap" in the chosen script instead of an icon; see lezen.md),
-then a lower row with one tile per group (`.profiel-tegel--groep`, current one
-`.geselecteerd`); tapping a group saves it and replaces the screen with that
-group's topics. There is no Wisselen submenu any more (owner, 6 Oct).
+Wisselen (full-width lower row). Its submenu shows the groups directly
+(`.profiel-keuze`, current one `.geselecteerd`); tapping one saves it and
+replaces the screen with that group's topics. The owner wants this submenu kept
+as a guard against switching by accident, but no extra "Ander profiel / Groep"
+step (6 Oct); another profile goes via the name.
 Submenus have a back arrow; picking keeps the menu open and marks the selection.
 The menu is `position: fixed` against the screen edge. Test drivers use
-`.profiel-tegel` / `.profiel-tegel--groep` / `.profiel-menu__terug`. Name max 16 chars.
+`.profiel-tegel` / `.profiel-keuze` / `.profiel-menu__terug`. Name max 16 chars.
 
 ## Avatars
 

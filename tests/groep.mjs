@@ -36,12 +36,13 @@ await page.locator('.terug-knop').click(); await w(600);
 await page.locator('.icoon-tegel', { hasText: 'Leren lezen' }).click(); await w(600);
 console.log('  groep 3 lezen hoofdstukken:', await page.locator('.kern-rij--klikbaar').count());
 await page.locator('.terug-knop').click(); await w(600);
-// Groep kiezen staat meteen in het profielmenu
+// Wisselen -> meteen de groepen in het submenu
 await page.locator('.profiel-knop').click(); await w(800);
+await page.locator('.profiel-tegel', { hasText: 'Wisselen' }).click(); await w(300);
 const paneel = await page.locator('.profiel-menu__paneel').boundingBox();
 await page.screenshot({ path: OUT + 'groep-menu.png', clip: paneel });
-console.log('gemarkeerde groep:', await page.locator('.profiel-tegel--groep.geselecteerd').textContent());
-await page.locator('.profiel-tegel--groep', { hasText: 'Kleuterschool' }).click(); await w(700);
+console.log('gemarkeerde groep:', await page.locator('.profiel-keuze.geselecteerd').textContent());
+await page.locator('.profiel-keuze', { hasText: 'Kleuterschool' }).click(); await w(700);
 console.log('Bram nu kleuter:', await labels());
 await naarProfielen();
 await page.locator('.icoon-tegel', { hasText: 'Cas' }).click(); await w(700);

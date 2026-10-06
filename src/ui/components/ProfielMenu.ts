@@ -21,12 +21,12 @@ import { TopicSelectScreen } from '../screens/TopicSelectScreen.ts';
 import { ProfileSelectScreen } from '../screens/ProfileSelectScreen.ts';
 
 // Profielmenu als klein kaartje: bovenaan je eigen figuur met je naam (tik = ander profiel),
-// daaronder plaatjestegels (Mijn figuur, Achtergrond, Geluid, Schrift) en een rij met de
-// groepen. Mijn figuur en Achtergrond openen een eigen submenu met een terugpijl; Geluid en
-// Schrift schakelen meteen om, een groep kiezen gaat meteen. Zo blijft het hoofdmenu kort
+// daaronder vijf plaatjestegels (Mijn figuur, Achtergrond, Geluid, Schrift, Wisselen). Mijn
+// figuur, Achtergrond en Wisselen (groep kiezen) openen een eigen submenu met een terugpijl;
+// Geluid en Schrift schakelen meteen om. Zo blijft het hoofdmenu kort
 // en kan een kind het zonder te lezen gebruiken (verzoek van de eigenaar: "te groot").
 
-type Weergave = 'hoofd' | 'figuur' | 'achtergrond';
+type Weergave = 'hoofd' | 'figuur' | 'achtergrond' | 'wisselen';
 
 function maak<K extends keyof HTMLElementTagNameMap>(tag: K, klasse: string, ouder?: HTMLElement): HTMLElementTagNameMap[K] {
   const e = document.createElement(tag);
@@ -129,19 +129,9 @@ export function maakProfielMenu(manager: ScreenManager): { element: HTMLElement;
   }
   werkSchriftBij();
 
-  // Groepen staan meteen in het menu (geen tussenmenu meer): de huidige is gemarkeerd, een
-  // tik gaat naar de onderwerpen van die groep. Ander profiel kies je via je naam bovenaan.
   const huidigeGroep = haalGroep();
-  for (const groep of GROEPEN) {
-    const groepTegel = tegel(GROEP_NAAM[groep], groepIcoon(groep), () => {
-      zetGroep(groep);
-      sluitPaneel();
-      speelSchermOvergang();
-      manager.replace((m) => TopicSelectScreen(m, groep));
-    });
-    groepTegel.knop.classList.add('profiel-tegel--groep');
-    groepTegel.knop.classList.toggle('geselecteerd', groep === huidigeGroep);
-  }
+  const wisselTegel = tegel('Wisselen', groepIcoon(huidigeGroep), () => toon('wisselen'));
+  wisselTegel.knop.classList.add('profiel-tegel--wissel');
 
   // ---- Submenu's: elk met een kopregel (terugpijl + titel) ----
   function submenu(titel: string): HTMLElement {
@@ -234,7 +224,25 @@ export function maakProfielMenu(manager: ScreenManager): { element: HTMLElement;
 
   winkelKnop(achtergrond);
 
-  const weergaven: Record<Weergave, HTMLElement> = { hoofd, figuur, achtergrond };
+  // Wisselen: meteen de groepen (de huidige gemarkeerd); een tik gaat naar de onderwerpen
+  // van die groep. Het submenu ertussen voorkomt dat je per ongeluk wisselt. Ander profiel
+  // kies je via je naam bovenaan.
+  const wisselen = submenu('Wisselen');
+  const wisselRij = maak('div', 'profiel-menu__keuzes', wisselen);
+  for (const groep of GROEPEN) {
+    const k = maak('button', 'profiel-keuze', wisselRij);
+    plaatje(groepIcoon(groep), '', k);
+    k.append(GROEP_NAAM[groep]);
+    k.classList.toggle('geselecteerd', groep === huidigeGroep);
+    k.addEventListener('click', () => {
+      zetGroep(groep);
+      sluitPaneel();
+      speelSchermOvergang();
+      manager.replace((m) => TopicSelectScreen(m, groep));
+    });
+  }
+
+  const weergaven: Record<Weergave, HTMLElement> = { hoofd, figuur, achtergrond, wisselen };
 
   function markeer(): void {
     for (const k of avatarKnoppen) k.classList.toggle('geselecteerd', k.dataset.icoon === icoonId());

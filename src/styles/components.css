@@ -366,19 +366,27 @@
   color: var(--kleur-secundair);
 }
 
-/* Groepen: lagere rij onderaan (kleiner icoon); de huidige groep heeft een rand. */
-.profiel-tegel--groep {
-  min-height: 72px;
+/* Vijfde tegel: Wisselen over de hele breedte, als lagere rij (icoon naast de tekst). */
+.profiel-tegel--wissel {
+  grid-column: 1 / -1;
+  flex-direction: row;
+  gap: 10px;
+  min-height: 64px;
 }
 
-.profiel-tegel--groep .profiel-tegel__icoon {
-  width: 36px;
-  height: 36px;
-}
-
-.profiel-tegel--groep.geselecteerd {
-  outline: 3px solid var(--kleur-secundair);
-  outline-offset: -3px;
+/* Twee pijltjes in de hoek: dit is om te wisselen. */
+.profiel-tegel--wissel::after {
+  content: '⇄';
+  position: absolute;
+  top: 6px;
+  right: 8px;
+  width: 22px;
+  height: 22px;
+  line-height: 22px;
+  border-radius: 50%;
+  background: var(--kleur-secundair);
+  color: #fff;
+  font-size: 0.8rem;
 }
 
 /* Submenu-kop: terugpijl en titel. */
@@ -423,6 +431,42 @@
   font-size: 0.8rem;
   color: #7a7f93;
   text-align: center;
+}
+
+.profiel-menu__keuzes {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.profiel-keuze {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding: 12px 6px;
+  border-radius: 16px;
+  background: #f1f2f6;
+  box-shadow: 0 3px 0 #dcdfe8;
+  color: var(--kleur-tekst);
+  font-weight: 800;
+  font-size: 0.85rem;
+}
+
+.profiel-keuze img {
+  width: 54px;
+  height: 54px;
+  object-fit: contain;
+}
+
+.profiel-keuze:active {
+  transform: translateY(2px);
+}
+
+/* De groep waar je nu in zit. */
+.profiel-keuze.geselecteerd {
+  outline: 3px solid var(--kleur-secundair);
+  outline-offset: -3px;
 }
 
 .avatar-grid {
