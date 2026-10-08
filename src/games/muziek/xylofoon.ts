@@ -49,8 +49,9 @@ export function maakXylofoon(
     pol('kikker-riet--rechts', true);
   let huidig = instrument;
   let actief = true;
-  let ingedrukt = false;
-  let laatste: HTMLElement | null = null;
+  // Per vinger de staaf waar hij nu op zit. Eén gedeelde "laatste" liet twee vingers elkaar
+  // steeds overschrijven: elke trilling van een vinger speelde dan opnieuw (oorverdovend).
+  const vingers = new Map<number, HTMLElement | null>();
 
   const staven = tonen.map((toon, positie) => {
     const staaf = document.createElement('button');
@@ -118,9 +119,9 @@ export function maakXylofoon(
 
   const speel = (positie: number, wanneer = 0): void => speelInstrument(huidig, TONEN[tonen[positie]], wanneer);
 
-  function raak(staaf: HTMLElement): void {
-    if (!actief || staaf === laatste) return;
-    laatste = staaf;
+  function raak(vinger: number, staaf: HTMLElement): void {
+    if (!actief || staaf === vingers.get(vinger)) return;
+    vingers.set(vinger, staaf);
     const positie = Number(staaf.dataset.positie);
     speel(positie);
     licht(positie);
@@ -132,19 +133,17 @@ export function maakXylofoon(
 
   el.addEventListener('pointerdown', (e) => {
     e.preventDefault();
-    ingedrukt = true;
-    laatste = null;
+    vingers.set(e.pointerId, null);
     const s = staafOnder(e);
-    if (s) raak(s);
+    if (s) raak(e.pointerId, s);
   });
   el.addEventListener('pointermove', (e) => {
-    if (!ingedrukt) return;
+    if (!vingers.has(e.pointerId)) return;
     const s = staafOnder(e);
-    if (s) raak(s);
+    if (s) raak(e.pointerId, s);
   });
-  const los = (): void => {
-    ingedrukt = false;
-    laatste = null;
+  const los = (e: PointerEvent): void => {
+    vingers.delete(e.pointerId);
   };
   window.addEventListener('pointerup', los);
   window.addEventListener('pointercancel', los);

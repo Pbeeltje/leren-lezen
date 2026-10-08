@@ -32,6 +32,48 @@ function context(): AudioContext | null {
   return ctx;
 }
 
+// Alle klanken gaan via één uitgang met een begrenzer. Zonder telden tien vingers tegelijk
+// op tot boven de 1, en dan kraakt het (digitaal clippen). De drempel ligt hoog (-3 dB),
+// zodat één losse toon even hard blijft; een zachte afronding boven 0,8 vangt de korte
+// pieken op die de begrenzer net mist. Gemeten: 20 harptonen tegelijk blijven onder 0,96.
+let begrenzer: DynamicsCompressorNode | null = null;
+function uitgang(c: AudioContext): AudioNode {
+  if (begrenzer) return begrenzer;
+  begrenzer = c.createDynamicsCompressor();
+  begrenzer.threshold.value = -3;
+  begrenzer.knee.value = 0;
+  begrenzer.ratio.value = 20;
+  begrenzer.attack.value = 0.001;
+  begrenzer.release.value = 0.2;
+  const rand = new Float32Array(2049);
+  for (let i = 0; i < rand.length; i++) {
+    const x = (i / (rand.length - 1)) * 2 - 1;
+    const a = Math.abs(x);
+    rand[i] = Math.sign(x) * (a <= 0.8 ? a : 0.8 + 0.2 * Math.tanh((a - 0.8) / 0.2));
+  }
+  const afronding = c.createWaveShaper();
+  afronding.curve = rand;
+  afronding.oversample = '2x';
+  begrenzer.connect(afronding).connect(c.destination);
+  return begrenzer;
+}
+
+// Dezelfde toon opnieuw aanslaan dempt de vorige klank van die toon (zoals een staaf of
+// snaar die je opnieuw raakt): snel herhaalde tikken stapelen dan niet op. Andere tonen
+// klinken gewoon door, dus akkoorden blijven. De knip-gain staat altijd op 1, zodat
+// het wegdraaien nooit botst met de omhulling van de klank zelf.
+const klinkt = new Map<string, GainNode>();
+function nieuweStem(c: AudioContext, sleutel: string, t: number): GainNode {
+  const oud = klinkt.get(sleutel);
+  if (oud) {
+    oud.gain.cancelScheduledValues(t);
+    oud.gain.setTargetAtTime(0, t, 0.015);
+  }
+  const knip = c.createGain();
+  klinkt.set(sleutel, knip);
+  return knip;
+}
+
 // Do-re-mi tot do (C5-C6). De speel-na-spelletjes gebruiken alleen de vijftonige reeks
 // (do re mi sol la): dan klinkt elk willekeurig melodietje vrolijk.
 export const TONEN = [523.25, 587.33, 659.25, 698.46, 783.99, 880, 987.77, 1046.5];
@@ -43,7 +85,7 @@ export function speelNoot(toon: number, wanneer = 0): void {
   const t = c.currentTime + wanneer;
   const uit = c.createGain();
   uit.gain.value = 0.35;
-  uit.connect(c.destination);
+  uit.connect(nieuweStem(c, `xylofoon:${toon}`, t)).connect(uitgang(c));
   // Boventonen van een houten staaf (ongeveer 1 : 3,9 : 9,2), elk met eigen uitsterftijd.
   for (const [factor, sterkte, duur] of [[1, 1, 1.1], [3.93, 0.25, 0.35], [9.2, 0.08, 0.12]]) {
     const osc = c.createOscillator();
@@ -89,13 +131,13 @@ function galm(c: AudioContext): GainNode {
   zaal.buffer = impuls;
   galmIn = c.createGain();
   galmIn.gain.value = 0.22;
-  galmIn.connect(zaal).connect(c.destination);
+  galmIn.connect(zaal).connect(uitgang(c));
   return galmIn;
 }
 
 // galmMate: hoeveel van de gedeelde galm dit instrument krijgt (1 = alles).
 function naarUit(c: AudioContext, knoop: AudioNode, galmMate = 1): void {
-  knoop.connect(c.destination);
+  knoop.connect(uitgang(c));
   const mate = c.createGain();
   mate.gain.value = galmMate;
   knoop.connect(mate).connect(galm(c));
@@ -162,7 +204,7 @@ export function speelInstrument(instrument: Instrument, toon: number, wanneer = 
   uit.gain.setValueAtTime(HARP.sterkte, t + HARP.duur - 0.4);
   uit.gain.linearRampToValueAtTime(0, t + HARP.duur);
   bron.connect(toonFilter).connect(uit);
-  naarUit(c, uit, 0.2);
+  naarUit(c, uit.connect(nieuweStem(c, `harp:${toon}`, t)), 0.2);
   bron.start(t);
   bron.stop(t + HARP.duur);
 }
@@ -276,7 +318,7 @@ function speelKikker(c: AudioContext, toon: number, t: number): void {
   const uit = c.createGain();
   uit.gain.value = 0.65;
   env.connect(uit);
-  naarUit(c, uit, 0.25);
+  naarUit(c, uit.connect(nieuweStem(c, `kikker:${toon}`, t)), 0.25);
 
   // De k van kwaak: een tikje ruis.
   const tik = ruis(c, 0.03);
@@ -325,7 +367,7 @@ function speelKeyboard(c: AudioContext, toon: number, t: number): void {
   uit.gain.exponentialRampToValueAtTime(0.0001, t + duur);
   drager.connect(uit);
   drager2.connect(laag2).connect(uit);
-  naarUit(c, uit);
+  naarUit(c, uit.connect(nieuweStem(c, `keyboard:${toon}`, t)));
   for (const o of [drager, modulator, drager2, modulator2]) {
     o.start(t);
     o.stop(t + duur + 0.05);
@@ -348,7 +390,7 @@ function omhulling(c: AudioContext, t: number, piek: number, duur: number): Gain
   const g = c.createGain();
   g.gain.setValueAtTime(piek, t);
   g.gain.exponentialRampToValueAtTime(0.0001, t + duur);
-  g.connect(c.destination);
+  g.connect(uitgang(c));
   return g;
 }
 

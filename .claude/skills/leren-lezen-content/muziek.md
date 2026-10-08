@@ -7,8 +7,18 @@ three decaying sine partials; drums = falling sine thump plus noise. Respects
 mute. The AudioContext starts lazily on the first tap
 (`navigator.audioSession.type = 'playback'` on iOS, see [app.md](app.md)).
 
+Everything goes through `uitgang(c)`, never `c.destination` directly. That is a
+limiter (compressor at −3 dB, ratio 20) plus a soft clip above 0.8: single notes
+stay as loud as before, and 20 harp notes at once stay under 0.96 instead of
+hard-clipping. New sounds must use `uitgang` too. Melody voices also go through
+`nieuweStem(c, 'instrument:toon', t)`: re-striking the same note fades out its
+previous voice in about 15 ms, so fast repeats don't pile up. Different notes keep ringing, so
+chords still work.
+
 `games/muziek/xylofoon.ts`: tap plays a bar, a gliding finger plays each bar
-once. Highlight/bounce classes are removed on `animationend` so a later class
+once. The "last bar" is tracked **per `pointerId`**. With one shared variable,
+two fingers resting on two bars overwrote each other on every touch jitter: 42 notes
+instead of 2, the "ungodly noise" bug (Oct 2026). Highlight/bounce classes are removed on `animationend` so a later class
 change can't look like a new hit; a played bar flashes clearly (white rim, glow,
 hop) so Speel na is easy to follow.
 
