@@ -37,7 +37,7 @@ commit (describe the current state; don't append dated "latest round" notes).
 | [audio.md](audio.md) | playing clips, replay buttons, feedback timing (`naHuidigeAudio`), mute |
 | [kleuter-onderwerpen.md](kleuter-onderwerpen.md) | Luisteren, Geheugenspel, Ontdekken, Schrijven (tracing), Tekenen |
 | [muziek.md](muziek.md) | xylophone, Speel na, Ritme, levels, drum kit, shop instruments (harp, fluit, keyboard, kikkerkoor) |
-| [spelletjes.md](spelletjes.md) | Vangspel, Tafeltennis, Dieren voeren |
+| [spelletjes.md](spelletjes.md) | Vangspel, Oversteken (Frogger), Tafeltennis, Dieren voeren |
 | [achtergronden.md](achtergronden.md) | background themes, adding a theme |
 | [winkel-profiel.md](winkel-profiel.md) | shop, profile menu, avatars and tints |
 | [layout.md](layout.md) | CSS gotchas, landscape phone/tablet layout, three.js sizing |

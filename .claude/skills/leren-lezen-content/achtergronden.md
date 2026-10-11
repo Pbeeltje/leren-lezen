@@ -10,7 +10,8 @@
   profile menu pick it up automatically (200 coins). Fluent animals face left:
   mirror with `.gespiegeld`. With `prefers-reduced-motion` don't start JS
   schedulers. Clear every timer/rAF in `vernietig`. Also add a Vangspel entry in
-  `THEMA_DINGEN` and optionally `THEMA_DIEREN` (Dieren voeren) and a table colour
+  `THEMA_DINGEN`, an Oversteken entry in `OVERSTEEK_THEMAS` (required, with lane
+  grounds in `oversteken.css`) and optionally `THEMA_DIEREN` (Dieren voeren) and a table colour
   (`.thema-<id> .pong-tafel`).
 - Hidden backgrounds pause: an invisible canvas (ruimte) is stopped and animations
   pause when the app is in the background.

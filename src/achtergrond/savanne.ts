@@ -101,7 +101,7 @@ const OLIFANT = `
 </svg>`;
 
 // Gnoe van opzij (kijkt naar rechts): hoge schoft, dunne poten, baard en gekrulde horens.
-const GNOE = `
+export const GNOE = `
 <svg viewBox="0 0 200 150" aria-hidden="true">
   <g class="dier__staart">
     <path d="M36 60 C28 72 26 86 28 98" stroke="#3a332e" stroke-width="3" fill="none" stroke-linecap="round"/>

@@ -1,7 +1,7 @@
-# Spelletjes: Vangspel, Tafeltennis, Dieren voeren (+ Geheugenspel, Tekenen)
+# Spelletjes: Vangspel, Oversteken, Tafeltennis, Dieren voeren (+ Geheugenspel, Tekenen)
 
 Topic `spellen` (both groups, `SpellenKiesScreen`, Fluent joystick) opens
-Vangspel, Tafeltennis, Dieren voeren, Geheugenspel and Tekenen. Geheugenspel and
+Vangspel, Oversteken, Tafeltennis, Dieren voeren, Geheugenspel and Tekenen. Geheugenspel and
 Tekenen: see [kleuter-onderwerpen.md](kleuter-onderwerpen.md). None of the games
 pay coins (coins come from learning); records are per profile.
 
@@ -33,6 +33,52 @@ pay coins (coins come from learning); records are per profile.
   media query (it adds `pointer: coarse`).
 - Record: `leren-lezen:vangspel:<profielId>`. Start/end screens are pictures only.
 - Check: `node tests/vangspel.mjs <map>`, `node tests/vangspel-thema.mjs <map>`.
+
+## Oversteken (`ui/screens/OversteekScreen.ts`, themes in `oversteek-themas.ts`)
+
+Frogger: the profile figure hops from the bottom strip to the finish row (checkered
+edge, theme decorations) through lanes seen from above. Tile icon: Fluent traffic light
+(`icons/oversteken.svg`).
+- **Units:** everything is in cells (`c` px, CSS var `--c` on `.ov-veld`): positions,
+  speeds (cells/s), gaps. `maatVeld()` sizes cells from the height under the bar and at
+  least 7 columns wide (max 15, then the field is centred). Resizing needs no rebuild.
+- **Controls:** a tap is read relative to the figure (above = forward, the dominant axis
+  wins, a tap on the figure = forward); a swipe works too; arrows/WASD. One hop is buffered
+  during a hop (0.13 s). Three white arrows round the figure until the first hop.
+- **Lanes:** `start`, `weg` (hazards), `veilig` (middle strip), `water` (stand only on
+  what floats, else a splash), `finish`. Level n has 3,4,5,6,7,8 hazard lanes (kleuter
+  3,3,4,5,5,6), capped by screen height; from 5 lanes (or with water) split by a middle
+  strip. Water replaces the upper half from level 3 for themes with a `rivier`. Each lane
+  gets one `Soort` (shuffled, neighbours differ), directions alternate.
+- **Difficulty:** speed ×(1 + 0.12/level, max 2.1; kleuter ×0.72), gaps shrink 0.26
+  cells/level to min 1.6 (kleuter 0.2 → 2.3), logs/floes get shorter and water gaps wider.
+  From level 4 (kleuter 5) one lane, from 7 two, become a `zeldzaam` lane: one fast thing
+  at a time, announced 1.5 s ahead by a blinking crossing light (`.ov-lamp`) and red lane
+  pulse (`.ov-baan--let-op`), with a two-note bell if the player is within 2 rows. Trains
+  (`sporadisch: true`) always work that way.
+- **Soort:** `maat` (cells per picture), `kijkt` (Fluent faces left; `'r'` exceptions are
+  mirrored the other way), `aantal` (herd/swarm, overlapping 0.82), `wagon`+`wagons`
+  (train: head leads), `draai` (rocket/comet tilted 45°), `spin`, `dobber` (bob),
+  `kleuren` (bumper cars, random hue). Own drawings: `gnoe` (exported `GNOE` from
+  `achtergrond/savanne.ts`, legs animate), `boomstam` and `schots` (SVG built at any
+  length). Hippos in water are clipped at the legs; lava rocks are darkened.
+- **Hit/splash:** hitbox ±0.3 cell against each thing minus its end margin; on water the
+  figure needs a floater within 0.15 cell and rides it; carried off the edge = splash.
+  One heart per hit, 1 s animation, then back to the last safe strip below, 1.3 s
+  invulnerable. 0 hearts = end window (score, level reached, record).
+- **Points:** +1 per new row in a level, +10 at the finish (fanfare, banner with the next
+  level number, 2 s), +5 for the one star per level (on a road lane or the middle strip).
+  Forward hops play a rising xylophone note toward the finish.
+- Traffic keeps running behind the start and end windows. Portrait only on phones (same
+  `.vang-draai` as Vangspel). Reuses `.vang-balk` (wraps to two rows on narrow phones,
+  the field starts below it), `.vang-venster*`, `.vang-plop`. CSS: `styles/oversteken.css`,
+  lane grounds `.ov-grond--<name>` per theme. Record: `leren-lezen:oversteken:<id>`.
+- New pictures in `public/assets/oversteken/` (Fluent); existing `woorden/`, `achtergrond/`
+  pictures are reused where identical.
+- Check: `node tests/oversteken.mjs <map> [thema,thema] [level] [BxH]` (screenshots,
+  broken images) and `node tests/oversteken-bot.mjs <map> [thema] [tot] [BxH] [start]`
+  (a bot plays via the DOM; screenshots of water, hit, banner, end). Dev hook
+  `window.__oversteekLevel` starts at a higher level.
 
 ## Tafeltennis (`ui/screens/TafeltennisScreen.ts`)
 

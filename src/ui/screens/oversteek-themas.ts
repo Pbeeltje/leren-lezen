@@ -1,0 +1,222 @@
+import type { ThemaId } from '../../achtergrond/achtergrond.ts';
+
+// Wat er bij Oversteken door de banen rijdt, loopt, zwemt of vliegt, per achtergrond.
+// Fluent-plaatjes kijken bijna allemaal naar links; `kijkt: 'r'` voor de uitzonderingen,
+// dan spiegelt het spel ze als ze naar links gaan (en de rest als ze naar rechts gaan).
+
+export interface Soort {
+  src?: string; // plaatje; zonder src een eigen tekening (`teken`)
+  teken?: 'gnoe' | 'boomstam' | 'schots';
+  maat: number; // breedte van één plaatje in vakjes
+  kijkt?: 'l' | 'r' | 'geen';
+  snel?: number; // snelheidsfactor (1 = gewoon)
+  aantal?: [number, number]; // kudde of zwerm: zoveel achter elkaar
+  wagon?: string; // trein: kop + wagons
+  wagons?: [number, number];
+  draai?: number; // graden, zodat een schuin plaatje (raket, komeet) recht vooruit wijst
+  spin?: boolean; // tolt (meteoren)
+  dobber?: boolean; // deint op en neer (lopende dieren, bootjes)
+  kleuren?: boolean; // botsauto's: elke auto een andere kleur
+  sporadisch?: boolean; // komt af en toe, snel, met knipperlicht vooraf
+}
+
+export interface OversteekThema {
+  weg: string; // grond van de gevaarlijke banen (css: .ov-grond--<weg>)
+  veilig: string; // grond van start, middenberm en overkant
+  vijanden: Soort[];
+  // Snelle uitschieters met waarschuwingslicht, vanaf level 4.
+  zeldzaam: Soort[];
+  // Water vanaf level 3: alleen staan op wat drijft.
+  rivier?: { water: string; drijvers: Soort[] };
+  overkant: string[]; // versiering op de finish
+}
+
+const o = (n: string): string => `assets/oversteken/${n}.svg`;
+const w = (n: string): string => `assets/images/woorden/${n}.svg`;
+const a = (n: string): string => `assets/achtergrond/${n}.svg`;
+const i = (n: string): string => `assets/icons/${n}.svg`;
+
+const BOOMSTAM: Soort = { teken: 'boomstam', maat: 1 };
+
+export const OVERSTEEK_THEMAS: Record<ThemaId, OversteekThema> = {
+  bouw: {
+    weg: 'asfalt',
+    veilig: 'stoep',
+    vijanden: [
+      { src: w('auto'), maat: 1.25 },
+      { src: w('taxi'), maat: 1.25 },
+      { src: o('suv'), maat: 1.3 },
+      { src: o('politie'), maat: 1.3, snel: 1.2 },
+      { src: w('bus'), maat: 2.1, snel: 0.75 },
+      { src: o('bestelwagen'), maat: 1.6, snel: 0.85 },
+      { src: o('oplegger'), maat: 2.3, snel: 0.7 },
+      { src: o('pickup'), maat: 1.5 },
+      { src: w('scooter'), maat: 1, snel: 1.3 },
+      { src: o('brandweer'), maat: 2, snel: 0.9 },
+    ],
+    zeldzaam: [
+      { src: w('ambulance'), maat: 1.6, snel: 2.4 },
+      { src: o('raceauto'), maat: 1.5, kijkt: 'r', snel: 2.8 },
+    ],
+    overkant: [o('bouwkraan'), o('afzetting'), w('huis'), o('afzetting'), o('bouwkraan')],
+  },
+  savanne: {
+    weg: 'savanne',
+    veilig: 'gras-droog',
+    vijanden: [
+      { teken: 'gnoe', maat: 1.3, kijkt: 'r', aantal: [3, 5], dobber: true, snel: 1.1 },
+      { src: w('zebra'), maat: 1.2, kijkt: 'r', aantal: [2, 3], dobber: true },
+      { src: w('olifant'), maat: 1.7, snel: 0.6, dobber: true },
+      { src: w('neushoorn'), maat: 1.5, snel: 1.3, dobber: true },
+      { src: w('giraf'), maat: 1.4, snel: 0.8, dobber: true },
+      { src: o('buffel'), maat: 1.4, kijkt: 'r', aantal: [1, 2], dobber: true },
+    ],
+    // Op hol geslagen kudde: veel gnoes, heel snel.
+    zeldzaam: [{ teken: 'gnoe', maat: 1.3, kijkt: 'r', aantal: [6, 9], dobber: true, snel: 2.4 }],
+    rivier: { water: 'rivier', drijvers: [BOOMSTAM, { src: w('nijlpaard'), maat: 1.3, aantal: [2, 3] }] },
+    overkant: [w('boom'), w('giraf'), w('boom'), w('olifant'), w('boom')],
+  },
+  boerderij: {
+    weg: 'zandpad',
+    veilig: 'gras',
+    vijanden: [
+      { src: a('koe'), maat: 1.4, snel: 0.7, dobber: true, aantal: [1, 3] },
+      { src: w('tractor'), maat: 1.5, snel: 0.9 },
+      { src: a('varken'), maat: 1.1, kijkt: 'r', dobber: true, aantal: [1, 2] },
+      { src: a('schaap'), maat: 1.1, dobber: true, aantal: [2, 4] },
+      { src: w('geit'), maat: 1.1, dobber: true, snel: 1.2 },
+      { src: a('kuiken'), maat: 0.8, kijkt: 'r', dobber: true, aantal: [3, 5], snel: 0.8 },
+      { src: o('paard'), maat: 1.4, kijkt: 'r', dobber: true, snel: 1.4 },
+    ],
+    zeldzaam: [{ src: w('tractor'), maat: 1.5, snel: 2.4 }],
+    rivier: { water: 'sloot', drijvers: [BOOMSTAM, { src: o('lotus'), maat: 1, aantal: [2, 3], kijkt: 'geen' }] },
+    overkant: [w('molen'), a('haan'), w('tractor'), w('kip'), w('molen')],
+  },
+  ruimte: {
+    weg: 'ruimte',
+    veilig: 'maan',
+    vijanden: [
+      // Meteorenzwerm: een paar draaiende stenen vlak achter elkaar.
+      { src: i('meteoor'), maat: 1, aantal: [2, 4], spin: true, kijkt: 'geen', snel: 1.1 },
+      { src: o('komeet'), maat: 1.3, draai: 45 },
+      { src: w('ufo'), maat: 1.3, kijkt: 'geen', dobber: true, snel: 0.8 },
+      { src: o('steen'), maat: 1, aantal: [1, 3], spin: true, kijkt: 'geen', snel: 0.7 },
+    ],
+    zeldzaam: [
+      { src: w('raket'), maat: 1.4, kijkt: 'r', draai: 45, snel: 2.8 },
+      { src: o('satelliet'), maat: 1.6, kijkt: 'geen', spin: true, snel: 1.6 },
+    ],
+    overkant: [o('planeet'), w('maan'), w('raket'), w('maan'), o('planeet')],
+  },
+  dino: {
+    weg: 'oerwoud',
+    veilig: 'varens',
+    vijanden: [
+      { src: w('stegosaurus'), maat: 1.6, snel: 0.75, dobber: true },
+      { src: a('triceratops'), maat: 1.4, dobber: true },
+      { src: o('sauropode'), maat: 1.8, snel: 0.55, dobber: true },
+      { src: o('trex'), maat: 1.5, kijkt: 'r', snel: 1.3, dobber: true },
+      { src: w('diplodocus'), maat: 1.8, snel: 0.6, dobber: true },
+    ],
+    zeldzaam: [{ src: o('trex'), maat: 1.6, kijkt: 'r', snel: 2.6, dobber: true }],
+    // Een lavarivier: springen over stenen.
+    rivier: { water: 'lava', drijvers: [{ src: o('steen'), maat: 1, aantal: [2, 3], kijkt: 'geen' }] },
+    overkant: [o('vulkaan'), w('ei'), a('boomvaren'), w('ei'), o('vulkaan')],
+  },
+  zee: {
+    weg: 'zee',
+    veilig: 'zandbank',
+    vijanden: [
+      { src: w('zeilboot'), maat: 1.4, kijkt: 'geen', dobber: true, snel: 0.8 },
+      { src: o('motorboot'), maat: 1.4, dobber: true },
+      { src: w('schip'), maat: 2.3, snel: 0.55, dobber: true },
+      { src: w('kano'), maat: 1.3, kijkt: 'geen', dobber: true, snel: 0.7 },
+      { src: w('haai'), maat: 1.4, snel: 1.2, dobber: true },
+      { src: w('dolfijn'), maat: 1.2, aantal: [2, 3], dobber: true, snel: 1.3 },
+    ],
+    zeldzaam: [{ src: o('speedboot'), maat: 1.5, snel: 2.8, dobber: true }],
+    overkant: [a('vuurtoren'), w('parasol'), a('krab'), w('emmer'), a('vuurtoren')],
+  },
+  onderwater: {
+    weg: 'diep',
+    veilig: 'zeebodem',
+    vijanden: [
+      { src: w('haai'), maat: 1.5, snel: 1.1, dobber: true },
+      { src: w('kwal'), maat: 1, kijkt: 'geen', aantal: [1, 3], dobber: true, snel: 0.6 },
+      { src: a('kogelvis'), maat: 1, dobber: true, snel: 0.8 },
+      { src: o('tropische-vis'), maat: 0.9, aantal: [3, 5], dobber: true, snel: 1.2 },
+      { src: w('octopus'), maat: 1.1, kijkt: 'geen', dobber: true, snel: 0.7 },
+      { src: o('walvis'), maat: 2.2, snel: 0.5, dobber: true },
+    ],
+    zeldzaam: [{ src: w('haai'), maat: 1.6, snel: 2.6, dobber: true }],
+    overkant: [a('schelp'), a('octopus'), a('schildpad'), a('krab'), a('schelp')],
+  },
+  herfst: {
+    weg: 'bospad',
+    veilig: 'bladeren',
+    vijanden: [
+      { src: o('everzwijn'), maat: 1.3, kijkt: 'r', snel: 1.2, dobber: true },
+      { src: o('hert'), maat: 1.3, snel: 1.1, dobber: true },
+      { src: w('das'), maat: 1.1, dobber: true, snel: 0.8 },
+      { src: w('egel'), maat: 0.9, dobber: true, snel: 0.5, aantal: [1, 3] },
+      { src: w('muis'), maat: 0.8, dobber: true, snel: 1.4, aantal: [2, 3] },
+    ],
+    zeldzaam: [{ src: o('everzwijn'), maat: 1.3, kijkt: 'r', snel: 2.4, aantal: [3, 4], dobber: true }],
+    rivier: { water: 'beek', drijvers: [BOOMSTAM, { src: o('herfstblad'), maat: 1, aantal: [2, 3], kijkt: 'geen' }] },
+    overkant: [a('herfst-paddenstoel'), a('herfst-eekhoorn'), a('esdoornblad'), a('herfst-egel'), a('herfst-paddenstoel')],
+  },
+  winter: {
+    weg: 'ijsbaan',
+    veilig: 'sneeuw',
+    vijanden: [
+      { src: w('slee'), maat: 1.3, kijkt: 'geen', snel: 1.3 },
+      { src: o('skier'), maat: 1.2, kijkt: 'r', snel: 1.4 },
+      { src: w('pinguin'), maat: 0.9, kijkt: 'geen', aantal: [2, 4], dobber: true, snel: 0.6 },
+      { src: o('sneeuwpop'), maat: 1.1, kijkt: 'geen', snel: 0.5, dobber: true },
+      { src: o('hert'), maat: 1.3, dobber: true },
+    ],
+    zeldzaam: [{ src: o('skier'), maat: 1.2, kijkt: 'r', snel: 3 }],
+    rivier: { water: 'wak', drijvers: [{ teken: 'schots', maat: 1 }] },
+    overkant: [a('sneeuwpop'), a('den'), a('winter-pinguin'), a('den'), a('sneeuwpop')],
+  },
+  kasteel: {
+    weg: 'keien',
+    veilig: 'gras',
+    vijanden: [
+      { src: o('paard'), maat: 1.4, kijkt: 'r', dobber: true, snel: 1.3 },
+      { src: w('eenhoorn'), maat: 1.1, dobber: true },
+      { src: w('draak'), maat: 1.3, dobber: true, snel: 0.8 },
+      { src: w('kar'), maat: 1.3, kijkt: 'r', snel: 0.7 },
+    ],
+    zeldzaam: [{ src: w('draak'), maat: 1.5, snel: 2.6, dobber: true }],
+    rivier: { water: 'gracht', drijvers: [BOOMSTAM, { src: w('zwaan'), maat: 1, aantal: [2, 3], dobber: true }] },
+    overkant: [w('vlag'), w('kroon'), a('kasteel-eigen'), w('sleutel'), w('vlag')],
+  },
+  kermis: {
+    weg: 'kermis',
+    veilig: 'ruitjes',
+    vijanden: [
+      { src: w('auto'), maat: 1.2, kleuren: true, snel: 1.2 },
+      { src: o('draaimolenpaard'), maat: 1.1, dobber: true, aantal: [2, 3], snel: 0.8 },
+      { src: w('ballon'), maat: 0.9, kijkt: 'geen', dobber: true, aantal: [2, 4], snel: 0.6 },
+      { src: o('clown'), maat: 1, kijkt: 'geen', spin: true },
+    ],
+    zeldzaam: [{ src: w('auto'), maat: 1.2, kleuren: true, snel: 2.6 }],
+    // Eendjes vissen: hop van eendje naar eendje.
+    rivier: { water: 'eendjes', drijvers: [{ src: w('eend'), maat: 1, aantal: [2, 4], dobber: true }] },
+    overkant: [a('reuzenrad'), a('kermis-popcorn'), o('teddybeer'), a('kermis-ijsje'), a('reuzenrad')],
+  },
+  trein: {
+    weg: 'rails',
+    veilig: 'perron',
+    vijanden: [
+      // Treinen komen af en toe en snel, met het knipperlicht van de overweg.
+      { src: a('locomotief'), maat: 1.3, wagon: o('wagon'), wagons: [2, 3], sporadisch: true, snel: 2.2 },
+      { src: o('snelle-trein'), maat: 1.4, wagon: o('wagon'), wagons: [2, 3], sporadisch: true, snel: 2.8 },
+      { src: w('tram'), maat: 1.3, kijkt: 'geen', snel: 0.8 },
+      { src: o('sneltram'), maat: 1.4, snel: 1 },
+    ],
+    zeldzaam: [{ src: o('kogeltrein'), maat: 1.5, kijkt: 'r', wagon: o('wagon'), wagons: [3, 4], sporadisch: true, snel: 3.4 }],
+    overkant: [a('locomotief'), w('klok'), o('verkeerslicht'), w('tas'),a('locomotief')],
+  },
+};
