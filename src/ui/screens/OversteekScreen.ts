@@ -42,7 +42,46 @@ interface Ding {
   el: HTMLElement;
   x: number; // linkerkant, vakjes
   lengte: number; // vakjes
-  marge: number; // doorzichtige rand aan de uiteinden, vakjes
+  // Waar er echt iets te zien is, gemeten vanaf x (vakjes): hier botst of draagt het.
+  links: number;
+  rechts: number;
+}
+
+// Botsen gaat zoals in de echte Frogger (na de bekende reparatie): één punt, het midden
+// van het figuurtje, tegen de echte breedte van wat er rijdt. Die breedte meten we aan de
+// pixels van elk plaatje, want elk Fluent-plaatje heeft zijn eigen doorzichtige rand.
+// Sleutel: pad + draaiing; waarde: eerste en laatste zichtbare kolom (0..1 van de breedte).
+const RANDEN = new Map<string, [number, number]>();
+const GNOE_RAND: [number, number] = [0.18, 0.98]; // eigen tekening: staart dun, kop tot de rand
+function meetRand(src: string, draai = 0): void {
+  const sleutel = `${src}|${draai}`;
+  if (RANDEN.has(sleutel)) return;
+  RANDEN.set(sleutel, [0.06, 0.94]); // tot de meting klaar is
+  const img = new Image();
+  img.onload = () => {
+    const M = 64;
+    const doek = document.createElement('canvas');
+    doek.width = doek.height = M;
+    const ctx = doek.getContext('2d', { willReadFrequently: true });
+    if (!ctx) return;
+    ctx.translate(M / 2, M / 2);
+    ctx.rotate((draai * Math.PI) / 180);
+    ctx.drawImage(img, -M / 2, -M / 2, M, M);
+    const alfa = ctx.getImageData(0, 0, M, M).data;
+    const zichtbaar = (x: number): boolean => {
+      for (let y = 0; y < M; y++) if (alfa[(y * M + x) * 4 + 3] > 60) return true;
+      return false;
+    };
+    let l = 0;
+    while (l < M && !zichtbaar(l)) l++;
+    let r = M - 1;
+    while (r > l && !zichtbaar(r)) r--;
+    if (r > l) RANDEN.set(sleutel, [l / M, (r + 1) / M]);
+  };
+  img.src = src;
+}
+function rand(s: Soort, src: string): [number, number] {
+  return s.teken === 'gnoe' ? GNOE_RAND : RANDEN.get(`${src}|${s.draai ?? 0}`) ?? [0.06, 0.94];
 }
 
 interface Baan {
@@ -121,6 +160,11 @@ export function OversteekScreen(manager: ScreenManager): Screen {
   const kleuter = haalGroep() === 'kleuter';
   const themaId = huidigThema();
   const thema = OVERSTEEK_THEMAS[themaId];
+  // Meten kost een paar milliseconden per plaatje; klaar voordat je op start drukt.
+  for (const sr of [...thema.vijanden, ...thema.zeldzaam, ...(thema.rivier?.drijvers ?? [])]) {
+    if (sr.src) meetRand(sr.src, sr.draai);
+    if (sr.wagon) meetRand(sr.wagon, sr.draai);
+  }
 
   const el = document.createElement('div');
   el.className = `ov-scherm ov-scherm--${themaId}`;
@@ -231,7 +275,9 @@ export function OversteekScreen(manager: ScreenManager): Screen {
       d.innerHTML = s.teken === 'boomstam' ? boomstam(rek) : schots(rek);
       d.classList.add('ov-ding--drijver');
       d.style.width = `calc(var(--c) * ${rek})`;
-      return { el: d, x: 0, lengte: rek, marge: 0 };
+      // Boomstam en schots zijn tot vlak bij de rand getekend.
+      const r = s.teken === 'boomstam' ? 0.06 : 0.04;
+      return { el: d, x: 0, lengte: rek, links: r, rechts: rek - r };
     }
     const kijkt = s.kijkt ?? 'l';
     const spiegel = kijkt !== 'geen' && (kijkt === 'l') === (richting === 1);
@@ -244,6 +290,8 @@ export function OversteekScreen(manager: ScreenManager): Screen {
     // Kuddes lopen een beetje over elkaar heen, wagons sluiten aan.
     const stap = s.wagon ? s.maat * 0.92 : s.aantal ? s.maat * 0.82 : s.maat;
     const lengte = (n - 1) * stap + s.maat;
+    let links = Infinity;
+    let rechts = -Infinity;
     const kleur = s.kleuren ? `hue-rotate(${Math.floor(Math.random() * 360)}deg)` : '';
     for (let k = 0; k < n; k++) {
       // De kop rijdt voorop: links als het naar links gaat, rechts als het naar rechts gaat.
@@ -259,6 +307,13 @@ export function OversteekScreen(manager: ScreenManager): Screen {
         stuk.classList.add('ov-stuk--dobber');
         stuk.style.animationDelay = `${(-Math.random()).toFixed(2)}s`;
       }
+      const src = s.wagon && !isKop ? s.wagon : s.src!;
+      // Zichtbaar deel van dit plaatje: het staat gecentreerd in zijn vak (of gerekt).
+      const [fl, fr] = rand(s, src);
+      const [zl, zr] = spiegel ? [1 - fr, 1 - fl] : [fl, fr];
+      const begin = k * stap + (s.lang ? 0 : (s.maat - zicht) / 2);
+      links = Math.min(links, begin + zl * zicht);
+      rechts = Math.max(rechts, begin + zr * zicht);
       let binnen: Element;
       if (s.teken === 'gnoe') {
         const houder = document.createElement('div');
@@ -267,7 +322,7 @@ export function OversteekScreen(manager: ScreenManager): Screen {
         binnen.setAttribute('class', 'ov-gnoe');
       } else {
         const img = document.createElement('img');
-        img.src = s.wagon && !isKop ? s.wagon : s.src!;
+        img.src = src;
         img.alt = '';
         if (kleur) img.style.filter = kleur;
         if (s.lang) img.classList.add('ov-stuk__beeld--lang');
@@ -285,14 +340,13 @@ export function OversteekScreen(manager: ScreenManager): Screen {
       d.appendChild(stuk);
     }
     d.style.width = `calc(var(--c) * ${lengte})`;
-    // Lege ruimte naast het plaatje plus de doorzichtige rand van het plaatje zelf.
-    return { el: d, x: 0, lengte, marge: (s.maat - zicht) / 2 + zicht * 0.08 };
+    return { el: d, x: 0, lengte, links, rechts };
   }
 
   function nieuwDing(b: Baan): Ding {
     const ding = maakDing(b.bron!, b.richting, willekeurig(b.rek[0], b.rek[1]));
     // Alleen in de dev-server: tests tekenen hiermee de botsrand over het plaatje.
-    if (import.meta.env.DEV) ding.el.dataset.marge = String(ding.marge);
+    if (import.meta.env.DEV) Object.assign(ding.el.dataset, { links: String(ding.links), rechts: String(ding.rechts) });
     b.el.appendChild(ding.el);
     b.dingen.push(ding);
     b.volgendGat = willekeurig(b.gat[0], b.gat[1]);
@@ -300,21 +354,23 @@ export function OversteekScreen(manager: ScreenManager): Screen {
   }
 
   // Vult een gewone baan aan de kant waar alles binnenkomt. De nieuwste staat achteraan
-  // in de lijst. Bij een lege baan komt de eerste bij de uitgang, zodat het beeld vanaf
-  // het begin vol is.
+  // in de lijst. Het gat telt tussen wat je ziet (niet tussen de vakken), zodat een gat
+  // van 3 ook echt 3 vakjes ruimte is. Bij een lege baan komt de eerste bij de uitgang,
+  // zodat het beeld vanaf het begin vol is.
   function vul(b: Baan): void {
     for (let k = 0; k < 40; k++) {
       const laatste = b.dingen[b.dingen.length - 1];
       if (b.richting === 1) {
-        if (laatste && laatste.x - b.volgendGat < 0) return;
-        const grens = laatste ? laatste.x - b.volgendGat : Wc - willekeurig(0, 2);
+        // Zichtbare rechterkant van de nieuwe: net buiten beeld links.
+        const grens = laatste ? laatste.x + laatste.links - b.volgendGat : Wc - willekeurig(0, 2);
+        if (laatste && grens < 0) return;
         const d = nieuwDing(b);
-        d.x = grens - d.lengte;
+        d.x = grens - d.rechts;
       } else {
-        if (laatste && laatste.x + laatste.lengte + b.volgendGat > Wc) return;
-        const grens = laatste ? laatste.x + laatste.lengte + b.volgendGat : willekeurig(0, 2);
+        const grens = laatste ? laatste.x + laatste.rechts + b.volgendGat : willekeurig(0, 2);
+        if (laatste && grens > Wc) return;
         const d = nieuwDing(b);
-        d.x = grens;
+        d.x = grens - d.links;
       }
     }
   }
@@ -329,9 +385,12 @@ export function OversteekScreen(manager: ScreenManager): Screen {
     for (const b of banen) b.el.remove();
     ster = null;
     banen = [];
-    const reeks = kleuter ? [3, 3, 4, 5, 5, 6] : [3, 4, 5, 6, 7, 8];
+    // Rustig opbouwen: elk aantal banen komt twee levels achter elkaar.
+    const reeks = kleuter ? [3, 3, 3, 4, 4, 5, 5, 6] : [3, 3, 4, 4, 5, 5, 6, 6, 7, 7, 8];
     const n = Math.min(reeks[Math.min(level - 1, reeks.length - 1)], maxBanen());
-    const water = !!thema.rivier && level >= 3 && n >= 4;
+    // Water vanaf level 4 (kleuters 5).
+    const waterVanaf = kleuter ? 5 : 4;
+    const water = !!thema.rivier && level >= waterVanaf && n >= 4;
     const plan: BaanSoort[] = ['start'];
     if (n >= 5 || water) {
       const onder = Math.ceil(n / 2);
@@ -345,17 +404,19 @@ export function OversteekScreen(manager: ScreenManager): Screen {
     N = plan.length;
     maatVeld();
 
-    const f = (kleuter ? 0.72 : 1) * Math.min(2.1, 1 + 0.12 * (level - 1));
-    const gatMin = Math.max(kleuter ? 2.3 : 1.6, (kleuter ? 3.8 : 3.3) - (kleuter ? 0.2 : 0.26) * (level - 1));
-    const L3 = Math.max(0, level - 3);
+    const f = (kleuter ? 0.72 : 1) * Math.min(2, 1 + 0.08 * (level - 1));
+    // Zichtbare ruimte tussen twee dingen: begint ruim en krimpt langzaam.
+    const gatMin = kleuter ? Math.max(2.4, 4.4 - 0.15 * (level - 1)) : Math.max(1.6, 3.8 - 0.18 * (level - 1));
+    const gatExtra = kleuter ? 2.8 : 2.6;
+    const Lw = Math.max(0, level - waterVanaf); // levels sinds het water begon
     // Elke baan een ander soort, zolang de lijst strekt.
     const vijanden = [...thema.vijanden].sort(() => Math.random() - 0.5);
     const drijvers = thema.rivier ? [...thema.rivier.drijvers].sort(() => Math.random() - 0.5) : [];
     const wegRijen = plan.flatMap((s, r) => (s === 'weg' ? [r] : []));
-    // Uitschieters: vanaf level 4 (kleuters 5) één baan, vanaf level 7 twee.
+    // Uitschieters: vanaf level 6 (kleuters 7) één baan, vanaf level 9 twee.
     const uitschieters = new Set<number>();
-    if (thema.zeldzaam.length && level >= (kleuter ? 5 : 4)) {
-      const aantal = level >= 7 && wegRijen.length >= 6 ? 2 : 1;
+    if (thema.zeldzaam.length && level >= (kleuter ? 7 : 6)) {
+      const aantal = level >= 9 && wegRijen.length >= 6 ? 2 : 1;
       const kandidaten = [...wegRijen].sort(() => Math.random() - 0.5);
       for (const r of kandidaten.slice(0, aantal)) uitschieters.add(r);
     }
@@ -378,7 +439,7 @@ export function OversteekScreen(manager: ScreenManager): Screen {
         v: 0,
         bron: null,
         dingen: [],
-        gat: [gatMin, gatMin + 2.6],
+        gat: [gatMin, gatMin + gatExtra],
         rek: [1, 1],
         volgendGat: 0,
         sporadisch: false,
@@ -396,7 +457,7 @@ export function OversteekScreen(manager: ScreenManager): Screen {
         b.sporadisch = zeldzaam || !!s.sporadisch;
         b.v = Math.min(7.5, willekeurig(1, 1.7) * (s.snel ?? 1) * f);
         if (b.sporadisch) {
-          b.tussen = [Math.max(1.4, (kleuter ? 5 : 4) - 0.3 * level), Math.max(2.8, (kleuter ? 8.5 : 7.5) - 0.4 * level)];
+          b.tussen = [Math.max(1.6, (kleuter ? 6 : 5.5) - 0.3 * level), Math.max(3, (kleuter ? 10 : 9.5) - 0.4 * level)];
           b.wacht = willekeurig(1.6, 3.5);
           const lamp = document.createElement('div');
           lamp.className = `ov-lamp ov-lamp--${b.richting === 1 ? 'links' : 'rechts'}`;
@@ -408,9 +469,9 @@ export function OversteekScreen(manager: ScreenManager): Screen {
         const s = drijvers[waterTeller++ % drijvers.length];
         b.bron = s;
         b.v = Math.min(3, willekeurig(0.7, 1.25) * f * (s.snel ?? 1));
-        const lang = Math.max(2, 3.5 - 0.22 * L3) + (kleuter ? 0.6 : 0);
+        const lang = Math.max(2, 3.5 - 0.2 * Lw) + (kleuter ? 0.6 : 0);
         b.rek = [lang, lang + 1.3];
-        b.gat = [Math.min(1.3, 0.8 + 0.08 * L3), Math.min(2.8, 1.8 + 0.15 * L3)];
+        b.gat = [Math.min(1.3, 0.8 + 0.08 * Lw), Math.min(2.8, 1.8 + 0.15 * Lw)];
       }
       if (b.bron && !b.sporadisch) vul(b);
       if (soort === 'weg' || soort === 'water') richting = richting === 1 ? -1 : 1;
@@ -624,8 +685,9 @@ export function OversteekScreen(manager: ScreenManager): Screen {
     const baan = banen[rij];
     const geland = hopT >= HOP;
     if (baan.soort === 'water' && geland) {
-      // Wat drijft er onder je? Kinderen krijgen een randje speling.
-      const onder = baan.dingen.find((d) => px > d.x - 0.15 && px < d.x + d.lengte + 0.15);
+      // Wat drijft er onder je? Ook hier telt het midden van het figuurtje, met een
+      // randje speling (0,1 vakje) voor kinderhanden.
+      const onder = baan.dingen.find((d) => px > d.x + d.links - 0.1 && px < d.x + d.rechts + 0.1);
       if (!onder) {
         sterf('plons');
       } else {
@@ -640,8 +702,7 @@ export function OversteekScreen(manager: ScreenManager): Screen {
     const zichtBaan = banen[halfweg ? rij : vanRij];
     const zx = vanX + (px - vanX) * Math.min(1, hopT / HOP);
     if (!dood && zichtBaan.soort === 'weg' && tijd >= onkwetsbaar) {
-      const hb = 0.3;
-      if (zichtBaan.dingen.some((d) => zx + hb > d.x + d.marge && zx - hb < d.x + d.lengte - d.marge)) sterf('au');
+      if (zichtBaan.dingen.some((d) => zx > d.x + d.links && zx < d.x + d.rechts)) sterf('au');
     }
     if (!dood && ster && ster.rij === rij && Math.abs(ster.x - px) < 0.6) {
       ster.el.remove();

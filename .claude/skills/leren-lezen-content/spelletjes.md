@@ -46,32 +46,38 @@ edge, theme decorations) through lanes seen from above. Tile icon: Fluent traffi
   wins, a tap on the figure = forward); a swipe works too; arrows/WASD. One hop is buffered
   during a hop (0.13 s). Three white arrows round the figure until the first hop.
 - **Lanes:** `start`, `weg` (hazards), `veilig` (middle strip), `water` (stand only on
-  what floats, else a splash), `finish`. Level n has 3,4,5,6,7,8 hazard lanes (kleuter
-  3,3,4,5,5,6), capped by screen height; from 5 lanes (or with water) split by a middle
-  strip. Water replaces the upper half from level 3 for themes with a `rivier`. Each lane
-  gets one `Soort` (shuffled, neighbours differ), directions alternate.
-- **Difficulty:** speed ×(1 + 0.12/level, max 2.1; kleuter ×0.72), gaps shrink 0.26
-  cells/level to min 1.6 (kleuter 0.2 → 2.3), logs/floes get shorter and water gaps wider.
-  From level 4 (kleuter 5) one lane, from 7 two, become a `zeldzaam` lane: one fast thing
-  at a time, announced 1.5 s ahead by a blinking crossing light (`.ov-lamp`) and red lane
-  pulse (`.ov-baan--let-op`), with a two-note bell if the player is within 2 rows. Trains
-  (`sporadisch: true`) always work that way.
+  what floats, else a splash), `finish`. Hazard lanes per level: 3,3,4,4,5,5,6,6,7,7,8
+  (kleuter 3,3,3,4,4,5,5,6), capped by screen height; from 5 lanes (or with water) split by
+  a middle strip. Water replaces the upper half from level 4 (kleuter 5) for themes with a
+  `rivier`. Each lane gets one `Soort` (shuffled, neighbours differ), directions alternate.
+- **Difficulty (kept gentle on purpose; level 3 used to jump to 5 split lanes + water):**
+  speed ×(1 + 0.08/level, max 2; kleuter ×0.72). Gaps are measured between the *visible*
+  spans (`vul` uses `links`/`rechts`): 3.8 cells, −0.18/level, min 1.6 (kleuter 4.4,
+  −0.15, min 2.4), plus up to 2.6 (2.8) random. Logs/floes shorten and water gaps widen per
+  level since the water started. From level 6 (kleuter 7) one lane, from 9 two, become a
+  `zeldzaam` lane: one fast thing at a time, announced 1.5 s ahead by a blinking crossing
+  light (`.ov-lamp`) and red lane pulse (`.ov-baan--let-op`), with a two-note bell if the
+  player is within 2 rows. Trains (`sporadisch: true`) always work that way.
 - **Soort:** `maat` (slot width, see hitboxes), `kijkt` (Fluent faces left; `'r'` exceptions are
   mirrored the other way), `aantal` (herd/swarm, overlapping 0.82), `wagon`+`wagons`
   (train: head leads), `draai` (rocket/comet tilted 45°), `spin`, `dobber` (bob),
   `kleuren` (bumper cars, random hue). Own drawings: `gnoe` (exported `GNOE` from
   `achtergrond/savanne.ts`, legs animate), `boomstam` and `schots` (SVG built at any
   length). Hippos in water are clipped at the legs; lava rocks are darkened.
-- **Hitboxes = what you see.** A picture is at most `HOOG_MAX` (1.15) cells tall, so a
-  square Fluent picture is at most that wide too; `maat` is only the slot. `marge` = the
-  empty slot space beside the picture + 8% of the picture. Long vehicles (`lang`: bus,
-  truck, fire engine, ship, trains) are stretched to their full `maat` instead. (Before
-  this, a bus drawn 1 cell long collided over 1.5 cells.) The player is ±0.3 cell, checked
-  in the lane where the figure is visible: the old lane for the first half of a hop.
-  `node tests/oversteken-botsing.mjs <map> [thema,..] [level]` draws the boxes (dev
-  `data-marge`). On water the figure needs a floater within 0.15 cell and rides it;
-  carried off the edge = splash.
-  One heart per hit, 1 s animation, then back to the last safe strip below, 1.3 s
+- **Hits work like arcade Frogger** (after the well-known community fix): one point, the
+  centre of the figure, against the real width of each thing. That width is measured
+  from the pixels: `meetRand()` draws every picture of the theme (with its `draai`) on a
+  64 px canvas once and keeps the first/last column with alpha > 60 (`RANDEN`; the gnoe
+  drawing has a fixed `GNOE_RAND`). A picture is at most `HOOG_MAX` (1.15) cells tall, so a
+  square Fluent picture is at most that wide; `maat` is only the slot. Long vehicles
+  (`lang`: bus, truck, fire engine, ship, trains) are stretched to their full `maat`. Each
+  `Ding` keeps `links`/`rechts` (visible span from `x`, mirrored when needed). The lane
+  checked is the one where the figure is visible: the old lane for the first half of a hop
+  (Frogger has the same two-stage check). Water: the centre must be over a floater's
+  visible span ± 0.1 cell; it rides along; carried off the edge = splash.
+  `node tests/oversteken-botsing.mjs <map> [thema,..] [level]` draws the spans (red) and
+  the player's point (blue), via dev-only `data-links`/`data-rechts`.
+- One heart per hit, 1 s animation, then back to the last safe strip below, 1.3 s
   invulnerable. 0 hearts = end window (score, level reached, record).
 - **Points:** +1 per new row in a level, +10 at the finish (fanfare, banner with the next
   level number, 2 s), +5 for the one star per level (on a road lane or the middle strip).

@@ -1,6 +1,6 @@
 import { chromium } from 'playwright';
-// Oversteken: tekent de botsrand (rood) van alles in de rijbanen en die van de speler
-// (blauw) over het spel, per thema één stilstaand beeld (de klok staat even stil).
+// Oversteken: tekent de botsrand (rood) van alles in de rijbanen en het botspunt van de
+// speler (blauw streepje) over het spel, per thema één stilstaand beeld (de klok staat even stil).
 // Gebruik: node tests/oversteken-botsing.mjs <map> [thema,thema] [level]
 const OUT = process.argv[2] + '/';
 const themas = (process.argv[3] || 'bouw').split(',');
@@ -32,10 +32,12 @@ for (const thema of themas) {
       ouder.appendChild(k);
     };
     for (const d of document.querySelectorAll('.ov-baan--weg .ov-ding')) {
-      const m = Number(d.dataset.marge) * c;
-      kader(d, `left:${m}px;right:${m}px`, '#ff0000');
+      const l = Number(d.dataset.links) * c;
+      const r = Number(d.dataset.rechts) * c;
+      kader(d, `left:${l}px;width:${r - l}px`, '#ff0000');
     }
-    kader(document.querySelector('.ov-speler'), `left:${0.2 * c}px;right:${0.2 * c}px`, '#0050ff');
+    // De speler botst met één punt: het midden.
+    kader(document.querySelector('.ov-speler'), `left:calc(50% - 3px);width:6px`, '#0050ff');
   });
   const v = await page.locator('.ov-veld').boundingBox();
   await page.screenshot({ path: OUT + `botsing-${thema}.png`, clip: v, animations: 'disabled' });
