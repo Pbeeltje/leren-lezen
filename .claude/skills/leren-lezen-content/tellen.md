@@ -47,6 +47,32 @@ which once let kern-01 pick up optellen. `oefeningVolgorde` pins oefening 1/2/3
   `schrijfBedrag` (`1,50`, whole euros as `2`).
 - `reken-kern-12` Plus, min en geld (`herhaling: 'plus-min-geld'`): 8 multiple
   choice, 5 matching (sums only), 8 typing, toets of 12.
+- `reken-kern-13` Klokkijken (`klok: true`, own `genereerKlok`): whole hours, half
+  hours, quarters. Oefening 1 = 6 multiple choice mixing `klok-kies-klok` (time →
+  pick one of 3 clocks) and `klok-kies-tijd` (clock → pick one of 3 digital times);
+  2 = 6× `klok-zetten` (drag the hands); 3 = 6× `klok-typen` (type `uur : minuten`);
+  toets of 10 mixes all four (2/2/3/3).
+
+## Klokkijken (`games/klok.ts`, `content/tellen/klok.ts`, `styles/klok.css`)
+
+- The given time is shown as a digital clock (`13:15`, 40% of digital times are
+  afternoon) or in words (`kwart over één`, `half twee` = 1:30), alternating.
+  Words are reading text: no audio for them.
+- On the clock face 1:15 and 13:15 are the same; `zelfdeKlokstand()` compares mod 12,
+  and typing accepts either (`13` or `1`). Multiple-choice times are shown 1-12.
+- Distractors (`klokAfleiders`) start with a typical mistake: half twee as 2:30,
+  kwart over/voor swapped, hour off by one, hands swapped on whole hours.
+- Setting the hands: the minute hand snaps per 5 minutes; the hour hand picks an
+  hour and is drawn like a real clock (moves on with the minutes), so placing it
+  "on the 2" for kwart voor twee still gives 1:45. A pointer near one hand grabs
+  that hand; otherwise the distance to the centre decides (inside 52 = hour hand).
+  Always starts at 12:00, so 12:00 is never asked there. A wrong check keeps the hands.
+- Layout: typing puts the clock and the fields side by side on screens up to 900px
+  tall. Landscape phones use the generic oefen-kaart grid (first child left), so
+  `klok-zetten` puts the clock first in the DOM and lifts the time above it with `order`.
+- Check: `node tests/klokkijken.mjs <map>` (plays every session correctly with one
+  mistake each, toets 10/10, screenshots at 4 sizes). Another session editing files
+  reloads the dev server mid-run: set `KLOK_URL` to a dev server without HMR.
 
 ## Kleuter counting
 

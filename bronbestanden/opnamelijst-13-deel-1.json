@@ -1,0 +1,26 @@
+[
+ {
+  "n": 1,
+  "slug": "klok-kies-klok",
+  "text": "Welke klok hoort bij deze tijd?",
+  "path": "public/assets/audio/instructies/klok-kies-klok.mp3"
+ },
+ {
+  "n": 2,
+  "slug": "klok-kies-tijd",
+  "text": "Hoe laat is het? Kies de goede tijd.",
+  "path": "public/assets/audio/instructies/klok-kies-tijd.mp3"
+ },
+ {
+  "n": 3,
+  "slug": "klok-zetten",
+  "text": "Zet de wijzers goed.",
+  "path": "public/assets/audio/instructies/klok-zetten.mp3"
+ },
+ {
+  "n": 4,
+  "slug": "klok-typen",
+  "text": "Hoe laat is het? Typ de tijd.",
+  "path": "public/assets/audio/instructies/klok-typen.mp3"
+ }
+]

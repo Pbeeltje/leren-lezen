@@ -33,6 +33,7 @@ import { renderSomKeuze } from '../../games/somKeuze.ts';
 import { renderSomKoppelen } from '../../games/somKoppelen.ts';
 import { renderSomTypen } from '../../games/somTypen.ts';
 import { renderGeldKeuze, renderGeldTypen } from '../../games/geld.ts';
+import { renderKlokKiesKlok, renderKlokKiesTijd, renderKlokTypen, renderKlokZetten } from '../../games/klok.ts';
 import { speelSchermOvergang } from '../../three/transitions.ts';
 import { TestResultScreen } from './TestResultScreen.ts';
 import { RekenChapterScreen } from './RekenChapterScreen.ts';
@@ -57,6 +58,10 @@ const INSTRUCTIES: Record<RekenOefeningDefinitie['type'], string> = {
   'som-typen': 'Typ het antwoord',
   'geld-keuze': 'Hoeveel geld is dit?',
   'geld-typen': 'Hoeveel geld is dit? Typ het in',
+  'klok-kies-klok': 'Welke klok hoort bij deze tijd?',
+  'klok-kies-tijd': 'Hoe laat is het? Kies de goede tijd',
+  'klok-zetten': 'Zet de wijzers goed',
+  'klok-typen': 'Hoe laat is het? Typ de tijd',
 };
 
 function renderOefening(
@@ -94,6 +99,14 @@ function renderOefening(
       return renderGeldKeuze(container, oefening, opties, afgerond);
     case 'geld-typen':
       return renderGeldTypen(container, oefening, opties, afgerond);
+    case 'klok-kies-klok':
+      return renderKlokKiesKlok(container, oefening, opties, afgerond);
+    case 'klok-kies-tijd':
+      return renderKlokKiesTijd(container, oefening, opties, afgerond);
+    case 'klok-zetten':
+      return renderKlokZetten(container, oefening, opties, afgerond);
+    case 'klok-typen':
+      return renderKlokTypen(container, oefening, opties, afgerond);
   }
 }
 

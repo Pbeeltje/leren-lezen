@@ -86,7 +86,7 @@ export function renderGeldKeuze(
   return { vernietig: () => container.replaceChildren() };
 }
 
-function bewaakVeld(
+export function bewaakVeld(
   invoer: HTMLInputElement,
   standaard: string,
   maxCijfers: number,

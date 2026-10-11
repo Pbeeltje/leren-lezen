@@ -1,4 +1,14 @@
-import type { RekenKern, RekenOefeningDefinitie, RekenOefeningType, RekenSom, SomTeken, TelObject } from '../content/tellen/types.ts';
+import type {
+  KlokTijd,
+  KlokVorm,
+  RekenKern,
+  RekenOefeningDefinitie,
+  RekenOefeningType,
+  RekenSom,
+  SomTeken,
+  TelObject,
+} from '../content/tellen/types.ts';
+import { klokUur, zelfdeKlokstand } from '../content/tellen/klok.ts';
 
 export type RekenModus = 'oefenen' | 'toets';
 
@@ -364,6 +374,90 @@ function genereerHerhaling(modus: RekenModus, oefeningNummer: 1 | 2 | 3, tracker
   ]);
 }
 
+const KWARTIEREN: KlokTijd['minuut'][] = [0, 15, 30, 45];
+
+// Een tijd die deze sessie nog niet op de klok stond (uur 1-12). Bij wijzers zetten nooit
+// 12 uur: daar staat de klok al op als je begint.
+function kiesKlokTijd(gebruikt: Set<string>, niet12: boolean): KlokTijd {
+  const kandidaten: KlokTijd[] = [];
+  for (let uur = 1; uur <= 12; uur++) {
+    for (const minuut of KWARTIEREN) {
+      if (niet12 && uur === 12 && minuut === 0) continue;
+      if (!gebruikt.has(`${uur}:${minuut}`)) kandidaten.push({ uur, minuut });
+    }
+  }
+  const tijd = kandidaten[Math.floor(Math.random() * kandidaten.length)] ?? { uur: 3, minuut: 0 };
+  gebruikt.add(`${tijd.uur}:${tijd.minuut}`);
+  return tijd;
+}
+
+// Bij een digitale tijd soms de middag (13:15): dat moet een kind ook leren lezen.
+function metMiddag(tijd: KlokTijd, vorm: KlokVorm): KlokTijd {
+  if (vorm === 'cijfers' && tijd.uur < 12 && Math.random() < 0.4) return { ...tijd, uur: tijd.uur + 12 };
+  return tijd;
+}
+
+// Eerst een typische vergissing (half twee als 2:30, kwart over en voor verwisseld, de
+// wijzers omgedraaid), dan buurtijden. Alles binnen hele, halve en kwartieren.
+function klokAfleiders(tijd: KlokTijd): KlokTijd[] {
+  const h = klokUur(tijd.uur);
+  const m = tijd.minuut;
+  const t = (uur: number, minuut: KlokTijd['minuut']): KlokTijd => ({ uur: klokUur(uur), minuut });
+  const typisch: KlokTijd[] = [];
+  if (m === 30) typisch.push(t(h + 1, 30), t(h, 0));
+  if (m === 15) typisch.push(t(h, 45), t(h - 1, 45));
+  if (m === 45) typisch.push(t(h + 1, 45), t(h + 1, 15));
+  if (m === 0) {
+    typisch.push(t(h, 30));
+    // Grote en kleine wijzer verwisseld: kan alleen als het uur op een kwartier valt.
+    if (h % 3 === 0) typisch.push(t(12, ((h * 5) % 60) as KlokTijd['minuut']));
+  }
+  const buren = [t(h - 1, m), t(h + 1, m), t(h, KWARTIEREN[(KWARTIEREN.indexOf(m) + 2) % 4])];
+  const uit: KlokTijd[] = [];
+  for (const kandidaat of [...schud(typisch).slice(0, 1), ...schud([...typisch, ...buren])]) {
+    if (zelfdeKlokstand(kandidaat, tijd) || uit.some((u) => zelfdeKlokstand(u, kandidaat))) continue;
+    uit.push(kandidaat);
+    if (uit.length === 2) break;
+  }
+  return uit;
+}
+
+function genereerKlok(modus: RekenModus, oefeningNummer: 1 | 2 | 3): RekenOefeningDefinitie[] {
+  const gebruikt = new Set<string>();
+  // Cijfers en woorden om en om, met een willekeurig begin.
+  let woorden = Math.random() < 0.5;
+  const volgendeVorm = (): KlokVorm => ((woorden = !woorden) ? 'woorden' : 'cijfers');
+
+  const maak = (type: 'klok-kies-klok' | 'klok-kies-tijd' | 'klok-zetten' | 'klok-typen'): RekenOefeningDefinitie => {
+    const tijd = kiesKlokTijd(gebruikt, type === 'klok-zetten');
+    switch (type) {
+      case 'klok-kies-klok': {
+        const vorm = volgendeVorm();
+        return { type, tijd: metMiddag(tijd, vorm), vorm, afleiders: klokAfleiders(tijd) };
+      }
+      case 'klok-zetten': {
+        const vorm = volgendeVorm();
+        return { type, tijd: metMiddag(tijd, vorm), vorm };
+      }
+      case 'klok-kies-tijd':
+        return { type, tijd, afleiders: klokAfleiders(tijd) };
+      case 'klok-typen':
+        return { type, tijd };
+    }
+  };
+
+  if (modus === 'toets') {
+    return schud(
+      (['klok-kies-klok', 'klok-kies-klok', 'klok-kies-tijd', 'klok-kies-tijd', 'klok-zetten', 'klok-zetten', 'klok-zetten', 'klok-typen', 'klok-typen', 'klok-typen'] as const).map(maak),
+    );
+  }
+  if (oefeningNummer === 1) {
+    return schud((['klok-kies-klok', 'klok-kies-klok', 'klok-kies-klok', 'klok-kies-tijd', 'klok-kies-tijd', 'klok-kies-tijd'] as const).map(maak));
+  }
+  const type = oefeningNummer === 2 ? 'klok-zetten' : 'klok-typen';
+  return Array.from({ length: 6 }, () => maak(type));
+}
+
 function mengGelijk(typen: readonly RekenOefeningType[], aantal: number): RekenOefeningType[] {
   const uniek: RekenOefeningType[] = [];
   for (const type of typen) {
@@ -496,6 +590,11 @@ function maakOefening(kern: RekenKern, type: RekenOefeningType, tracker: SessieT
     case 'geld-keuze':
     case 'geld-typen':
       return maakGeld(kern, type, tracker);
+    case 'klok-kies-klok':
+    case 'klok-kies-tijd':
+    case 'klok-zetten':
+    case 'klok-typen':
+      throw new Error(`kloktypen alleen via genereerKlok: ${kern.id}`);
     default: {
       const nooit: never = type;
       throw new Error(`onbekend rekentype: ${nooit}`);
@@ -517,6 +616,7 @@ export function genereerRekenSessie(
     oefeningNummer,
   };
   if (kern.herhaling === 'plus-min-geld') return genereerHerhaling(modus, oefeningNummer, tracker);
+  if (kern.klok) return genereerKlok(modus, oefeningNummer);
 
   const aantal = modus === 'oefenen' ? OEFENEN_AANTAL : TOETS_AANTAL;
   let typeVolgorde: RekenOefeningType[];

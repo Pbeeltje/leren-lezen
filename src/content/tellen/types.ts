@@ -30,7 +30,21 @@ export type RekenOefeningType =
   | 'som-koppelen'
   | 'som-typen'
   | 'geld-keuze'
-  | 'geld-typen';
+  | 'geld-typen'
+  | 'klok-kies-klok'
+  | 'klok-kies-tijd'
+  | 'klok-zetten'
+  | 'klok-typen';
+
+// Klokkijken: hele uren, halve uren en kwartieren. `uur` 0-23; bij een digitale tijd mag
+// het een middaguur zijn (13:15), de klok zelf toont alleen 1-12.
+export interface KlokTijd {
+  uur: number;
+  minuut: 0 | 15 | 30 | 45;
+}
+
+// Hoe de opgegeven tijd getoond wordt: `13:15` of `kwart over één`.
+export type KlokVorm = 'cijfers' | 'woorden';
 
 export type RekenOefeningDefinitie =
   // Getalbeeld/tellen: N plaatjes zien, het juiste cijfer kiezen.
@@ -64,7 +78,13 @@ export type RekenOefeningDefinitie =
   // Geld. `briefjes` alleen als de vraag echt briefjes heeft (5, 10 of 20 euro).
   // Munten in centen: 5, 10, 20, 50, 100, 200.
   | { type: 'geld-keuze'; munten: number[]; antwoordCent: number; afleidersCent: number[]; briefjes?: number[] }
-  | { type: 'geld-typen'; munten: number[]; antwoordCent: number; briefjes?: number[] };
+  | { type: 'geld-typen'; munten: number[]; antwoordCent: number; briefjes?: number[] }
+  // Tijd gegeven, de goede klok kiezen (meerkeuze) of zelf de wijzers zetten.
+  | { type: 'klok-kies-klok'; tijd: KlokTijd; vorm: KlokVorm; afleiders: KlokTijd[] }
+  | { type: 'klok-zetten'; tijd: KlokTijd; vorm: KlokVorm }
+  // Klok gegeven, de goede tijd kiezen of zelf typen.
+  | { type: 'klok-kies-tijd'; tijd: KlokTijd; afleiders: KlokTijd[] }
+  | { type: 'klok-typen'; tijd: KlokTijd };
 
 export interface RekenKern {
   id: string; // bv. 'reken-kern-01'
@@ -86,4 +106,6 @@ export interface RekenKern {
   geld?: 'munten' | 'briefjes';
   // Herhaling: elke sessie bevat plus, min en geld (behalve de koppel-oefening, die alleen sommen is).
   herhaling?: 'plus-min-geld';
+  // Klokkijken: oefening 1 meerkeuze (beide kanten op), 2 wijzers zetten, 3 tijd typen.
+  klok?: true;
 }
