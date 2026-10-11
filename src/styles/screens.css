@@ -3121,7 +3121,7 @@
 .pong-vs { display: flex; align-items: center; gap: 14px; }
 .pong-vs b { font-size: 1.8rem; font-weight: 800; color: var(--kleur-secundair); }
 .pong-venster__figuur { width: 96px; height: 96px; }
-.pong-venster__trofee { width: 110px; height: 110px; }
+.pong-venster__figuur--kampioen { width: 120px; height: 120px; }
 .pong-vs--verloren .pong-venster__figuur:first-child { opacity: 0.55; transform: scale(0.85); }
 .vang-venster__doos .pong-ladder__vak { width: 46px; height: 46px; }
 @media (orientation: landscape) and (max-height: 500px) {

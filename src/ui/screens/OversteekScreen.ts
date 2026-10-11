@@ -1,5 +1,6 @@
 import type { Screen, ScreenManager } from '../../engine/screenManager.ts';
 import { maakTerugKnop } from '../components/TerugKnop.ts';
+import { flitsIn } from '../components/spelFiguur.ts';
 import { avatarFilter, avatarPad, haalActiefProfiel } from '../../engine/profielStore.ts';
 import { haalGroep } from '../../engine/progressStore.ts';
 import { haalRecord, zetRecord } from '../../engine/records.ts';
@@ -663,6 +664,8 @@ export function OversteekScreen(manager: ScreenManager): Screen {
     px = vanX = Math.min(Wc - 0.5, Math.max(0.5, Math.floor(px) + 0.5));
     hopT = HOP;
     onkwetsbaar = tijd + 1.3;
+    tekenSpeler();
+    flitsIn(speler, veld);
   }
 
   function gehaald(): void {
@@ -733,6 +736,7 @@ export function OversteekScreen(manager: ScreenManager): Screen {
         level++;
         fase = 'spel';
         bouwLevel();
+        flitsIn(speler, veld);
       }
       tekenSpeler();
       return;
@@ -835,6 +839,8 @@ export function OversteekScreen(manager: ScreenManager): Screen {
     pijlen.hidden = false;
     fase = 'spel';
     bouwLevel();
+    // De flits is op de wikkel (div), want het plaatje zelf knippert al als je onkwetsbaar bent.
+    flitsIn(speler, veld);
   }
 
   function knop(klasse: string, html: string, label: string, actie: () => void): HTMLButtonElement {

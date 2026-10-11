@@ -903,3 +903,63 @@
 .profiel-menu__paneel[data-weergave='figuur'] .profiel-menu__subtitel { font-size: 1.35rem; }
 .profiel-menu__paneel[data-weergave='figuur'] .profiel-menu__label { font-size: 1rem; }
 .profiel-menu__paneel[data-weergave='figuur'] .profiel-menu__winkel { min-height: 56px; font-size: 1.05rem; }
+
+/* ---------- Eigen figuurtje in de spelletjes (ui/components/spelFiguur.ts) ---------- */
+/* Begin: twee keer wit oplichten (filter springt om, dus echte flitsen) terwijl het
+   figuurtje van klein naar groot popt. `scale` staat los van transform, dus het werkt ook op
+   figuurtjes die met transform bewegen. */
+.figuur-flits { animation: figuur-flits 0.8s ease-out; }
+@keyframes figuur-flits {
+  0% { scale: 0.35; filter: brightness(0) invert(1) drop-shadow(0 0 10px #fff) drop-shadow(0 0 3px #fff); }
+  20% { scale: 1.2; filter: brightness(0) invert(1) drop-shadow(0 0 10px #fff) drop-shadow(0 0 3px #fff); }
+  32% { scale: 0.94; filter: var(--figuur-filter, none); }
+  46% { scale: 1.05; filter: brightness(0) invert(1) drop-shadow(0 0 10px #fff) drop-shadow(0 0 3px #fff); }
+  62%, 100% { scale: 1; filter: var(--figuur-filter, none); }
+}
+.figuur-ring {
+  position: absolute;
+  z-index: 6;
+  border: 5px solid #fff;
+  border-radius: 50%;
+  box-shadow: 0 0 14px rgba(255, 255, 255, 0.9);
+  pointer-events: none;
+  transform: translate(-50%, -50%);
+  animation: figuur-ring 0.7s ease-out forwards;
+}
+@keyframes figuur-ring {
+  from { scale: 0.2; opacity: 1; }
+  to { scale: 1.5; opacity: 0; }
+}
+
+/* Gewonnen: bekertje omhoog naast het figuurtje (in het spel en in het venster). */
+.figuur-beker {
+  position: absolute;
+  z-index: 6;
+  pointer-events: none;
+  rotate: 12deg;
+  filter: drop-shadow(0 0 10px rgba(255, 215, 64, 0.9));
+  animation: figuur-beker 0.55s cubic-bezier(0.3, 1.6, 0.5, 1) both, figuur-beker-zwaai 0.9s ease-in-out 0.55s infinite alternate;
+}
+@keyframes figuur-beker {
+  from { translate: -30% 60%; scale: 0.2; opacity: 0; }
+}
+@keyframes figuur-beker-zwaai {
+  from { rotate: 6deg; translate: 0 0; }
+  to { rotate: 18deg; translate: 0 -8%; }
+}
+.figuur-winnaar { position: relative; display: inline-block; }
+.figuur-winnaar__beker {
+  position: absolute;
+  right: -30%;
+  top: -14%;
+  width: 62%;
+  height: 62%;
+  rotate: 12deg;
+  filter: drop-shadow(0 0 10px rgba(255, 215, 64, 0.9));
+  animation: figuur-beker 0.55s cubic-bezier(0.3, 1.6, 0.5, 1) 0.15s both, figuur-beker-zwaai 0.9s ease-in-out 0.7s infinite alternate;
+}
+.figuur-winnaar--klein .figuur-winnaar__beker { width: 46%; height: 46%; right: -22%; top: -14%; }
+@media (prefers-reduced-motion: reduce) {
+  .figuur-flits, .figuur-ring, .figuur-beker, .figuur-winnaar__beker { animation: none; }
+  .figuur-ring { display: none; }
+}

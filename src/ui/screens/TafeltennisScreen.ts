@@ -1,5 +1,6 @@
 import type { Screen, ScreenManager } from '../../engine/screenManager.ts';
 import { maakTerugKnop } from '../components/TerugKnop.ts';
+import { figuurMetBeker, flitsIn, houdBekerOmhoog } from '../components/spelFiguur.ts';
 import { AVATAR_ICONEN, AVATAR_KLEUREN, avatarFilter, avatarPad, haalActiefProfiel } from '../../engine/profielStore.ts';
 import { haalGroep } from '../../engine/progressStore.ts';
 import { haalRecord, zetRecord } from '../../engine/records.ts';
@@ -15,7 +16,6 @@ import { confetti } from '../../three/particles.ts';
 // Record per profiel: hoeveel tegenstanders je op rij verslaat (te zien in Records).
 
 const HART = 'assets/icons/bewaar.svg';
-const TROFEE = 'assets/icons/trofee.svg';
 const DOELEN = 3;
 
 // De tegenstander speelt eerlijk: hij ziet alleen waar de bal is en hoe die gaat, en schat
@@ -134,6 +134,7 @@ export function TafeltennisScreen(manager: ScreenManager): Screen {
   let tijd = 0;
   let opslagNaarSpeler = false;
   let overlay: HTMLElement | null = null;
+  let beker: HTMLElement | null = null; // na een gewonnen wedstrijd omhoog naast je figuur
   let pauzeTimer: number | undefined;
 
   // Afmetingen (in px binnen .pong-veld), opnieuw berekend bij elke grootteverandering.
@@ -340,6 +341,7 @@ export function TafeltennisScreen(manager: ScreenManager): Screen {
     if (gescoord >= DOELEN) {
       actief = false;
       opRij++;
+      beker = houdBekerOmhoog(spelerFiguur, veld);
       if (opRij > haalRecord('tafeltennis')) zetRecord('tafeltennis', opRij);
       confetti.vuurwerk(ronde === NIVEAUS.length - 1 ? 'groot' : 'klein');
       pauzeTimer = window.setTimeout(() => {
@@ -384,7 +386,9 @@ export function TafeltennisScreen(manager: ScreenManager): Screen {
     const n = niveau();
     if (bezig && balNaarTegen) {
       if (tijd >= volgendeBlik) {
-        tegenDoel = schat(n);
+        // Alleen in de dev-server: een test kan de tegenstander laten slapen (om te winnen).
+        const slaapt = import.meta.env.DEV && (window as { __pongTegenSlaapt?: boolean }).__pongTegenSlaapt;
+        tegenDoel = slaapt ? batBreedte / 2 : schat(n);
         volgendeBlik = tijd + n.kijkElke * (0.8 + Math.random() * 0.4);
       }
     } else if (n.terugNaarMidden) {
@@ -481,11 +485,15 @@ export function TafeltennisScreen(manager: ScreenManager): Screen {
     const vulOp = gescoord > 0 || tegen > 0;
     overlay?.remove();
     overlay = null;
+    beker?.remove();
+    beker = null;
     gescoord = 0;
     tegen = 0;
     zetTegenstander();
     tekenStand(vulOp);
     spelerX = doelX = tegenX = tegenDoel = B / 2;
+    teken();
+    flitsIn(spelerFiguur, veld);
     tegenV = 0;
     // De eerste opslag gaat naar de tegenstander, zodat je eerst ziet hoe hij terugslaat.
     opslagNaarSpeler = false;
@@ -512,13 +520,15 @@ export function TafeltennisScreen(manager: ScreenManager): Screen {
     const doos = document.createElement('div');
     doos.className = 'vang-venster__doos';
     const t = tegenstanders[ronde];
+    // Gewonnen: je figuur houdt een beker omhoog (groot na alle drie, klein na één).
     if (soort === 'gewonnen') {
       doos.innerHTML = `
-        <div class="pong-vs">${gezicht(eigenPad, eigenTint)}<img class="pong-venster__trofee" src="${TROFEE}" alt=""></div>`;
+        <div class="pong-vs">${figuurMetBeker(gezicht(eigenPad, eigenTint, 'pong-venster__figuur pong-venster__figuur--kampioen'))}</div>`;
     } else {
+      const eigen = gezicht(eigenPad, eigenTint);
       doos.innerHTML = `
         <div class="pong-vs${soort === 'verloren' ? ' pong-vs--verloren' : ''}">
-          ${gezicht(eigenPad, eigenTint)}<b>VS</b>${gezicht(avatarPad(t.icoon), avatarFilter(t.kleur))}
+          ${soort === 'volgende' ? figuurMetBeker(eigen, true) : eigen}<b>VS</b>${gezicht(avatarPad(t.icoon), avatarFilter(t.kleur))}
         </div>`;
     }
     doos.appendChild(ladder.cloneNode(true));

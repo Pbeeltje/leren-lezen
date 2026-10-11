@@ -1,5 +1,6 @@
 import type { Screen, ScreenManager } from '../../engine/screenManager.ts';
 import { maakTerugKnop } from '../components/TerugKnop.ts';
+import { flitsIn } from '../components/spelFiguur.ts';
 import { avatarFilter, avatarPad, haalActiefProfiel } from '../../engine/profielStore.ts';
 import { haalGroep } from '../../engine/progressStore.ts';
 import { haalRecord, zetRecord } from '../../engine/records.ts';
@@ -1295,6 +1296,7 @@ export function VoerScreen(manager: ScreenManager): Screen {
     noot = 0;
     vorigeDieren = [];
     zetMaten();
+    flitsIn(speler, veld);
     void volgendGroepje();
   }
 

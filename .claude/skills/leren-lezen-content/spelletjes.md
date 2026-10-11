@@ -18,6 +18,23 @@ pay coins (coins come from learning); records are per profile.
 - Geheugenspel (pays coins, no score) and Tekenen have no record.
 - A new game with a score: add it to `RecordSpel` and to `SPELLEN` in `RecordsScreen.ts`.
 
+## Shared: start flash and trophy (`ui/components/spelFiguur.ts`, CSS in components.css)
+
+- `flitsIn(figuur, ouder?)`: the own figure flashes white twice (filter switches, so real
+  flashes) while popping from small to full size, with a white ring (`.figuur-ring`) and a
+  two-note pling. The figure's own filter (tint, shadow) goes in `--figuur-filter` so it
+  comes back. Used at every start (Vangspel, Oversteken, Tafeltennis match, Dieren voeren),
+  and in Oversteken also after a hit and at each new level (on the `.ov-speler` wrapper,
+  because the image itself blinks while invulnerable).
+- Winning: `houdBekerOmhoog(figuur, ouder)` puts a swaying Fluent trophy (`trofee.svg`) up
+  next to the figure in the game (with a fanfare); `figuurMetBeker(html, klein?)` wraps a
+  window figure so it holds the trophy up. Vangspel: when the round is played out (not on
+  losing all hearts), trophy in the game for 1.5 s, then in the end window. Tafeltennis:
+  trophy in the game when a match is won, small in the next "VS" window, big after all
+  three opponents. Oversteken and Dieren voeren have no winning end.
+- Dev hooks to see the endings: `window.__vangEindeNa` (seconds before the big enemy),
+  `window.__pongTegenSlaapt` (opponent stops aiming).
+
 ## Vangspel (`ui/screens/VangScreen.ts`)
 
 - The tile and the player show the profile's own figure with `avatarFilter` for
