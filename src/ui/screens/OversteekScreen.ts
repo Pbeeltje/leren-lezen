@@ -500,6 +500,11 @@ export function OversteekScreen(manager: ScreenManager): Screen {
       const grond = soort === 'weg' ? thema.weg : soort === 'water' ? thema.rivier!.water : thema.veilig;
       bel.classList.add(`ov-grond--${grond}`);
       if (soort === 'weg' && plan[r + 1] === 'weg') bel.classList.add('ov-baan--streep');
+      // Een berm naast de weg: daar mag het gras over de rand groeien (alleen savanne).
+      if (soort !== 'weg' && soort !== 'water') {
+        if (plan[r + 1] === 'weg') bel.classList.add('ov-baan--weg-boven');
+        if (plan[r - 1] === 'weg') bel.classList.add('ov-baan--weg-onder');
+      }
       veld.appendChild(bel);
       const b: Baan = {
         soort,
