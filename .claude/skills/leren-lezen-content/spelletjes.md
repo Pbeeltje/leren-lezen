@@ -9,8 +9,12 @@ pay coins (coins come from learning); records are per profile.
 
 - All records go through `engine/records.ts` (`haalRecord`/`zetRecord(spel, n)`, key
   `leren-lezen:<spel>:<profielId>`, `RecordSpel` = vangspel, oversteken, tafeltennis, voeren).
-- The Records tile opens a look-only grid: one card per game (Vangspel shows the profile
-  figure), trophy + number; a 0 record is greyed out (`.record-kaart--leeg`).
+- The Records tile opens a grid: one card per game (Vangspel shows the profile figure),
+  trophy + number; a 0 record is greyed out (`.record-kaart--leeg`).
+- Tapping a card opens `RanglijstScreen`: every profile on the device
+  (`haalRecord(spel, profielId)`), highest first, ties share a place, places 1–3 gold/
+  silver/bronze, the active profile outlined, profiles without a record greyed at the bottom.
+  The list scrolls when there are many profiles.
 - Geheugenspel (pays coins, no score) and Tekenen have no record.
 - A new game with a score: add it to `RecordSpel` and to `SPELLEN` in `RecordsScreen.ts`.
 

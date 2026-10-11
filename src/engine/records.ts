@@ -1,14 +1,16 @@
 import { haalActiefProfielId } from './profielStore.ts';
 
 // Records van de spelletjes, per profiel: `leren-lezen:<spel>:<profielId>`. Het
-// Records-scherm (RecordsScreen) leest dezelfde sleutels.
+// Records-scherm (RecordsScreen) en de ranglijst (RanglijstScreen) lezen dezelfde sleutels.
 export type RecordSpel = 'vangspel' | 'oversteken' | 'tafeltennis' | 'voeren';
 
-const sleutel = (spel: RecordSpel): string => `leren-lezen:${spel}:${haalActiefProfielId() ?? 'gast'}`;
+const sleutel = (spel: RecordSpel, profielId = haalActiefProfielId() ?? 'gast'): string =>
+  `leren-lezen:${spel}:${profielId}`;
 
-export function haalRecord(spel: RecordSpel): number {
+// Zonder profielId: het actieve profiel. Met: een ander profiel (voor de ranglijst).
+export function haalRecord(spel: RecordSpel, profielId?: string): number {
   try {
-    return Number(localStorage.getItem(sleutel(spel))) || 0;
+    return Number(localStorage.getItem(sleutel(spel, profielId))) || 0;
   } catch {
     return 0;
   }
