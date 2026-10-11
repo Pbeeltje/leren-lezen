@@ -40,7 +40,10 @@ which once let kern-01 pick up optellen. `oefeningVolgorde` pins oefening 1/2/3
   U+2212 via `schrijfSom`.
 - `reken-kern-10` Munten tot 10 (`geld: 'munten'`, ≤ 10 euro; oefening 1 ≤ 3 coins
   and ≤ 2 euro, oefening 3 `geld-typen` with euro/cent fields starting `0` / `00`),
-  `11` Munten en briefjes (bills 5/10/20, pile ≤ 50 euro). Amounts via
+  `11` Munten en briefjes (bills 5/10/20, pile ≤ 50 euro). Pictures in
+  `public/assets/images/geld/` use the real euro colours: bills 5 grey, 10 red,
+  20 blue; coin 5 cent copper, 10/20/50 cent Nordic gold, €1 silver centre with
+  gold ring, €2 gold centre with silver ring. Amounts via
   `schrijfBedrag` (`1,50`, whole euros as `2`).
 - `reken-kern-12` Plus, min en geld (`herhaling: 'plus-min-geld'`): 8 multiple
   choice, 5 matching (sums only), 8 typing, toets of 12.
