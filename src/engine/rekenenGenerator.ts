@@ -9,6 +9,7 @@ import type {
   TelObject,
 } from '../content/tellen/types.ts';
 import { klokUur, zelfdeKlokstand } from '../content/tellen/klok.ts';
+import { type KalenderSoort, kalenderLijst } from '../content/tijd/kalender.ts';
 
 export type RekenModus = 'oefenen' | 'toets';
 
@@ -458,6 +459,61 @@ function genereerKlok(modus: RekenModus, oefeningNummer: 1 | 2 | 3): RekenOefeni
   return Array.from({ length: 6 }, () => maak(type));
 }
 
+// Dagen en maanden. Rijtjes bij invullen lopen gewoon door (zondag, maandag, dinsdag);
+// bij volgorde niet, anders kan een kind met recht zeggen dat de week op maandag begint.
+const VOLGORDE_LENGTE = 4;
+
+function genereerKalender(soort: KalenderSoort, modus: RekenModus, oefeningNummer: 1 | 2 | 3): RekenOefeningDefinitie[] {
+  const lijst = kalenderLijst(soort);
+  const n = lijst.length;
+  const naam = (i: number): string => lijst[((i % n) + n) % n];
+  const typen =
+    soort === 'dagen'
+      ? ({ invullen: 'dag-invullen', volgorde: 'dag-volgorde', voorNa: 'dag-voor-na' } as const)
+      : ({ invullen: 'maand-invullen', volgorde: 'maand-volgorde', voorNa: 'maand-voor-na' } as const);
+  const gebruikt = new Set<string>();
+  // Een nog niet gebruikte sleutel uit de kandidaten; als alles al geweest is, een willekeurige.
+  const kies = <T,>(kandidaten: T[], sleutel: (k: T) => string): T => {
+    const vrij = kandidaten.filter((k) => !gebruikt.has(sleutel(k)));
+    const pool = vrij.length > 0 ? vrij : kandidaten;
+    const gekozen = pool[Math.floor(Math.random() * pool.length)];
+    gebruikt.add(sleutel(gekozen));
+    return gekozen;
+  };
+  const indexen = Array.from({ length: n }, (_, i) => i);
+
+  const invullen = (): RekenOefeningDefinitie => {
+    const paren = indexen.flatMap((start) => [0, 1, 2].map((gat) => ({ start, gat })));
+    const { start, gat } = kies(paren, (p) => `i${naam(p.start + p.gat)}`);
+    const rij = [0, 1, 2].map((i) => naam(start + i));
+    // Eerst de buur net buiten het rijtje (de typische vergissing), dan iets willekeurigs.
+    const buiten = schud([naam(start - 1), naam(start + 3)]).filter((x) => !rij.includes(x));
+    const rest = schud(lijst.filter((x) => !rij.includes(x) && !buiten.includes(x)));
+    return { type: typen.invullen, rij, gat, afleiders: [...buiten.slice(0, 1), ...rest].slice(0, 2) };
+  };
+
+  const volgorde = (): RekenOefeningDefinitie => {
+    const start = kies(indexen.slice(0, n - VOLGORDE_LENGTE + 1), (i) => `v${i}`);
+    return { type: typen.volgorde, rij: lijst.slice(start, start + VOLGORDE_LENGTE) };
+  };
+
+  const voorNa = (): RekenOefeningDefinitie => {
+    const vragen = indexen.flatMap((i) => (['voor', 'na'] as const).map((richting) => ({ i, richting })));
+    const { i, richting } = kies(vragen, (v) => `r${v.i}${v.richting}`);
+    const stap = richting === 'na' ? 1 : -1;
+    const antwoord = naam(i + stap);
+    // De andere kant op is de klassieke fout; daarna twee verder.
+    return { type: typen.voorNa, naam: naam(i), richting, antwoord, afleiders: [naam(i - stap), naam(i + 2 * stap)] };
+  };
+
+  if (modus === 'toets') {
+    return schud([invullen(), invullen(), invullen(), invullen(), volgorde(), volgorde(), volgorde(), voorNa(), voorNa(), voorNa()]);
+  }
+  if (oefeningNummer === 1) return Array.from({ length: 6 }, invullen);
+  if (oefeningNummer === 2) return Array.from({ length: 5 }, volgorde);
+  return Array.from({ length: 6 }, voorNa);
+}
+
 function mengGelijk(typen: readonly RekenOefeningType[], aantal: number): RekenOefeningType[] {
   const uniek: RekenOefeningType[] = [];
   for (const type of typen) {
@@ -595,6 +651,13 @@ function maakOefening(kern: RekenKern, type: RekenOefeningType, tracker: SessieT
     case 'klok-zetten':
     case 'klok-typen':
       throw new Error(`kloktypen alleen via genereerKlok: ${kern.id}`);
+    case 'dag-invullen':
+    case 'dag-volgorde':
+    case 'dag-voor-na':
+    case 'maand-invullen':
+    case 'maand-volgorde':
+    case 'maand-voor-na':
+      throw new Error(`kalendertypen alleen via genereerKalender: ${kern.id}`);
     default: {
       const nooit: never = type;
       throw new Error(`onbekend rekentype: ${nooit}`);
@@ -617,6 +680,7 @@ export function genereerRekenSessie(
   };
   if (kern.herhaling === 'plus-min-geld') return genereerHerhaling(modus, oefeningNummer, tracker);
   if (kern.klok) return genereerKlok(modus, oefeningNummer);
+  if (kern.kalender) return genereerKalender(kern.kalender, modus, oefeningNummer);
 
   const aantal = modus === 'oefenen' ? OEFENEN_AANTAL : TOETS_AANTAL;
   let typeVolgorde: RekenOefeningType[];

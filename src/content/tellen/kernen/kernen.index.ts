@@ -11,7 +11,6 @@ import { rekenKern09MinTot20 } from './kern-09-min-tot-20.ts';
 import { rekenKern10Munten } from './kern-10-munten.ts';
 import { rekenKern11Briefjes } from './kern-11-briefjes.ts';
 import { rekenKern12Herhaling } from './kern-12-herhaling.ts';
-import { rekenKern13Klokkijken } from './kern-13-klokkijken.ts';
 
 export const REKEN_KERNEN: RekenKern[] = [
   rekenKern01Getallen1Tot6,
@@ -26,7 +25,6 @@ export const REKEN_KERNEN: RekenKern[] = [
   rekenKern10Munten,
   rekenKern11Briefjes,
   rekenKern12Herhaling,
-  rekenKern13Klokkijken,
 ];
 
 export function vindRekenKern(kernId: string): RekenKern | undefined {

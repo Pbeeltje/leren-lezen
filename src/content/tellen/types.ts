@@ -34,7 +34,13 @@ export type RekenOefeningType =
   | 'klok-kies-klok'
   | 'klok-kies-tijd'
   | 'klok-zetten'
-  | 'klok-typen';
+  | 'klok-typen'
+  | 'dag-invullen'
+  | 'dag-volgorde'
+  | 'dag-voor-na'
+  | 'maand-invullen'
+  | 'maand-volgorde'
+  | 'maand-voor-na';
 
 // Klokkijken: hele uren, halve uren en kwartieren. `uur` 0-23; bij een digitale tijd mag
 // het een middaguur zijn (13:15), de klok zelf toont alleen 1-12.
@@ -84,7 +90,13 @@ export type RekenOefeningDefinitie =
   | { type: 'klok-zetten'; tijd: KlokTijd; vorm: KlokVorm }
   // Klok gegeven, de goede tijd kiezen of zelf typen.
   | { type: 'klok-kies-tijd'; tijd: KlokTijd; afleiders: KlokTijd[] }
-  | { type: 'klok-typen'; tijd: KlokTijd };
+  | { type: 'klok-typen'; tijd: KlokTijd }
+  // Dagen/maanden: een rijtje met een gat, het gat kiezen (meerkeuze).
+  | { type: 'dag-invullen' | 'maand-invullen'; rij: string[]; gat: number; afleiders: string[] }
+  // Een rijtje dat aansluit (zonder over zondag/december heen te lopen), door elkaar: op volgorde tikken.
+  | { type: 'dag-volgorde' | 'maand-volgorde'; rij: string[] }
+  // "Welke dag komt na dinsdag?" (meerkeuze). De vraag is leestekst.
+  | { type: 'dag-voor-na' | 'maand-voor-na'; naam: string; richting: 'voor' | 'na'; antwoord: string; afleiders: string[] };
 
 export interface RekenKern {
   id: string; // bv. 'reken-kern-01'
@@ -108,4 +120,6 @@ export interface RekenKern {
   herhaling?: 'plus-min-geld';
   // Klokkijken: oefening 1 meerkeuze (beide kanten op), 2 wijzers zetten, 3 tijd typen.
   klok?: true;
+  // Dagen of maanden: oefening 1 invullen, 2 volgorde, 3 ervoor/erna; de toets mengt ze.
+  kalender?: 'dagen' | 'maanden';
 }

@@ -33,6 +33,7 @@ console.log('knop:', await verder.textContent()); await verder.click(); await wa
 if (await page.locator('.icoon-tegel', { hasText: '6' }).count()) { await page.locator('.icoon-tegel', { hasText: '6' }).last().click(); await wacht(1000); }
 foto('3-onderwerpen');
 await page.locator('.icoon-tegel', { hasText: 'Leren lezen' }).click(); await wacht(900);
+if (await page.locator('.icoon-tegel', { hasText: 'Woorden lezen' }).count()) { await page.locator('.icoon-tegel', { hasText: 'Woorden lezen' }).click(); await wacht(900); }
 await page.locator('.kern-rij--klikbaar').first().click(); await wacht(900);
 await page.locator('.hoofdstuk-tegel', { hasText: 'Oefening 1' }).click(); await wacht(1500);
 foto('4-oefening');

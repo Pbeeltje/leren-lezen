@@ -1,0 +1,71 @@
+/* Dagen en maanden (Tijd lezen). Namen in het leeslettertype; lange maanden (september)
+   moeten op een smalle telefoon nog naast elkaar passen, dus de letter schaalt mee. */
+.kalender-kaart { gap: 22px; }
+
+.kalender-rij {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 10px;
+  width: 100%;
+}
+
+.kalender-vakje {
+  min-width: 72px;
+  padding: 10px 14px;
+  border-radius: var(--radius-klein);
+  background: #fff6d8;
+  border: 3px solid #f0c94a;
+  color: var(--kleur-tekst);
+  font-family: var(--leeslettertype);
+  font-size: clamp(1.1rem, 4.4vw, 1.7rem);
+  font-weight: 700;
+  text-align: center;
+}
+
+.kalender-vakje--leeg {
+  background: #fff;
+  border-style: dashed;
+  border-color: var(--kleur-secundair);
+  color: var(--kleur-secundair);
+  font-family: inherit;
+}
+
+.kalender-rij--volgorde .kalender-vakje--leeg { color: #b9c3cf; border-color: #b9c3cf; }
+
+.kalender-vakje--goed {
+  background: #e6faed;
+  border-style: solid;
+  border-color: var(--kleur-succes);
+  color: var(--kleur-tekst);
+  font-family: var(--leeslettertype);
+}
+
+.kalender-vraag {
+  margin: 0;
+  font-family: var(--leeslettertype);
+  font-size: clamp(1.2rem, 4.8vw, 1.8rem);
+  color: var(--kleur-tekst);
+  text-align: center;
+}
+
+.kalender-knop {
+  font-family: var(--leeslettertype);
+  font-size: clamp(1.1rem, 4.4vw, 1.5rem);
+  font-weight: 700;
+  padding: 10px 16px;
+}
+
+/* Al in een vakje gezet: plek houden zodat de andere knoppen niet verspringen. */
+.kalender-knop--weg { visibility: hidden; }
+
+@media (max-width: 560px) {
+  .kalender-rij { gap: 6px; }
+  .kalender-vakje { min-width: 56px; padding: 8px 8px; }
+  .kalender-knop { padding: 8px 10px; }
+}
+
+/* Tijd lezen-tegels: twee regels titel plus sterren, dus een kleiner plaatje. */
+.tegel-grid.tegel-grid--tijd .icoon-tegel { gap: 4px; padding: 10px; }
+.tegel-grid.tegel-grid--tijd .icoon-tegel__plaatje { width: 56px; height: 56px; }
+.tegel-grid.tegel-grid--tijd .icoon-tegel__label { line-height: 1.15; }

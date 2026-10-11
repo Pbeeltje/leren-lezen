@@ -1,4 +1,12 @@
-# Reading: word bank, exercise types, kleuter letters, begrijpend lezen, leesboekjes
+# Reading: word bank, exercise types, kleuter letters, begrijpend lezen, tijd lezen, leesboekjes
+
+## Menu
+
+Kleuters: the Leren lezen topic opens the letter chapters directly. Groep 3: it opens
+`LerenLezenKiesScreen` with three parts: **Woorden lezen** (`KernOverviewScreen`),
+**Begrijpend lezen** (`BegrijpendKiesScreen`, no longer its own topic) and **Tijd lezen**
+(`TijdLezenScreen`). The back buttons of those screens use `terugOfAnders` with
+`LerenLezenKiesScreen` as fallback.
 
 ## Word bank and chapters
 
@@ -127,7 +135,7 @@ keyboard is shown.
 
 ## Begrijpend lezen (groep 3 only)
 
-Topic id `begrijpend`. A short story, then one multiple-choice question whose
+Under Leren lezen (not a topic of its own any more). A short story, then one multiple-choice question whose
 answer is literally in the text. Stories in `content/lezen/begrijpend.ts`, four
 questions each. Opening a story shows the next question for that profile
 (`volgendeBegrijpendVraag`, key `begrijpendVraag`); the index is picked in the
@@ -135,6 +143,27 @@ screen factory so a shop visit keeps the same question. Correct pays
 `MUNTEN_BEGRIJPEND` (50) once; wrong can be retried; skip pays nothing. The
 story is not read aloud (tapping a word plays its clip if recorded). Instruction
 clip `begrijpend-lezen` is not recorded yet.
+
+## Tijd lezen (groep 3 only)
+
+`content/tijd/kernen.ts` `TIJD_KERNEN`: Klokkijken (id stays `reken-kern-13` so progress
+is kept; details in [tellen.md](tellen.md)), Dagen van de week (`tijd-dagen`), Maanden van
+het jaar (`tijd-maanden`). They are `RekenKern`s run by `RekenChapterScreen(m, i, 'tijd')`
+and `RekenOefeningScreen`; `kernenVanReeks()`/`reeksVanKern()` in `engine/leeftijdGrens.ts`
+pick the list, the chapter title and the back target. `TijdLezenScreen` shows them as tiles
+with stars (icons: Fluent clock and calendars).
+
+Dagen/maanden (`kern.kalender`, `genereerKalender`, `games/kalender.ts`, `styles/kalender.css`;
+names in `content/tijd/kalender.ts`, week starts on maandag):
+- Oefening 1 = 6× `dag-/maand-invullen`: a row of three with one gap (`maandag ? woensdag`),
+  multiple choice. Rows wrap around (zondag → maandag); the first distractor is the
+  neighbour just outside the row.
+- Oefening 2 = 5× `-volgorde`: four consecutive names, shuffled; tap them in order into
+  numbered slots. Never wraps (a child may rightly say the week starts on maandag).
+- Oefening 3 = 6× `-voor-na`: "Welke dag komt **na** dinsdag?" with the opposite neighbour
+  as distractor.
+- Toets: 10 (4 / 3 / 3). The names are reading text: no audio.
+Check: `node tests/tijd-lezen.mjs <map>`.
 
 ## Leesboekjes (hidden for now)
 

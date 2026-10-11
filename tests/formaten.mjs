@@ -155,14 +155,14 @@ async function draai([id, w, h, soort]) {
   await stap('onderwerpen', async () => { await tik('.icoon-tegel', 'Maximiliaan'); await bekijk('onderwerpen'); });
   await stap('menu', async () => { await tik('.profiel-knop'); await bekijk('profielmenu'); await tik('.profiel-tegel', 'Mijn figuur'); await bekijk('profielmenu-figuur'); await page.mouse.click(5, h - 5); await page.waitForTimeout(300); });
   await stap('lezen', async () => {
-    await tik('.icoon-tegel', 'Leren lezen'); await bekijk('lezen-hoofdstukken');
+    await tik('.icoon-tegel', 'Leren lezen'); if (await page.locator('.icoon-tegel', { hasText: 'Woorden lezen' }).count()) await tik('.icoon-tegel', 'Woorden lezen'); await bekijk('lezen-hoofdstukken');
     await tik('.kern-rij--klikbaar'); await bekijk('lezen-kern1');
     await tik('.hoofdstuk-tegel', 'Oefening 1'); await loopVragen('lezen-oef', 9);
     await terugNaarOnderwerpen();
   });
   await stap('lezen-later', async () => {
     // Een later hoofdstuk voor woord bouwen, zinnen en typen.
-    await tik('.icoon-tegel', 'Leren lezen');
+    await tik('.icoon-tegel', 'Leren lezen'); if (await page.locator('.icoon-tegel', { hasText: 'Woorden lezen' }).count()) await tik('.icoon-tegel', 'Woorden lezen');
     const rijen = page.locator('.kern-rij--klikbaar'); await rijen.nth(Math.min(5, (await rijen.count()) - 1)).click(); await page.waitForTimeout(500);
     await tik('.hoofdstuk-tegel', 'Oefening 3'); await loopVragen('lezen-later', 9);
     await terugNaarOnderwerpen();

@@ -34,7 +34,10 @@ await page.locator('.icoon-tegel', { hasText: 'Schrijven' }).click(); await w(60
 console.log('  groep 3 schrijven:', await labels());
 await page.locator('.terug-knop').click(); await w(600);
 await page.locator('.icoon-tegel', { hasText: 'Leren lezen' }).click(); await w(600);
+console.log('  groep 3 leren lezen:', await labels());
+await page.locator('.icoon-tegel', { hasText: 'Woorden lezen' }).click(); await w(600);
 console.log('  groep 3 lezen hoofdstukken:', await page.locator('.kern-rij--klikbaar').count());
+await page.locator('.terug-knop').click(); await w(600);
 await page.locator('.terug-knop').click(); await w(600);
 // Wisselen -> meteen de groepen in het submenu
 await page.locator('.profiel-knop').click(); await w(800);

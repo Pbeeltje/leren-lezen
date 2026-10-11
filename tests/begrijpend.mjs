@@ -39,8 +39,11 @@ await page.locator('.icoon-tegel', { hasText: 'Bram' }).click();
 await w(700);
 const groep3 = await page.locator('.icoon-tegel__label').allTextContents();
 console.log('groep 3 onderwerpen:', groep3.join(' | '));
-if (!groep3.includes('Begrijpend lezen')) fouten.push('groep 3 ziet begrijpend lezen niet');
+if (groep3.includes('Begrijpend lezen')) fouten.push('Begrijpend lezen staat nog los (hoort onder Leren lezen)');
 
+await page.locator('.icoon-tegel', { hasText: 'Leren lezen' }).click();
+await w(600);
+if (!(await page.locator('.icoon-tegel', { hasText: 'Begrijpend lezen' }).count())) fouten.push('groep 3 ziet begrijpend lezen niet onder Leren lezen');
 await page.locator('.icoon-tegel', { hasText: 'Begrijpend lezen' }).click();
 await w(600);
 await page.screenshot({ path: `${OUT}/kast.png` });

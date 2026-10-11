@@ -1,7 +1,7 @@
 import { chromium } from 'playwright';
 import { mkdirSync } from 'node:fs';
 
-// Klokkijken (reken-kern-13): oefening 1 meerkeuze, 2 wijzers slepen, 3 tijd typen, toets.
+// Klokkijken (reken-kern-13, onder Leren lezen > Tijd lezen): oefening 1 meerkeuze, 2 wijzers slepen, 3 tijd typen, toets.
 // Speelt alles goed (plus één fout per oefening voor de herkansing) en maakt screenshots.
 // Gebruik: node tests/klokkijken.mjs <map>
 const OUT = process.argv[2].replace(/\\/g, '/').replace(/\/?$/, '/');
@@ -44,22 +44,9 @@ async function openApp(width, height) {
   page.on('console', (msg) => msg.type() === 'error' && fouten.push(msg.text()));
   await page.goto(process.env.KLOK_URL || 'http://localhost:5173');
   await page.locator('.icoon-tegel', { hasText: 'Anna' }).click();
-  await page.locator('.icoon-tegel', { hasText: 'Tellen' }).click();
-  await page.locator('.kern-rij__titel').first().waitFor();
-  const titel = page.locator('.kern-rij__titel', { hasText: 'Klokkijken' });
-  for (let i = 0; i < 10; i++) {
-    const zichtbaar = await titel.evaluate((el) => {
-      const venster = el.closest('.kern-paginas__venster');
-      if (!venster) return true;
-      const r = el.getBoundingClientRect();
-      const v = venster.getBoundingClientRect();
-      return r.width > 0 && r.left < v.right - 8 && r.right > v.left + 8;
-    });
-    if (zichtbaar) break;
-    await page.locator('.kern-paginas__pijl--rechts').click();
-    await page.waitForTimeout(350);
-  }
-  await titel.click();
+  await page.locator('.icoon-tegel', { hasText: 'Leren lezen' }).click();
+  await page.locator('.icoon-tegel', { hasText: 'Tijd lezen' }).click();
+  await page.locator('.icoon-tegel', { hasText: 'Klokkijken' }).click();
   await page.locator('.hoofdstuk-tegel', { hasText: 'Oefening 1' }).waitFor();
   return page;
 }

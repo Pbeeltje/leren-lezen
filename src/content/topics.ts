@@ -5,6 +5,7 @@ import type { Groep, Topic } from './types.ts';
 // placeholder zodat het scherm meteen goed aanvoelt zonder herontwerp later.
 export const TOPICS: Topic[] = [
   {
+    // Groep 3 kiest daarna woorden, begrijpend lezen of tijd lezen (LerenLezenKiesScreen).
     id: 'lezen',
     groepen: ['kleuter', 'groep3'],
     titel: 'Leren lezen',
@@ -12,16 +13,8 @@ export const TOPICS: Topic[] = [
     beschikbaar: true,
   },
   {
-    // Kort verhaal, één meerkeuzevraag. Alleen groep 3: kleuters lezen dit nog niet.
-    id: 'begrijpend',
-    groepen: ['groep3'],
-    titel: 'Begrijpend lezen',
-    icoonPad: 'assets/icons/begrijpend.svg',
-    beschikbaar: true,
-  },
-  {
     id: 'tellen',
-    // Kleuters zien alleen de eerste twee hoofdstukken (engine/leeftijdGrens.ts).
+    // Kleuters hebben een eigen reeks (engine/leeftijdGrens.ts). Klokkijken staat onder Leren lezen.
     groepen: ['kleuter', 'groep3'],
     titel: 'Tellen',
     icoonPad: 'assets/icons/tellen.svg',

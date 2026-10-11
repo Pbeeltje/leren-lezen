@@ -1,4 +1,4 @@
-import { rekenKernen } from '../../engine/leeftijdGrens.ts';
+import { kernenVanReeks, reeksVanKern } from '../../engine/leeftijdGrens.ts';
 import type { Screen, ScreenManager } from '../../engine/screenManager.ts';
 import { events } from '../../engine/events.ts';
 import type { RekenKern, RekenOefeningDefinitie } from '../../content/tellen/types.ts';
@@ -34,6 +34,7 @@ import { renderSomKoppelen } from '../../games/somKoppelen.ts';
 import { renderSomTypen } from '../../games/somTypen.ts';
 import { renderGeldKeuze, renderGeldTypen } from '../../games/geld.ts';
 import { renderKlokKiesKlok, renderKlokKiesTijd, renderKlokTypen, renderKlokZetten } from '../../games/klok.ts';
+import { renderKalenderInvullen, renderKalenderVolgorde, renderKalenderVoorNa } from '../../games/kalender.ts';
 import { speelSchermOvergang } from '../../three/transitions.ts';
 import { TestResultScreen } from './TestResultScreen.ts';
 import { RekenChapterScreen } from './RekenChapterScreen.ts';
@@ -62,6 +63,12 @@ const INSTRUCTIES: Record<RekenOefeningDefinitie['type'], string> = {
   'klok-kies-tijd': 'Hoe laat is het? Kies de goede tijd',
   'klok-zetten': 'Zet de wijzers goed',
   'klok-typen': 'Hoe laat is het? Typ de tijd',
+  'dag-invullen': 'Welke dag ontbreekt?',
+  'dag-volgorde': 'Zet de dagen op volgorde',
+  'dag-voor-na': 'Lees de vraag. Welke dag is het?',
+  'maand-invullen': 'Welke maand ontbreekt?',
+  'maand-volgorde': 'Zet de maanden op volgorde',
+  'maand-voor-na': 'Lees de vraag. Welke maand is het?',
 };
 
 function renderOefening(
@@ -107,6 +114,15 @@ function renderOefening(
       return renderKlokZetten(container, oefening, opties, afgerond);
     case 'klok-typen':
       return renderKlokTypen(container, oefening, opties, afgerond);
+    case 'dag-invullen':
+    case 'maand-invullen':
+      return renderKalenderInvullen(container, oefening, opties, afgerond);
+    case 'dag-volgorde':
+    case 'maand-volgorde':
+      return renderKalenderVolgorde(container, oefening, opties, afgerond);
+    case 'dag-voor-na':
+    case 'maand-voor-na':
+      return renderKalenderVoorNa(container, oefening, opties, afgerond);
   }
 }
 
@@ -220,12 +236,13 @@ export function RekenOefeningScreen(
       }
       markeerKernVoltooid(kern.id, sterren);
       speelSchermOvergang();
-      const kernIndex = rekenKernen().findIndex((k) => k.id === kern.id);
+      const reeks = reeksVanKern(kern);
+      const kernIndex = kernenVanReeks(reeks).findIndex((k) => k.id === kern.id);
       manager.replace((m) =>
         TestResultScreen(
           m,
           { aantalGoed, totaal: oefeningen.length, muntenVerdiend: muntenDitKeer, sterren },
-          (mgr) => mgr.replace((m2) => RekenChapterScreen(m2, kernIndex)),
+          (mgr) => mgr.replace((m2) => RekenChapterScreen(m2, kernIndex, reeks)),
         ),
       );
       return;

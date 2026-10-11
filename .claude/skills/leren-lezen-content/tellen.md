@@ -47,13 +47,13 @@ which once let kern-01 pick up optellen. `oefeningVolgorde` pins oefening 1/2/3
   `schrijfBedrag` (`1,50`, whole euros as `2`).
 - `reken-kern-12` Plus, min en geld (`herhaling: 'plus-min-geld'`): 8 multiple
   choice, 5 matching (sums only), 8 typing, toets of 12.
-- `reken-kern-13` Klokkijken (`klok: true`, own `genereerKlok`): whole hours, half
-  hours, quarters. Oefening 1 = 6 multiple choice mixing `klok-kies-klok` (time →
-  pick one of 3 clocks) and `klok-kies-tijd` (clock → pick one of 3 digital times);
-  2 = 6× `klok-zetten` (drag the hands); 3 = 6× `klok-typen` (type `uur : minuten`);
-  toets of 10 mixes all four (2/2/3/3).
+- Klokkijken is no longer a math chapter: it moved to Leren lezen > Tijd lezen (see
+  lezen.md), but still runs on the math engine and keeps id `reken-kern-13`.
+  Oefening 1 = 6 multiple choice mixing `klok-kies-klok` (time → pick one of 3 clocks)
+  and `klok-kies-tijd` (clock → pick one of 3 digital times); 2 = 6× `klok-zetten` (drag
+  the hands); 3 = 6× `klok-typen` (type `uur : minuten`); toets of 10 mixes all four (2/2/3/3).
 
-## Klokkijken (`games/klok.ts`, `content/tellen/klok.ts`, `styles/klok.css`)
+## Klokkijken (`games/klok.ts`, `content/tellen/klok.ts`, `styles/klok.css`, kern in `content/tijd/kernen.ts`)
 
 - The given time is shown as a digital clock (`13:15`, 40% of digital times are
   afternoon) or in words (`kwart over één`, `half twee` = 1:30), alternating.

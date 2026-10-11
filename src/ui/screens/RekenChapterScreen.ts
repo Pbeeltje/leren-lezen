@@ -1,5 +1,5 @@
 import type { Screen, ScreenManager } from '../../engine/screenManager.ts';
-import { rekenKernen } from '../../engine/leeftijdGrens.ts';
+import { type RekenReeks, kernenVanReeks } from '../../engine/leeftijdGrens.ts';
 import { maakTerugKnop } from '../components/TerugKnop.ts';
 import { maakTopRechtsBalk } from '../components/TopRechtsBalk.ts';
 import { maakSterBalk } from '../components/ProgressStars.ts';
@@ -7,9 +7,11 @@ import { haalKernVoortgang, OEFENSESSIES_VOOR_TOETS, zetLaatsteKern } from '../.
 import { speelSchermOvergang } from '../../three/transitions.ts';
 import { RekenOefeningScreen } from './RekenOefeningScreen.ts';
 import { RekenKernOverviewScreen } from './RekenKernOverviewScreen.ts';
+import { TijdLezenScreen } from './TijdLezenScreen.ts';
 
-export function RekenChapterScreen(manager: ScreenManager, index: number): Screen {
-  const kern = rekenKernen()[index];
+export function RekenChapterScreen(manager: ScreenManager, index: number, reeks: RekenReeks = 'tellen'): Screen {
+  const kernen = kernenVanReeks(reeks);
+  const kern = kernen[index];
 
   const el = document.createElement('div');
   el.className = 'scherm';
@@ -24,23 +26,23 @@ export function RekenChapterScreen(manager: ScreenManager, index: number): Scree
   vorigeKnop.disabled = index === 0;
   vorigeKnop.addEventListener('click', () => {
     speelSchermOvergang();
-    manager.replace((m) => RekenChapterScreen(m, index - 1));
+    manager.replace((m) => RekenChapterScreen(m, index - 1, reeks));
   });
   titelRij.appendChild(vorigeKnop);
 
   const titel = document.createElement('h1');
   titel.className = 'scherm-titel hoofdstuk-titel';
-  titel.textContent = `Rekenen ${kern.volgnummer}: ${kern.titel}`;
+  titel.textContent = reeks === 'tijd' ? kern.titel : `Rekenen ${kern.volgnummer}: ${kern.titel}`;
   titelRij.appendChild(titel);
 
   const volgendeKnop = document.createElement('button');
   volgendeKnop.className = 'hoofdstuk-pijl';
   volgendeKnop.textContent = '›';
   volgendeKnop.setAttribute('aria-label', 'Volgend hoofdstuk');
-  volgendeKnop.disabled = index >= rekenKernen().length - 1;
+  volgendeKnop.disabled = index >= kernen.length - 1;
   volgendeKnop.addEventListener('click', () => {
     speelSchermOvergang();
-    manager.replace((m) => RekenChapterScreen(m, index + 1));
+    manager.replace((m) => RekenChapterScreen(m, index + 1, reeks));
   });
   titelRij.appendChild(volgendeKnop);
 
@@ -67,7 +69,7 @@ export function RekenChapterScreen(manager: ScreenManager, index: number): Scree
       tegel.appendChild(label);
       const ditNummer = i as 1 | 2 | 3;
       tegel.addEventListener('click', () => {
-        zetLaatsteKern('tellen', kern.id);
+        zetLaatsteKern(reeks, kern.id);
         speelSchermOvergang();
         manager.push((m) => RekenOefeningScreen(m, kern, 'oefenen', tekenTegels, ditNummer));
       });
@@ -85,7 +87,7 @@ export function RekenChapterScreen(manager: ScreenManager, index: number): Scree
     toetsTegel.appendChild(toetsLabel);
     toetsTegel.appendChild(maakSterBalk(voortgang.sterren));
     toetsTegel.addEventListener('click', () => {
-      zetLaatsteKern('tellen', kern.id);
+      zetLaatsteKern(reeks, kern.id);
       speelSchermOvergang();
       manager.push((m) => RekenOefeningScreen(m, kern, 'toets', tekenTegels));
     });
@@ -94,7 +96,7 @@ export function RekenChapterScreen(manager: ScreenManager, index: number): Scree
 
   const terug = maakTerugKnop(() => {
     speelSchermOvergang();
-    manager.replace((m) => RekenKernOverviewScreen(m));
+    manager.replace((m) => (reeks === 'tijd' ? TijdLezenScreen(m) : RekenKernOverviewScreen(m)));
   });
   let topRechts: ReturnType<typeof maakTopRechtsBalk> | null = null;
 

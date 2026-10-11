@@ -53,7 +53,7 @@ for (const [w, h] of MATEN) {
   await stap('onderwerpen', async () => { await tik('.icoon-tegel', 'Anna'); await foto('onderwerpen-groep3'); });
   await stap('menu', async () => { await tik('.profiel-knop'); await foto('profielmenu'); await page.mouse.click(5, h - 5); await wacht(300); });
   await stap('lezen', async () => {
-    await tik('.icoon-tegel', 'Leren lezen'); await foto('lezen-hoofdstukken');
+    await tik('.icoon-tegel', 'Leren lezen'); if (await page.locator('.icoon-tegel', { hasText: 'Woorden lezen' }).count()) await tik('.icoon-tegel', 'Woorden lezen'); await foto('lezen-hoofdstukken');
     const aantal = await page.locator('.kern-rij--klikbaar').count();
     for (const k of [...new Set([0, 3, 8, aantal - 1].filter((i) => i < aantal))]) {
       await page.locator('.kern-rij--klikbaar').nth(k).click(); await wacht(500);
@@ -125,7 +125,7 @@ for (const [w, h] of MATEN) {
     await start(6, thema);
     await stap(`thema-${thema}`, async () => {
       await tik('.icoon-tegel', 'Anna'); await foto(`thema-${thema}-onderwerpen`);
-      await tik('.icoon-tegel', 'Leren lezen'); await tik('.kern-rij--klikbaar'); await tik('.hoofdstuk-tegel', 'Oefening 1'); await foto(`thema-${thema}-vraag`);
+      await tik('.icoon-tegel', 'Leren lezen'); if (await page.locator('.icoon-tegel', { hasText: 'Woorden lezen' }).count()) await tik('.icoon-tegel', 'Woorden lezen'); await tik('.kern-rij--klikbaar'); await tik('.hoofdstuk-tegel', 'Oefening 1'); await foto(`thema-${thema}-vraag`);
       const stuur = (naam) => page.evaluate(async (naam) => (await import('/src/engine/events.ts')).events.emit(naam, undefined), naam);
       await stuur('sessie-klaar'); await wacht(3000); await foto(`thema-${thema}-feest`);
     });

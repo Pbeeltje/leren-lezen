@@ -152,6 +152,7 @@ await start(6);
 const lezenId = await page.evaluate(async () => (await import('/src/engine/leeftijdGrens.ts')).leesKernen()[0].id);
 await start(6, { [lezenId]: { gestart: true, voltooid: true, sterren: 2, oefenSessies: 3 } });
 await tik('.icoon-tegel', 'Leren lezen');
+await tik('.icoon-tegel', 'Woorden lezen');
 await tik('.kern-rij--klikbaar');
 await oefening('g3 lezen oefening 1, eerste keer (oude opslag)', 1, 2, 5);
 await oefening('g3 lezen oefening 1, herhaling', 1, 1, 3);

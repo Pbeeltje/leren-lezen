@@ -54,6 +54,9 @@ async function doorloopSessie(label) {
 async function sweepVak(topic, aantalKernen) {
   await start();
   await klikTopic(topic);
+  // Groep 3: Leren lezen heeft eerst een keuze (woorden, begrijpend, tijd).
+  const keuzeScherm = (await page.locator('.icoon-tegel', { hasText: 'Woorden lezen' }).count()) > 0;
+  if (keuzeScherm) await klikTopic('Woorden lezen');
   const types = new Set();
   for (let k = 0; k < aantalKernen; k++) {
     const rijen = page.locator('.kern-rij--klikbaar');
@@ -86,6 +89,11 @@ async function sweepVak(topic, aantalKernen) {
   }
   await page.locator('.terug-knop').first().click();
   await page.waitForTimeout(400);
+  if (keuzeScherm) {
+    if (!(await page.locator('.icoon-tegel', { hasText: 'Woorden lezen' }).count())) fouten.push(`${topic}: terug-knop werkt niet vanaf overzicht`);
+    await page.locator('.terug-knop').first().click();
+    await page.waitForTimeout(400);
+  }
   if (!(await page.locator('.icoon-tegel', { hasText: topic }).count())) fouten.push(`${topic}: terug-knop werkt niet vanaf overzicht`);
   return types;
 }
@@ -127,7 +135,7 @@ for (let poging = 0; poging < 8 && !vingerGevonden; poging++) {
     await page.locator('.overslaan-knop').click();
     await page.waitForTimeout(250);
   }
-  while (await page.locator('.overslaan-knop').count()) { await page.locator('.overslaan-knop').click(); await page.waitForTimeout(200); }
+  while (await page.locator('.overslaan-knop').count()) { await page.locator('.overslaan-knop').click({ timeout: 2000 }).catch(() => {}); await page.waitForTimeout(200); }
 }
 if (!vingerGevonden) fouten.push('vingers-naar-cijfer kwam niet voor in 8 sessies');
 
@@ -144,7 +152,8 @@ for (let i = 0; i < 5; i++) {
     for (let j = 0; j < n; j++) {
       const k = knoppen.nth(j);
       await page.evaluate(() => (window.__gespeeld = []));
-      await k.click();
+      // Na het goede antwoord kan de vraag al weg zijn: dan is deze knop verdwenen.
+      if (!(await k.click({ timeout: 2000 }).then(() => true, () => false))) break;
       await page.waitForTimeout(120);
       const goed = await k.evaluate((el) => el.classList.contains('goed-gekozen'));
       const clips = (await page.evaluate(() => window.__gespeeld)).filter((s) => s.includes('feedback'));

@@ -12,6 +12,7 @@ import { isOpgenomen } from '../../engine/opnames.ts';
 import { voegMuntenToe, volgendeBegrijpendVraag } from '../../engine/progressStore.ts';
 import { MUNTEN_BEGRIJPEND } from '../../engine/rewards.ts';
 import { schud } from '../../engine/oefeningGenerator.ts';
+import { LerenLezenKiesScreen } from './LerenLezenKiesScreen.ts';
 
 const KAFT_KLEUREN = ['#ff7a3d', '#3dbdff', '#3ecf6e', '#b36bff', '#ff5d8f'];
 const INSTRUCTIE = 'Lees het verhaal. Kies het goede antwoord.';
@@ -55,7 +56,7 @@ export function BegrijpendKiesScreen(manager: ScreenManager): Screen {
   });
 
   // Alleen bereikbaar via push vanaf het onderwerpmenu.
-  const terug = maakTerugKnop(() => manager.pop());
+  const terug = maakTerugKnop(() => manager.terugOfAnders((m) => LerenLezenKiesScreen(m)));
   let topRechts: ReturnType<typeof maakTopRechtsBalk> | null = null;
 
   return {

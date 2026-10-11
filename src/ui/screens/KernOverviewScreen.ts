@@ -9,6 +9,7 @@ import { speelSchermOvergang } from '../../three/transitions.ts';
 import { ChapterScreen } from './ChapterScreen.ts';
 import { TopicSelectScreen } from './TopicSelectScreen.ts';
 import { GroepKiesScreen } from './GroepKiesScreen.ts';
+import { LerenLezenKiesScreen } from './LerenLezenKiesScreen.ts';
 
 // Hoofdstukkenoverzicht: alleen een lijst met voortgang. Niets is op slot — elk
 // hoofdstuk (met zijn 3 oefeningen + toets) is altijd bereikbaar door op de rij te
@@ -69,12 +70,13 @@ export function KernOverviewScreen(manager: ScreenManager): Screen {
     el.appendChild(bladzijden.element);
   }
 
-  // Normaal gepusht vanaf TopicSelectScreen, maar ChapterScreen's terug-knop komt hier
-  // via 'replace' terug (stack dan maar 1 diep) -- terugOfAnders pop't als dat kan en
-  // valt anders terug op TopicSelectScreen (of GroepKiesScreen als de groep ooit weg is).
+  // Normaal gepusht vanaf TopicSelectScreen (kleuter) of LerenLezenKiesScreen (groep 3), maar
+  // ChapterScreen's terug-knop komt hier via 'replace' terug (stack dan maar 1 diep) --
+  // terugOfAnders pop't als dat kan en valt anders terug op het scherm daarboven.
   const terug = maakTerugKnop(() =>
     manager.terugOfAnders((m) => {
       const groep = haalGroep();
+      if (groep === 'groep3') return LerenLezenKiesScreen(m);
       return groep ? TopicSelectScreen(m, groep) : GroepKiesScreen(m);
     }),
   );

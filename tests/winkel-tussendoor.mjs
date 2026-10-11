@@ -15,6 +15,7 @@ await page.evaluate(() => {
 await page.reload(); await page.waitForTimeout(700);
 await page.locator('.icoon-tegel', { hasText: 'Anna' }).click(); await page.waitForTimeout(600);
 await page.getByText('Leren lezen', { exact: true }).click(); await page.waitForTimeout(600);
+await page.getByText('Woorden lezen', { exact: true }).click(); await page.waitForTimeout(600);
 await page.locator('.kern-rij--klikbaar').first().click(); await page.waitForTimeout(600);
 await page.getByText('Oefening 1', { exact: true }).click(); await page.waitForTimeout(900);
 for (let i = 0; i < 40; i++) {
