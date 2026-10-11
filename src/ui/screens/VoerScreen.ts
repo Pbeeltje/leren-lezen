@@ -1,7 +1,8 @@
 import type { Screen, ScreenManager } from '../../engine/screenManager.ts';
 import { maakTerugKnop } from '../components/TerugKnop.ts';
-import { avatarFilter, avatarPad, haalActiefProfiel, haalActiefProfielId } from '../../engine/profielStore.ts';
+import { avatarFilter, avatarPad, haalActiefProfiel } from '../../engine/profielStore.ts';
 import { haalGroep } from '../../engine/progressStore.ts';
+import { haalRecord, zetRecord } from '../../engine/records.ts';
 import { TONEN, speelDrum, speelNoot } from '../../engine/muziek.ts';
 import { confetti } from '../../three/particles.ts';
 import { huidigThema, type ThemaId } from '../../achtergrond/achtergrond.ts';
@@ -192,22 +193,6 @@ const LEVENS = 3;
 const KEUZES = 3; // zoveel dingen liggen er minstens in de bak bij een nieuw groepje
 const TWEE_VANAF = 6; // score
 const DRIE_VANAF = 14; // score, alleen groep 3
-
-const recordSleutel = (): string => `leren-lezen:voeren:${haalActiefProfielId() ?? 'gast'}`;
-function haalRecord(): number {
-  try {
-    return Number(localStorage.getItem(recordSleutel())) || 0;
-  } catch {
-    return 0;
-  }
-}
-function zetRecord(n: number): void {
-  try {
-    localStorage.setItem(recordSleutel(), String(n));
-  } catch {
-    // geen opslag: dan maar geen record
-  }
-}
 
 const willekeurig = <T,>(lijst: readonly T[]): T => lijst[Math.floor(Math.random() * lijst.length)];
 function schud<T>(lijst: T[]): T[] {
@@ -1328,9 +1313,9 @@ export function VoerScreen(manager: ScreenManager): Screen {
     const doos = document.createElement('div');
     doos.className = 'vang-venster__doos';
     if (eind) {
-      const record = haalRecord();
+      const record = haalRecord('voeren');
       const nieuw = score > record;
-      if (nieuw) zetRecord(score);
+      if (nieuw) zetRecord('voeren', score);
       doos.innerHTML = `
         <img class="vang-venster__figuur" src="${speler.src}" alt="">
         <div class="vang-venster__score"><img src="${STER}" alt=""><span>${score}</span></div>

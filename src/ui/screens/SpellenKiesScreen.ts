@@ -7,8 +7,9 @@ import { TekenScreen } from './TekenScreen.ts';
 import { TafeltennisScreen } from './TafeltennisScreen.ts';
 import { VoerScreen } from './VoerScreen.ts';
 import { OversteekScreen } from './OversteekScreen.ts';
+import { RecordsScreen } from './RecordsScreen.ts';
 
-// Spelletjes: vangen, oversteken, tafeltennis, dieren voeren, geheugen en vrij tekenen. Kleuters 4 paren, groep 3 acht (16 kaarten).
+// Spelletjes: vangen, oversteken, tafeltennis, dieren voeren, geheugen, vrij tekenen en de records. Kleuters 4 paren, groep 3 acht (16 kaarten).
 export function SpellenKiesScreen(manager: ScreenManager): Screen {
   return SpelKiesScreen(
     manager,
@@ -19,6 +20,7 @@ export function SpellenKiesScreen(manager: ScreenManager): Screen {
       { icoon: 'voeren', label: 'Dieren voeren', open: (m) => VoerScreen(m) },
       { icoon: 'geheugenspel', label: 'Geheugenspel', open: (m) => GeheugenScreen(m, haalGroep() === 'groep3' ? 8 : 4) },
       { icoon: 'tekenen', label: 'Tekenen', open: (m) => TekenScreen(m) },
+      { icoon: 'trofee', label: 'Records', open: (m) => RecordsScreen(m) },
     ],
     'Wat wil je spelen?',
   );

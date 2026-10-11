@@ -2,6 +2,7 @@ import type { Screen, ScreenManager } from '../../engine/screenManager.ts';
 import { maakTerugKnop } from '../components/TerugKnop.ts';
 import { AVATAR_ICONEN, AVATAR_KLEUREN, avatarFilter, avatarPad, haalActiefProfiel } from '../../engine/profielStore.ts';
 import { haalGroep } from '../../engine/progressStore.ts';
+import { haalRecord, zetRecord } from '../../engine/records.ts';
 import { TONEN, speelDrum, speelNoot } from '../../engine/muziek.ts';
 import { confetti } from '../../three/particles.ts';
 
@@ -11,6 +12,7 @@ import { confetti } from '../../three/particles.ts';
 // drie keer tegen jou, dan probeer je hem opnieuw. Zijn hartjes zijn blauw, die van jou rood.
 // Ze lopen leeg bij een punt en ploppen pas weer vol als de nieuwe tegenstander écht speelt,
 // niet al op het venster dat hem aankondigt. Geen munten: munten verdien je met leren.
+// Record per profiel: hoeveel tegenstanders je op rij verslaat (te zien in Records).
 
 const HART = 'assets/icons/bewaar.svg';
 const TROFEE = 'assets/icons/trofee.svg';
@@ -123,6 +125,7 @@ export function TafeltennisScreen(manager: ScreenManager): Screen {
   let ronde = 0; // welke tegenstander
   let gescoord = 0; // jouw doelpunten tegen hem
   let tegen = 0; // zijn doelpunten tegen jou
+  let opRij = 0; // tegenstanders op rij verslagen (ook over een trofee heen); dat is het record
   let bezig = false; // bal in het spel
   let actief = false; // wedstrijd loopt (ook tijdens de pauze na een doelpunt)
   let frame = 0;
@@ -336,6 +339,8 @@ export function TafeltennisScreen(manager: ScreenManager): Screen {
     opslagNaarSpeler = !voorSpeler;
     if (gescoord >= DOELEN) {
       actief = false;
+      opRij++;
+      if (opRij > haalRecord('tafeltennis')) zetRecord('tafeltennis', opRij);
       confetti.vuurwerk(ronde === NIVEAUS.length - 1 ? 'groot' : 'klein');
       pauzeTimer = window.setTimeout(() => {
         if (ronde === NIVEAUS.length - 1) toonVenster('gewonnen');
@@ -348,6 +353,7 @@ export function TafeltennisScreen(manager: ScreenManager): Screen {
     }
     if (tegen >= DOELEN) {
       actief = false;
+      opRij = 0;
       pauzeTimer = window.setTimeout(() => toonVenster('verloren'), 900);
       return;
     }

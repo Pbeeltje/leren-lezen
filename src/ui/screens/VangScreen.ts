@@ -1,7 +1,8 @@
 import type { Screen, ScreenManager } from '../../engine/screenManager.ts';
 import { maakTerugKnop } from '../components/TerugKnop.ts';
-import { avatarFilter, avatarPad, haalActiefProfiel, haalActiefProfielId } from '../../engine/profielStore.ts';
+import { avatarFilter, avatarPad, haalActiefProfiel } from '../../engine/profielStore.ts';
 import { haalGroep } from '../../engine/progressStore.ts';
+import { haalRecord, zetRecord } from '../../engine/records.ts';
 import { TONEN, speelDrum, speelNoot } from '../../engine/muziek.ts';
 import { confetti } from '../../three/particles.ts';
 import { huidigThema, type ThemaId } from '../../achtergrond/achtergrond.ts';
@@ -68,22 +69,6 @@ interface Ding {
   draai: number;
   soort: 'lekker' | 'ster' | 'gevaar';
   slot?: 'vijand' | 'ster';
-}
-
-const recordSleutel = (): string => `leren-lezen:vangspel:${haalActiefProfielId() ?? 'gast'}`;
-function haalRecord(): number {
-  try {
-    return Number(localStorage.getItem(recordSleutel())) || 0;
-  } catch {
-    return 0;
-  }
-}
-function zetRecord(n: number): void {
-  try {
-    localStorage.setItem(recordSleutel(), String(n));
-  } catch {
-    // geen opslag: dan maar geen record
-  }
 }
 
 export function VangScreen(manager: ScreenManager): Screen {
@@ -484,9 +469,9 @@ export function VangScreen(manager: ScreenManager): Screen {
     const doos = document.createElement('div');
     doos.className = 'vang-venster__doos';
     if (eind) {
-      const record = haalRecord();
+      const record = haalRecord('vangspel');
       const nieuw = score > record;
-      if (nieuw) zetRecord(score);
+      if (nieuw) zetRecord('vangspel', score);
       doos.innerHTML = `
         <img class="vang-venster__figuur" src="${speler.src}" alt="">
         <div class="vang-venster__score"><img src="${STER}" alt=""><span>${score}</span></div>

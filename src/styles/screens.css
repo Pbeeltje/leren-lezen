@@ -3776,3 +3776,15 @@
   .begrijpend-scherm ~ .overslaan-knop img { width: 28px; height: 28px; }
   .begrijpend-scherm ~ .overslaan-knop:active { transform: translateY(2px); }
 }
+
+/* Records (RecordsScreen): spel-tegels zonder klik, met trofee + getal eronder. */
+.tegel-grid .record-kaart { height: auto; min-height: 160px; cursor: default; }
+.record-kaart:active { transform: none; box-shadow: 0 8px 0 rgba(0, 0, 0, 0.15); }
+.record-kaart__score { display: flex; align-items: center; gap: 6px; font-size: 2rem; font-weight: 800; color: var(--kleur-tekst); line-height: 1; }
+.record-kaart__score img { width: 36px; height: 36px; }
+.record-kaart--leeg .record-kaart__score { opacity: 0.4; filter: grayscale(1); }
+@media (orientation: landscape) and (max-height: 500px) {
+  .tegel-grid .record-kaart { min-height: var(--tegel); }
+  .record-kaart__score { font-size: 1.4rem; }
+  .record-kaart__score img { width: 26px; height: 26px; }
+}

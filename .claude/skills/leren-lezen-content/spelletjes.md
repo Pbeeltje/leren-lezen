@@ -1,9 +1,18 @@
 # Spelletjes: Vangspel, Oversteken, Tafeltennis, Dieren voeren (+ Geheugenspel, Tekenen)
 
 Topic `spellen` (both groups, `SpellenKiesScreen`, Fluent joystick) opens
-Vangspel, Oversteken, Tafeltennis, Dieren voeren, Geheugenspel and Tekenen. Geheugenspel and
+Vangspel, Oversteken, Tafeltennis, Dieren voeren, Geheugenspel, Tekenen and Records. Geheugenspel and
 Tekenen: see [kleuter-onderwerpen.md](kleuter-onderwerpen.md). None of the games
 pay coins (coins come from learning); records are per profile.
+
+## Records (`ui/screens/RecordsScreen.ts`, trophy icon `icons/trofee.svg`)
+
+- All records go through `engine/records.ts` (`haalRecord`/`zetRecord(spel, n)`, key
+  `leren-lezen:<spel>:<profielId>`, `RecordSpel` = vangspel, oversteken, tafeltennis, voeren).
+- The Records tile opens a look-only grid: one card per game (Vangspel shows the profile
+  figure), trophy + number; a 0 record is greyed out (`.record-kaart--leeg`).
+- Geheugenspel (pays coins, no score) and Tekenen have no record.
+- A new game with a score: add it to `RecordSpel` and to `SPELLEN` in `RecordsScreen.ts`.
 
 ## Vangspel (`ui/screens/VangScreen.ts`)
 
@@ -31,7 +40,7 @@ pay coins (coins come from learning); records are per profile.
 - Portrait only: on a sideways phone a "Draai je telefoon" overlay (`.vang-draai`)
   pauses the game; the `matchMedia` in `VangScreen.ts` must stay identical to that
   media query (it adds `pointer: coarse`).
-- Record: `leren-lezen:vangspel:<profielId>`. Start/end screens are pictures only.
+- Record: `haalRecord('vangspel')`. Start/end screens are pictures only.
 - Check: `node tests/vangspel.mjs <map>`, `node tests/vangspel-thema.mjs <map>`.
 
 ## Oversteken (`ui/screens/OversteekScreen.ts`, themes in `oversteek-themas.ts`)
@@ -89,7 +98,7 @@ edge, theme decorations) through lanes seen from above. Tile icon: Fluent traffi
 - Traffic keeps running behind the start and end windows. Portrait only on phones (same
   `.vang-draai` as Vangspel). Reuses `.vang-balk` (wraps to two rows on narrow phones,
   the field starts below it), `.vang-venster*`, `.vang-plop`. CSS: `styles/oversteken.css`,
-  lane grounds `.ov-grond--<name>` per theme. Record: `leren-lezen:oversteken:<id>`.
+  lane grounds `.ov-grond--<name>` per theme. Record: `haalRecord('oversteken')`.
 - New pictures in `public/assets/oversteken/` (Fluent); existing `woorden/`, `achtergrond/`
   pictures are reused where identical.
 - Check: `node tests/oversteken.mjs <map> [thema,thema] [level] [BxH]` (screenshots,
@@ -116,6 +125,8 @@ getting better. In landscape the table uses the full width.
 - Windows are pictures only and reuse `.vang-venster`; the rotate overlay reuses
   `.vang-draai`. Table colour follows the background (`.thema-* .pong-tafel` sets
   `--pong-tafel`/`--pong-rand`).
+- Record: opponents beaten in a row (`opRij`, carries over a trophy, a loss resets it);
+  saved silently, shown only on the Records screen (the windows stay pictures only).
 - Check: `node tests/tafeltennis.mjs <map> [mis-kans]`.
 
 ## Dieren voeren (`ui/screens/VoerScreen.ts`, carrot icon `icons/voeren.svg`)
@@ -129,7 +140,7 @@ dinos stamp it flat, hedgehog and shell animals bounce it, everyone else drops
 it); the animal stands still 150 ms, then shudders while it turns and walks off a
 bit slower (shell animals keep crawl speed). It moves to `kruipers` at once so the
 next group doesn't wait. −1 heart; three wrong = end. Record per profile
-(`leren-lezen:voeren:<id>`), no timer.
+(`haalRecord('voeren')`), no timer.
 - `DIEREN`: per animal `goed` (what it eats) and an explicit `fout` list (only those
   are used as wrong options). `kijkt` (left/right/front) mirrors to the walking
   direction. `schaal` 0.8–1.2 is stretched by `spreid()` (×1.75 around 1, min 0.4)
