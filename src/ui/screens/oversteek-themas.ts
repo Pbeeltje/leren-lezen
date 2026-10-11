@@ -82,7 +82,8 @@ export const OVERSTEEK_THEMAS: Record<ThemaId, OversteekThema> = {
     // Op hol geslagen kudde: veel gnoes, heel snel.
     zeldzaam: [{ teken: 'gnoe', maat: 1.3, kijkt: 'r', aantal: [6, 9], dobber: true, snel: 2.4 }],
     rivier: { water: 'rivier', drijvers: [BOOMSTAM, { teken: 'vlot', maat: 1 }] },
-    overkant: [w('boom'), w('giraf'), w('boom'), w('olifant'), w('boom')],
+    // Afrikaanse bomen (eigen tekeningen), niet de Europese boom uit de woordplaatjes.
+    overkant: [o('acacia'), w('giraf'), o('baobab'), w('olifant'), o('acacia')],
   },
   boerderij: {
     weg: 'zandpad',

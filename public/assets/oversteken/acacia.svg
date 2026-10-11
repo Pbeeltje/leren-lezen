@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 300">
+  <!-- Acacia (eigen tekening, zoals de boom in achtergrond/savanne.ts): gevorkte stam, brede platte kruin. -->
+  <path d="M138 296 C141 262 146 232 138 202 C130 182 112 166 88 152 L95 143 C118 154 136 168 145 182 C149 158 152 138 160 120 L169 124 C163 144 161 164 159 184 C171 164 192 150 218 140 L222 149 C198 162 178 178 166 202 C159 228 161 260 166 296 Z" fill="#5b3d26"/>
+  <path d="M146 186 C152 208 152 250 150 294" stroke="#7a5536" stroke-width="5" fill="none" stroke-linecap="round"/>
+  <path d="M92 148 L70 128 M200 144 L232 126 M162 122 L150 100 M164 124 L184 102" stroke="#5b3d26" stroke-width="6" stroke-linecap="round"/>
+  <ellipse cx="150" cy="124" rx="142" ry="22" fill="#3f5a2a"/>
+  <ellipse cx="84" cy="112" rx="72" ry="24" fill="#56752f"/>
+  <ellipse cx="214" cy="110" rx="80" ry="25" fill="#56752f"/>
+  <ellipse cx="150" cy="98" rx="90" ry="27" fill="#648637"/>
+  <ellipse cx="116" cy="88" rx="50" ry="17" fill="#739840"/>
+  <ellipse cx="198" cy="90" rx="46" ry="15" fill="#739840"/>
+  <ellipse cx="40" cy="116" rx="34" ry="13" fill="#648637"/>
+  <ellipse cx="262" cy="114" rx="34" ry="13" fill="#648637"/>
+</svg>

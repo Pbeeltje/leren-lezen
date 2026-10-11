@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 300">
+  <!-- Baobab (eigen tekening): dikke flessenstam, korte kale takken met plukjes blad bovenop. -->
+  <g stroke="#7d5a43" stroke-width="12" stroke-linecap="round" fill="none">
+    <path d="M128 112 C118 92 96 82 74 78"/>
+    <path d="M136 106 C132 82 124 64 112 48"/>
+    <path d="M150 104 C152 80 154 60 152 38"/>
+    <path d="M164 106 C170 84 180 66 196 52"/>
+    <path d="M172 112 C186 94 208 86 230 82"/>
+  </g>
+  <g stroke="#7d5a43" stroke-width="7" stroke-linecap="round" fill="none">
+    <path d="M88 80 L78 62 M112 48 L98 40 M152 40 L164 26 M196 52 L210 40 M216 84 L226 66"/>
+  </g>
+  <path d="M120 296 C104 296 98 288 102 270 C110 232 114 196 112 160 C110 134 116 112 130 104 C142 98 158 98 170 104 C184 112 190 134 188 160 C186 196 190 232 198 270 C202 288 196 296 180 296 Z" fill="#9b7558"/>
+  <path d="M126 112 C122 150 124 220 118 286 M150 106 C150 160 152 230 150 290 M174 112 C178 150 176 220 182 286" stroke="#836148" stroke-width="5" fill="none" stroke-linecap="round"/>
+  <path d="M170 104 C184 112 190 134 188 160 C186 196 190 232 198 270 C202 288 196 296 180 296 L172 296 C178 250 176 190 178 150 C179 130 176 114 170 104 Z" fill="#000" opacity="0.12"/>
+  <g fill="#5d7f31">
+    <ellipse cx="70" cy="70" rx="24" ry="13"/>
+    <ellipse cx="104" cy="38" rx="22" ry="12"/>
+    <ellipse cx="156" cy="28" rx="26" ry="13"/>
+    <ellipse cx="204" cy="42" rx="22" ry="12"/>
+    <ellipse cx="232" cy="72" rx="24" ry="13"/>
+  </g>
+  <g fill="#78a043">
+    <ellipse cx="74" cy="64" rx="14" ry="7"/>
+    <ellipse cx="108" cy="33" rx="12" ry="6"/>
+    <ellipse cx="160" cy="22" rx="15" ry="7"/>
+    <ellipse cx="208" cy="37" rx="12" ry="6"/>
+    <ellipse cx="236" cy="66" rx="14" ry="7"/>
+  </g>
+</svg>
