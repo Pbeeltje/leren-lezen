@@ -538,8 +538,8 @@ export function OversteekScreen(manager: ScreenManager): Screen {
         const s = drijvers[waterTeller++ % drijvers.length];
         b.bron = s;
         b.v = Math.min(3, willekeurig(0.7, 1.25) * f * (s.snel ?? 1));
-        const lang = Math.max(2, 3.5 - 0.2 * Lw) + (kleuter ? 0.6 : 0);
-        b.rek = [lang, lang + 1.3];
+        const lang = Math.max(1.6, 2.8 - 0.2 * Lw) + (kleuter ? 0.6 : 0);
+        b.rek = [lang, lang + 1];
         b.gat = [Math.min(1.3, 0.8 + 0.08 * Lw), Math.min(2.8, 1.8 + 0.15 * Lw)];
       }
       if (b.bron && !b.sporadisch) vul(b);
