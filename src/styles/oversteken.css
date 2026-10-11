@@ -387,12 +387,15 @@
     radial-gradient(ellipse 12px 4px at 50% 70%, rgba(150, 180, 210, 0.3) 0 60%, transparent 70%) 0 0 / 47px 100%,
     linear-gradient(#ffffff, #eaf3fb);
 }
-/* Kasteel: kinderkopjes. */
-.ov-grond--keien {
+/* Kasteel: een weg van gele bakstenen in halfsteensverband (twee rijen per tegel, de
+   tweede een halve steen verschoven), elke steen met een licht randje boven en een
+   schaduwrandje onder. Vier rijen stenen per baan. */
+.ov-grond--gele-stenen {
   background:
-    radial-gradient(ellipse 45% 40% at 50% 50%, #a59a8a 0 80%, #6f665a 92%) 0 0 / calc(var(--c) / 3) calc(var(--c) / 3),
-    #6f665a;
-  --ov-streep: rgba(255, 230, 150, 0.5);
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='60' viewBox='0 0 120 60'%3E%3Crect width='120' height='60' fill='%23b77d12'/%3E%3Cg%3E%3Crect x='2' y='2' width='56' height='26' rx='4' fill='%23f6c835'/%3E%3Crect x='62' y='2' width='56' height='26' rx='4' fill='%23f2bd2a'/%3E%3Crect x='-28' y='32' width='56' height='26' rx='4' fill='%23efb925'/%3E%3Crect x='32' y='32' width='56' height='26' rx='4' fill='%23f8cf45'/%3E%3Crect x='92' y='32' width='56' height='26' rx='4' fill='%23efb925'/%3E%3C/g%3E%3Cg fill='%23ffe68a'%3E%3Crect x='6' y='4' width='48' height='4' rx='2'/%3E%3Crect x='66' y='4' width='48' height='4' rx='2'/%3E%3Crect x='-24' y='34' width='48' height='4' rx='2'/%3E%3Crect x='36' y='34' width='48' height='4' rx='2'/%3E%3Crect x='96' y='34' width='48' height='4' rx='2'/%3E%3C/g%3E%3Cg fill='%23d99a17'%3E%3Crect x='6' y='23' width='48' height='3' rx='1.5'/%3E%3Crect x='66' y='23' width='48' height='3' rx='1.5'/%3E%3Crect x='-24' y='53' width='48' height='3' rx='1.5'/%3E%3Crect x='36' y='53' width='48' height='3' rx='1.5'/%3E%3Crect x='96' y='53' width='48' height='3' rx='1.5'/%3E%3C/g%3E%3C/svg%3E")
+      0 0 / calc(var(--c) * 1.2) calc(var(--c) / 2),
+    #b77d12;
+  --ov-streep: rgba(150, 90, 0, 0.45);
 }
 /* Kermis: glimmende vloer met lichtjes, rood-witte ruitjes als berm. */
 .ov-grond--kermis {
@@ -424,3 +427,6 @@
   .ov-grond--sloot, .ov-grond--rivier, .ov-grond--beek, .ov-grond--gracht, .ov-grond--wak,
   .ov-grond--eendjes, .ov-grond--zee, .ov-grond--diep, .ov-grond--lava { animation: none; }
 }
+
+/* Een gele ster op gele stenen: donker randje en witte gloed, zodat hij blijft opvallen. */
+.ov-grond--gele-stenen .ov-ster { filter: drop-shadow(0 0 1.5px #6b3e00) drop-shadow(0 0 1.5px #6b3e00) drop-shadow(0 0 8px #fff); }

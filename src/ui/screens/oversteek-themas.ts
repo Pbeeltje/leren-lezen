@@ -183,7 +183,7 @@ export const OVERSTEEK_THEMAS: Record<ThemaId, OversteekThema> = {
     overkant: [a('sneeuwpop'), a('den'), a('winter-pinguin'), a('den'), a('sneeuwpop')],
   },
   kasteel: {
-    weg: 'keien',
+    weg: 'gele-stenen',
     veilig: 'gras',
     vijanden: [
       { src: o('paard'), maat: 1.4, kijkt: 'r', dobber: true, snel: 1.3 },
