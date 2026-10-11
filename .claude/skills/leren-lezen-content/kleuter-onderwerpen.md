@@ -48,10 +48,30 @@ Topic `ontdekken`, `OntdekkenKiesScreen` (inspired by Squla, `onderzoek/squla.md
   is a paint splat (colour, incl. paars/roze/zwart/bruin) or a white outline
   (shape, incl. a real crescent moon). Tap every match.
 
+- **Op volgorde** (`games/kleuter/volgorde.ts`): 3–4 pictures (never more) to put in
+  order. Tap them one by one: the right one flies (FLIP animation) into the next
+  numbered slot, the card stays as an invisible placeholder; a wrong one wiggles.
+  60% stories, 20% "van groot naar klein", 20% "van klein naar groot". A size question
+  is either one pool picture at 100/74/52/32% (bottom-aligned, `.volgorde--maten`) or
+  four animals drawn the same size from `ECHTE_GROOTTE` (mier … walvis, any four in
+  list order). Stories: `PLAATJES_REEKSEN` (Fluent, `assets/volgorde/` +
+  `images/woorden/`) only where every step is clear on its own; everything that changes
+  step by step is our own drawing in `volgordeTekeningen.ts` (`GETEKENDE_REEKSEN`: seed
+  → flower, acorn → tree, frogspawn → frog (reuses `kikkerSvg`), egg → butterfly,
+  apple → core, snowman built and melted, house built, ice cream melting, candle,
+  balloon, Sinterklaas shoe), frog-choir style. Rejected as too vague: socks/shoes/
+  outside, seasons/day (cyclic), moon phases, ill → better, adult vs child faces,
+  Fluent pie. Layout: slots row + cards row; ≤520px wide four cards go 2×2; low
+  landscape uses the general two-column landscape card rule (slots left, cards right).
+  Check: `node tests/volgorde.mjs <map>` (set `URL=` to test a `vite preview` build
+  when someone else is editing and the dev server keeps reloading).
+  Preview drawings: `npx tsx tests/volgorde-tekeningen.mts <out.html>`.
+  Tile icon from `bronbestanden/teken-volgorde-icoon.mts`.
+
 Each game is one `maakVraag(): RondeVraag`; `ui/screens/RondeScreen.ts` is the
 shell (rounds of 5, progress bar, fireworks, coins, replay button). A new game =
 one `maakVraag` plus a tile in `SPELLEN`. Instruction audio:
-`instructies/vergelijk-*`, `meer-minder-*`, `zoek-kleur-*`, `zoek-vorm-*`.
+`instructies/vergelijk-*`, `meer-minder-*`, `zoek-kleur-*`, `zoek-vorm-*`, `volgorde`, `volgorde-groot-klein`, `volgorde-klein-groot` (list 12).
 
 ## Schrijven (tracing)
 

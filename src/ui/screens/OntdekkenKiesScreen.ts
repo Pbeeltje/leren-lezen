@@ -8,6 +8,7 @@ import { maakVergelijkVraag } from '../../games/kleuter/vergelijken.ts';
 import { maakMeerMinderVraag } from '../../games/kleuter/meerMinder.ts';
 import { maakKleurVormVraag } from '../../games/kleuter/kleurenVormen.ts';
 import { maakWelkeVormVraag } from '../../games/kleuter/welkeVorm.ts';
+import { maakVolgordeVraag } from '../../games/kleuter/volgorde.ts';
 
 // "Ontdekken": kleuterbegrippen zonder lezen (groep 1-2), geïnspireerd op de onderwerpen
 // die Squla voor peuters/kleuters noemt (zie onderzoek/squla.md). Elk spel is een
@@ -17,6 +18,7 @@ const SPELLEN: { icoon: string; label: string; titel: string; maakVraag: () => R
   { icoon: 'meer-minder', label: 'Meer of minder?', titel: 'Meer of minder?', maakVraag: maakMeerMinderVraag },
   { icoon: 'vormen', label: 'Kleuren & vormen', titel: 'Kleuren & vormen', maakVraag: maakKleurVormVraag },
   { icoon: 'welke-vorm', label: 'Welke vorm?', titel: 'Welke vorm?', maakVraag: maakWelkeVormVraag },
+  { icoon: 'volgorde', label: 'Op volgorde', titel: 'Op volgorde', maakVraag: maakVolgordeVraag },
 ];
 
 export function OntdekkenKiesScreen(manager: ScreenManager): Screen {

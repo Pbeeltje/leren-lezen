@@ -48,7 +48,7 @@ function zwaarLichtParen(): [string, string][] {
   return ZWAAR_LICHT.filter(([a, b]) => woordMetPlaatje(a) && woordMetPlaatje(b));
 }
 
-function plaatjesPool(): Woord[] {
+export function plaatjesPool(): Woord[] {
   const gezien = new Set<string>();
   const pool: Woord[] = [];
   for (const kern of KERNEN) {

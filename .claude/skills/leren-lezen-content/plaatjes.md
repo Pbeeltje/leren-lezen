@@ -3,8 +3,8 @@
 **Only Fluent Emoji (MIT) or our own drawings.** No VLL, juf-milou or worksheet
 images (the app will be sold). Own drawings come from scripts in `bronbestanden/`:
 `teken-woorden.py`, `teken-weer.py`, `teken-lezen-nieuw.py`, `teken-lange-woorden.py`,
-`teken-kasteel.py`,
-and inline SVG in the background/game code. Exception still in the repo:
+`teken-kasteel.py`, `teken-volgorde-icoon.mts`,
+and inline SVG in the background/game code (e.g. `games/kleuter/volgordeTekeningen.ts`). Exception still in the repo:
 `woorden/was.svg` (game-icons clothesline, CC BY 3.0, listed in `ATTRIBUTIONS.md`
 — keep that file up to date if anything non-MIT is ever added).
 

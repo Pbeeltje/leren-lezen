@@ -1,0 +1,20 @@
+[
+ {
+  "n": 1,
+  "slug": "volgorde",
+  "text": "Wat komt eerst? Zet ze op volgorde.",
+  "path": "public/assets/audio/instructies/volgorde.mp3"
+ },
+ {
+  "n": 2,
+  "slug": "volgorde-groot-klein",
+  "text": "Zet ze van groot naar klein.",
+  "path": "public/assets/audio/instructies/volgorde-groot-klein.mp3"
+ },
+ {
+  "n": 3,
+  "slug": "volgorde-klein-groot",
+  "text": "Zet ze van klein naar groot.",
+  "path": "public/assets/audio/instructies/volgorde-klein-groot.mp3"
+ }
+]
