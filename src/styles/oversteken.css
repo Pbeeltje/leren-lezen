@@ -124,6 +124,7 @@
   justify-content: center;
 }
 .ov-stuk__beeld { width: 100%; height: 100%; object-fit: contain; display: block; }
+.ov-stuk__beeld--lang { object-fit: fill; }
 .ov-stuk--dobber { animation: ov-dobber 0.42s ease-in-out infinite alternate; }
 @keyframes ov-dobber {
   from { transform: translateY(-4%); }

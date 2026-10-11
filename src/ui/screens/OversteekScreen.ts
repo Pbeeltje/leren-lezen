@@ -33,6 +33,7 @@ const DOOD_DUUR = 1; // s tussen een klap en weer verder
 const TUSSEN_DUUR = 2; // s feest aan de overkant
 const KOLOMMEN_MIN = 7; // het veld is altijd minstens zo breed (in vakjes)
 const KOLOMMEN_MAX = 15;
+const HOOG_MAX = 1.15; // vakjes: hoger mag een plaatje niet, anders loopt het over de buurbanen
 
 type BaanSoort = 'start' | 'veilig' | 'finish' | 'weg' | 'water';
 type Richting = 'op' | 'neer' | 'links' | 'rechts';
@@ -235,6 +236,11 @@ export function OversteekScreen(manager: ScreenManager): Screen {
     const kijkt = s.kijkt ?? 'l';
     const spiegel = kijkt !== 'geen' && (kijkt === 'l') === (richting === 1);
     const n = s.wagon ? 1 + heelGetal(s.wagons ?? [2, 3]) : s.aantal ? heelGetal(s.aantal) : 1;
+    // Wat je ziet is wat je raakt. Een plaatje is nooit hoger dan HOOG_MAX (anders loopt het
+    // over de buurbanen), dus een vierkant Fluent-plaatje is ook niet breder dan dat; alleen
+    // lange voertuigen (`lang`) worden in de lengte uitgerekt tot hun hele maat.
+    const hoogte = Math.min(s.maat, HOOG_MAX);
+    const zicht = s.lang ? s.maat : Math.min(s.maat, hoogte * (s.teken === 'gnoe' ? 4 / 3 : 1));
     // Kuddes lopen een beetje over elkaar heen, wagons sluiten aan.
     const stap = s.wagon ? s.maat * 0.92 : s.aantal ? s.maat * 0.82 : s.maat;
     const lengte = (n - 1) * stap + s.maat;
@@ -246,11 +252,13 @@ export function OversteekScreen(manager: ScreenManager): Screen {
       stuk.className = 'ov-stuk';
       stuk.style.left = `calc(var(--c) * ${k * stap})`;
       stuk.style.width = `calc(var(--c) * ${s.maat})`;
+      stuk.style.height = `calc(var(--c) * ${hoogte})`;
+      const schuif = s.aantal && n > 1 ? Math.random() * 0.14 - 0.07 : 0;
+      stuk.style.top = `calc(var(--c) * ${((1 - hoogte) / 2 + schuif).toFixed(3)})`;
       if (s.dobber) {
         stuk.classList.add('ov-stuk--dobber');
         stuk.style.animationDelay = `${(-Math.random()).toFixed(2)}s`;
       }
-      if (s.aantal && n > 1) stuk.style.top = `${(Math.random() * 14 - 7).toFixed(0)}%`;
       let binnen: Element;
       if (s.teken === 'gnoe') {
         const houder = document.createElement('div');
@@ -262,6 +270,7 @@ export function OversteekScreen(manager: ScreenManager): Screen {
         img.src = s.wagon && !isKop ? s.wagon : s.src!;
         img.alt = '';
         if (kleur) img.style.filter = kleur;
+        if (s.lang) img.classList.add('ov-stuk__beeld--lang');
         binnen = img;
       }
       binnen.classList.add('ov-stuk__beeld');
@@ -276,11 +285,14 @@ export function OversteekScreen(manager: ScreenManager): Screen {
       d.appendChild(stuk);
     }
     d.style.width = `calc(var(--c) * ${lengte})`;
-    return { el: d, x: 0, lengte, marge: s.maat * 0.14 };
+    // Lege ruimte naast het plaatje plus de doorzichtige rand van het plaatje zelf.
+    return { el: d, x: 0, lengte, marge: (s.maat - zicht) / 2 + zicht * 0.08 };
   }
 
   function nieuwDing(b: Baan): Ding {
     const ding = maakDing(b.bron!, b.richting, willekeurig(b.rek[0], b.rek[1]));
+    // Alleen in de dev-server: tests tekenen hiermee de botsrand over het plaatje.
+    if (import.meta.env.DEV) ding.el.dataset.marge = String(ding.marge);
     b.el.appendChild(ding.el);
     b.dingen.push(ding);
     b.volgendGat = willekeurig(b.gat[0], b.gat[1]);
@@ -621,9 +633,15 @@ export function OversteekScreen(manager: ScreenManager): Screen {
         vanX = px;
         if (px < 0.1 || px > Wc - 0.1) sterf('plons');
       }
-    } else if (baan.soort === 'weg' && tijd >= onkwetsbaar) {
+    }
+    // Aanrijden: in de baan waar je te zien bent. Tijdens een sprong is dat de eerste helft
+    // nog de oude baan, daarna de nieuwe; ook opzij telt de plek waar je nu in beeld bent.
+    const halfweg = hopT >= HOP / 2;
+    const zichtBaan = banen[halfweg ? rij : vanRij];
+    const zx = vanX + (px - vanX) * Math.min(1, hopT / HOP);
+    if (!dood && zichtBaan.soort === 'weg' && tijd >= onkwetsbaar) {
       const hb = 0.3;
-      if (baan.dingen.some((d) => px + hb > d.x + d.marge && px - hb < d.x + d.lengte - d.marge)) sterf('au');
+      if (zichtBaan.dingen.some((d) => zx + hb > d.x + d.marge && zx - hb < d.x + d.lengte - d.marge)) sterf('au');
     }
     if (!dood && ster && ster.rij === rij && Math.abs(ster.x - px) < 0.6) {
       ster.el.remove();

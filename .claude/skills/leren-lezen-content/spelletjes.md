@@ -56,14 +56,21 @@ edge, theme decorations) through lanes seen from above. Tile icon: Fluent traffi
   at a time, announced 1.5 s ahead by a blinking crossing light (`.ov-lamp`) and red lane
   pulse (`.ov-baan--let-op`), with a two-note bell if the player is within 2 rows. Trains
   (`sporadisch: true`) always work that way.
-- **Soort:** `maat` (cells per picture), `kijkt` (Fluent faces left; `'r'` exceptions are
+- **Soort:** `maat` (slot width, see hitboxes), `kijkt` (Fluent faces left; `'r'` exceptions are
   mirrored the other way), `aantal` (herd/swarm, overlapping 0.82), `wagon`+`wagons`
   (train: head leads), `draai` (rocket/comet tilted 45°), `spin`, `dobber` (bob),
   `kleuren` (bumper cars, random hue). Own drawings: `gnoe` (exported `GNOE` from
   `achtergrond/savanne.ts`, legs animate), `boomstam` and `schots` (SVG built at any
   length). Hippos in water are clipped at the legs; lava rocks are darkened.
-- **Hit/splash:** hitbox ±0.3 cell against each thing minus its end margin; on water the
-  figure needs a floater within 0.15 cell and rides it; carried off the edge = splash.
+- **Hitboxes = what you see.** A picture is at most `HOOG_MAX` (1.15) cells tall, so a
+  square Fluent picture is at most that wide too; `maat` is only the slot. `marge` = the
+  empty slot space beside the picture + 8% of the picture. Long vehicles (`lang`: bus,
+  truck, fire engine, ship, trains) are stretched to their full `maat` instead. (Before
+  this, a bus drawn 1 cell long collided over 1.5 cells.) The player is ±0.3 cell, checked
+  in the lane where the figure is visible: the old lane for the first half of a hop.
+  `node tests/oversteken-botsing.mjs <map> [thema,..] [level]` draws the boxes (dev
+  `data-marge`). On water the figure needs a floater within 0.15 cell and rides it;
+  carried off the edge = splash.
   One heart per hit, 1 s animation, then back to the last safe strip below, 1.3 s
   invulnerable. 0 hearts = end window (score, level reached, record).
 - **Points:** +1 per new row in a level, +10 at the finish (fanfare, banner with the next

@@ -7,8 +7,11 @@ import type { ThemaId } from '../../achtergrond/achtergrond.ts';
 export interface Soort {
   src?: string; // plaatje; zonder src een eigen tekening (`teken`)
   teken?: 'gnoe' | 'boomstam' | 'schots';
-  maat: number; // breedte van één plaatje in vakjes
+  // Breedte van het vak voor één plaatje, in vakjes. Getekend wordt het hooguit HOOG_MAX
+  // (1,15) breed, behalve met `lang`; de rest van het vak is ruimte, geen botsing.
+  maat: number;
   kijkt?: 'l' | 'r' | 'geen';
+  lang?: boolean; // lang voertuig: het plaatje wordt in de lengte uitgerekt tot de hele maat
   snel?: number; // snelheidsfactor (1 = gewoon)
   aantal?: [number, number]; // kudde of zwerm: zoveel achter elkaar
   wagon?: string; // trein: kop + wagons
@@ -47,15 +50,15 @@ export const OVERSTEEK_THEMAS: Record<ThemaId, OversteekThema> = {
       { src: w('taxi'), maat: 1.25 },
       { src: o('suv'), maat: 1.3 },
       { src: o('politie'), maat: 1.3, snel: 1.2 },
-      { src: w('bus'), maat: 2.1, snel: 0.75 },
-      { src: o('bestelwagen'), maat: 1.6, snel: 0.85 },
-      { src: o('oplegger'), maat: 2.3, snel: 0.7 },
+      { src: w('bus'), maat: 1.8, lang: true, snel: 0.75 },
+      { src: o('bestelwagen'), maat: 1.45, lang: true, snel: 0.85 },
+      { src: o('oplegger'), maat: 2, lang: true, snel: 0.7 },
       { src: o('pickup'), maat: 1.5 },
       { src: w('scooter'), maat: 1, snel: 1.3 },
-      { src: o('brandweer'), maat: 2, snel: 0.9 },
+      { src: o('brandweer'), maat: 1.7, lang: true, snel: 0.9 },
     ],
     zeldzaam: [
-      { src: w('ambulance'), maat: 1.6, snel: 2.4 },
+      { src: w('ambulance'), maat: 1.45, lang: true, snel: 2.4 },
       { src: o('raceauto'), maat: 1.5, kijkt: 'r', snel: 2.8 },
     ],
     overkant: [o('bouwkraan'), o('afzetting'), w('huis'), o('afzetting'), o('bouwkraan')],
@@ -66,7 +69,7 @@ export const OVERSTEEK_THEMAS: Record<ThemaId, OversteekThema> = {
     vijanden: [
       { teken: 'gnoe', maat: 1.3, kijkt: 'r', aantal: [3, 5], dobber: true, snel: 1.1 },
       { src: w('zebra'), maat: 1.2, kijkt: 'r', aantal: [2, 3], dobber: true },
-      { src: w('olifant'), maat: 1.7, snel: 0.6, dobber: true },
+      { src: w('olifant'), maat: 1.15, snel: 0.6, dobber: true },
       { src: w('neushoorn'), maat: 1.5, snel: 1.3, dobber: true },
       { src: w('giraf'), maat: 1.4, snel: 0.8, dobber: true },
       { src: o('buffel'), maat: 1.4, kijkt: 'r', aantal: [1, 2], dobber: true },
@@ -112,11 +115,11 @@ export const OVERSTEEK_THEMAS: Record<ThemaId, OversteekThema> = {
     weg: 'oerwoud',
     veilig: 'varens',
     vijanden: [
-      { src: w('stegosaurus'), maat: 1.6, snel: 0.75, dobber: true },
+      { src: w('stegosaurus'), maat: 1.15, snel: 0.75, dobber: true },
       { src: a('triceratops'), maat: 1.4, dobber: true },
-      { src: o('sauropode'), maat: 1.8, snel: 0.55, dobber: true },
+      { src: o('sauropode'), maat: 1.15, snel: 0.55, dobber: true },
       { src: o('trex'), maat: 1.5, kijkt: 'r', snel: 1.3, dobber: true },
-      { src: w('diplodocus'), maat: 1.8, snel: 0.6, dobber: true },
+      { src: w('diplodocus'), maat: 1.15, snel: 0.6, dobber: true },
     ],
     zeldzaam: [{ src: o('trex'), maat: 1.6, kijkt: 'r', snel: 2.6, dobber: true }],
     // Een lavarivier: springen over stenen.
@@ -129,7 +132,7 @@ export const OVERSTEEK_THEMAS: Record<ThemaId, OversteekThema> = {
     vijanden: [
       { src: w('zeilboot'), maat: 1.4, kijkt: 'geen', dobber: true, snel: 0.8 },
       { src: o('motorboot'), maat: 1.4, dobber: true },
-      { src: w('schip'), maat: 2.3, snel: 0.55, dobber: true },
+      { src: w('schip'), maat: 1.9, lang: true, snel: 0.55, dobber: true },
       { src: w('kano'), maat: 1.3, kijkt: 'geen', dobber: true, snel: 0.7 },
       { src: w('haai'), maat: 1.4, snel: 1.2, dobber: true },
       { src: w('dolfijn'), maat: 1.2, aantal: [2, 3], dobber: true, snel: 1.3 },
@@ -146,7 +149,7 @@ export const OVERSTEEK_THEMAS: Record<ThemaId, OversteekThema> = {
       { src: a('kogelvis'), maat: 1, dobber: true, snel: 0.8 },
       { src: o('tropische-vis'), maat: 0.9, aantal: [3, 5], dobber: true, snel: 1.2 },
       { src: w('octopus'), maat: 1.1, kijkt: 'geen', dobber: true, snel: 0.7 },
-      { src: o('walvis'), maat: 2.2, snel: 0.5, dobber: true },
+      { src: o('walvis'), maat: 1.15, snel: 0.5, dobber: true },
     ],
     zeldzaam: [{ src: w('haai'), maat: 1.6, snel: 2.6, dobber: true }],
     overkant: [a('schelp'), a('octopus'), a('schildpad'), a('krab'), a('schelp')],
@@ -211,12 +214,12 @@ export const OVERSTEEK_THEMAS: Record<ThemaId, OversteekThema> = {
     veilig: 'perron',
     vijanden: [
       // Treinen komen af en toe en snel, met het knipperlicht van de overweg.
-      { src: a('locomotief'), maat: 1.3, wagon: o('wagon'), wagons: [2, 3], sporadisch: true, snel: 2.2 },
-      { src: o('snelle-trein'), maat: 1.4, wagon: o('wagon'), wagons: [2, 3], sporadisch: true, snel: 2.8 },
+      { src: a('locomotief'), maat: 1.3, lang: true, wagon: o('wagon'), wagons: [2, 3], sporadisch: true, snel: 2.2 },
+      { src: o('snelle-trein'), maat: 1.4, lang: true, wagon: o('wagon'), wagons: [2, 3], sporadisch: true, snel: 2.8 },
       { src: w('tram'), maat: 1.3, kijkt: 'geen', snel: 0.8 },
       { src: o('sneltram'), maat: 1.4, snel: 1 },
     ],
-    zeldzaam: [{ src: o('kogeltrein'), maat: 1.5, kijkt: 'r', wagon: o('wagon'), wagons: [3, 4], sporadisch: true, snel: 3.4 }],
+    zeldzaam: [{ src: o('kogeltrein'), maat: 1.5, lang: true, kijkt: 'r', wagon: o('wagon'), wagons: [3, 4], sporadisch: true, snel: 3.4 }],
     overkant: [a('locomotief'), w('klok'), o('verkeerslicht'), w('tas'),a('locomotief')],
   },
 };
