@@ -91,7 +91,14 @@ edge, theme decorations) through lanes seen from above. Tile icon: Fluent traffi
   `Ding` keeps `links`/`rechts` (visible span from `x`, mirrored when needed). The lane
   checked is the one where the figure is visible: the old lane for the first half of a hop
   (Frogger has the same two-stage check). Water: the centre must be over a floater's
-  visible span ± 0.1 cell; it rides along; carried off the edge = splash.
+  visible span ± 0.25 cell. The figure drifts with its lane, also during a hop (from the
+  lane it hopped from), so hopping along a raft or to the next row keeps you on it. At the
+  field edge the figure is held back (0.5 cell) instead of drowning; it falls in only when
+  the raft slides out from under it (a phone field is just 7 cells wide; instant edge
+  deaths made duck rows nearly impossible). Water lanes move 0.6–1 × the speed factor.
+  Rafts of `aantal` floaters (ducks, hippos, lily pads, rocks, leaves, swans) get as many
+  pieces as fit the level's log length (`rek`), so every theme's water is equally hard;
+  `aantal` on a floater only marks it as a group.
   `node tests/oversteken-botsing.mjs <map> [thema,..] [level]` draws the spans (red) and
   the player's point (blue), via dev-only `data-links`/`data-rechts`.
 - One heart per hit, 1 s animation, then back to the last safe strip below, 1.3 s

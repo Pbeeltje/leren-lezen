@@ -278,7 +278,7 @@ export function OversteekScreen(manager: ScreenManager): Screen {
 
   // ---------- dingen in de banen ----------
 
-  function maakDing(s: Soort, richting: 1 | -1, rek: number): Ding {
+  function maakDing(s: Soort, richting: 1 | -1, rek: number, drijft: boolean): Ding {
     const d = document.createElement('div');
     d.className = 'ov-ding';
     if (s.teken === 'boomstam' || s.teken === 'schots') {
@@ -291,7 +291,10 @@ export function OversteekScreen(manager: ScreenManager): Screen {
     }
     const kijkt = s.kijkt ?? 'l';
     const spiegel = kijkt !== 'geen' && (kijkt === 'l') === (richting === 1);
-    const n = s.wagon ? 1 + heelGetal(s.wagons ?? [2, 3]) : s.aantal ? heelGetal(s.aantal) : 1;
+    // Een vlot van eendjes, nijlpaarden of stenen is net zo lang als een boomstam op dat
+    // level (`rek`), anders zijn de vlotjes op sommige achtergronden veel korter.
+    const vlot = drijft && s.aantal ? Math.max(2, Math.round((rek - s.maat) / (s.maat * 0.82)) + 1) : 0;
+    const n = vlot || (s.wagon ? 1 + heelGetal(s.wagons ?? [2, 3]) : s.aantal ? heelGetal(s.aantal) : 1);
     // Wat je ziet is wat je raakt. Een plaatje is nooit hoger dan HOOG_MAX (anders loopt het
     // over de buurbanen), dus een vierkant Fluent-plaatje is ook niet breder dan dat; alleen
     // lange voertuigen (`lang`) worden in de lengte uitgerekt tot hun hele maat.
@@ -355,7 +358,7 @@ export function OversteekScreen(manager: ScreenManager): Screen {
   }
 
   function nieuwDing(b: Baan): Ding {
-    const ding = maakDing(b.bron!, b.richting, willekeurig(b.rek[0], b.rek[1]));
+    const ding = maakDing(b.bron!, b.richting, willekeurig(b.rek[0], b.rek[1]), b.soort === 'water');
     // Alleen in de dev-server: tests tekenen hiermee de botsrand over het plaatje.
     if (import.meta.env.DEV) Object.assign(ding.el.dataset, { links: String(ding.links), rechts: String(ding.rechts) });
     b.el.appendChild(ding.el);
@@ -479,7 +482,7 @@ export function OversteekScreen(manager: ScreenManager): Screen {
       } else if (soort === 'water') {
         const s = drijvers[waterTeller++ % drijvers.length];
         b.bron = s;
-        b.v = Math.min(3, willekeurig(0.7, 1.25) * f * (s.snel ?? 1));
+        b.v = Math.min(2.4, willekeurig(0.6, 1) * f * (s.snel ?? 1));
         const lang = Math.max(2, 3.5 - 0.2 * Lw) + (kleuter ? 0.6 : 0);
         b.rek = [lang, lang + 1.3];
         b.gat = [Math.min(1.3, 0.8 + 0.08 * Lw), Math.min(2.8, 1.8 + 0.15 * Lw)];
@@ -695,17 +698,21 @@ export function OversteekScreen(manager: ScreenManager): Screen {
     }
     const baan = banen[rij];
     const geland = hopT >= HOP;
+    // Op het water drijf je mee, ook midden in een sprong (zoals in Frogger): springen langs
+    // de eendjes of naar de volgende rij houdt je gewoon bij je vlot. Aan de rand van het
+    // veld word je tegengehouden; je valt pas in het water als je vlot onder je vandaan
+    // drijft. Op een telefoon (7 vakjes breed) was meteen verdrinken aan de rand te streng.
+    const drijfBaan = banen[geland ? rij : vanRij];
+    if (drijfBaan.soort === 'water') {
+      const dx = drijfBaan.v * drijfBaan.richting * dt;
+      const tegen = (x: number): number => Math.min(Wc - 0.5, Math.max(0.5, x + dx));
+      px = tegen(px);
+      vanX = geland ? px : tegen(vanX);
+    }
     if (baan.soort === 'water' && geland) {
-      // Wat drijft er onder je? Ook hier telt het midden van het figuurtje, met een
-      // randje speling (0,1 vakje) voor kinderhanden.
-      const onder = baan.dingen.find((d) => px > d.x + d.links - 0.1 && px < d.x + d.rechts + 0.1);
-      if (!onder) {
-        sterf('plons');
-      } else {
-        px += baan.v * baan.richting * dt;
-        vanX = px;
-        if (px < 0.1 || px > Wc - 0.1) sterf('plons');
-      }
+      // Wat drijft er onder je? Ook hier telt het midden van het figuurtje, met wat
+      // speling (0,25 vakje) voor kinderhanden.
+      if (!baan.dingen.some((d) => px > d.x + d.links - 0.25 && px < d.x + d.rechts + 0.25)) sterf('plons');
     }
     // Aanrijden: in de baan waar je te zien bent. Tijdens een sprong is dat de eerste helft
     // nog de oude baan, daarna de nieuwe; ook opzij telt de plek waar je nu in beeld bent.
