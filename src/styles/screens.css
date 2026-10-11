@@ -3306,9 +3306,10 @@
 .muziek-vrij-scherm .muziek-kaart--vrij .xylofoon--harp .xylofoon__staaf,
 .muziek-vrij-scherm .muziek-kaart--vrij .xylofoon--fluit .xylofoon__staaf { max-width: none; }
 .muziek-vrij-scherm .muziek-kaart--vrij .xylofoon--fluit { height: min(22vh, 120px); max-height: 140px; align-self: center; width: min(100%, 860px); }
-/* Zo groot als in de kaart past, in de 4:3-vorm van het frame. */
+/* Zo groot als in de kaart past, in de 4:3-vorm van het frame. Met .xylofoon erbij: anders
+   wint de Speel na-regel voor lage liggende schermen (verderop) en wordt de harp piepklein. */
 .muziek-vrij-scherm .muziek-kaart--vrij { container-type: size; }
-.muziek-vrij-scherm .muziek-kaart--vrij .xylofoon--harp {
+.muziek-vrij-scherm .muziek-kaart--vrij .xylofoon.xylofoon--harp {
   --harp-breedte: min(100cqw, 133cqh, 1100px);
   height: auto;
   max-height: none;

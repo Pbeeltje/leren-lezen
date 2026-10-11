@@ -92,7 +92,10 @@ Check: `node tests/drumstel.mjs <map>`.
   (`.xylofoon__staaf`), `zetInstrument()` switches the look (`.xylofoon--<id>`,
   CSS in screens.css), `speel(positie, wanneer)` plays. Strings keep
   `STAAF_KLEUREN`. Harp keys ~120px wide; frame `harp-kast.svg` (CSS
-  `url("/assets/icons/harp-kast.svg")` — absolute, see CLAUDE.md). The fluit
+  `url("/assets/icons/harp-kast.svg")` — absolute, see CLAUDE.md). Size via
+  `--harp-breedte`; in Vrij spelen `min(100cqw, 133cqh, 1100px)` of the card. That rule
+  needs `.xylofoon.xylofoon--harp`: the Speel na rule for low landscape screens comes
+  later and otherwise wins (harp was 233px wide on an 844×390 phone, Oct 2026). The fluit
   stands upright in Vrij spelen on a portrait screen.
 - Picker: `ui/components/InstrumentKnoppen.ts` (`data-instrument`; not owned =
   grey + lock, tap opens `WinkelScreen(m, { soort: 'instrument', koop: id })`) plus
