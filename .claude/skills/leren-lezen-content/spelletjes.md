@@ -26,6 +26,11 @@ pay coins (coins come from learning); records are per profile.
   comes back. Used at every start (Vangspel, Oversteken, Tafeltennis match, Dieren voeren),
   and in Oversteken also after a hit and at each new level (on the `.ov-speler` wrapper,
   because the image itself blinks while invulnerable).
+- During the flash (0.8 s, `flitstNog(figuur)`) the figure stands still: Oversteken ignores
+  hops; Vangspel and Tafeltennis keep the finger/key target but only glide there after the
+  flash. The pop uses the CSS `scale` property, so these figures are positioned with the
+  `translate` property, not `transform: translate()`: with transform, `scale` shrank the
+  whole position toward the corner and the figure seemed to fly in from the side.
 - Winning: `houdBekerOmhoog(figuur, ouder)` puts a swaying Fluent trophy (`trofee.svg`) up
   next to the figure in the game (with a fanfare); `figuurMetBeker(html, klein?)` wraps a
   window figure so it holds the trophy up. Vangspel: when the round is played out (not on

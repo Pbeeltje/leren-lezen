@@ -10,17 +10,26 @@ const TROFEE = 'assets/icons/trofee.svg';
 // op en popt van klein naar groot, met een witte ring eromheen en een kort 'pling'. De
 // eigen filter (kleur, schaduw) staat in --figuur-filter, zodat het na de witte flitsen
 // weer gewoon gekleurd is. `ouder` krijgt de ring; die moet position: relative/absolute zijn.
+// Zolang het figuurtje flitst staat het stil: de spelletjes vragen `flitstNog` voordat ze
+// het laten bewegen of springen. Bij 'minder beweging' (geen flits te zien) wacht niemand.
+const FLITS_MS = 800; // gelijk aan de animatie .figuur-flits in components.css
+export function flitstNog(figuur: HTMLElement): boolean {
+  return performance.now() < Number(figuur.dataset.flitsTot ?? 0);
+}
+
 export function flitsIn(figuur: HTMLElement, ouder?: HTMLElement): void {
   figuur.style.setProperty('--figuur-filter', figuur.style.filter || 'none');
   figuur.classList.remove('figuur-flits');
   // Meten vóór de flits: daarna begint het figuurtje klein en wordt de ring te klein.
   const r = figuur.getBoundingClientRect();
   figuur.classList.add('figuur-flits');
-  figuur.addEventListener('animationend', function klaar(e) {
-    if (e.animationName !== 'figuur-flits') return;
-    figuur.classList.remove('figuur-flits');
-    figuur.removeEventListener('animationend', klaar);
-  });
+  const stil = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const tot = performance.now() + (stil ? 0 : FLITS_MS);
+  figuur.dataset.flitsTot = String(tot);
+  // Met een timer in plaats van animationend: die komt niet als animaties uit staan.
+  window.setTimeout(() => {
+    if (Number(figuur.dataset.flitsTot) === tot) figuur.classList.remove('figuur-flits');
+  }, FLITS_MS);
   if (ouder) {
     const o = ouder.getBoundingClientRect();
     const ring = document.createElement('div');

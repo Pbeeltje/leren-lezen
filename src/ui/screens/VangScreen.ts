@@ -1,6 +1,6 @@
 import type { Screen, ScreenManager } from '../../engine/screenManager.ts';
 import { maakTerugKnop } from '../components/TerugKnop.ts';
-import { figuurMetBeker, flitsIn, houdBekerOmhoog } from '../components/spelFiguur.ts';
+import { figuurMetBeker, flitsIn, flitstNog, houdBekerOmhoog } from '../components/spelFiguur.ts';
 import { avatarFilter, avatarPad, haalActiefProfiel } from '../../engine/profielStore.ts';
 import { haalGroep } from '../../engine/progressStore.ts';
 import { haalRecord, zetRecord } from '../../engine/records.ts';
@@ -151,7 +151,7 @@ export function VangScreen(manager: ScreenManager): Screen {
   const SPRING_G = 2400;
 
   function spring(): void {
-    if (!bezig || springY > 0.5 || draaiNodig.matches) return;
+    if (!bezig || springY > 0.5 || draaiNodig.matches || flitstNog(speler)) return;
     springV = Math.sqrt(2 * SPRING_G * spelerMaat() * 0.48);
     speelDrum('tom');
   }
@@ -187,7 +187,9 @@ export function VangScreen(manager: ScreenManager): Screen {
     const m = spelerMaat();
     speler.style.width = `${m}px`;
     speler.style.height = `${m}px`;
-    speler.style.transform = `translate(${spelerX - m / 2}px, ${-springY}px) scaleX(${kijkRechts ? -1 : 1})`;
+    // Plaats via `translate` (los van transform): dan popt de startflits (`scale`) op zijn plek.
+    speler.style.translate = `${spelerX - m / 2}px ${-springY}px`;
+    speler.style.transform = `scaleX(${kijkRechts ? -1 : 1})`;
   }
 
   // Volgen van de vinger: overal op het veld tikken of slepen.
@@ -370,8 +372,9 @@ export function VangScreen(manager: ScreenManager): Screen {
     }
     const m = spelerMaat();
     doelX = Math.min(breedte() - m / 2, Math.max(m / 2, doelX));
+    // Tijdens de startflits staat het figuurtje stil; daarna glijdt het naar de vinger.
     const oud = spelerX;
-    spelerX += (doelX - spelerX) * Math.min(1, dt * 14);
+    if (!flitstNog(speler)) spelerX += (doelX - spelerX) * Math.min(1, dt * 14);
     if (Math.abs(spelerX - oud) > 0.6) kijkRechts = spelerX > oud;
     if (springY > 0 || springV !== 0) {
       springV -= SPRING_G * dt;

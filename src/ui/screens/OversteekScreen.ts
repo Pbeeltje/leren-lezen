@@ -1,6 +1,6 @@
 import type { Screen, ScreenManager } from '../../engine/screenManager.ts';
 import { maakTerugKnop } from '../components/TerugKnop.ts';
-import { flitsIn } from '../components/spelFiguur.ts';
+import { flitsIn, flitstNog } from '../components/spelFiguur.ts';
 import { avatarFilter, avatarPad, haalActiefProfiel } from '../../engine/profielStore.ts';
 import { haalGroep } from '../../engine/progressStore.ts';
 import { haalRecord, zetRecord } from '../../engine/records.ts';
@@ -588,13 +588,16 @@ export function OversteekScreen(manager: ScreenManager): Screen {
     const r = vanRij + (rij - vanRij) * t;
     const sprong = Math.sin(Math.PI * t) * 0.28; // even groter in de lucht
     speler.style.width = speler.style.height = `${c}px`;
-    speler.style.transform = `translate3d(${((x - 0.5) * c).toFixed(1)}px, ${((N - 1 - r) * c).toFixed(1)}px, 0) scale(${(1 + sprong).toFixed(3)})`;
+    // Plaats via `translate` (los van transform): dan popt de startflits (`scale`) op zijn plek.
+    speler.style.translate = `${((x - 0.5) * c).toFixed(1)}px ${((N - 1 - r) * c).toFixed(1)}px`;
+    speler.style.transform = `scale(${(1 + sprong).toFixed(3)})`;
     spelerImg.classList.toggle('ov-speler__img--rechts', kijkRechts);
     speler.classList.toggle('ov-speler--knipper', tijd < onkwetsbaar);
   }
 
   function hop(richting: Richting): void {
-    if (fase !== 'spel' || dood || draaiNodig.matches) return;
+    // Tijdens de flits (start, na een klap, nieuw level) kun je nog niet springen.
+    if (fase !== 'spel' || dood || draaiNodig.matches || flitstNog(speler)) return;
     if (hopT < HOP) {
       buffer = richting;
       return;

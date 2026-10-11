@@ -1,6 +1,6 @@
 import type { Screen, ScreenManager } from '../../engine/screenManager.ts';
 import { maakTerugKnop } from '../components/TerugKnop.ts';
-import { figuurMetBeker, flitsIn, houdBekerOmhoog } from '../components/spelFiguur.ts';
+import { figuurMetBeker, flitsIn, flitstNog, houdBekerOmhoog } from '../components/spelFiguur.ts';
 import { AVATAR_ICONEN, AVATAR_KLEUREN, avatarFilter, avatarPad, haalActiefProfiel } from '../../engine/profielStore.ts';
 import { haalGroep } from '../../engine/progressStore.ts';
 import { haalRecord, zetRecord } from '../../engine/records.ts';
@@ -175,9 +175,9 @@ export function TafeltennisScreen(manager: ScreenManager): Screen {
     tegenLijn = boven + figuurMaat * 0.85;
     spelerLijn = h - 8 - figuurMaat * 0.85;
     const lengte = spelerLijn - tegenLijn;
-    // Liggend (iPad) is de rally korter dan het scherm breed is. De tafel volgt dan de
-    // breedte, anders blijft hij een smalle strook. Staand blijft hij hoog en smal.
-    B = w > h ? Math.max(300, w - 48) : Math.min(w - 24, Math.max(300, lengte * 0.8), 640);
+    // De tafel is altijd hoger dan breed, ook liggend (laptop, iPad): een brede tafel
+    // maakt batjes en bal reusachtig en voelt raar.
+    B = Math.min(w - 24, 640, Math.max(220, lengte * 0.8));
     x0 = (w - B) / 2;
     batBreedte = Math.round(Math.max(78, B * 0.24));
     straal = Math.round(Math.min(32, Math.max(11, B * 0.032)));
@@ -202,9 +202,10 @@ export function TafeltennisScreen(manager: ScreenManager): Screen {
 
   function teken(): void {
     spelerBat.style.transform = `translate(${x0 + spelerX - batBreedte / 2}px, ${spelerLijn - BAT_DIKTE / 2}px)`;
-    spelerFiguur.style.transform = `translate(${x0 + spelerX - figuurMaat / 2}px, ${spelerLijn - figuurMaat * 0.15}px)`;
+    // Figuren via `translate` (los van transform): dan popt de startflits (`scale`) op zijn plek.
+    spelerFiguur.style.translate = `${x0 + spelerX - figuurMaat / 2}px ${spelerLijn - figuurMaat * 0.15}px`;
     tegenBat.style.transform = `translate(${x0 + tegenX - batBreedte / 2}px, ${tegenLijn - BAT_DIKTE / 2}px)`;
-    tegenFiguur.style.transform = `translate(${x0 + tegenX - figuurMaat / 2}px, ${tegenLijn - figuurMaat * 0.85}px)`;
+    tegenFiguur.style.translate = `${x0 + tegenX - figuurMaat / 2}px ${tegenLijn - figuurMaat * 0.85}px`;
     bal.style.transform = `translate(${x0 + bx - straal}px, ${by - straal}px)`;
   }
 
@@ -380,7 +381,8 @@ export function TafeltennisScreen(manager: ScreenManager): Screen {
       if (toetsen.has('rechts')) doelX += v;
     }
     doelX = Math.min(B - batBreedte / 2, Math.max(batBreedte / 2, doelX));
-    spelerX += (doelX - spelerX) * Math.min(1, dt * 18);
+    // Tijdens de startflits staan figuur en batje stil; daarna glijden ze naar de vinger.
+    if (!flitstNog(spelerFiguur)) spelerX += (doelX - spelerX) * Math.min(1, dt * 18);
 
     // Tegenstander.
     const n = niveau();
