@@ -367,8 +367,6 @@
     linear-gradient(#ff7a1a, #e2440c);
   animation: ov-lava 3s linear infinite;
 }
-/* Nijlpaarden zwemmen: de pootjes zitten onder water. */
-.ov-baan--water img[src*='nijlpaard'] { clip-path: inset(0 0 26% 0); }
 /* Stenen in de lava: donker basalt, met een gloeiende onderkant. */
 .ov-grond--lava .ov-stuk__beeld { filter: brightness(0.5) sepia(0.5) drop-shadow(0 3px 3px rgba(255, 90, 0, 0.9)); }
 @keyframes ov-lava {
@@ -462,3 +460,71 @@
 
 /* Een gele ster op gele stenen: donker randje en witte gloed, zodat hij blijft opvallen. */
 .ov-grond--gele-stenen .ov-ster { filter: drop-shadow(0 0 1.5px #6b3e00) drop-shadow(0 0 1.5px #6b3e00) drop-shadow(0 0 8px #fff); }
+
+/* De trein uit de achtergrond (maakTrein): een rij tekeningen, één vakje hoog. --loc is de
+   locbreedte waar de rookpluimpjes (.trein-rook uit achtergrond-trein.css) mee rekenen. */
+.ov-trein {
+  position: absolute;
+  left: 0;
+  top: 0;
+  height: var(--c);
+  display: flex;
+  align-items: flex-end;
+  --loc: calc(var(--c) * 1.54);
+}
+.ov-trein--links { transform: scaleX(-1); }
+.ov-trein__stuk { position: relative; flex: none; height: 100%; margin-right: calc(var(--c) * -0.035); }
+.ov-trein__stuk:last-child { margin-right: 0; }
+.ov-trein__stuk svg { display: block; width: 100%; height: 100%; overflow: visible; }
+
+/* Startvenster: gevaren die geen plaatje zijn (trein, eigen dino's) inline. */
+.ov-voorbeeld { display: block; width: 52px; height: 48px; }
+.ov-voorbeeld--trein { width: 70px; }
+.ov-voorbeeld svg { display: block; width: 100%; height: 100%; overflow: visible; }
+
+/* Startvenster bij achtergronden met water (waterPlaatjes): een stukje water met een vlot
+   en het figuurtje erop (goed), en het figuurtje dat in het water zakt met een plons (fout). */
+.ov-uitleg { flex-direction: column; align-items: center; }
+.ov-uitleg .vang-uitleg__vak { gap: 10px; }
+.ov-uitleg-plek {
+  position: relative;
+  display: block;
+  width: 104px;
+  height: 66px;
+  border-radius: 12px;
+  overflow: hidden;
+  --c: 48px;
+}
+.ov-uitleg-water { position: absolute; inset: 0; }
+.ov-uitleg-vlot {
+  position: absolute;
+  left: 6px;
+  right: 6px;
+  top: 20px;
+  height: 44px;
+  display: flex;
+  justify-content: center;
+}
+.ov-uitleg-vlot svg { width: 100%; height: 100%; }
+.vang-uitleg__vak .ov-uitleg-vlot img { width: 44px; height: 44px; margin: 0 -3px; }
+.vang-uitleg__vak .ov-uitleg-figuur {
+  position: absolute;
+  left: 50%;
+  top: 2px;
+  width: 44px;
+  height: 44px;
+  transform: translateX(-50%);
+  filter: drop-shadow(0 4px 2px rgba(0, 0, 0, 0.35));
+}
+.vang-uitleg__vak .ov-uitleg-figuur--zinkt { top: 26px; clip-path: inset(0 0 46% 0); opacity: 0.85; }
+.ov-uitleg-plons {
+  position: absolute;
+  left: 50%;
+  top: 40px;
+  width: 62px;
+  height: 16px;
+  border: 3px solid rgba(255, 255, 255, 0.9);
+  border-radius: 50%;
+  transform: translateX(-50%);
+}
+.ov-grond--lava ~ .ov-uitleg-vlot img { filter: brightness(0.5) sepia(0.5); }

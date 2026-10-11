@@ -301,6 +301,32 @@ const WAGONKLEUREN: [string, string][] = [
 ];
 const DIEREN = ['koe', 'varken', 'schaap', 'haan', 'kuiken', 'schildpad'];
 
+// Voor Oversteken: dezelfde locomotief (rijdt naar rechts) en wagons, als losse SVG.
+// Breedte/hoogte: loc 160/104, wagon 120/104.
+export const TREIN_LOC = LOC;
+export interface WagonStuk { svg: string; soort: string }
+// n wagons van achter naar voren: de laatste hangt direct achter de loc. Reizigers: de
+// postwagon achter de loc, daarvoor personenwagons in verschillende kleuren en soms een
+// container achteraan. Goederen: stenen, tanks en containers, soms twee dezelfde op rij.
+export function treinWagons(goederen: boolean, n: number): WagonStuk[] {
+  const lijst: WagonStuk[] = [];
+  if (goederen) {
+    let vorige = '';
+    for (let i = 0; i < n; i++) {
+      const soort = Math.random() < 0.35 && vorige ? vorige : kies(['stenen', 'tank', 'container', 'container']);
+      vorige = soort;
+      const svg = soort === 'stenen' ? STENEN : soort === 'tank' ? TANK : container(...kies(CONTAINERKLEUREN), kies(LADINGEN));
+      lijst.push({ svg, soort });
+    }
+    return lijst;
+  }
+  const kleuren = [...WAGONKLEUREN].sort(() => Math.random() - 0.5);
+  for (let i = 0; i < n - 1; i++) lijst.push({ svg: wagon(...kleuren[i % kleuren.length]), soort: 'personen' });
+  if (n >= 3 && Math.random() < 0.5) lijst[0] = { svg: container(...kies(CONTAINERKLEUREN), kies(LADINGEN)), soort: 'container' };
+  if (n > 0) lijst.push({ svg: POST, soort: 'post' });
+  return lijst;
+}
+
 // Zwevende arend (kijkt naar rechts), van onderen gezien met gespreide vleugels, net als de
 // pteranodon bij de dino's. De vleugels (ar-vleugel--l / --r) slaan af en toe traag.
 const AREND = `

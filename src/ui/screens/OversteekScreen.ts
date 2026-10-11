@@ -7,6 +7,7 @@ import { TONEN, speelDrum, speelNoot } from '../../engine/muziek.ts';
 import { confetti } from '../../three/particles.ts';
 import { huidigThema } from '../../achtergrond/achtergrond.ts';
 import { GNOE } from '../../achtergrond/savanne.ts';
+import { TREIN_LOC, treinWagons } from '../../achtergrond/trein.ts';
 import { OVERSTEEK_THEMAS, type Soort, type Tekening } from './oversteek-themas.ts';
 import { STEGOSAURUS, TRICERATOPS } from './oversteek-tekeningen.ts';
 
@@ -149,6 +150,26 @@ function boomstam(lengte: number): string {
   </svg>`;
 }
 
+// Vlot van bovenaf: korte stammetjes naast elkaar, met twee touwen vastgebonden.
+function vlot(lengte: number): string {
+  const L = Math.round(lengte * 100);
+  const n = Math.max(3, Math.round((L - 8) / 24));
+  const b = (L - 8) / n;
+  let stammen = '';
+  for (let k = 0; k < n; k++) {
+    const x = 4 + k * b;
+    const kleur = k % 2 ? '#b07a42' : '#c48a4c';
+    stammen += `<rect x="${(x + 1).toFixed(1)}" y="12" width="${(b - 2).toFixed(1)}" height="76" rx="${(b / 2 - 1).toFixed(1)}" fill="${kleur}" stroke="#6e4522" stroke-width="3"/>`;
+    stammen += `<ellipse cx="${(x + b / 2).toFixed(1)}" cy="18" rx="${(b / 2 - 4).toFixed(1)}" ry="5" fill="#e6c08a"/>`;
+  }
+  return `<svg viewBox="0 0 ${L} 100" aria-hidden="true">
+    ${stammen}
+    <rect x="2" y="30" width="${L - 4}" height="7" rx="3" fill="#e8d6a8" stroke="#8a6a3a" stroke-width="2"/>
+    <rect x="2" y="64" width="${L - 4}" height="7" rx="3" fill="#e8d6a8" stroke="#8a6a3a" stroke-width="2"/>
+  </svg>`;
+}
+const RAFT_TEKENING = { boomstam, schots, vlot };
+
 // IJsschots van bovenaf: een grillige witte plaat met een blauwe rand.
 function schots(lengte: number): string {
   const L = Math.round(lengte * 100);
@@ -251,6 +272,7 @@ export function OversteekScreen(manager: ScreenManager): Screen {
   let actief = false; // de lus draait zolang het scherm er is
   let vorigeT = 0;
   let overlay: HTMLElement | null = null;
+  let overlayActie: (() => void) | null = null; // spatie/Enter op een venster
   let eersteSprong = true;
 
   // ---------- maten ----------
@@ -281,14 +303,15 @@ export function OversteekScreen(manager: ScreenManager): Screen {
   function maakDing(s: Soort, richting: 1 | -1, rek: number, drijft: boolean): Ding {
     const d = document.createElement('div');
     d.className = 'ov-ding';
-    if (s.teken === 'boomstam' || s.teken === 'schots') {
-      d.innerHTML = s.teken === 'boomstam' ? boomstam(rek) : schots(rek);
+    if (s.teken === 'boomstam' || s.teken === 'schots' || s.teken === 'vlot') {
+      d.innerHTML = RAFT_TEKENING[s.teken](rek);
       d.classList.add('ov-ding--drijver');
       d.style.width = `calc(var(--c) * ${rek})`;
       // Boomstam en schots zijn tot vlak bij de rand getekend.
-      const r = s.teken === 'boomstam' ? 0.06 : 0.04;
+      const r = s.teken === 'schots' ? 0.04 : 0.03;
       return { el: d, x: 0, lengte: rek, links: r, rechts: rek - r };
     }
+    if (s.teken === 'trein') return maakTrein(d, s, richting);
     const kijkt = s.kijkt ?? 'l';
     const spiegel = kijkt !== 'geen' && (kijkt === 'l') === (richting === 1);
     // Een vlot van eendjes, nijlpaarden of stenen is net zo lang als een boomstam op dat
@@ -355,6 +378,37 @@ export function OversteekScreen(manager: ScreenManager): Screen {
     }
     d.style.width = `calc(var(--c) * ${lengte})`;
     return { el: d, x: 0, lengte, links, rechts };
+  }
+
+  // De trein uit de achtergrond: loc (rijdt naar rechts) met wagons erachter, één vakje hoog.
+  // Naar links rijden = de hele trein gespiegeld, zodat de loc altijd voorop gaat (de rook
+  // waait dan ook mee de goede kant op). Wielen draaien en de loc rookt, net als op de
+  // achtergrond. De tekeningen lopen tot de rand van hun vak: botsen over de hele lengte.
+  function maakTrein(d: HTMLElement, s: Soort, richting: 1 | -1): Ding {
+    const OVERLAP = 0.035; // buffers schuiven een beetje in elkaar
+    const rij = document.createElement('div');
+    rij.className = `ov-trein${richting === -1 ? ' ov-trein--links' : ''}`;
+    const stukken = [...treinWagons(!!s.goederen, heelGetal(s.wagons ?? [1, 2])), { svg: TREIN_LOC, soort: 'loc' }];
+    let lengte = 0;
+    for (const st of stukken) {
+      const breedte = (st.soort === 'loc' ? 160 : 120) / 104;
+      const vak = document.createElement('div');
+      vak.className = `ov-trein__stuk ov-trein__stuk--${st.soort}`;
+      vak.style.width = `calc(var(--c) * ${breedte.toFixed(3)})`;
+      vak.innerHTML = st.svg.trim();
+      if (st.soort === 'loc') {
+        const rook = document.createElement('div');
+        rook.className = 'trein-rook';
+        rook.innerHTML = '<div class="trein-pluim"></div><div class="trein-pluim"></div><div class="trein-pluim"></div>';
+        vak.appendChild(rook);
+      }
+      rij.appendChild(vak);
+      lengte += breedte;
+    }
+    lengte -= OVERLAP * (stukken.length - 1);
+    d.appendChild(rij);
+    d.style.width = `calc(var(--c) * ${lengte})`;
+    return { el: d, x: 0, lengte, links: 0.03, rechts: lengte - 0.03 };
   }
 
   function nieuwDing(b: Baan): Ding {
@@ -482,7 +536,7 @@ export function OversteekScreen(manager: ScreenManager): Screen {
       } else if (soort === 'water') {
         const s = drijvers[waterTeller++ % drijvers.length];
         b.bron = s;
-        b.v = Math.min(2.4, willekeurig(0.6, 1) * f * (s.snel ?? 1));
+        b.v = Math.min(3, willekeurig(0.7, 1.25) * f * (s.snel ?? 1));
         const lang = Math.max(2, 3.5 - 0.2 * Lw) + (kleuter ? 0.6 : 0);
         b.rek = [lang, lang + 1.3];
         b.gat = [Math.min(1.3, 0.8 + 0.08 * Lw), Math.min(2.8, 1.8 + 0.15 * Lw)];
@@ -710,9 +764,9 @@ export function OversteekScreen(manager: ScreenManager): Screen {
       vanX = geland ? px : tegen(vanX);
     }
     if (baan.soort === 'water' && geland) {
-      // Wat drijft er onder je? Ook hier telt het midden van het figuurtje, met wat
-      // speling (0,25 vakje) voor kinderhanden.
-      if (!baan.dingen.some((d) => px > d.x + d.links - 0.25 && px < d.x + d.rechts + 0.25)) sterf('plons');
+      // Wat drijft er onder je? Ook hier telt het midden van het figuurtje, met een
+      // randje speling (0,1 vakje).
+      if (!baan.dingen.some((d) => px > d.x + d.links - 0.1 && px < d.x + d.rechts + 0.1)) sterf('plons');
     }
     // Aanrijden: in de baan waar je te zien bent. Tijdens een sprong is dat de eerste helft
     // nog de oude baan, daarna de nieuwe; ook opzij telt de plek waar je nu in beeld bent.
@@ -766,6 +820,7 @@ export function OversteekScreen(manager: ScreenManager): Screen {
   function start(): void {
     overlay?.remove();
     overlay = null;
+    overlayActie = null;
     // Alleen in de dev-server: een test kan meteen op een hoger level beginnen.
     level = (import.meta.env.DEV ? (window as { __oversteekLevel?: number }).__oversteekLevel : undefined) ?? 1;
     zetScore(0);
@@ -792,6 +847,21 @@ export function OversteekScreen(manager: ScreenManager): Screen {
     return b;
   }
 
+  // Twee stukjes water voor het startvenster: het figuurtje op een vlot (goed) en het
+  // figuurtje dat zinkt met een plons (fout).
+  function waterPlaatjes(rivier: NonNullable<typeof thema.rivier>): { goed: string; fout: string } {
+    const vlotSoort = rivier.drijvers.find((d) => d.teken !== 'boomstam') ?? rivier.drijvers[0];
+    const vlotHtml = vlotSoort.teken === 'boomstam' || vlotSoort.teken === 'schots' || vlotSoort.teken === 'vlot'
+      ? RAFT_TEKENING[vlotSoort.teken](2)
+      : `<img src="${vlotSoort.src}" alt=""><img src="${vlotSoort.src}" alt="">`;
+    const plas = `<span class="ov-uitleg-water ov-grond--${rivier.water}"></span>`;
+    const fig = (extra: string): string => `<img class="ov-uitleg-figuur${extra}" src="${spelerImg.src}" alt=""${tint ? ` style="filter: ${tint}"` : ''}>`;
+    return {
+      goed: `<span class="ov-uitleg-plek">${plas}<span class="ov-uitleg-vlot">${vlotHtml}</span>${fig('')}</span>`,
+      fout: `<span class="ov-uitleg-plek">${plas}${fig(' ov-uitleg-figuur--zinkt')}<i class="ov-uitleg-plons"></i></span>`,
+    };
+  }
+
   // Begin- en eindscherm: plaatjes in plaats van uitleg (overkant ✓, verkeer ✕).
   function toonVenster(eind: boolean): void {
     overlay?.remove();
@@ -812,15 +882,22 @@ export function OversteekScreen(manager: ScreenManager): Screen {
         <p class="vang-venster__record">${nieuw ? 'Nieuw record!' : `Record: ${record}`}</p>`;
       if (nieuw && score > 0) confetti.vuurwerk('klein');
     } else {
-      const gevaar = thema.vijanden.filter((s) => s.src).slice(0, 2);
+      // Een gevaar als plaatje: Fluent-plaatje, of de trein / een eigen tekening inline.
       const plaatje = (s: Soort): string => {
+        if (s.teken === 'trein') return `<span class="ov-voorbeeld ov-voorbeeld--trein">${TREIN_LOC}</span>`;
+        if (isTekening(s.teken)) return `<span class="ov-voorbeeld">${TEKENINGEN[s.teken].svg}</span>`;
         const spiegel = (s.kijkt ?? 'l') === 'r' ? ' style="transform: scaleX(-1)"' : '';
         return `<img src="${s.src}" alt=""${spiegel}>`;
       };
+      // Achtergronden met water (vanaf level 4) laten ook dat meteen zien: op een vlot staan
+      // is goed, in het water vallen fout. Zonder dit dachten kinderen dat een vlot van
+      // dieren gevaar was, net als op de weg.
+      const water = thema.rivier ? waterPlaatjes(thema.rivier) : null;
+      const gevaar = thema.vijanden.slice(0, water ? 1 : 2);
       doos.innerHTML = `${figuur}
-        <div class="vang-uitleg">
-          <span class="vang-uitleg__vak vang-uitleg__vak--goed"><img src="${VLAG}" alt=""><b>✓</b></span>
-          <span class="vang-uitleg__vak vang-uitleg__vak--fout">${gevaar.map(plaatje).join('')}<b>✕</b></span>
+        <div class="vang-uitleg ov-uitleg">
+          <span class="vang-uitleg__vak vang-uitleg__vak--goed"><img src="${VLAG}" alt="">${water?.goed ?? ''}<b>✓</b></span>
+          <span class="vang-uitleg__vak vang-uitleg__vak--fout">${gevaar.map(plaatje).join('')}${water?.fout ?? ''}<b>✕</b></span>
         </div>`;
       if (matchMedia('(hover: hover) and (pointer: fine)').matches) {
         const hint = document.createElement('p');
@@ -836,6 +913,7 @@ export function OversteekScreen(manager: ScreenManager): Screen {
     v.appendChild(doos);
     el.appendChild(v);
     overlay = v;
+    overlayActie = start;
   }
 
   function klaar(): void {
@@ -884,9 +962,9 @@ export function OversteekScreen(manager: ScreenManager): Screen {
     ArrowRight: 'rechts', d: 'rechts', D: 'rechts',
   };
   const toetsNeer = (e: KeyboardEvent): void => {
-    if ((e.key === ' ' || e.key === 'Enter') && overlay && !e.repeat) {
+    if ((e.key === ' ' || e.key === 'Enter') && overlayActie && !e.repeat) {
       e.preventDefault();
-      start();
+      overlayActie();
       return;
     }
     const r = TOETSEN[e.key];

@@ -9,7 +9,8 @@ export type Tekening = 'gnoe' | 'stegosaurus' | 'triceratops';
 
 export interface Soort {
   src?: string; // plaatje; zonder src een eigen tekening (`teken`)
-  teken?: Tekening | 'boomstam' | 'schots';
+  teken?: Tekening | 'boomstam' | 'schots' | 'vlot' | 'trein'; // trein: de trein uit de achtergrond
+  goederen?: boolean; // trein: goederenwagons in plaats van reizigers
   // Breedte van het vak voor één plaatje, in vakjes. Getekend wordt het hooguit HOOG_MAX
   // (1,15) breed, behalve met `lang`; de rest van het vak is ruimte, geen botsing.
   maat: number;
@@ -32,7 +33,8 @@ export interface OversteekThema {
   vijanden: Soort[];
   // Snelle uitschieters met waarschuwingslicht, vanaf level 4.
   zeldzaam: Soort[];
-  // Water vanaf level 3: alleen staan op wat drijft.
+  // Water vanaf level 4: alleen staan op wat drijft. Geen dieren als vlot: kinderen zien
+  // een dier als gevaar (zoals op de weg) en durfden er niet op.
   rivier?: { water: string; drijvers: Soort[] };
   overkant: string[]; // versiering op de finish
 }
@@ -79,7 +81,7 @@ export const OVERSTEEK_THEMAS: Record<ThemaId, OversteekThema> = {
     ],
     // Op hol geslagen kudde: veel gnoes, heel snel.
     zeldzaam: [{ teken: 'gnoe', maat: 1.3, kijkt: 'r', aantal: [6, 9], dobber: true, snel: 2.4 }],
-    rivier: { water: 'rivier', drijvers: [BOOMSTAM, { src: w('nijlpaard'), maat: 1.3, aantal: [2, 3] }] },
+    rivier: { water: 'rivier', drijvers: [BOOMSTAM, { teken: 'vlot', maat: 1 }] },
     overkant: [w('boom'), w('giraf'), w('boom'), w('olifant'), w('boom')],
   },
   boerderij: {
@@ -195,7 +197,7 @@ export const OVERSTEEK_THEMAS: Record<ThemaId, OversteekThema> = {
       { src: w('kar'), maat: 1.3, kijkt: 'r', snel: 0.7 },
     ],
     zeldzaam: [{ src: w('draak'), maat: 1.5, snel: 2.6, dobber: true }],
-    rivier: { water: 'gracht', drijvers: [BOOMSTAM, { src: w('zwaan'), maat: 1, aantal: [2, 3], dobber: true }] },
+    rivier: { water: 'gracht', drijvers: [BOOMSTAM, { src: o('lotus'), maat: 1, aantal: [2, 3], kijkt: 'geen' }] },
     overkant: [w('vlag'), w('kroon'), a('kasteel-eigen'), w('sleutel'), w('vlag')],
   },
   kermis: {
@@ -208,21 +210,22 @@ export const OVERSTEEK_THEMAS: Record<ThemaId, OversteekThema> = {
       { src: o('clown'), maat: 1, kijkt: 'geen', spin: true },
     ],
     zeldzaam: [{ src: w('auto'), maat: 1.2, kleuren: true, snel: 2.6 }],
-    // Eendjes vissen: hop van eendje naar eendje.
-    rivier: { water: 'eendjes', drijvers: [{ src: w('eend'), maat: 1, aantal: [2, 4], dobber: true }] },
+    // Zwembanden in allerlei kleuren: hop van band naar band.
+    rivier: { water: 'eendjes', drijvers: [{ src: o('zwemband'), maat: 1, aantal: [2, 4], kijkt: 'geen', kleuren: true, dobber: true }] },
     overkant: [a('reuzenrad'), a('kermis-popcorn'), o('teddybeer'), a('kermis-ijsje'), a('reuzenrad')],
   },
   trein: {
     weg: 'rails',
     veilig: 'perron',
     vijanden: [
-      // Treinen komen af en toe en snel, met het knipperlicht van de overweg.
-      { src: a('locomotief'), maat: 1.3, lang: true, wagon: o('wagon'), wagons: [2, 3], sporadisch: true, snel: 2.2 },
-      { src: o('snelle-trein'), maat: 1.4, lang: true, wagon: o('wagon'), wagons: [2, 3], sporadisch: true, snel: 2.8 },
-      { src: w('tram'), maat: 1.3, kijkt: 'geen', snel: 0.8 },
-      { src: o('sneltram'), maat: 1.4, snel: 1 },
+      // De trein uit de achtergrond. Lange treinen komen af en toe en snel, met het
+      // knipperlicht van de overweg; rangeerlocjes met één wagon rijden af en aan.
+      { teken: 'trein', maat: 1, wagons: [2, 3], sporadisch: true, snel: 2.4 },
+      { teken: 'trein', maat: 1, wagons: [3, 4], goederen: true, sporadisch: true, snel: 2 },
+      { teken: 'trein', maat: 1, wagons: [1, 1], snel: 0.8 },
+      { teken: 'trein', maat: 1, wagons: [0, 1], goederen: true, snel: 1 },
     ],
-    zeldzaam: [{ src: o('kogeltrein'), maat: 1.5, lang: true, kijkt: 'r', wagon: o('wagon'), wagons: [3, 4], sporadisch: true, snel: 3.4 }],
+    zeldzaam: [{ teken: 'trein', maat: 1, wagons: [5, 6], goederen: true, sporadisch: true, snel: 3 }],
     overkant: [a('locomotief'), w('klok'), o('verkeerslicht'), w('tas'),a('locomotief')],
   },
 };

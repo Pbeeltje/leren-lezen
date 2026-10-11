@@ -80,7 +80,19 @@ edge, theme decorations) through lanes seen from above. Tile icon: Fluent traffi
   `achtergrond/savanne.ts`, the dinos are in `oversteek-tekeningen.ts` (copies of
   `woorden/stegosaurus.svg` and `achtergrond/triceratops.svg` with flat colours, because a
   gradient id breaks once its first copy leaves the screen). Dinos stamp slower
-  (`ov-stamp`). `boomstam` and `schots` are SVG built at any length. Hippos in water are clipped at the legs; lava rocks are darkened.
+  (`ov-stamp`). `boomstam`, `schots` and `vlot` (plank raft) are SVG built at any length
+  (`RAFT_TEKENING`); lava rocks are darkened. `teken: 'trein'` (`maakTrein`) is the
+  background train from `achtergrond/trein.ts` (`TREIN_LOC` + `treinWagons(goederen, n)`:
+  passenger cars + mail wagon, or stones/tanks/containers), one cell tall, mirrored as a
+  whole when it runs left, wheels spin and the loc smokes (`.trein-rook`, `--loc`).
+  Trein theme: long trains are sporadic with crossing lights, short shunting trains (loc +
+  0–1 wagon) run as normal traffic.
+- **No animals as rafts.** Kids took ducks/swans/hippos for hazards (every other animal
+  hits you). Rafts are logs, plank rafts, lily pads, leaves, floes, lava rocks and (fair)
+  swim rings (`zwemband`, random hue). The start window explains water on themes with a
+  `rivier`: ✓ box = finish flag + the figure on a raft, ✕ box = one hazard + the figure
+  sinking with a splash (`waterPlaatjes`). No popup during play. Hazards without a picture
+  file (train, own dinos) are shown inline (`.ov-voorbeeld`).
 - **Hits work like arcade Frogger** (after the well-known community fix): one point, the
   centre of the figure, against the real width of each thing. That width is measured
   from the pixels: `meetRand()` draws every picture of the theme (with its `draai`) on a
@@ -91,12 +103,12 @@ edge, theme decorations) through lanes seen from above. Tile icon: Fluent traffi
   `Ding` keeps `links`/`rechts` (visible span from `x`, mirrored when needed). The lane
   checked is the one where the figure is visible: the old lane for the first half of a hop
   (Frogger has the same two-stage check). Water: the centre must be over a floater's
-  visible span ± 0.25 cell. The figure drifts with its lane, also during a hop (from the
+  visible span ± 0.1 cell. The figure drifts with its lane, also during a hop (from the
   lane it hopped from), so hopping along a raft or to the next row keeps you on it. At the
   field edge the figure is held back (0.5 cell) instead of drowning; it falls in only when
   the raft slides out from under it (a phone field is just 7 cells wide; instant edge
-  deaths made duck rows nearly impossible). Water lanes move 0.6–1 × the speed factor.
-  Rafts of `aantal` floaters (ducks, hippos, lily pads, rocks, leaves, swans) get as many
+  deaths made raft rows nearly impossible). Water lanes move 0.7–1.25 × the speed factor
+  (max 3). Rafts of `aantal` floaters (rings, lily pads, rocks, leaves) get as many
   pieces as fit the level's log length (`rek`), so every theme's water is equally hard;
   `aantal` on a floater only marks it as a group.
   `node tests/oversteken-botsing.mjs <map> [thema,..] [level]` draws the spans (red) and
