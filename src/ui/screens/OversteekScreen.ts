@@ -1,12 +1,14 @@
 import type { Screen, ScreenManager } from '../../engine/screenManager.ts';
 import { maakTerugKnop } from '../components/TerugKnop.ts';
-import { avatarFilter, avatarPad, haalActiefProfiel, haalActiefProfielId } from '../../engine/profielStore.ts';
+import { avatarFilter, avatarPad, haalActiefProfiel } from '../../engine/profielStore.ts';
 import { haalGroep } from '../../engine/progressStore.ts';
+import { haalRecord, zetRecord } from '../../engine/records.ts';
 import { TONEN, speelDrum, speelNoot } from '../../engine/muziek.ts';
 import { confetti } from '../../three/particles.ts';
 import { huidigThema } from '../../achtergrond/achtergrond.ts';
 import { GNOE } from '../../achtergrond/savanne.ts';
-import { OVERSTEEK_THEMAS, type Soort } from './oversteek-themas.ts';
+import { OVERSTEEK_THEMAS, type Soort, type Tekening } from './oversteek-themas.ts';
+import { STEGOSAURUS, TRICERATOPS } from './oversteek-tekeningen.ts';
 
 // Oversteken (een soort Frogger): je eigen figuurtje staat onderaan en moet naar de
 // overkant, baan voor baan, tussen wat er langs raast door. Wat dat is hangt af van de
@@ -52,24 +54,47 @@ interface Ding {
 // pixels van elk plaatje, want elk Fluent-plaatje heeft zijn eigen doorzichtige rand.
 // Sleutel: pad + draaiing; waarde: eerste en laatste zichtbare kolom (0..1 van de breedte).
 const RANDEN = new Map<string, [number, number]>();
-const GNOE_RAND: [number, number] = [0.18, 0.98]; // eigen tekening: staart dun, kop tot de rand
-function meetRand(src: string, draai = 0): void {
+
+// Eigen tekeningen die lopen (poten, staart, kop bewegen in CSS); verhouding = breedte/hoogte.
+const TEKENINGEN: Record<Tekening, { svg: string; verhouding: number }> = {
+  gnoe: { svg: GNOE, verhouding: 200 / 150 },
+  stegosaurus: { svg: STEGOSAURUS, verhouding: 1 },
+  triceratops: { svg: TRICERATOPS, verhouding: 220 / 150 },
+};
+const isTekening = (t: Soort['teken']): t is Tekening => !!t && t in TEKENINGEN;
+// Een tekening als los plaatje (alleen om te meten): met xmlns en een echte maat, anders
+// tekent de browser hem in een standaardvak van 300×150.
+const TEKENING_SRC = new Map<Tekening, string>();
+function tekeningSrc(t: Tekening): string {
+  let src = TEKENING_SRC.get(t);
+  if (!src) {
+    const [, , b, h] = /viewBox="([^"]+)"/.exec(TEKENINGEN[t].svg)![1].split(/\s+/).map(Number);
+    const svg = TEKENINGEN[t].svg.trim().replace('<svg ', `<svg xmlns="http://www.w3.org/2000/svg" width="${b}" height="${h}" `);
+    src = `data:image/svg+xml,${encodeURIComponent(svg)}`;
+    TEKENING_SRC.set(t, src);
+  }
+  return src;
+}
+
+function meetRand(src: string, draai = 0, verhouding = 1): void {
   const sleutel = `${src}|${draai}`;
   if (RANDEN.has(sleutel)) return;
   RANDEN.set(sleutel, [0.06, 0.94]); // tot de meting klaar is
   const img = new Image();
   img.onload = () => {
     const M = 64;
+    const H = Math.round(M / verhouding);
     const doek = document.createElement('canvas');
-    doek.width = doek.height = M;
+    doek.width = M;
+    doek.height = H;
     const ctx = doek.getContext('2d', { willReadFrequently: true });
     if (!ctx) return;
-    ctx.translate(M / 2, M / 2);
+    ctx.translate(M / 2, H / 2);
     ctx.rotate((draai * Math.PI) / 180);
-    ctx.drawImage(img, -M / 2, -M / 2, M, M);
-    const alfa = ctx.getImageData(0, 0, M, M).data;
+    ctx.drawImage(img, -M / 2, -H / 2, M, H);
+    const alfa = ctx.getImageData(0, 0, M, H).data;
     const zichtbaar = (x: number): boolean => {
-      for (let y = 0; y < M; y++) if (alfa[(y * M + x) * 4 + 3] > 60) return true;
+      for (let y = 0; y < H; y++) if (alfa[(y * M + x) * 4 + 3] > 60) return true;
       return false;
     };
     let l = 0;
@@ -81,7 +106,7 @@ function meetRand(src: string, draai = 0): void {
   img.src = src;
 }
 function rand(s: Soort, src: string): [number, number] {
-  return s.teken === 'gnoe' ? GNOE_RAND : RANDEN.get(`${src}|${s.draai ?? 0}`) ?? [0.06, 0.94];
+  return RANDEN.get(`${src}|${s.draai ?? 0}`) ?? [0.06, 0.94];
 }
 
 interface Baan {
@@ -103,22 +128,6 @@ interface Baan {
 
 const willekeurig = (a: number, b: number): number => a + Math.random() * (b - a);
 const heelGetal = ([a, b]: [number, number]): number => a + Math.floor(Math.random() * (b - a + 1));
-
-const recordSleutel = (): string => `leren-lezen:oversteken:${haalActiefProfielId() ?? 'gast'}`;
-function haalRecord(): number {
-  try {
-    return Number(localStorage.getItem(recordSleutel())) || 0;
-  } catch {
-    return 0;
-  }
-}
-function zetRecord(n: number): void {
-  try {
-    localStorage.setItem(recordSleutel(), String(n));
-  } catch {
-    // geen opslag: dan maar geen record
-  }
-}
 
 // Boomstam van bovenaf, zo lang als gevraagd (viewBox: 100 per vakje).
 function boomstam(lengte: number): string {
@@ -162,6 +171,7 @@ export function OversteekScreen(manager: ScreenManager): Screen {
   const thema = OVERSTEEK_THEMAS[themaId];
   // Meten kost een paar milliseconden per plaatje; klaar voordat je op start drukt.
   for (const sr of [...thema.vijanden, ...thema.zeldzaam, ...(thema.rivier?.drijvers ?? [])]) {
+    if (isTekening(sr.teken)) meetRand(tekeningSrc(sr.teken), 0, TEKENINGEN[sr.teken].verhouding);
     if (sr.src) meetRand(sr.src, sr.draai);
     if (sr.wagon) meetRand(sr.wagon, sr.draai);
   }
@@ -286,7 +296,8 @@ export function OversteekScreen(manager: ScreenManager): Screen {
     // over de buurbanen), dus een vierkant Fluent-plaatje is ook niet breder dan dat; alleen
     // lange voertuigen (`lang`) worden in de lengte uitgerekt tot hun hele maat.
     const hoogte = Math.min(s.maat, HOOG_MAX);
-    const zicht = s.lang ? s.maat : Math.min(s.maat, hoogte * (s.teken === 'gnoe' ? 4 / 3 : 1));
+    const tekening = isTekening(s.teken) ? s.teken : null;
+    const zicht = s.lang ? s.maat : Math.min(s.maat, hoogte * (tekening ? TEKENINGEN[tekening].verhouding : 1));
     // Kuddes lopen een beetje over elkaar heen, wagons sluiten aan.
     const stap = s.wagon ? s.maat * 0.92 : s.aantal ? s.maat * 0.82 : s.maat;
     const lengte = (n - 1) * stap + s.maat;
@@ -307,7 +318,7 @@ export function OversteekScreen(manager: ScreenManager): Screen {
         stuk.classList.add('ov-stuk--dobber');
         stuk.style.animationDelay = `${(-Math.random()).toFixed(2)}s`;
       }
-      const src = s.wagon && !isKop ? s.wagon : s.src!;
+      const src = tekening ? tekeningSrc(tekening) : s.wagon && !isKop ? s.wagon : s.src!;
       // Zichtbaar deel van dit plaatje: het staat gecentreerd in zijn vak (of gerekt).
       const [fl, fr] = rand(s, src);
       const [zl, zr] = spiegel ? [1 - fr, 1 - fl] : [fl, fr];
@@ -315,11 +326,11 @@ export function OversteekScreen(manager: ScreenManager): Screen {
       links = Math.min(links, begin + zl * zicht);
       rechts = Math.max(rechts, begin + zr * zicht);
       let binnen: Element;
-      if (s.teken === 'gnoe') {
+      if (tekening) {
         const houder = document.createElement('div');
-        houder.innerHTML = GNOE.trim();
+        houder.innerHTML = TEKENINGEN[tekening].svg.trim();
         binnen = houder.firstElementChild as Element;
-        binnen.setAttribute('class', 'ov-gnoe');
+        binnen.setAttribute('class', `ov-tekening ov-tekening--${tekening}`);
       } else {
         const img = document.createElement('img');
         img.src = src;
@@ -783,9 +794,9 @@ export function OversteekScreen(manager: ScreenManager): Screen {
     doos.className = 'vang-venster__doos';
     const figuur = `<img class="vang-venster__figuur" src="${spelerImg.src}" alt="">`;
     if (eind) {
-      const record = haalRecord();
+      const record = haalRecord('oversteken');
       const nieuw = score > record;
-      if (nieuw) zetRecord(score);
+      if (nieuw) zetRecord('oversteken', score);
       doos.innerHTML = `${figuur}
         <div class="ov-eind">
           <div class="vang-venster__score"><img src="${STER}" alt=""><span>${score}</span></div>

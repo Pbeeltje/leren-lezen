@@ -4,9 +4,12 @@ import type { ThemaId } from '../../achtergrond/achtergrond.ts';
 // Fluent-plaatjes kijken bijna allemaal naar links; `kijkt: 'r'` voor de uitzonderingen,
 // dan spiegelt het spel ze als ze naar links gaan (en de rest als ze naar rechts gaan).
 
+// Eigen tekeningen die lopen (OversteekScreen: TEKENINGEN).
+export type Tekening = 'gnoe' | 'stegosaurus' | 'triceratops';
+
 export interface Soort {
   src?: string; // plaatje; zonder src een eigen tekening (`teken`)
-  teken?: 'gnoe' | 'boomstam' | 'schots';
+  teken?: Tekening | 'boomstam' | 'schots';
   // Breedte van het vak voor één plaatje, in vakjes. Getekend wordt het hooguit HOOG_MAX
   // (1,15) breed, behalve met `lang`; de rest van het vak is ruimte, geen botsing.
   maat: number;
@@ -113,10 +116,10 @@ export const OVERSTEEK_THEMAS: Record<ThemaId, OversteekThema> = {
   },
   dino: {
     weg: 'oerwoud',
-    veilig: 'varens',
+    veilig: 'oergras',
     vijanden: [
-      { src: w('stegosaurus'), maat: 1.15, snel: 0.75, dobber: true },
-      { src: a('triceratops'), maat: 1.4, dobber: true },
+      { teken: 'stegosaurus', maat: 1.15, snel: 0.75, dobber: true },
+      { teken: 'triceratops', maat: 1.4, dobber: true },
       { src: o('sauropode'), maat: 1.15, snel: 0.55, dobber: true },
       { src: o('trex'), maat: 1.5, kijkt: 'r', snel: 1.3, dobber: true },
       { src: w('diplodocus'), maat: 1.15, snel: 0.6, dobber: true },

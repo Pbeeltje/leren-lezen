@@ -61,14 +61,18 @@ edge, theme decorations) through lanes seen from above. Tile icon: Fluent traffi
 - **Soort:** `maat` (slot width, see hitboxes), `kijkt` (Fluent faces left; `'r'` exceptions are
   mirrored the other way), `aantal` (herd/swarm, overlapping 0.82), `wagon`+`wagons`
   (train: head leads), `draai` (rocket/comet tilted 45°), `spin`, `dobber` (bob),
-  `kleuren` (bumper cars, random hue). Own drawings: `gnoe` (exported `GNOE` from
-  `achtergrond/savanne.ts`, legs animate), `boomstam` and `schots` (SVG built at any
-  length). Hippos in water are clipped at the legs; lava rocks are darkened.
+  `kleuren` (bumper cars, random hue). Own drawings that walk (`TEKENINGEN`, `teken: 'gnoe' | 'stegosaurus' | 'triceratops'`):
+  inline SVG with `.dier__poot--a/--b` (legs alternate), `.dier__staart` (sways),
+  `.dier__kop` (triceratops nods); the gnoe is `GNOE` exported from
+  `achtergrond/savanne.ts`, the dinos are in `oversteek-tekeningen.ts` (copies of
+  `woorden/stegosaurus.svg` and `achtergrond/triceratops.svg` with flat colours, because a
+  gradient id breaks once its first copy leaves the screen). Dinos stamp slower
+  (`ov-stamp`). `boomstam` and `schots` are SVG built at any length. Hippos in water are clipped at the legs; lava rocks are darkened.
 - **Hits work like arcade Frogger** (after the well-known community fix): one point, the
   centre of the figure, against the real width of each thing. That width is measured
   from the pixels: `meetRand()` draws every picture of the theme (with its `draai`) on a
   64 px canvas once and keeps the first/last column with alpha > 60 (`RANDEN`; the gnoe
-  drawing has a fixed `GNOE_RAND`). A picture is at most `HOOG_MAX` (1.15) cells tall, so a
+  drawings are measured from a data URL with their own aspect ratio, `tekeningSrc`). A picture is at most `HOOG_MAX` (1.15) cells tall, so a
   square Fluent picture is at most that wide; `maat` is only the slot. Long vehicles
   (`lang`: bus, truck, fire engine, ship, trains) are stretched to their full `maat`. Each
   `Ding` keeps `links`/`rechts` (visible span from `x`, mirrored when needed). The lane
