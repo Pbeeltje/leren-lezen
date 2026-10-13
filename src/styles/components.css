@@ -963,3 +963,43 @@
   .figuur-flits, .figuur-ring, .figuur-beker, .figuur-winnaar__beker { animation: none; }
   .figuur-ring { display: none; }
 }
+
+/* Profiel weghalen (profielkeuze): knop rechtsboven, daarna kies je een profiel en
+   bevestig je in een venster door de naam te typen. */
+.profiel-weghaal-knop {
+  position: fixed;
+  top: calc(16px + var(--veilig-boven));
+  right: calc(16px + var(--veilig-rechts));
+  z-index: 5;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-height: var(--touch-target-min);
+  padding: 0 18px 0 12px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.95);
+  box-shadow: 0 4px 0 rgba(0, 0, 0, 0.15);
+  font-weight: 800;
+  font-size: 1rem;
+  color: var(--kleur-tekst);
+}
+.profiel-weghaal-knop img { width: 28px; height: 28px; }
+.profiel-weghaal-knop:active { transform: translateY(3px); box-shadow: none; }
+.profiel-weghaal-knop[hidden] { display: none; }
+.scherm--weghalen .icoon-tegel { outline: 4px dashed var(--kleur-fout); outline-offset: 3px; }
+
+.weghaal-venster { width: min(380px, 100%); text-align: center; }
+.weghaal-venster p { margin: 0; color: var(--kleur-tekst); }
+.weghaal-venster__plaatje { width: 90px; height: 90px; object-fit: contain; }
+.weghaal-venster__vraag { font-weight: 800; font-size: 1.5rem; overflow-wrap: anywhere; }
+.weghaal-venster__waarschuwing {
+  padding: 8px 12px;
+  border-radius: 14px;
+  background: rgba(255, 93, 108, 0.12);
+  font-weight: 700;
+  line-height: 1.35;
+}
+.weghaal-venster__uitleg { font-size: 0.95rem; }
+.weghaal-venster__invoer { width: 100%; text-transform: none; font-size: 1.3rem; }
+.weghaal-venster__knop--ja { background: var(--kleur-fout); box-shadow: 0 5px 0 #c9404d; }
+.weghaal-venster__knop--ja:disabled { opacity: 0.4; box-shadow: none; }

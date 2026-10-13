@@ -40,7 +40,8 @@ export function NewProfileScreen(manager: ScreenManager): Screen {
   // Los van elkaar: het icoon-rooster toont altijd de ware kleuren (anders zijn de
   // vormen niet goed te onderscheiden), de kleur-rooster toont alleen het gekozen
   // icoon in elke tint — geen van beide beïnvloedt de ander qua weergave.
-  let gekozenIcoon: string | null = null;
+  // Het eerste figuur staat al gekozen, zodat een kind niet vastloopt op een grijze knop.
+  let gekozenIcoon: string | null = GRATIS_FIGUREN[0] ?? null;
   let gekozenKleur = 0;
   const iconKnoppen: HTMLButtonElement[] = [];
 
@@ -52,6 +53,7 @@ export function NewProfileScreen(manager: ScreenManager): Screen {
     img.src = avatarPad(icoonId);
     img.alt = '';
     knop.appendChild(img);
+    if (icoonId === gekozenIcoon) knop.classList.add('geselecteerd');
     knop.addEventListener('click', () => {
       gekozenIcoon = icoonId;
       for (const k of iconKnoppen) k.classList.remove('geselecteerd');
@@ -78,7 +80,7 @@ export function NewProfileScreen(manager: ScreenManager): Screen {
     const knop = document.createElement('button');
     knop.className = 'kleur-keuze';
     const voorbeeld = document.createElement('img');
-    voorbeeld.src = avatarPad('vos'); // totdat een icoon gekozen is: een warmgekleurd voorbeeld
+    voorbeeld.src = avatarPad(gekozenIcoon ?? 'vos');
     voorbeeld.alt = '';
     voorbeeld.style.filter = avatarFilter(kleur);
     knop.appendChild(voorbeeld);

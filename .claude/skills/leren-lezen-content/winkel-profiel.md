@@ -25,6 +25,19 @@ Submenus have a back arrow; picking keeps the menu open and marks the selection.
 The menu is `position: fixed` against the screen edge. Test drivers use
 `.profiel-tegel` / `.profiel-keuze` / `.profiel-menu__terug`. Name max 16 chars.
 
+## Profile select and deleting (`ui/screens/ProfileSelectScreen.ts`)
+
+A new profile starts with the first free figure already selected (`GRATIS_FIGUREN[0]`),
+so "Aan de slag!" only waits for a name. Deleting (13 Oct) takes 3 steps, each with a way
+back so a child can't get stuck: `.profiel-weghaal-knop` top right (label turns into
+"Annuleren") → delete mode (title "Welk profiel weghalen?", red dashed tiles, no "Nieuw
+profiel" tile, a `.terug-knop` that leaves the mode) → tapping a profile opens a
+`.winkel-venster` dialog (reused, so the Android back button closes it; tapping beside it
+or "Nee" closes it too). "Weghalen" only works once the full name is typed (case-insensitive,
+since app inputs show lowercase). `verwijderProfiel(id)` in `profielStore.ts` removes the
+profile plus every `leren-lezen:` key that has the id as a `:`-separated part. Check:
+`tests/profiel-weghalen.mjs`.
+
 ## Avatars
 
 `AVATAR_ICONEN` (Fluent Emoji plus own drawings: `avatar-stegosaurus.svg` after

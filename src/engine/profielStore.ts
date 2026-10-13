@@ -171,6 +171,28 @@ export function wijzigProfielKleur(id: string, kleur: number): void {
   schrijfProfielen(profielen);
 }
 
+// Haalt het profiel weg, plus alles wat onder zijn id bewaard is (voortgang, munten,
+// achtergrond, schrift, tekeningen, records, muziekniveaus): elke `leren-lezen:`-sleutel
+// met het id als los stuk tussen de dubbele punten.
+export function verwijderProfiel(id: string): void {
+  schrijfProfielen(leesProfielen().filter((p) => p.id !== id));
+  try {
+    for (const k of Object.keys(localStorage)) {
+      if (k.startsWith('leren-lezen:') && k.split(':').includes(id)) localStorage.removeItem(k);
+    }
+  } catch {
+    // zonder opslag is er ook niets om op te ruimen
+  }
+  if (haalActiefProfielId() === id) {
+    actiefInGeheugen = null;
+    try {
+      sessionStorage.removeItem(ACTIEF_PROFIEL_SLEUTEL);
+    } catch {
+      // negeren
+    }
+  }
+}
+
 export function zetActiefProfiel(id: string): void {
   actiefInGeheugen = id;
   try {
