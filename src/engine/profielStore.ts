@@ -100,13 +100,26 @@ function isGeldigProfiel(p: unknown): p is Profiel {
   return !!x && typeof x.id === 'string' && typeof x.naam === 'string' && typeof x.icoonId === 'string';
 }
 
+// Opslag kan kapot of met de hand aangepast zijn. icoonId en kleur komen in src- en
+// style-attributen terecht, dus alleen bekende figuren en echte getallen doorlaten. Een
+// onbekend figuur wordt het eerste figuur (het profiel en zijn voortgang blijven bestaan).
+function schoonProfiel(p: Profiel): Profiel {
+  return {
+    ...p,
+    naam: p.naam.slice(0, MAX_NAAM_LENGTE),
+    icoonId: (AVATAR_ICONEN as readonly string[]).includes(p.icoonId) ? p.icoonId : AVATAR_ICONEN[0],
+    kleur: Number.isFinite(p.kleur) ? p.kleur : 0,
+    aangemaakt: Number.isFinite(p.aangemaakt) ? p.aangemaakt : 0,
+  };
+}
+
 function leesProfielen(): Profiel[] {
   if (profielenInGeheugen) return profielenInGeheugen;
   try {
     const ruw = localStorage.getItem(PROFIELEN_SLEUTEL);
     if (!ruw) return [];
     const data = JSON.parse(ruw);
-    return Array.isArray(data) ? data.filter(isGeldigProfiel) : [];
+    return Array.isArray(data) ? data.filter(isGeldigProfiel).map(schoonProfiel) : [];
   } catch {
     return [];
   }

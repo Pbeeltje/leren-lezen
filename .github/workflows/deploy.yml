@@ -5,10 +5,9 @@ on:
     branches: [main]
   workflow_dispatch:
 
+# Standaard alleen lezen; schrijfrechten voor Pages alleen in de publiceer-stap.
 permissions:
   contents: read
-  pages: write
-  id-token: write
 
 concurrency:
   group: pages
@@ -32,6 +31,9 @@ jobs:
   publiceer:
     needs: bouw
     runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
     environment:
       name: github-pages
       url: ${{ steps.deploy.outputs.page_url }}

@@ -50,10 +50,23 @@ type Opgeslagen = { v: number; l: { k: string; d: number; p: string }[] } | null
 
 const sleutel = (): string => `leren-lezen:tekeningen:${haalActiefProfielId() ?? 'gast'}`;
 
+function isGeldig(t: unknown): t is NonNullable<Opgeslagen> {
+  const x = t as NonNullable<Opgeslagen> | null;
+  return (
+    !!x &&
+    Number.isFinite(x.v) &&
+    x.v > 0 &&
+    Array.isArray(x.l) &&
+    x.l.every((l) => !!l && typeof l.k === 'string' && Number.isFinite(l.d) && typeof l.p === 'string')
+  );
+}
+
 function leesAlles(): Opgeslagen[] {
   try {
-    const ruw = JSON.parse(localStorage.getItem(sleutel()) ?? '[]') as Opgeslagen[];
-    return Array.from({ length: AANTAL_PLEKKEN }, (_, i) => ruw[i] ?? null);
+    const ruw = JSON.parse(localStorage.getItem(sleutel()) ?? '[]') as unknown;
+    const lijst = Array.isArray(ruw) ? ruw : [];
+    // Een kapotte plek wordt leeg; de andere tekeningen blijven.
+    return Array.from({ length: AANTAL_PLEKKEN }, (_, i) => (isGeldig(lijst[i]) ? lijst[i] : null));
   } catch {
     return Array.from({ length: AANTAL_PLEKKEN }, () => null);
   }

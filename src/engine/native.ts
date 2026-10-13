@@ -19,8 +19,11 @@ export async function herstelEnSpiegelOpslag(): Promise<void> {
     const { value } = await Preferences.get({ key: OPSLAG_SLEUTEL });
     const leeg = !Object.keys(localStorage).some((k) => k.startsWith(VOORVOEGSEL));
     if (value && leeg) {
-      const kopie = JSON.parse(value) as Record<string, string>;
-      for (const [k, v] of Object.entries(kopie)) localStorage.setItem(k, v);
+      const kopie = JSON.parse(value) as Record<string, unknown>;
+      // Alleen onze eigen sleutels en tekstwaarden terugzetten.
+      for (const [k, v] of Object.entries(kopie)) {
+        if (k.startsWith(VOORVOEGSEL) && typeof v === 'string') localStorage.setItem(k, v);
+      }
     }
   } catch {
     // geen kopie of kapot: gewoon verder met wat er is

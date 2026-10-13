@@ -24,6 +24,11 @@ commit (describe the current state; don't append dated "latest round" notes).
   a shop visit (`onderbroken`), see navigatie-voortgang.md.
 - **`el.hidden` toggles** need a `.class[hidden] { display: none; }` rule.
 - **Per-profile state:** key localStorage as `leren-lezen:<thing>:<profielId>`.
+  Treat stored data as untrusted: validate/normalise on read (see `schoonProfiel`,
+  `leesRuw`, `tekeningenStore.isGeldig`); never put stored strings into `innerHTML`.
+- **Content-Security-Policy:** `vite.config.ts` adds a CSP meta tag to the build only
+  (no external scripts/connections; images may be `data:`). Loading anything from
+  another domain, or an inline `<script>`, means extending that policy.
 - **Group lists:** reading screens use `leesKernen()`, math screens `rekenKernen()`
   (`engine/leeftijdGrens.ts`), never `KERNEN` / `REKEN_KERNEN` directly.
 

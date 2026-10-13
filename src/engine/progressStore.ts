@@ -66,10 +66,16 @@ function leesRuw(): VoortgangData {
     const ruw = localStorage.getItem(sleutel);
     if (!ruw) return leegVoortgang();
     const data = JSON.parse(ruw) as VoortgangData;
-    if (data.versie !== 1) return leegVoortgang(); // toekomstige migraties hier
-    if (typeof data.munten !== 'number') data.munten = 0;
-    if (!data.woordBlootstelling) data.woordBlootstelling = {};
-    if (!data.kernen) data.kernen = {};
+    if (!data || typeof data !== 'object' || data.versie !== 1) return leegVoortgang(); // toekomstige migraties hier
+    // Kapotte of met de hand aangepaste opslag: verkeerde soorten velden terugzetten in
+    // plaats van later ergens anders te laten vastlopen.
+    const isObject = (x: unknown): boolean => !!x && typeof x === 'object' && !Array.isArray(x);
+    if (!Number.isFinite(data.munten) || data.munten < 0) data.munten = 0;
+    if (!isObject(data.woordBlootstelling)) data.woordBlootstelling = {};
+    if (!isObject(data.kernen)) data.kernen = {};
+    if (data.gekocht !== undefined && !Array.isArray(data.gekocht)) delete data.gekocht;
+    if (data.laatsteKern !== undefined && !isObject(data.laatsteKern)) delete data.laatsteKern;
+    if (data.begrijpendVraag !== undefined && !isObject(data.begrijpendVraag)) delete data.begrijpendVraag;
     if (!data.laatstGekozenGroep && typeof data.laatstGekozenLeeftijd === 'number') {
       data.laatstGekozenGroep = data.laatstGekozenLeeftijd >= 6 ? 'groep3' : 'kleuter';
     }
