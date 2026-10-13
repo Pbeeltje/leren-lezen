@@ -964,26 +964,26 @@
   .figuur-ring { display: none; }
 }
 
-/* Profiel weghalen (profielkeuze): knop rechtsboven, daarna kies je een profiel en
+/* Profiel weghalen (profielkeuze): kleine knop rechtsonder (rechtsboven trok te veel aandacht), daarna kies je een profiel en
    bevestig je in een venster door de naam te typen. */
 .profiel-weghaal-knop {
   position: fixed;
-  top: calc(16px + var(--veilig-boven));
-  right: calc(16px + var(--veilig-rechts));
+  bottom: calc(14px + var(--veilig-onder));
+  right: calc(14px + var(--veilig-rechts));
   z-index: 5;
   display: flex;
   align-items: center;
-  gap: 6px;
-  min-height: var(--touch-target-min);
-  padding: 0 18px 0 12px;
+  gap: 4px;
+  min-height: 40px;
+  padding: 0 14px 0 10px;
   border-radius: 999px;
-  background: rgba(255, 255, 255, 0.95);
-  box-shadow: 0 4px 0 rgba(0, 0, 0, 0.15);
+  background: rgba(255, 255, 255, 0.85);
+  box-shadow: 0 3px 0 rgba(0, 0, 0, 0.15);
   font-weight: 800;
-  font-size: 1rem;
+  font-size: 0.85rem;
   color: var(--kleur-tekst);
 }
-.profiel-weghaal-knop img { width: 28px; height: 28px; }
+.profiel-weghaal-knop img { width: 20px; height: 20px; }
 .profiel-weghaal-knop:active { transform: translateY(3px); box-shadow: none; }
 .profiel-weghaal-knop[hidden] { display: none; }
 .scherm--weghalen .icoon-tegel { outline: 4px dashed var(--kleur-fout); outline-offset: 3px; }

@@ -29,7 +29,7 @@ The menu is `position: fixed` against the screen edge. Test drivers use
 
 A new profile starts with the first free figure already selected (`GRATIS_FIGUREN[0]`),
 so "Aan de slag!" only waits for a name. Deleting (13 Oct) takes 3 steps, each with a way
-back so a child can't get stuck: `.profiel-weghaal-knop` top right (label turns into
+back so a child can't get stuck: `.profiel-weghaal-knop` small, bottom right (top right drew too much attention on phones) (label turns into
 "Annuleren") → delete mode (title "Welk profiel weghalen?", red dashed tiles, no "Nieuw
 profiel" tile, a `.terug-knop` that leaves the mode) → tapping a profile opens a
 `.winkel-venster` dialog (reused, so the Android back button closes it; tapping beside it
