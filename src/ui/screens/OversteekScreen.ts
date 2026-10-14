@@ -1112,7 +1112,9 @@ export function OversteekScreen(manager: ScreenManager): Screen {
         // (treinen op de trein-achtergrond): die horen tussen het drukke verkeer.
         const gewoon = vijanden.filter((v) => !v.sporadisch);
         const naastUitschieter = uitschieters.has(r - 1) || uitschieters.has(r + 1) || !!banen[r - 1]?.sporadisch;
-        const lijst = ingeklemd && (!tussenWegen(r) || naastUitschieter) && gewoon.length ? gewoon : vijanden;
+        // In de eerste twee levels nog helemaal geen (rustig opbouwen).
+        const alleenGewoon = level <= 2 || (ingeklemd && (!tussenWegen(r) || naastUitschieter));
+        const lijst = alleenGewoon && gewoon.length ? gewoon : vijanden;
         const s = zeldzaam
           ? thema.zeldzaam[Math.floor(Math.random() * thema.zeldzaam.length)]
           : lijst[wegTeller++ % lijst.length];

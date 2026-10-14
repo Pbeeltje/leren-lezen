@@ -112,7 +112,8 @@ edge, theme decorations) through lanes seen from above. Tile icon: Fluent traffi
   (end of `bouwLevel`), so you can't just rush through before anything arrives.
   From level 8 (kleuter 9, `ingeklemd`) warned lanes sit between two busy road lanes
   (`tussenWegen`), never next to a safe strip or another warned lane; edge lanes then get
-  only non-sporadic `vijanden` (on trein: shunting trains). From level 12 (kleuter 13,
+  only non-sporadic `vijanden` (on trein: shunting trains). Levels 1–2 get no sporadic
+  `vijanden` at all (only trein has them), so the warned ones build up. From level 12 (kleuter 13,
   `laatWaarschuwen`) the lamp starts 1 s ahead instead of 1.5 s and `tussen` is ×0.75
   (min 1.2 / 2.2 s).
 - **Uitdagingen (level 10 and 15, also kleuter):** each theme has 2–3 `uitdagingen` in
