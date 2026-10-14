@@ -8,9 +8,9 @@ import { speelSchermOvergang } from '../../three/transitions.ts';
 import { GroepKiesScreen } from './GroepKiesScreen.ts';
 import { voegMuntenToe } from '../../engine/progressStore.ts';
 
-// Tijdelijk, om sneller te testen: een nieuw profiel begint met munten. Op 0 zetten
-// (of weghalen) voordat de app echt uitkomt.
-const START_MUNTEN = 2000;
+// Welkomstcadeau: een nieuw profiel begint met een paar munten, zodat er meteen iets
+// kleins in de winkel te kopen is.
+const START_MUNTEN = 100;
 
 export function NewProfileScreen(manager: ScreenManager): Screen {
   const el = document.createElement('div');

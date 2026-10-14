@@ -101,6 +101,9 @@ skip races the exercise's own `afgerond` callback.
 
 ## Coins (`engine/rewards.ts`)
 
+A new profile starts with `START_MUNTEN` = 100 coins (welcome gift, `NewProfileScreen.ts`,
+added right after `zetActiefProfiel`).
+
 Repeat tiers, identical in `OefeningScreen` and `RekenOefeningScreen`. The flag
 `herhaling` is captured once at screen entry (before anything is written).
 Oefening: `herhaling` = this Oefening 1/2/3 is in `KernVoortgang.oefeningenAf`
