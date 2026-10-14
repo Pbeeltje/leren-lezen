@@ -576,6 +576,9 @@
 }
 .ov-grond--lava ~ .ov-uitleg-vlot img { filter: brightness(0.5) sepia(0.5); }
 
+/* Hartje om op te rapen (om het level vanaf level 10): rood gloeiend in plaats van geel. */
+.ov-baan .ov-ster.ov-hartje { filter: drop-shadow(0 0 1.5px #7a0018) drop-shadow(0 0 8px rgba(255, 80, 110, 0.95)); }
+
 /* ---------- uitdagingen vanaf level 10 (OversteekScreen: werkBaanAan, werkInslagen, ...) ---------- */
 .ov-banner__nieuw { animation: ov-nieuw 0.5s ease-in-out infinite alternate; }
 @keyframes ov-nieuw {

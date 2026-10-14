@@ -173,6 +173,9 @@ edge, theme decorations) through lanes seen from above. Tile icon: Fluent traffi
   invulnerable. 0 hearts = end window (score, level reached, record).
 - **Points:** +1 per new row in a level, +10 at the finish (fanfare, banner with the next
   level number, 2 s), +5 for the one star per level (on a road lane or the middle strip).
+  From level 10, every other level (10, 12, 14, …; `HARTJE_VANAF`) also has a heart
+  (`.ov-hartje`, red glow; on another row than the star if possible) that gives back one
+  life, or +5 when all three hearts are still there.
   Forward hops play a rising xylophone note toward the finish.
 - Traffic keeps running behind the start and end windows. Portrait only on phones (same
   `.vang-draai` as Vangspel). Reuses `.vang-balk` (wraps to two rows on narrow phones,

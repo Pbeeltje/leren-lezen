@@ -39,7 +39,8 @@ const TUSSEN_DUUR = 2; // s feest aan de overkant
 const KOLOMMEN_MIN = 7; // het veld is altijd minstens zo breed (in vakjes)
 const KOLOMMEN_MAX = 15;
 const HOOG_MAX = 1.15; // vakjes: hoger mag een plaatje niet, anders loopt het over de buurbanen
-const UITDAGING_VANAF = [10, 15]; // op deze levels komt er een uitdaging van de achtergrond bij
+const UITDAGING_VANAF = [10, 15];
+const HARTJE_VANAF = 10; // vanaf hier om het level een hartje om op te rapen // op deze levels komt er een uitdaging van de achtergrond bij
 const VAL = 1.4; // s dat iets uit de lucht valt (inslag), met een schaduw die groeit
 const NPC_HOP = 0.24; // s per sprongetje van een overstekertje
 
@@ -287,6 +288,7 @@ export function OversteekScreen(manager: ScreenManager): Screen {
   let tussenTot = 0;
   let fase: 'wacht' | 'spel' | 'tussen' | 'uit' = 'wacht';
   let ster: { el: HTMLElement; rij: number; x: number } | null = null;
+  let hartje: { el: HTMLElement; rij: number; x: number } | null = null;
   let frame = 0;
   let actief = false; // de lus draait zolang het scherm er is
   let vorigeT = 0;
@@ -803,6 +805,7 @@ export function OversteekScreen(manager: ScreenManager): Screen {
     inslagWacht = 2;
     npcWacht = 1;
     ster = null;
+    hartje = null;
     banen = [];
     uitdagingen = uitdagingVolgorde.slice(0, UITDAGING_VANAF.filter((l) => level >= l).length);
     // Rustig opbouwen: elk aantal banen komt twee levels achter elkaar.
@@ -1005,6 +1008,22 @@ export function OversteekScreen(manager: ScreenManager): Screen {
     sEl.style.left = `calc(var(--c) * ${sx})`;
     banen[sr].el.appendChild(sEl);
     ster = { el: sEl, rij: sr, x: sx };
+
+    // Vanaf level 10 om het level een hartje (10, 12, 14, ...): een leven terug. Liefst op
+    // een andere rij dan de ster, anders een eind ervandaan.
+    if (level >= HARTJE_VANAF && (level - HARTJE_VANAF) % 2 === 0) {
+      const anders = sterRijen.filter((r) => r !== sr);
+      const hr = anders.length ? anders[Math.floor(Math.random() * anders.length)] : sr;
+      let hx = Math.floor(willekeurig(1, Math.max(2, Wc - 1))) + 0.5;
+      if (hr === sr && Math.abs(hx - sx) < 2) hx = sx < Wc / 2 ? Math.floor(Wc) - 1.5 : 1.5;
+      const hEl = document.createElement('img');
+      hEl.className = 'ov-ster ov-hartje';
+      hEl.src = HART;
+      hEl.alt = '';
+      hEl.style.left = `calc(var(--c) * ${hx})`;
+      banen[hr].el.appendChild(hEl);
+      hartje = { el: hEl, rij: hr, x: hx };
+    }
 
     rij = 0;
     hoogste = 0;
@@ -1239,6 +1258,20 @@ export function OversteekScreen(manager: ScreenManager): Screen {
       zetScore(score + 5);
       speelNoot(TONEN[4]);
       speelNoot(TONEN[7], 0.08);
+    }
+    // Hartje: een leven terug (met alle hartjes nog heel: 5 punten, net als een ster).
+    if (!dood && hartje && hartje.rij === rij && Math.abs(hartje.x - px) < 0.6) {
+      hartje.el.remove();
+      if (levens < LEVENS) {
+        levens++;
+        tekenHartjes();
+        toonPlop(hartje.x, rij, '+1 ♥');
+      } else {
+        zetScore(score + 5);
+        toonPlop(hartje.x, rij, '+5');
+      }
+      hartje = null;
+      [2, 4, 7].forEach((k, j) => speelNoot(TONEN[k], j * 0.07));
     }
     if (!dood && rij === N - 1 && geland) gehaald();
     tekenSpeler();
