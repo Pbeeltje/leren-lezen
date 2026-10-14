@@ -45,6 +45,7 @@ const HARTJE_VANAF = 10; // vanaf hier om het level een hartje om op te rapen //
 const VAL = 1.4; // s dat iets uit de lucht valt (inslag), met een schaduw die groeit
 const NPC_HOP = 0.24;
 const PASSAGIER = 0.8; // vakjes: zo groot is een dier op een wagon
+const DIER_RUIMTE = PASSAGIER + 1; // zo lang moet een vlot zijn voor een dier erop (ook twee lavastenen)
 const DIER_SPRINGT = 15; // vanaf dit level springen de dieren soms naar de volgende wagon
 const DIER_KLAAR = 0.6; // s wiebelen voor de sprong
 const DIER_VLUCHT = 0.45; // s in de lucht // s per sprongetje van een overstekertje
@@ -64,12 +65,13 @@ interface Ding {
   onder?: boolean;
   // Dieren die op dit vlot staan (vanaf x, vakjes): daar botst het.
   gevaar?: [number, number][];
-  dier?: { el: HTMLImageElement; src: string; p: number }; // het dier zelf, p: plek vanaf x
+  // Het dier zelf, p: plek vanaf x; v: loopt heen en weer (vakjes/s, + is naar rechts).
+  dier?: { el: HTMLImageElement; src: string; p: number; v: number };
 }
 
 // Een dier dat naar de volgende wagon springt (vanaf level 15): eerst wiebelt het even,
 // dan vliegt het in een boogje over het gat.
-interface DierSprong { el: HTMLImageElement; van: Ding; naar: Ding; p0: number; p1: number; t: number; src: string }
+interface DierSprong { el: HTMLImageElement; van: Ding; naar: Ding; p0: number; p1: number; t: number; src: string; v: number }
 
 // Botsen gaat zoals in de echte Frogger (na de bekende reparatie): één punt, het midden
 // van het figuurtje, tegen de echte breedte van wat er rijdt. Die breedte meten we aan de
@@ -155,6 +157,7 @@ interface Baan {
   duikKans: number; // zinken/leegte: zoveel van de vlotten zakt af en toe weg (0 = geen)
   val: NonNullable<Rivier['val']>; // rivier: plons, stofwolk of sterretjes als je ernaast springt
   passagiers: string[]; // rivier: dieren die op een deel van de vlotten staan
+  dierLoopt: boolean; // lavaland: ze lopen heen en weer en springen vanaf het begin
   sprongen: DierSprong[];
   springWacht: number;
 }
@@ -263,6 +266,7 @@ export function OversteekScreen(manager: ScreenManager): Screen {
     if (sr.src) meetRand(sr.src, sr.draai);
     if (sr.wagon) meetRand(sr.wagon, sr.draai);
   }
+  for (const u of thema.uitdagingen) if (u.wat === 'lavaland') for (const p of u.passagiers ?? []) meetRand(isTekening(p as Tekening) ? tekeningSrc(p as Tekening) : p);
   for (const src of thema.rivier?.passagiers ?? []) meetRand(src);
 
   const el = document.createElement('div');
@@ -540,24 +544,44 @@ export function OversteekScreen(manager: ScreenManager): Screen {
   function plekOp(ding: Ding): number {
     const vrij = (p: number): number => Math.max(p - ding.links, ding.rechts - p - PASSAGIER);
     const p = willekeurig(ding.links, ding.rechts - PASSAGIER);
-    return vrij(p) >= 1.1 ? p : Math.random() < 0.5 ? ding.links : ding.rechts - PASSAGIER;
+    return vrij(p) >= 1 ? p : Math.random() < 0.5 ? ding.links : ding.rechts - PASSAGIER;
   }
-  function zetDier(ding: Ding, img: HTMLImageElement, src: string, p: number): void {
+  function zetDier(ding: Ding, img: HTMLImageElement, src: string, p: number, v = 0): void {
     img.style.left = `calc(var(--c) * ${p.toFixed(3)})`;
     img.style.transform = '';
     ding.el.appendChild(img);
     const [l, r] = rand({ maat: PASSAGIER }, src);
     ding.gevaar = [[p + l * PASSAGIER, p + r * PASSAGIER]];
-    ding.dier = { el: img, src, p };
+    ding.dier = { el: img, src, p, v };
   }
-  function zetPassagier(ding: Ding, lijst: string[]): void {
-    const src = lijst[Math.floor(Math.random() * lijst.length)];
+  function zetPassagier(ding: Ding, lijst: string[], loopt: boolean): void {
+    const src = icoonSrc(lijst[Math.floor(Math.random() * lijst.length)]);
     const img = document.createElement('img');
     img.className = 'ov-passagier';
     img.src = src;
     img.alt = '';
-    if (Math.random() < 0.5) img.classList.add('ov-passagier--om');
-    zetDier(ding, img, src, plekOp(ding));
+    zetDier(ding, img, src, plekOp(ding), loopt ? (Math.random() < 0.5 ? -1 : 1) * willekeurig(0.3, kleuter ? 0.4 : 0.55) : 0);
+    // Lopers kijken de kant op waar ze heen gaan (de plaatjes kijken naar links).
+    img.classList.toggle('ov-passagier--om', loopt ? ding.dier!.v > 0 : Math.random() < 0.5);
+  }
+
+  // Lavaland: de dieren lopen heen en weer over hun steen, tot aan de rand.
+  function werkLopers(b: Baan, dt: number): void {
+    for (const d of b.dingen) {
+      const dier = d.dier;
+      if (!dier?.v || b.sprongen.some((sp) => sp.van === d)) continue;
+      const min = d.links;
+      const max = d.rechts - PASSAGIER;
+      dier.p += dier.v * dt;
+      if (dier.p < min || dier.p > max) {
+        dier.p = Math.min(max, Math.max(min, dier.p));
+        dier.v = -dier.v;
+        dier.el.classList.toggle('ov-passagier--om', dier.v > 0);
+      }
+      dier.el.style.left = `calc(var(--c) * ${dier.p.toFixed(3)})`;
+      const [l, r] = rand({ maat: PASSAGIER }, dier.src);
+      d.gevaar = [[dier.p + l * PASSAGIER, dier.p + r * PASSAGIER]];
+    }
   }
 
   // Vanaf level 15: af en toe springt een dier naar de wagon ervoor of erachter, als daar
@@ -584,7 +608,7 @@ export function OversteekScreen(manager: ScreenManager): Screen {
       }
       const f = Math.min(1, (sp.t - DIER_KLAAR) / DIER_VLUCHT);
       if (f >= 1) {
-        zetDier(sp.naar, sp.el, sp.src, sp.p1);
+        zetDier(sp.naar, sp.el, sp.src, sp.p1, sp.v);
         sp.t = Infinity;
         continue;
       }
@@ -603,7 +627,7 @@ export function OversteekScreen(manager: ScreenManager): Screen {
     const kan = b.dingen.flatMap((d, i) =>
       d.dier && !b.sprongen.some((sp) => sp.van === d)
         ? [b.dingen[i - 1], b.dingen[i + 1]]
-            .filter((n): n is Ding => !!n && !n.dier && !n.gevaar && !b.sprongen.some((sp) => sp.naar === n) && n.lengte >= 2.2 && n.x > -1 && n.x + n.lengte < Wc + 1)
+            .filter((n): n is Ding => !!n && !n.dier && !n.gevaar && !b.sprongen.some((sp) => sp.naar === n) && n.lengte >= DIER_RUIMTE && n.x > -1 && n.x + n.lengte < Wc + 1)
             .map((naar) => ({ van: d, naar }))
         : [],
     );
@@ -612,16 +636,17 @@ export function OversteekScreen(manager: ScreenManager): Screen {
     const dier = van.dier!;
     // Het landt aan de kant van de wagon waar het vandaan komt.
     const vanLinks = van.x < naar.x;
-    const p1 = vanLinks ? naar.links + willekeurig(0, 0.4) : naar.rechts - PASSAGIER - willekeurig(0, 0.4);
+    const speel = willekeurig(0, Math.min(0.4, naar.rechts - naar.links - DIER_RUIMTE));
+    const p1 = vanLinks ? naar.links + speel : naar.rechts - PASSAGIER - speel;
     dier.el.classList.add('ov-passagier--klaar');
-    b.sprongen.push({ el: dier.el, van, naar, p0: dier.p, p1, t: 0, src: dier.src });
+    b.sprongen.push({ el: dier.el, van, naar, p0: dier.p, p1, t: 0, src: dier.src, v: dier.v });
   }
 
   function nieuwDing(b: Baan): Ding {
     const s = b.bron!;
     const ding = s.banen && s.aantal ? maakKudde(s, b.richting) : maakDing(s, b.richting, willekeurig(b.rek[0], b.rek[1]), b.soort === 'water');
     if (Math.random() < b.duikKans) ding.duik = { fase: 'boven', t: willekeurig(1, 3.5) };
-    if (b.passagiers.length && ding.lengte >= 2.2 && Math.random() < 0.5) zetPassagier(ding, b.passagiers);
+    if (b.passagiers.length && ding.lengte >= DIER_RUIMTE && Math.random() < 0.5) zetPassagier(ding, b.passagiers, b.dierLoopt);
     // Alleen in de dev-server: tests tekenen hiermee de botsrand over het plaatje.
     if (import.meta.env.DEV) Object.assign(ding.el.dataset, { links: String(ding.links), rechts: String(ding.rechts) });
     b.el.appendChild(ding.el);
@@ -954,7 +979,9 @@ export function OversteekScreen(manager: ScreenManager): Screen {
     const n = Math.min(reeks[Math.min(level - 1, reeks.length - 1)], maxBanen());
     // Water vanaf level 4 (kleuters 5). Lavaland: alle banen lava met stenen.
     const waterVanaf = kleuter ? 5 : 4;
-    const lavaland = !!thema.rivier && !!uitdaging('lavaland');
+    // Lavaland niet elk level: op het level waar hij erbij komt wel, daarna één op de drie.
+    const lavaland =
+      !!thema.rivier && !!uitdaging('lavaland') && (uitdagingVolgorde[UITDAGING_VANAF.indexOf(level)]?.wat === 'lavaland' || Math.random() < 1 / 3);
     const water = !!thema.rivier && ((level >= waterVanaf && n >= 4) || lavaland);
     const plan: BaanSoort[] = ['start'];
     if (n >= 5 || water) {
@@ -1071,7 +1098,9 @@ export function OversteekScreen(manager: ScreenManager): Screen {
         // Op de leegte verdwijnt alles af en toe; bij Zinken 60% van de vlotten.
         duikKans: r >= leegteVanaf ? 1 : duikRijen.has(r) ? 0.6 : 0,
         val: soort === 'water' ? (rivierVan(r).val ?? 'plons') : 'plons',
-        passagiers: soort === 'water' && level >= (kleuter ? 7 : 6) ? (rivierVan(r).passagiers ?? []) : [],
+        passagiers:
+          soort !== 'water' ? [] : lavaland ? (uitdaging('lavaland')?.passagiers ?? []) : level >= (kleuter ? 7 : 6) ? (rivierVan(r).passagiers ?? []) : [],
+        dierLoopt: soort === 'water' && lavaland,
         sprongen: [],
         springWacht: willekeurig(1, 3),
       };
@@ -1374,7 +1403,8 @@ export function OversteekScreen(manager: ScreenManager): Screen {
       if (!b.bron) continue;
       if (b.keer) werkKeer(b, dt);
       if (b.duikKans) werkDuikers(b, dt);
-      if (b.passagiers.length && level >= DIER_SPRINGT) werkDierSprongen(b, dt);
+      if (b.dierLoopt) werkLopers(b, dt);
+      if (b.passagiers.length && (level >= DIER_SPRINGT || b.dierLoopt)) werkDierSprongen(b, dt);
       const dx = b.v * b.richting * dt;
       for (const d of b.dingen) d.x += dx;
       b.dingen = b.dingen.filter((d) => {

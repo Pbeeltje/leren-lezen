@@ -54,7 +54,10 @@ export type Uitdaging = { icoon: string } & (
   | { wat: 'overstekers'; src: string; kleur?: string }
   // Iets reusachtigs dat meerdere banen breed is.
   | { wat: 'kolos'; ding: Soort }
-  | { wat: 'lavaland' } // alle banen zijn lava met stenen
+  // Alle banen zijn lava met stenen (één op de drie levels). Op de stenen staan dan dieren
+  // (`passagiers`, plaatje of Tekening-naam, naar links kijkend) die heen en weer lopen en
+  // van steen naar steen springen.
+  | { wat: 'lavaland'; passagiers?: string[] }
   | { wat: 'lawine' } // sneeuw schuift van onderen omhoog en bedekt baan na baan
   | { wat: 'storm' } // windvlagen blazen je opzij
   | { wat: 'donker'; mist?: boolean } // je ziet alleen een kring om je heen
@@ -194,7 +197,7 @@ export const OVERSTEEK_THEMAS: Record<ThemaId, OversteekThema> = {
     rivier: { water: 'lava', drijvers: [{ src: o('steen'), maat: 1, aantal: [2, 3], kijkt: 'geen' }] },
     overkant: [o('vulkaan'), w('ei'), a('boomvaren'), w('ei'), o('vulkaan')],
     uitdagingen: [
-      { wat: 'lavaland', icoon: o('vulkaan') },
+      { wat: 'lavaland', icoon: o('vulkaan'), passagiers: ['stegosaurus', 'triceratops', o('sauropode'), w('diplodocus')] },
       // Lavabommen uit de vulkaan.
       { wat: 'inslag', src: o('steen'), gloed: true, icoon: w('vuur') },
     ],
