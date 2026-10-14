@@ -76,7 +76,7 @@
 .ov-lamp {
   position: absolute;
   top: 50%;
-  z-index: 3;
+  z-index: 4; /* boven het donker (.ov-donker) */
   display: flex;
   gap: 3px;
   padding: 3px 5px;
@@ -575,3 +575,255 @@
   transform: translateX(-50%);
 }
 .ov-grond--lava ~ .ov-uitleg-vlot img { filter: brightness(0.5) sepia(0.5); }
+
+/* ---------- uitdagingen vanaf level 10 (OversteekScreen: werkBaanAan, werkInslagen, ...) ---------- */
+.ov-banner__nieuw { animation: ov-nieuw 0.5s ease-in-out infinite alternate; }
+@keyframes ov-nieuw {
+  to { scale: 1.18; rotate: 8deg; }
+}
+
+/* Hele baan aan: stroom op de rails (blauw), drakenvuur, laser. Lamp en knipperen in de eigen kleur. */
+.ov-lamp--stroom i { background: #10305a; }
+.ov-lamp--aan.ov-lamp--stroom i { animation-name: ov-lamp-blauw; }
+@keyframes ov-lamp-blauw {
+  0% { background: #3aa8ff; box-shadow: 0 0 10px 3px #5ab8ff; }
+  50% { background: #10305a; box-shadow: none; }
+}
+.ov-lamp--vuur i { background: #5a2a00; }
+.ov-lamp--aan.ov-lamp--vuur i { animation-name: ov-lamp-oranje; }
+@keyframes ov-lamp-oranje {
+  0% { background: #ff9a1a; box-shadow: 0 0 10px 3px #ffae3a; }
+  50% { background: #5a2a00; box-shadow: none; }
+}
+.ov-baan--stroom.ov-baan--let-op { animation-name: ov-let-op-blauw; }
+@keyframes ov-let-op-blauw {
+  50% { box-shadow: inset 0 0 0 999px rgba(40, 140, 255, 0.28); }
+}
+.ov-baan--vuur.ov-baan--let-op { animation-name: ov-let-op-oranje; }
+@keyframes ov-let-op-oranje {
+  50% { box-shadow: inset 0 0 0 999px rgba(255, 140, 20, 0.26); }
+}
+.ov-aan {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  pointer-events: none;
+  opacity: 0;
+}
+.ov-aan--aan { opacity: 1; }
+/* Stroom: blauwe vonkjes over de hele baan, flakkerend. */
+.ov-aan--stroom {
+  background:
+    repeating-linear-gradient(115deg, transparent 0 14px, rgba(190, 235, 255, 0.95) 14px 17px, transparent 17px 26px, rgba(120, 200, 255, 0.8) 26px 28px, transparent 28px 40px),
+    linear-gradient(rgba(40, 140, 255, 0.15), rgba(60, 170, 255, 0.55) 50%, rgba(40, 140, 255, 0.15));
+  box-shadow: inset 0 0 18px 4px rgba(80, 180, 255, 0.9);
+}
+.ov-aan--aan.ov-aan--stroom { animation: ov-stroom-aan 0.12s steps(2) infinite; }
+@keyframes ov-stroom-aan {
+  50% { background-position: 9px 0, 0 0; filter: brightness(1.4); }
+}
+/* Vuur: vlammen die vanaf de draak (links) over de baan schieten. */
+.ov-aan--vuur {
+  transform-origin: left center;
+  background:
+    radial-gradient(ellipse 18px 40% at 50% 50%, rgba(255, 245, 160, 0.95) 0 40%, transparent 70%) 0 0 / 30px 100%,
+    linear-gradient(rgba(255, 90, 0, 0) 5%, rgba(255, 110, 10, 0.85) 30%, rgba(255, 200, 40, 0.95) 50%, rgba(255, 110, 10, 0.85) 70%, rgba(255, 90, 0, 0) 95%);
+}
+.ov-aan--aan.ov-aan--vuur { animation: ov-vuur-in 0.2s ease-out, ov-vuur 0.25s linear 0.2s infinite; }
+@keyframes ov-vuur-in {
+  from { transform: scaleX(0); }
+}
+@keyframes ov-vuur {
+  to { background-position: 30px 0, 0 0; }
+}
+/* Laser: een felrode straal dwars over de baan. */
+.ov-aan--laser {
+  top: 38%;
+  bottom: 38%;
+  transform-origin: left center;
+  border-radius: 999px;
+  background: linear-gradient(#ff8a8a, #fff 50%, #ff8a8a);
+  box-shadow: 0 0 10px 4px rgba(255, 40, 60, 0.9), 0 0 26px 8px rgba(255, 40, 120, 0.5);
+}
+.ov-aan--aan.ov-aan--laser { animation: ov-vuur-in 0.15s ease-out; }
+.ov-aan__bron {
+  position: absolute;
+  left: 2px;
+  top: 6%;
+  z-index: 3;
+  width: calc(var(--c) * 0.88);
+  height: calc(var(--c) * 0.88);
+  pointer-events: none;
+  transform: scaleX(-1);
+  filter: drop-shadow(0 3px 2px rgba(0, 0, 0, 0.35));
+}
+.ov-baan--let-op .ov-aan__bron { animation: ov-wiebel 0.15s ease-in-out infinite alternate; }
+
+/* Keren: pijltjes aan beide kanten knipperen kort voor en tijdens het omkeren. */
+.ov-keer { position: absolute; inset: 0; z-index: 4; pointer-events: none; opacity: 0; transition: opacity 0.2s; }
+.ov-keer img {
+  position: absolute;
+  top: 18%;
+  width: calc(var(--c) * 0.64);
+  height: calc(var(--c) * 0.64);
+}
+.ov-keer img:first-child { left: 4px; }
+.ov-keer img:last-child { right: 4px; }
+.ov-keer--aan { opacity: 1; }
+.ov-keer--aan img { animation: ov-keer 0.35s steps(1) infinite; }
+@keyframes ov-keer {
+  50% { opacity: 0.25; }
+}
+.ov-ding--om { scale: -1 1; }
+
+/* Zinken: eerst wiebelen, dan bijna weg onder water. */
+.ov-ding--wiebel { animation: ov-wiebel 0.14s ease-in-out infinite alternate; }
+@keyframes ov-wiebel {
+  from { rotate: -3deg; }
+  to { rotate: 3deg; }
+}
+.ov-ding { transition: opacity 0.35s; }
+.ov-ding--onder { opacity: 0.2; }
+
+/* Kolos: een rij dieren per baan, samen één ding. */
+.ov-kolos__rij { position: absolute; top: 0; left: 0; height: var(--c); }
+
+/* Inslag: een schaduw die groeit (met een rode ring), dan valt het neer en stuitert even. */
+.ov-inslag {
+  position: absolute;
+  z-index: 4;
+  width: var(--c);
+  height: var(--c);
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+}
+.ov-inslag__schaduw {
+  position: absolute;
+  inset: 12%;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.45);
+  box-shadow: 0 0 0 3px rgba(255, 50, 50, 0.85);
+  animation: ov-schaduw 1.4s ease-in forwards;
+}
+@keyframes ov-schaduw {
+  from { scale: 0.15; opacity: 0.3; }
+  to { scale: 1; opacity: 1; }
+}
+.ov-inslag__ding {
+  position: absolute;
+  inset: 8%;
+  width: 84%;
+  height: 84%;
+  filter: drop-shadow(0 6px 3px rgba(0, 0, 0, 0.35));
+  animation: ov-val 1.4s cubic-bezier(0.55, 0, 1, 0.45) forwards;
+}
+@keyframes ov-val {
+  from { translate: 0 calc(var(--c) * -4); scale: 1.6; opacity: 0; }
+  25% { opacity: 1; }
+  to { translate: 0 0; scale: 1; opacity: 1; }
+}
+.ov-inslag--gloed .ov-inslag__ding { filter: brightness(0.6) sepia(0.6) saturate(2) drop-shadow(0 0 6px rgba(255, 110, 0, 1)); }
+.ov-inslag--plof .ov-inslag__schaduw { animation: ov-plof 0.6s ease-out forwards; }
+.ov-inslag--plof .ov-inslag__ding { animation: ov-plof-ding 0.6s ease-out forwards; }
+@keyframes ov-plof {
+  from { scale: 1; opacity: 0.9; box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.9); background: transparent; }
+  to { scale: 2.2; opacity: 0; box-shadow: 0 0 0 2px rgba(255, 255, 255, 0); background: transparent; }
+}
+@keyframes ov-plof-ding {
+  0% { scale: 1.25 0.75; }
+  30% { scale: 1; }
+  100% { scale: 1; opacity: 0; }
+}
+
+/* Overstekers: hoppen naar beneden, plat of weg zakken als het misgaat. */
+.ov-npc {
+  position: absolute;
+  left: 0;
+  top: 0;
+  z-index: 3;
+  width: var(--c);
+  height: var(--c);
+  pointer-events: none;
+}
+.ov-npc img {
+  position: absolute;
+  inset: 12%;
+  width: 76%;
+  height: 76%;
+  filter: drop-shadow(0 4px 2px rgba(0, 0, 0, 0.3));
+}
+.ov-npc--au img { animation: ov-au 0.9s ease-out forwards; }
+.ov-npc--plons img { animation: ov-zink 0.8s ease-in forwards; }
+.ov-npc--klaar { transition: opacity 0.8s; opacity: 0; }
+
+/* Lawine: sneeuw schuift van onderen omhoog, met een bobbelige rand. */
+.ov-lawine[hidden] { display: none; }
+.ov-lawine[hidden] { display: none; }
+.ov-lawine {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 4;
+  height: calc(var(--c) * var(--h, 0));
+  pointer-events: none;
+  /* Blauwgrijze schaduwen en kluiten: op een witte sneeuwbaan moet je hem goed zien. */
+  background:
+    radial-gradient(circle calc(var(--c) * 0.22) at 30% 35%, #fff 0 55%, rgba(120, 150, 190, 0.55) 62%, transparent 75%) 0 0 / calc(var(--c) * 0.9) calc(var(--c) * 0.7),
+    radial-gradient(circle calc(var(--c) * 0.16) at 70% 70%, #f4f8fc 0 55%, rgba(120, 150, 190, 0.5) 62%, transparent 75%) 0 0 / calc(var(--c) * 0.75) calc(var(--c) * 0.55),
+    linear-gradient(#dfe9f4, #a9bfd8);
+  filter: drop-shadow(0 -5px 4px rgba(40, 70, 110, 0.55));
+}
+/* De voorkant: dikke rollende sneeuwballen. */
+.ov-lawine::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: calc(100% - var(--c) * 0.2);
+  height: calc(var(--c) * 0.6);
+  background: radial-gradient(circle at 50% 60%, #fff 0 38%, #c3d4e8 52%, #8fa9c8 60%, transparent 62%) 0 100% / calc(var(--c) * 0.62) 100% repeat-x;
+  animation: ov-lawine 0.9s linear infinite;
+}
+@keyframes ov-lawine {
+  50% { translate: 0 -3px; }
+  to { background-position: calc(var(--c) * 0.62) 100%; }
+}
+
+/* Storm: sneeuwstrepen die opzij vliegen zolang de vlaag duurt. */
+.ov-storm {
+  position: absolute;
+  inset: 0;
+  z-index: 4;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.4s;
+  background:
+    radial-gradient(ellipse 14px 2px at 50% 50%, rgba(255, 255, 255, 0.95) 0 50%, transparent 70%) 0 0 / 61px 23px,
+    radial-gradient(ellipse 22px 2px at 50% 50%, rgba(255, 255, 255, 0.8) 0 50%, transparent 70%) 13px 11px / 89px 37px,
+    linear-gradient(90deg, rgba(220, 235, 250, 0.25), rgba(220, 235, 250, 0.05));
+  animation: ov-storm 0.5s linear infinite;
+}
+.ov-storm--links { scale: -1 1; }
+.ov-storm--aan { opacity: 1; }
+@keyframes ov-storm {
+  to { background-position: 61px 0, 102px 11px, 0 0; }
+}
+
+/* Donker (diepzee) en mist: je ziet alleen een kring om je heen. */
+.ov-donker {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: var(--c);
+  z-index: 3;
+  pointer-events: none;
+  background: radial-gradient(circle at var(--lx, 50%) var(--ly, 50%), transparent 0 calc(var(--c) * 1.7), rgba(2, 12, 35, 0.93) calc(var(--c) * 3));
+}
+.ov-donker--mist {
+  background: radial-gradient(circle at var(--lx, 50%) var(--ly, 50%), transparent 0 calc(var(--c) * 1.6), rgba(226, 230, 236, 0.95) calc(var(--c) * 3.2));
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ov-storm, .ov-lawine::before, .ov-aan--aan.ov-aan--stroom, .ov-aan--aan.ov-aan--vuur { animation: none; }
+}

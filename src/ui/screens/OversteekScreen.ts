@@ -9,7 +9,7 @@ import { confetti } from '../../three/particles.ts';
 import { huidigThema } from '../../achtergrond/achtergrond.ts';
 import { GNOE } from '../../achtergrond/savanne.ts';
 import { TREIN_LOC, treinWagons } from '../../achtergrond/trein.ts';
-import { OVERSTEEK_THEMAS, type Soort, type Tekening } from './oversteek-themas.ts';
+import { OVERSTEEK_THEMAS, type Soort, type Tekening, type Uitdaging } from './oversteek-themas.ts';
 import { STEGOSAURUS, TRICERATOPS } from './oversteek-tekeningen.ts';
 
 // Oversteken (een soort Frogger): je eigen figuurtje staat onderaan en moet naar de
@@ -23,7 +23,8 @@ import { STEGOSAURUS, TRICERATOPS } from './oversteek-tekeningen.ts';
 // sneller en de gaten worden kleiner. Drie hartjes; een klap of in het water vallen kost
 // er één en je begint weer bij de laatste veilige strook. Punten: 1 per nieuwe baan, 10
 // voor de overkant, 5 voor een ster. Geen munten (die verdien je met leren), wel een
-// record per profiel.
+// record per profiel. Vanaf level 10 komt er een uitdaging van de achtergrond bij (stroom
+// op de rails, een lawine, overstekende kwallen, ...), vanaf 15 nog een.
 //
 // Alles wordt in vakjes gerekend (`c` px per vakje): posities, snelheden, gaten. Zo
 // past het spel zich bij draaien of een ander venster vanzelf aan.
@@ -38,6 +39,9 @@ const TUSSEN_DUUR = 2; // s feest aan de overkant
 const KOLOMMEN_MIN = 7; // het veld is altijd minstens zo breed (in vakjes)
 const KOLOMMEN_MAX = 15;
 const HOOG_MAX = 1.15; // vakjes: hoger mag een plaatje niet, anders loopt het over de buurbanen
+const UITDAGING_VANAF = [10, 15]; // op deze levels komt er een uitdaging van de achtergrond bij
+const VAL = 1.4; // s dat iets uit de lucht valt (inslag), met een schaduw die groeit
+const NPC_HOP = 0.24; // s per sprongetje van een overstekertje
 
 type BaanSoort = 'start' | 'veilig' | 'finish' | 'weg' | 'water';
 type Richting = 'op' | 'neer' | 'links' | 'rechts';
@@ -49,6 +53,9 @@ interface Ding {
   // Waar er echt iets te zien is, gemeten vanaf x (vakjes): hier botst of draagt het.
   links: number;
   rechts: number;
+  // Zinken: dit vlot zakt af en toe even onder water, en draagt dan niet.
+  duik?: { fase: 'boven' | 'wiebel' | 'onder'; t: number };
+  onder?: boolean;
 }
 
 // Botsen gaat zoals in de echte Frogger (na de bekende reparatie): één punt, het midden
@@ -126,10 +133,20 @@ interface Baan {
   tussen: [number, number];
   lamp: HTMLElement | null;
   belGespeeld: boolean;
+  // Uitdagingen (vanaf level 10):
+  deelVan: number | null; // bovenste stuk van een kolos die in baan `deelVan` rijdt
+  mede: Baan[]; // kolos: de banen erboven (die knipperen mee)
+  aan: { fase: 'uit' | 'let-op' | 'aan'; t: number; el: HTMLElement } | null; // hele baan gevaarlijk
+  keer: { fase: 'rijden' | 'remmen' | 'stil' | 'optrekken'; t: number; v: number; el: HTMLElement } | null;
+  duikers: boolean; // zinken: een deel van de vlotten zakt af en toe weg
 }
+
+interface Inslag { el: HTMLElement; x: number; r: number; t: number; geland: boolean }
+interface Overstekertje { el: HTMLElement; r: number; vanR: number; x: number; hopT: number; wacht: number; weg: number }
 
 const willekeurig = (a: number, b: number): number => a + Math.random() * (b - a);
 const heelGetal = ([a, b]: [number, number]): number => a + Math.floor(Math.random() * (b - a + 1));
+const husselen = <T>(lijst: T[]): T[] => [...lijst].sort(() => Math.random() - 0.5);
 
 // Boomstam van bovenaf, zo lang als gevraagd (viewBox: 100 per vakje).
 function boomstam(lengte: number): string {
@@ -192,7 +209,8 @@ export function OversteekScreen(manager: ScreenManager): Screen {
   const themaId = huidigThema();
   const thema = OVERSTEEK_THEMAS[themaId];
   // Meten kost een paar milliseconden per plaatje; klaar voordat je op start drukt.
-  for (const sr of [...thema.vijanden, ...thema.zeldzaam, ...(thema.rivier?.drijvers ?? [])]) {
+  const kolossen = thema.uitdagingen.flatMap((u) => (u.wat === 'kolos' ? [u.ding] : []));
+  for (const sr of [...thema.vijanden, ...thema.zeldzaam, ...(thema.rivier?.drijvers ?? []), ...kolossen]) {
     if (isTekening(sr.teken)) meetRand(tekeningSrc(sr.teken), 0, TEKENINGEN[sr.teken].verhouding);
     if (sr.src) meetRand(sr.src, sr.draai);
     if (sr.wagon) meetRand(sr.wagon, sr.draai);
@@ -275,6 +293,30 @@ export function OversteekScreen(manager: ScreenManager): Screen {
   let overlay: HTMLElement | null = null;
   let overlayActie: (() => void) | null = null; // spatie/Enter op een venster
   let eersteSprong = true;
+  // Uitdagingen: bij elk spel in een andere volgorde; vanaf level 10 doet de eerste mee,
+  // vanaf 15 ook de tweede.
+  let uitdagingVolgorde: Uitdaging[] = [];
+  let uitdagingen: Uitdaging[] = [];
+  let inslagen: Inslag[] = [];
+  let inslagWacht = 0;
+  let npcs: Overstekertje[] = [];
+  let npcWacht = 0;
+  let lawine: { el: HTMLElement; h: number; wacht: number } | null = null; // h: zoveel rijen bedekt
+  let storm: { el: HTMLElement; richting: 1 | -1; t: number; aan: boolean } | null = null;
+  let donker: HTMLElement | null = null;
+
+  function uitdaging<W extends Uitdaging['wat']>(wat: W): Extract<Uitdaging, { wat: W }> | undefined {
+    return uitdagingen.find((u) => u.wat === wat) as Extract<Uitdaging, { wat: W }> | undefined;
+  }
+  const icoonSrc = (icoon: string): string => (isTekening(icoon as Soort['teken']) ? tekeningSrc(icoon as Tekening) : icoon);
+  const binnenVeld = (x: number): number => Math.min(Wc - 0.5, Math.max(0.5, x));
+  // Waar het figuurtje te zien is: tijdens een sprong eerst nog de oude rij, daarna de nieuwe.
+  const zichtRij = (): number => (hopT >= HOP / 2 ? rij : vanRij);
+  const zichtX = (): number => vanX + (px - vanX) * Math.min(1, hopT / HOP);
+  // Wat er in een baan rijdt; het bovenste stuk van een kolos kijkt naar de baan eronder.
+  const dingenVan = (b: Baan): Ding[] => (b.deelVan !== null ? banen[b.deelVan].dingen : b.dingen);
+  const draagt = (b: Baan, x: number, speling: number): boolean =>
+    b.dingen.some((d) => !d.onder && x > d.x + d.links - speling && x < d.x + d.rechts + speling);
 
   // ---------- maten ----------
 
@@ -322,7 +364,9 @@ export function OversteekScreen(manager: ScreenManager): Screen {
     // Wat je ziet is wat je raakt. Een plaatje is nooit hoger dan HOOG_MAX (anders loopt het
     // over de buurbanen), dus een vierkant Fluent-plaatje is ook niet breder dan dat; alleen
     // lange voertuigen (`lang`) worden in de lengte uitgerekt tot hun hele maat.
-    const hoogte = Math.min(s.maat, HOOG_MAX);
+    // Een kolos is `banen` hoog en staat in het midden van zijn banen (de onderste is deze).
+    const hoogte = s.banen ? s.banen - 0.1 : Math.min(s.maat, HOOG_MAX);
+    const midden = s.banen ? (2 - s.banen) / 2 : 0.5;
     const tekening = isTekening(s.teken) ? s.teken : null;
     const zicht = s.lang ? s.maat : Math.min(s.maat, hoogte * (tekening ? TEKENINGEN[tekening].verhouding : 1));
     // Kuddes lopen een beetje over elkaar heen, wagons sluiten aan.
@@ -340,7 +384,7 @@ export function OversteekScreen(manager: ScreenManager): Screen {
       stuk.style.width = `calc(var(--c) * ${s.maat})`;
       stuk.style.height = `calc(var(--c) * ${hoogte})`;
       const schuif = s.aantal && n > 1 ? Math.random() * 0.14 - 0.07 : 0;
-      stuk.style.top = `calc(var(--c) * ${((1 - hoogte) / 2 + schuif).toFixed(3)})`;
+      stuk.style.top = `calc(var(--c) * ${(midden - hoogte / 2 + schuif).toFixed(3)})`;
       if (s.dobber) {
         stuk.classList.add('ov-stuk--dobber');
         stuk.style.animationDelay = `${(-Math.random()).toFixed(2)}s`;
@@ -412,8 +456,32 @@ export function OversteekScreen(manager: ScreenManager): Screen {
     return { el: d, x: 0, lengte, links: 0.03, rechts: lengte - 0.03 };
   }
 
+  // De grote trek: per baan een rij dieren, een beetje verspringend; samen één kolos.
+  function maakKudde(s: Soort, richting: 1 | -1): Ding {
+    const d = document.createElement('div');
+    d.className = 'ov-ding';
+    let links = Infinity;
+    let rechts = -Infinity;
+    let lengte = 0;
+    for (let j = 0; j < s.banen!; j++) {
+      const rij = maakDing({ ...s, banen: undefined }, richting, 1, false);
+      const schuif = willekeurig(0, 1.2);
+      rij.el.className = 'ov-kolos__rij';
+      rij.el.style.left = `calc(var(--c) * ${schuif.toFixed(2)})`;
+      rij.el.style.top = `calc(var(--c) * ${-j})`;
+      d.appendChild(rij.el);
+      links = Math.min(links, schuif + rij.links);
+      rechts = Math.max(rechts, schuif + rij.rechts);
+      lengte = Math.max(lengte, schuif + rij.lengte);
+    }
+    d.style.width = `calc(var(--c) * ${lengte})`;
+    return { el: d, x: 0, lengte, links, rechts };
+  }
+
   function nieuwDing(b: Baan): Ding {
-    const ding = maakDing(b.bron!, b.richting, willekeurig(b.rek[0], b.rek[1]), b.soort === 'water');
+    const s = b.bron!;
+    const ding = s.banen && s.aantal ? maakKudde(s, b.richting) : maakDing(s, b.richting, willekeurig(b.rek[0], b.rek[1]), b.soort === 'water');
+    if (b.duikers && Math.random() < 0.6) ding.duik = { fase: 'boven', t: willekeurig(1, 3.5) };
     // Alleen in de dev-server: tests tekenen hiermee de botsrand over het plaatje.
     if (import.meta.env.DEV) Object.assign(ding.el.dataset, { links: String(ding.links), rechts: String(ding.rechts) });
     b.el.appendChild(ding.el);
@@ -448,22 +516,299 @@ export function OversteekScreen(manager: ScreenManager): Screen {
     d.el.style.transform = `translate3d(${(d.x * c).toFixed(1)}px, 0, 0)`;
   }
 
+  function maakLamp(bel: HTMLElement, kant: 'links' | 'rechts', extra = ''): HTMLElement {
+    const lamp = document.createElement('div');
+    lamp.className = `ov-lamp ov-lamp--${kant}${extra ? ` ${extra}` : ''}`;
+    lamp.innerHTML = '<i></i><i></i>';
+    bel.appendChild(lamp);
+    return lamp;
+  }
+
+  // Knipperlicht en knipperende baan aan of uit (bij een kolos ook de banen erboven), met
+  // een belletje als je in de buurt bent.
+  function waarschuw(b: Baan, r: number, aan: boolean): void {
+    for (const x of [b, ...b.mede]) {
+      x.lamp?.classList.toggle('ov-lamp--aan', aan);
+      x.el.classList.toggle('ov-baan--let-op', aan);
+    }
+    if (!aan) b.belGespeeld = false;
+    else if (!b.belGespeeld && rij >= r - 2 && rij <= r + b.mede.length + 2 && fase === 'spel') {
+      b.belGespeeld = true;
+      speelNoot(TONEN[5], 0);
+      speelNoot(TONEN[5], 0.32);
+    }
+  }
+
+  // ---------- uitdagingen ----------
+
+  // Hele baan aan: een tijd uit, 1,5 s waarschuwen, dan even helemaal gevaarlijk.
+  function werkBaanAan(b: Baan, r: number, dt: number): void {
+    const a = b.aan!;
+    a.t -= dt;
+    if (a.t > 0) return;
+    if (a.fase === 'uit') {
+      a.fase = 'let-op';
+      a.t = 1.5;
+      waarschuw(b, r, true);
+    } else if (a.fase === 'let-op') {
+      a.fase = 'aan';
+      a.t = kleuter ? 1.4 : 1.8;
+      waarschuw(b, r, false);
+      a.el.classList.add('ov-aan--aan');
+      if (fase === 'spel' && Math.abs(r - rij) <= 2) speelDrum('snare');
+    } else {
+      a.fase = 'uit';
+      a.t = kleuter ? willekeurig(3.5, 5.5) : willekeurig(2.4, 4.4);
+      a.el.classList.remove('ov-aan--aan');
+    }
+  }
+
+  // Keren: afremmen, even stil (met de pijltjes), dan de andere kant op.
+  function werkKeer(b: Baan, dt: number): void {
+    const k = b.keer!;
+    const REM = 0.5;
+    k.t -= dt;
+    if (k.fase === 'remmen') b.v = k.v * Math.max(0, k.t / REM);
+    else if (k.fase === 'optrekken') b.v = k.v * Math.min(1, 1 - k.t / REM);
+    k.el.classList.toggle('ov-keer--aan', k.fase !== 'rijden' || k.t < 1.2);
+    if (k.t > 0) return;
+    if (k.fase === 'rijden') {
+      k.fase = 'remmen';
+      k.t = REM;
+    } else if (k.fase === 'remmen') {
+      k.fase = 'stil';
+      k.t = 0.5;
+      b.v = 0;
+      b.richting = b.richting === 1 ? -1 : 1;
+      // De nieuwste staat achteraan in de lijst (aan de kant waar alles binnenkomt).
+      b.dingen.reverse();
+      for (const d of b.dingen) {
+        d.el.classList.toggle('ov-ding--om');
+        [d.links, d.rechts] = [d.lengte - d.rechts, d.lengte - d.links];
+      }
+    } else if (k.fase === 'stil') {
+      k.fase = 'optrekken';
+      k.t = REM;
+    } else {
+      k.fase = 'rijden';
+      k.t = willekeurig(3, 6);
+      b.v = k.v;
+    }
+  }
+
+  // Zinken: wiebelen (waarschuwing), even onder water, weer boven.
+  function werkDuikers(b: Baan, dt: number): void {
+    for (const d of b.dingen) {
+      const z = d.duik;
+      if (!z) continue;
+      z.t -= dt;
+      if (z.t > 0) continue;
+      if (z.fase === 'boven') {
+        z.fase = 'wiebel';
+        z.t = 1.1;
+      } else if (z.fase === 'wiebel') {
+        z.fase = 'onder';
+        z.t = kleuter ? 1.2 : 1.6;
+      } else {
+        z.fase = 'boven';
+        z.t = willekeurig(2.5, 4.5);
+      }
+      d.onder = z.fase === 'onder';
+      d.el.classList.toggle('ov-ding--wiebel', z.fase === 'wiebel');
+      d.el.classList.toggle('ov-ding--onder', d.onder);
+    }
+  }
+
+  // Inslag: een schaduw groeit op een vakje, dan valt het neer. De helft valt vlak bij je.
+  function werkInslagen(dt: number): void {
+    const u = uitdaging('inslag');
+    if (u && fase === 'spel') {
+      inslagWacht -= dt;
+      if (inslagWacht <= 0) {
+        inslagWacht = kleuter ? willekeurig(1.8, 3) : willekeurig(1.1, 2.1);
+        const dichtbij = Math.random() < 0.5;
+        const r = Math.min(N - 2, Math.max(1, dichtbij ? rij + heelGetal([0, 2]) : heelGetal([1, N - 2])));
+        const kolom = dichtbij ? Math.floor(px) + heelGetal([-1, 1]) : Math.floor(Math.random() * Wc);
+        const x = Math.min(Math.floor(Wc) - 0.5, Math.max(0.5, kolom + 0.5));
+        const el = document.createElement('div');
+        el.className = `ov-inslag${u.gloed ? ' ov-inslag--gloed' : ''}`;
+        el.style.left = `calc(var(--c) * ${x})`;
+        el.style.top = `calc(var(--c) * ${N - 1 - r + 0.5})`;
+        el.innerHTML = `<i class="ov-inslag__schaduw"></i><img class="ov-inslag__ding" src="${u.src}" alt="">`;
+        veld.appendChild(el);
+        inslagen.push({ el, x, r, t: 0, geland: false });
+      }
+    }
+    for (const s of inslagen) {
+      s.t += dt;
+      if (s.geland || s.t < VAL) continue;
+      s.geland = true;
+      s.el.classList.add('ov-inslag--plof');
+      if (fase !== 'spel') continue;
+      if (Math.abs(s.r - rij) <= 2) speelDrum('bas');
+      if (!dood && tijd >= onkwetsbaar && zichtRij() === s.r && Math.abs(zichtX() - s.x) < 0.6) sterf('au');
+    }
+    inslagen = inslagen.filter((s) => {
+      if (s.t < VAL + 0.6) return true;
+      s.el.remove();
+      return false;
+    });
+  }
+
+  // Overstekers: diertjes die van de overkant naar beneden hoppen. Meestal kijken ze goed
+  // uit, soms niet, en dan worden ze ook aangereden. Raken ze jou, dan kost dat een hartje.
+  function veiligVoorNpc(b: Baan, x: number): boolean {
+    if (b.aan && b.aan.fase !== 'uit') return false;
+    if (lawine && lawine.h > banen.indexOf(b) - 0.5) return false;
+    if (b.soort === 'water') return b.dingen.some((d) => !d.duik && x > d.x + d.links + 0.2 && x < d.x + d.rechts - 0.2);
+    if (b.soort !== 'weg') return true;
+    if (b.el.classList.contains('ov-baan--let-op')) return false;
+    const bron = b.deelVan !== null ? banen[b.deelVan] : b;
+    // Nu en over 0,8 s nog vrij (met wat ruimte)?
+    return !dingenVan(b).some((d) => {
+      const later = d.x + bron.v * bron.richting * 0.8;
+      return Math.min(d.x, later) + d.links - 0.7 < x && Math.max(d.x, later) + d.rechts + 0.7 > x;
+    });
+  }
+
+  function werkOverstekers(dt: number): void {
+    const u = uitdaging('overstekers');
+    if (u && fase === 'spel') {
+      npcWacht -= dt;
+      if (npcWacht <= 0 && npcs.filter((n) => !n.weg).length < (kleuter ? 2 : 3)) {
+        npcWacht = willekeurig(2.2, 4);
+        const el = document.createElement('div');
+        el.className = 'ov-npc';
+        el.innerHTML = `<img src="${u.src}" alt=""${u.kleur ? ` style="filter: ${u.kleur}"` : ''}>`;
+        veld.appendChild(el);
+        const x = Math.floor(Math.random() * Math.floor(Wc)) + 0.5;
+        npcs.push({ el, r: N - 1, vanR: N - 1, x, hopT: NPC_HOP, wacht: willekeurig(0.3, 1), weg: 0 });
+      }
+    }
+    for (const n of npcs) {
+      if (n.weg) {
+        n.weg += dt;
+        continue;
+      }
+      n.hopT += dt;
+      const geland = n.hopT >= NPC_HOP;
+      const drijf = banen[geland ? n.r : n.vanR];
+      if (drijf.soort === 'water') n.x = binnenVeld(n.x + drijf.v * drijf.richting * dt);
+      if (geland) {
+        n.wacht -= dt;
+        if (n.wacht <= 0) {
+          if (n.r === 0) {
+            // Veilig aan de onderkant: verdwijnt.
+            n.weg = dt;
+            n.el.classList.add('ov-npc--klaar');
+            continue;
+          }
+          // Verder als de volgende baan vrij is, of als het hier gevaarlijk wordt (op de weg
+          // blijven wachten is het slechtste), en heel soms zonder te kijken.
+          const hier = banen[n.r];
+          const opWeg = hier.soort === 'weg';
+          if (veiligVoorNpc(banen[n.r - 1], n.x) || (opWeg && !veiligVoorNpc(hier, n.x)) || Math.random() < 0.06) {
+            n.vanR = n.r;
+            n.r--;
+            n.hopT = 0;
+            n.wacht = banen[n.r].soort === 'weg' ? willekeurig(0.1, 0.4) : willekeurig(0.3, 0.9);
+          } else {
+            n.wacht = 0.2;
+          }
+        }
+      }
+      const zr = n.hopT >= NPC_HOP / 2 ? n.r : n.vanR;
+      const zb = banen[zr];
+      const geraakt =
+        (zb.soort === 'weg' && dingenVan(zb).some((d) => n.x > d.x + d.links && n.x < d.x + d.rechts)) ||
+        zb.aan?.fase === 'aan' ||
+        (geland && zb.soort === 'water' && !draagt(zb, n.x, 0.1));
+      if (geraakt) {
+        n.weg = dt;
+        n.el.classList.add(zb.soort === 'water' ? 'ov-npc--plons' : 'ov-npc--au');
+        if (fase === 'spel' && Math.abs(zr - rij) <= 3) speelDrum('snare');
+        continue;
+      }
+      if (!dood && fase === 'spel' && tijd >= onkwetsbaar && zichtRij() === zr && Math.abs(zichtX() - n.x) < 0.62) sterf('au');
+    }
+    npcs = npcs.filter((n) => {
+      if (n.weg < 0.9) return true;
+      n.el.remove();
+      return false;
+    });
+    tekenNpcs();
+  }
+
+  function tekenNpcs(): void {
+    for (const n of npcs) {
+      const t = Math.min(1, n.hopT / NPC_HOP);
+      const r = n.vanR + (n.r - n.vanR) * t;
+      n.el.style.translate = `${((n.x - 0.5) * c).toFixed(1)}px ${((N - 1 - r) * c).toFixed(1)}px`;
+      n.el.style.scale = String(1 + Math.sin(Math.PI * t) * 0.2);
+    }
+  }
+
+  // Lawine: na een poosje schuift de sneeuw van onderen omhoog, rij voor rij. Haalt hij je
+  // in, dan kost dat een hartje; terug naar beneden kan niet meer waar al sneeuw ligt.
+  function werkLawine(dt: number): void {
+    if (!lawine || fase !== 'spel' || dood) return;
+    if (lawine.wacht > 0) {
+      lawine.wacht -= dt;
+      if (lawine.wacht <= 0) [0, 0.25, 0.5].forEach((t) => speelDrum('bas', t));
+    } else {
+      lawine.h = Math.min(N - 1.5, lawine.h + dt * (kleuter ? 0.15 : 0.21));
+    }
+    lawine.el.style.setProperty('--h', lawine.h.toFixed(3));
+    lawine.el.hidden = lawine.h <= 0;
+    if (lawine.h > zichtRij() + 0.45) sterf('au');
+  }
+
+  // Storm: vlagen van een paar seconden die je opzij blazen (niet op start en finish).
+  function werkStorm(dt: number): void {
+    if (!storm) return;
+    storm.t -= dt;
+    if (storm.t <= 0) {
+      storm.aan = !storm.aan;
+      storm.t = storm.aan ? willekeurig(2.5, 4) : willekeurig(2, 3.5);
+      if (storm.aan) storm.richting = Math.random() < 0.5 ? 1 : -1;
+      storm.el.classList.toggle('ov-storm--aan', storm.aan);
+      storm.el.classList.toggle('ov-storm--links', storm.richting === -1);
+    }
+    if (!storm.aan || fase !== 'spel' || dood) return;
+    const r = zichtRij();
+    if (r === 0 || r === N - 1) return;
+    const dx = storm.richting * (kleuter ? 0.35 : 0.5) * dt;
+    px = binnenVeld(px + dx);
+    vanX = binnenVeld(vanX + dx);
+  }
+
   // ---------- level opbouwen ----------
 
   function bouwLevel(): void {
     for (const b of banen) b.el.remove();
+    for (const x of [...inslagen, ...npcs]) x.el.remove();
+    lawine?.el.remove();
+    storm?.el.remove();
+    donker?.remove();
+    inslagen = [];
+    npcs = [];
+    lawine = storm = donker = null;
+    inslagWacht = 2;
+    npcWacht = 1;
     ster = null;
     banen = [];
+    uitdagingen = uitdagingVolgorde.slice(0, UITDAGING_VANAF.filter((l) => level >= l).length);
     // Rustig opbouwen: elk aantal banen komt twee levels achter elkaar.
     const reeks = kleuter ? [3, 3, 3, 4, 4, 5, 5, 6] : [3, 3, 4, 4, 5, 5, 6, 6, 7, 7, 8];
     const n = Math.min(reeks[Math.min(level - 1, reeks.length - 1)], maxBanen());
-    // Water vanaf level 4 (kleuters 5).
+    // Water vanaf level 4 (kleuters 5). Lavaland: alle banen lava met stenen.
     const waterVanaf = kleuter ? 5 : 4;
-    const water = !!thema.rivier && level >= waterVanaf && n >= 4;
+    const lavaland = !!thema.rivier && !!uitdaging('lavaland');
+    const water = !!thema.rivier && ((level >= waterVanaf && n >= 4) || lavaland);
     const plan: BaanSoort[] = ['start'];
     if (n >= 5 || water) {
       const onder = Math.ceil(n / 2);
-      for (let k = 0; k < onder; k++) plan.push('weg');
+      for (let k = 0; k < onder; k++) plan.push(lavaland ? 'water' : 'weg');
       plan.push('veilig');
       for (let k = 0; k < n - onder; k++) plan.push(water ? 'water' : 'weg');
     } else {
@@ -482,13 +827,31 @@ export function OversteekScreen(manager: ScreenManager): Screen {
     const vijanden = [...thema.vijanden].sort(() => Math.random() - 0.5);
     const drijvers = thema.rivier ? [...thema.rivier.drijvers].sort(() => Math.random() - 0.5) : [];
     const wegRijen = plan.flatMap((s, r) => (s === 'weg' ? [r] : []));
+    const vrij = new Set(wegRijen); // wegen zonder bijzondere taak
+    // Kolos: aaneengesloten weg van `banen` hoog (of minder als dat niet past). Hij rijdt in
+    // de onderste baan; de banen erboven rijden dezelfde kant op en hebben verder niets.
+    const kolos = uitdaging('kolos');
+    let kolosRij = -1;
+    let kolosHoog = 0;
+    for (let k = kolos?.ding.banen ?? 0; k >= 2 && kolosRij < 0; k--) {
+      const kan = wegRijen.filter((r) => Array.from({ length: k }, (_, j) => plan[r + j] === 'weg').every(Boolean));
+      if (!kan.length) continue;
+      kolosRij = kan[Math.floor(Math.random() * kan.length)];
+      kolosHoog = k;
+    }
+    for (let j = 0; j < kolosHoog; j++) vrij.delete(kolosRij + j);
+    const isKolosBoven = (r: number): boolean => r > kolosRij && r < kolosRij + kolosHoog;
     // Uitschieters: vanaf level 6 (kleuters 7) één baan, vanaf level 9 twee.
     const uitschieters = new Set<number>();
     if (thema.zeldzaam.length && level >= (kleuter ? 7 : 6)) {
       const aantal = level >= 9 && wegRijen.length >= 6 ? 2 : 1;
-      const kandidaten = [...wegRijen].sort(() => Math.random() - 0.5);
-      for (const r of kandidaten.slice(0, aantal)) uitschieters.add(r);
+      for (const r of husselen([...vrij]).slice(0, aantal)) uitschieters.add(r);
     }
+    for (const r of uitschieters) vrij.delete(r);
+    const baanAan = uitdaging('baan-aan');
+    const aanRij = baanAan ? husselen([...vrij])[0] : undefined;
+    const waterRijen = plan.flatMap((s, r) => (s === 'water' ? [r] : []));
+    const duikRijen = new Set(uitdaging('zinken') ? husselen(waterRijen).slice(0, Math.max(1, Math.round(waterRijen.length / 3))) : []);
     let richting: 1 | -1 = Math.random() < 0.5 ? 1 : -1;
     let wegTeller = 0;
     let waterTeller = 0;
@@ -521,8 +884,40 @@ export function OversteekScreen(manager: ScreenManager): Screen {
         tussen: [3, 6],
         lamp: null,
         belGespeeld: false,
+        deelVan: null,
+        mede: [],
+        aan: null,
+        keer: null,
+        duikers: duikRijen.has(r),
       };
-      if (soort === 'weg') {
+      if (r === kolosRij && kolos) {
+        // Komt af en toe, met lamp en knipperende banen vooraf (alle banen die hij vult).
+        b.bron = kolos.ding;
+        b.sporadisch = true;
+        b.v = Math.min(5, willekeurig(1.1, 1.4) * (kolos.ding.snel ?? 1) * f);
+        b.tussen = kleuter ? [6, 10] : [4.5, 8];
+        b.wacht = willekeurig(2.5, 4);
+        b.lamp = maakLamp(bel, b.richting === 1 ? 'links' : 'rechts');
+      } else if (isKolosBoven(r)) {
+        b.deelVan = kolosRij;
+        b.lamp = maakLamp(bel, b.richting === 1 ? 'links' : 'rechts');
+        banen[kolosRij].mede.push(b);
+      } else if (r === aanRij && baanAan) {
+        // Geen verkeer: de hele baan gaat af en toe aan (stroom, vuur, laser).
+        const laag = document.createElement('div');
+        laag.className = `ov-aan ov-aan--${baanAan.stijl}`;
+        bel.appendChild(laag);
+        if (baanAan.bron) {
+          const img = document.createElement('img');
+          img.className = 'ov-aan__bron';
+          img.src = baanAan.bron;
+          img.alt = '';
+          bel.appendChild(img);
+        }
+        bel.classList.add(`ov-baan--${baanAan.stijl}`);
+        b.lamp = maakLamp(bel, 'rechts', `ov-lamp--${baanAan.stijl}`);
+        b.aan = { fase: 'uit', t: willekeurig(1.5, 3), el: laag };
+      } else if (soort === 'weg') {
         const zeldzaam = uitschieters.has(r);
         const s = zeldzaam
           ? thema.zeldzaam[Math.floor(Math.random() * thema.zeldzaam.length)]
@@ -533,11 +928,7 @@ export function OversteekScreen(manager: ScreenManager): Screen {
         if (b.sporadisch) {
           b.tussen = [Math.max(1.6, (kleuter ? 6 : 5.5) - 0.3 * level), Math.max(3, (kleuter ? 10 : 9.5) - 0.4 * level)];
           b.wacht = willekeurig(1.6, 3.5);
-          const lamp = document.createElement('div');
-          lamp.className = `ov-lamp ov-lamp--${b.richting === 1 ? 'links' : 'rechts'}`;
-          lamp.innerHTML = '<i></i><i></i>';
-          bel.appendChild(lamp);
-          b.lamp = lamp;
+          b.lamp = maakLamp(bel, b.richting === 1 ? 'links' : 'rechts');
         }
       } else if (soort === 'water') {
         const s = drijvers[waterTeller++ % drijvers.length];
@@ -548,7 +939,7 @@ export function OversteekScreen(manager: ScreenManager): Screen {
         b.gat = [Math.min(1.3, 0.8 + 0.08 * Lw), Math.min(2.8, 1.8 + 0.15 * Lw)];
       }
       if (b.bron && !b.sporadisch) vul(b);
-      if (soort === 'weg' || soort === 'water') richting = richting === 1 ? -1 : 1;
+      if ((soort === 'weg' || soort === 'water') && !isKolosBoven(r + 1)) richting = richting === 1 ? -1 : 1;
       if (soort === 'finish') {
         for (const [k, src] of thema.overkant.entries()) {
           const img = document.createElement('img');
@@ -561,6 +952,40 @@ export function OversteekScreen(manager: ScreenManager): Screen {
       }
       banen.push(b);
     });
+
+    // Keren: een of twee gewone wegen stoppen af en toe en rijden dan de andere kant op.
+    if (uitdaging('keren')) {
+      const kan = husselen(banen.filter((b) => b.soort === 'weg' && b.bron && !b.sporadisch));
+      for (const b of kan.slice(0, Math.min(2, Math.ceil(kan.length / 3)))) {
+        const el = document.createElement('div');
+        el.className = 'ov-keer';
+        el.innerHTML = '<img src="assets/oversteken/keren.svg" alt=""><img src="assets/oversteken/keren.svg" alt="">';
+        b.el.appendChild(el);
+        b.keer = { fase: 'rijden', t: willekeurig(2.5, 5), v: b.v, el };
+      }
+    }
+    if (uitdaging('lawine')) {
+      const el = document.createElement('div');
+      el.className = 'ov-lawine';
+      veld.appendChild(el);
+      el.hidden = true;
+      el.hidden = true;
+      lawine = { el, h: 0, wacht: kleuter ? 7 : 5 };
+    }
+    if (uitdaging('storm')) {
+      const el = document.createElement('div');
+      el.className = 'ov-storm';
+      veld.appendChild(el);
+      storm = { el, richting: 1, t: willekeurig(1.5, 3), aan: false };
+    }
+    const dk = uitdaging('donker');
+    if (dk) {
+      // Over alle banen behalve start en finish: je ziet waar je heen moet.
+      donker = document.createElement('div');
+      donker.className = `ov-donker${dk.mist ? ' ov-donker--mist' : ''}`;
+      donker.style.height = `calc(var(--c) * ${N - 2})`;
+      veld.appendChild(donker);
+    }
 
     // Eén ster per level, op een baan met verkeer of op de middenberm.
     const sterRijen = plan.flatMap((s, r) => (s === 'weg' || s === 'veilig' ? [r] : []));
@@ -598,6 +1023,9 @@ export function OversteekScreen(manager: ScreenManager): Screen {
     speler.style.transform = `scale(${(1 + sprong).toFixed(3)})`;
     spelerImg.classList.toggle('ov-speler__img--rechts', kijkRechts);
     speler.classList.toggle('ov-speler--knipper', tijd < onkwetsbaar);
+    // Donker of mist: de lichtkring gaat met je mee (de laag begint één rij onder de finish).
+    donker?.style.setProperty('--lx', `${(x * c).toFixed(1)}px`);
+    donker?.style.setProperty('--ly', `${((N - 2 - r + 0.5) * c).toFixed(1)}px`);
   }
 
   function hop(richting: Richting): void {
@@ -609,6 +1037,7 @@ export function OversteekScreen(manager: ScreenManager): Screen {
     }
     const nr = rij + (richting === 'op' ? 1 : richting === 'neer' ? -1 : 0);
     if (nr < 0 || nr >= N) return;
+    if (lawine && lawine.h > nr + 0.2) return; // daar ligt al sneeuw
     let nx = px + (richting === 'links' ? -1 : richting === 'rechts' ? 1 : 0);
     nx = Math.min(Wc - 0.5, Math.max(0.5, nx));
     if (nx === px && nr === rij) return;
@@ -637,6 +1066,8 @@ export function OversteekScreen(manager: ScreenManager): Screen {
 
   function sterf(soort: 'au' | 'plons'): void {
     if (dood || fase !== 'spel') return;
+    // Alleen in de dev-server: een test kan de speler onsterfelijk maken (om rustig te kijken).
+    if (import.meta.env.DEV && (window as { __oversteekOnsterfelijk?: boolean }).__oversteekOnsterfelijk) return;
     dood = soort;
     doodTot = tijd + DOOD_DUUR;
     levens--;
@@ -669,7 +1100,12 @@ export function OversteekScreen(manager: ScreenManager): Screen {
     let r = rij;
     while (r > 0 && banen[r].soort !== 'veilig' && banen[r].soort !== 'start') r--;
     rij = vanRij = r;
-    px = vanX = Math.min(Wc - 0.5, Math.max(0.5, Math.floor(px) + 0.5));
+    px = vanX = binnenVeld(Math.floor(px) + 0.5);
+    // De lawine trekt zich terug tot onder die strook en wacht even.
+    if (lawine) {
+      lawine.h = Math.min(lawine.h, r);
+      lawine.wacht = 2.5;
+    }
     hopT = HOP;
     onkwetsbaar = tijd + 1.3;
     tekenSpeler();
@@ -678,13 +1114,15 @@ export function OversteekScreen(manager: ScreenManager): Screen {
 
   function gehaald(): void {
     fase = 'tussen';
-    tussenTot = tijd + TUSSEN_DUUR;
+    // Komt er volgend level een uitdaging bij? Dan staat die in de banner (en duurt het iets langer).
+    const nieuw = uitdagingVolgorde[UITDAGING_VANAF.indexOf(level + 1)] as Uitdaging | undefined;
+    tussenTot = tijd + TUSSEN_DUUR + (nieuw ? 1 : 0);
     zetScore(score + 10);
     toonPlop(px, rij, '+10');
     [0, 2, 4, 7].forEach((k, j) => speelNoot(TONEN[k], j * 0.11));
     confetti.vuurwerk('klein');
     speler.classList.add('ov-speler--juich');
-    banner.innerHTML = `<img src="${VLAG}" alt=""><span>${level + 1}</span>`;
+    banner.innerHTML = `<img src="${VLAG}" alt=""><span>${level + 1}</span>${nieuw ? `<img class="ov-banner__nieuw" src="${icoonSrc(nieuw.icoon)}" alt="">` : ''}`;
     banner.hidden = false;
     banner.classList.remove('ov-banner--in');
     void banner.offsetWidth;
@@ -703,7 +1141,10 @@ export function OversteekScreen(manager: ScreenManager): Screen {
     tijd += dt;
 
     for (const [r, b] of banen.entries()) {
+      if (b.aan) werkBaanAan(b, r, dt);
       if (!b.bron) continue;
+      if (b.keer) werkKeer(b, dt);
+      if (b.duikers) werkDuikers(b, dt);
       const dx = b.v * b.richting * dt;
       for (const d of b.dingen) d.x += dx;
       b.dingen = b.dingen.filter((d) => {
@@ -714,21 +1155,12 @@ export function OversteekScreen(manager: ScreenManager): Screen {
       if (b.sporadisch) {
         if (b.dingen.length) continue;
         b.wacht -= dt;
-        const aan = b.wacht < 1.5;
-        b.lamp?.classList.toggle('ov-lamp--aan', aan);
-        b.el.classList.toggle('ov-baan--let-op', aan);
-        if (aan && !b.belGespeeld && Math.abs(r - rij) <= 2 && fase === 'spel') {
-          b.belGespeeld = true;
-          speelNoot(TONEN[5], 0);
-          speelNoot(TONEN[5], 0.32);
-        }
+        waarschuw(b, r, b.wacht < 1.5);
         if (b.wacht <= 0) {
           const d = nieuwDing(b);
           d.x = b.richting === 1 ? -d.lengte : Wc;
           b.wacht = willekeurig(b.tussen[0], b.tussen[1]);
-          b.belGespeeld = false;
-          b.lamp?.classList.remove('ov-lamp--aan');
-          b.el.classList.remove('ov-baan--let-op');
+          waarschuw(b, r, false);
         }
       } else {
         vul(b);
@@ -749,6 +1181,11 @@ export function OversteekScreen(manager: ScreenManager): Screen {
       tekenSpeler();
       return;
     }
+
+    werkInslagen(dt);
+    werkOverstekers(dt);
+    werkStorm(dt);
+    werkLawine(dt);
 
     if (dood) {
       if (tijd >= doodTot) naDood();
@@ -778,15 +1215,15 @@ export function OversteekScreen(manager: ScreenManager): Screen {
     if (baan.soort === 'water' && geland) {
       // Wat drijft er onder je? Ook hier telt het midden van het figuurtje, met een
       // randje speling (0,1 vakje).
-      if (!baan.dingen.some((d) => px > d.x + d.links - 0.1 && px < d.x + d.rechts + 0.1)) sterf('plons');
+      if (!draagt(baan, px, 0.1)) sterf('plons');
     }
     // Aanrijden: in de baan waar je te zien bent. Tijdens een sprong is dat de eerste helft
     // nog de oude baan, daarna de nieuwe; ook opzij telt de plek waar je nu in beeld bent.
-    const halfweg = hopT >= HOP / 2;
-    const zichtBaan = banen[halfweg ? rij : vanRij];
-    const zx = vanX + (px - vanX) * Math.min(1, hopT / HOP);
+    const zichtBaan = banen[zichtRij()];
+    const zx = zichtX();
     if (!dood && zichtBaan.soort === 'weg' && tijd >= onkwetsbaar) {
-      if (zichtBaan.dingen.some((d) => zx > d.x + d.links && zx < d.x + d.rechts)) sterf('au');
+      if (dingenVan(zichtBaan).some((d) => zx > d.x + d.links && zx < d.x + d.rechts)) sterf('au');
+      else if (zichtBaan.aan?.fase === 'aan') sterf('au');
     }
     if (!dood && ster && ster.rij === rij && Math.abs(ster.x - px) < 0.6) {
       ster.el.remove();
@@ -835,6 +1272,9 @@ export function OversteekScreen(manager: ScreenManager): Screen {
     overlayActie = null;
     // Alleen in de dev-server: een test kan meteen op een hoger level beginnen.
     level = (import.meta.env.DEV ? (window as { __oversteekLevel?: number }).__oversteekLevel : undefined) ?? 1;
+    // Welke uitdaging eerst komt is elk spel anders (een test kan de volgorde kiezen).
+    const kies = import.meta.env.DEV ? (window as { __oversteekUitdagingen?: string[] }).__oversteekUitdagingen : undefined;
+    uitdagingVolgorde = kies ? kies.flatMap((w) => thema.uitdagingen.filter((u) => u.wat === w)) : husselen(thema.uitdagingen);
     zetScore(0);
     levens = LEVENS;
     tekenHartjes();
@@ -991,6 +1431,7 @@ export function OversteekScreen(manager: ScreenManager): Screen {
   const opGrootte = new ResizeObserver(() => {
     maatVeld();
     for (const b of banen) for (const d of b.dingen) tekenDing(d);
+    tekenNpcs();
     tekenSpeler();
   });
 

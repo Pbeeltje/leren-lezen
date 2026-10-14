@@ -93,6 +93,40 @@ edge, theme decorations) through lanes seen from above. Tile icon: Fluent traffi
   `zeldzaam` lane: one fast thing at a time, announced 1.5 s ahead by a blinking crossing
   light (`.ov-lamp`) and red lane pulse (`.ov-baan--let-op`), with a two-note bell if the
   player is within 2 rows. Trains (`sporadisch: true`) always work that way.
+- **Uitdagingen (level 10 and 15, also kleuter):** each theme has 2–3 `uitdagingen` in
+  `oversteek-themas.ts`. `start()` shuffles them per game; from level 10 the first is
+  active, from 15 the first two (`UITDAGING_VANAF`). The banner of the level where one is
+  added shows its `icoon` (a path, or a `Tekening` name like `'gnoe'`) and lasts 1 s longer.
+  Mechanics (`wat`), each a `werk…` function in the screen:
+  - `baan-aan` (trein stroom, kasteel drakenvuur, ruimte ufo-laser): one road lane without
+    traffic; off 2.4–4.4 s, then 1.5 s lamp in its own colour (`.ov-lamp--stroom` blue,
+    `--vuur` orange) + lane pulse, then the whole lane is deadly for 1.8 s (`.ov-aan--aan`).
+  - `inslag` (bouw bakstenen, ruimte meteorieten, dino lavabommen, herfst kastanjes): every
+    1.1–2.1 s a growing shadow on a cell (half of them near the player, never on start or
+    finish), it lands after `VAL` (1.4 s) and hits if you are on that cell.
+  - `overstekers` (onderwater pink jellyfish via a `kleur` filter, boerderij kippen, zee krabben):
+    up to 3 hop from the finish row down. They step when the next lane is safe
+    (`veiligVoorNpc`), or when their own road lane turns unsafe, and 6% of the time
+    without looking. Traffic, water, rafts and `baan-aan` kill them too. Touching one costs a heart.
+  - `kolos` (zee cruiseschip 2 lanes, bouw truck 2 lanes, savanne gnoe-trek 3 lanes):
+    the `Soort` has `banen`. It is a sporadic thing in the lowest of N adjacent road lanes. The
+    lanes above get `deelVan` (collision via `dingenVan`) and the same direction, and
+    blink along (`mede`). A herd (`aantal`) is built as one row per lane (`maakKudde`).
+  - `lavaland` (dino): all hazard lanes are lava with stones.
+  - `lawine` (winter): after 5 s snow climbs from the bottom at 0.21 rows/s (kleuter 0.15).
+    It kills when it passes the figure's centre, and you cannot hop back into it. After a
+    death it pulls back below the respawn strip and waits 2.5 s.
+  - `storm` (winter): gusts of 2.5–4 s blow you sideways at 0.5 cell/s (not on start or finish).
+  - `donker` (onderwater diepzee, herfst `mist`): overlay over rows 1..N-2 with a light circle
+    that follows the player (`--lx/--ly`); lamps sit above it (z 4).
+  - `zinken` (savanne, boerderij, herfst, winter, kasteel, kermis): in about a third of the water
+    lanes 60% of the rafts cycle wiggle 1.1 s → under 1.6 s (`onder`, doesn't carry) → up.
+  - `keren` (kermis botsauto's, trein rangeren): 1–2 ordinary road lanes brake, stand still
+    0.5 s (blinking `keren.svg` signs at both edges), and reverse. `dingen` is reversed,
+    spans are mirrored and `.ov-ding--om` mirrors the picture.
+  Check: `node tests/oversteken-uitdagingen.mjs <map> <thema:wat+wat,...> [level] [BxH] [ms]
+  [onsterfelijk]` (dev hooks `__oversteekUitdagingen` pick the order,
+  `__oversteekOnsterfelijk` stops `sterf`).
 - **Soort:** `maat` (slot width, see hitboxes), `kijkt` (Fluent faces left; `'r'` exceptions are
   mirrored the other way), `aantal` (herd/swarm, overlapping 0.82), `wagon`+`wagons`
   (train: head leads), `draai` (rocket/comet tilted 45°), `spin`, `dobber` (bob),
