@@ -106,7 +106,7 @@ export const OVERSTEEK_THEMAS: Record<ThemaId, OversteekThema> = {
     ],
     zeldzaam: [
       { src: w('ambulance'), maat: 1.45, lang: true, snel: 2.4 },
-      { src: o('raceauto'), maat: 1.5, kijkt: 'r', snel: 2.8 },
+      { src: o('raceauto'), maat: 1.5, snel: 2.8 },
     ],
     // De bouwput: oversteken over rijplaten en stalen balken.
     rivier: { water: 'bouwput', val: 'stof', drijvers: [{ teken: 'rijplaat', maat: 1 }, { teken: 'balk', maat: 1 }] },
