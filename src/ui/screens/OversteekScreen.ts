@@ -43,7 +43,8 @@ const HOOG_MAX = 1.15; // vakjes: hoger mag een plaatje niet, anders loopt het o
 const UITDAGING_VANAF = [10, 15];
 const HARTJE_VANAF = 10; // vanaf hier om het level een hartje om op te rapen // op deze levels komt er een uitdaging van de achtergrond bij
 const VAL = 1.4; // s dat iets uit de lucht valt (inslag), met een schaduw die groeit
-const NPC_HOP = 0.24; // s per sprongetje van een overstekertje
+const NPC_HOP = 0.24;
+const PASSAGIER = 0.8; // vakjes: zo groot is een dier op een wagon // s per sprongetje van een overstekertje
 
 type BaanSoort = 'start' | 'veilig' | 'finish' | 'weg' | 'water';
 type Richting = 'op' | 'neer' | 'links' | 'rechts';
@@ -58,6 +59,8 @@ interface Ding {
   // Zinken: dit vlot zakt af en toe even onder water, en draagt dan niet.
   duik?: { fase: 'boven' | 'wiebel' | 'onder'; t: number };
   onder?: boolean;
+  // Dieren die op dit vlot staan (vanaf x, vakjes): daar botst het.
+  gevaar?: [number, number][];
 }
 
 // Botsen gaat zoals in de echte Frogger (na de bekende reparatie): één punt, het midden
@@ -142,6 +145,7 @@ interface Baan {
   keer: { fase: 'rijden' | 'remmen' | 'stil' | 'optrekken'; t: number; v: number; el: HTMLElement } | null;
   duikKans: number; // zinken/leegte: zoveel van de vlotten zakt af en toe weg (0 = geen)
   val: NonNullable<Rivier['val']>; // rivier: plons, stofwolk of sterretjes als je ernaast springt
+  passagiers: string[]; // rivier: dieren die op een deel van de vlotten staan
 }
 
 interface Inslag { el: HTMLElement; x: number; r: number; t: number; geland: boolean }
@@ -192,6 +196,34 @@ function vlot(lengte: number): string {
 const RAFT_TEKENING: Record<Vlot, (lengte: number) => string> = { boomstam, schots, vlot, ...VLOT_TEKENINGEN };
 const isVlot = (t: Soort['teken']): t is Vlot => !!t && t in RAFT_TEKENING;
 
+// Stroom op de rails: gloeiende rails met bliksemschichten ertussen, in drie beeldjes die
+// elkaar snel afwisselen (CSS). Bij elke stroomstoot nieuwe schichten.
+function stroomSvg(): string {
+  const schicht = (x: number): string => {
+    let d = `M${x.toFixed(0)} 30`;
+    for (let y = 40; y < 70; y += 8 + Math.random() * 6) d += ` L${(x + (Math.random() - 0.5) * 50).toFixed(0)} ${y.toFixed(0)}`;
+    return `${d} L${(x + (Math.random() - 0.5) * 20).toFixed(0)} 70`;
+  };
+  const vonk = (y: number): string => {
+    const x = Math.random() * 1000;
+    return `M${x.toFixed(0)} ${y} Q${(x + 20).toFixed(0)} ${y + (y < 50 ? -14 : 14)} ${(x + 40).toFixed(0)} ${y}`;
+  };
+  let beeldjes = '';
+  for (let k = 0; k < 3; k++) {
+    let d = '';
+    for (let x = Math.random() * 120; x < 1000; x += 90 + Math.random() * 110) d += schicht(x) + ' ';
+    for (let j = 0; j < 6; j++) d += vonk(j % 2 ? 30 : 70) + ' ';
+    beeldjes += `<g class="ov-vonk"><path d="${d}" stroke="#5ab8ff" stroke-width="7" opacity="0.6"/><path d="${d}" stroke="#fff" stroke-width="2.5"/></g>`;
+  }
+  return `<svg viewBox="0 0 1000 100" preserveAspectRatio="none" aria-hidden="true">
+    <g fill="none" stroke-linecap="round" stroke-linejoin="round" vector-effect="non-scaling-stroke">
+      <path d="M0 30.5 H1000 M0 69.5 H1000" stroke="#3aa8ff" stroke-width="12" opacity="0.55"/>
+      <path d="M0 30.5 H1000 M0 69.5 H1000" stroke="#e6f6ff" stroke-width="4"/>
+      ${beeldjes}
+    </g>
+  </svg>`;
+}
+
 // IJsschots van bovenaf: een grillige witte plaat met een blauwe rand.
 function schots(lengte: number): string {
   const L = Math.round(lengte * 100);
@@ -220,6 +252,7 @@ export function OversteekScreen(manager: ScreenManager): Screen {
     if (sr.src) meetRand(sr.src, sr.draai);
     if (sr.wagon) meetRand(sr.wagon, sr.draai);
   }
+  for (const src of thema.rivier?.passagiers ?? []) meetRand(src);
 
   const el = document.createElement('div');
   el.className = `ov-scherm ov-scherm--${themaId}`;
@@ -491,10 +524,29 @@ export function OversteekScreen(manager: ScreenManager): Screen {
     return { el: d, x: 0, lengte, links, rechts };
   }
 
+  // Een dier dat op een vlot staat, ergens op de lengte, maar zo dat er aan één kant
+  // minstens een vakje vrij blijft om op te landen.
+  function zetPassagier(ding: Ding, lijst: string[]): void {
+    const src = lijst[Math.floor(Math.random() * lijst.length)];
+    const vrij = (p: number): number => Math.max(p - ding.links, ding.rechts - p - PASSAGIER);
+    let p = willekeurig(ding.links, ding.rechts - PASSAGIER);
+    if (vrij(p) < 1.1) p = Math.random() < 0.5 ? ding.links : ding.rechts - PASSAGIER;
+    const img = document.createElement('img');
+    img.className = 'ov-passagier';
+    img.src = src;
+    img.alt = '';
+    img.style.left = `calc(var(--c) * ${p.toFixed(3)})`;
+    if (Math.random() < 0.5) img.classList.add('ov-passagier--om');
+    ding.el.appendChild(img);
+    const [l, r] = rand({ maat: PASSAGIER }, src);
+    ding.gevaar = [[p + l * PASSAGIER, p + r * PASSAGIER]];
+  }
+
   function nieuwDing(b: Baan): Ding {
     const s = b.bron!;
     const ding = s.banen && s.aantal ? maakKudde(s, b.richting) : maakDing(s, b.richting, willekeurig(b.rek[0], b.rek[1]), b.soort === 'water');
     if (Math.random() < b.duikKans) ding.duik = { fase: 'boven', t: willekeurig(1, 3.5) };
+    if (b.passagiers.length && ding.lengte >= 2.2 && Math.random() < 0.5) zetPassagier(ding, b.passagiers);
     // Alleen in de dev-server: tests tekenen hiermee de botsrand over het plaatje.
     if (import.meta.env.DEV) Object.assign(ding.el.dataset, { links: String(ding.links), rechts: String(ding.rechts) });
     b.el.appendChild(ding.el);
@@ -567,6 +619,7 @@ export function OversteekScreen(manager: ScreenManager): Screen {
       a.fase = 'aan';
       a.t = kleuter ? 1.4 : 1.8;
       waarschuw(b, r, false);
+      if (a.el.classList.contains('ov-aan--stroom')) a.el.innerHTML = stroomSvg();
       a.el.classList.add('ov-aan--aan');
       if (fase === 'spel' && Math.abs(r - rij) <= 2) speelDrum('snare');
     } else {
@@ -821,10 +874,15 @@ export function OversteekScreen(manager: ScreenManager): Screen {
     const water = !!thema.rivier && ((level >= waterVanaf && n >= 4) || lavaland);
     const plan: BaanSoort[] = ['start'];
     if (n >= 5 || water) {
-      const onder = Math.ceil(n / 2);
+      // Vanaf level 7 (kleuters 8) is de onderste helft de helft van de keren 4 of 5 banen
+      // breed, anders loop je de paar wegen onder het water zo voorbij.
+      let onder = Math.ceil(n / 2);
+      if (!lavaland && level >= (kleuter ? 8 : 7) && Math.random() < 0.5) {
+        onder = Math.max(onder, Math.min(heelGetal([4, 5]), maxBanen() - (n - onder)));
+      }
       for (let k = 0; k < onder; k++) plan.push(lavaland ? 'water' : 'weg');
       plan.push('veilig');
-      for (let k = 0; k < n - onder; k++) plan.push(water ? 'water' : 'weg');
+      for (let k = 0; k < n - Math.ceil(n / 2); k++) plan.push(water ? 'water' : 'weg');
     } else {
       for (let k = 0; k < n; k++) plan.push('weg');
     }
@@ -915,6 +973,7 @@ export function OversteekScreen(manager: ScreenManager): Screen {
         // Op de leegte verdwijnt alles af en toe; bij Zinken 60% van de vlotten.
         duikKans: r >= leegteVanaf ? 1 : duikRijen.has(r) ? 0.6 : 0,
         val: soort === 'water' ? (rivierVan(r).val ?? 'plons') : 'plons',
+        passagiers: soort === 'water' && level >= (kleuter ? 7 : 6) ? (rivierVan(r).passagiers ?? []) : [],
       };
       if (r === kolosRij && kolos) {
         // Komt af en toe, met lamp en knipperende banen vooraf (alle banen die hij vult).
@@ -978,6 +1037,18 @@ export function OversteekScreen(manager: ScreenManager): Screen {
       }
       banen.push(b);
     });
+
+    // Vanaf level 4 (kleuters 5) is de helft van de uitschieters al onderweg als het level
+    // begint, anders steek je die banen over voordat ze ook maar één keer zijn gekomen.
+    if (level >= waterVanaf) {
+      for (const b of banen) {
+        if (!b.sporadisch || !b.bron || Math.random() < 0.5) continue;
+        const d = nieuwDing(b);
+        const kop = willekeurig(0.35, 0.8) * Wc; // zo ver is de voorkant al
+        d.x = b.richting === 1 ? kop - d.lengte : Wc - kop;
+        tekenDing(d);
+      }
+    }
 
     // Keren: een of twee gewone wegen stoppen af en toe en rijden dan de andere kant op.
     if (uitdaging('keren')) {
@@ -1266,6 +1337,10 @@ export function OversteekScreen(manager: ScreenManager): Screen {
     if (!dood && zichtBaan.soort === 'weg' && tijd >= onkwetsbaar) {
       if (dingenVan(zichtBaan).some((d) => zx > d.x + d.links && zx < d.x + d.rechts)) sterf('au');
       else if (zichtBaan.aan?.fase === 'aan') sterf('au');
+    }
+    // Een dier op een wagon: daar sta je niet op.
+    if (!dood && zichtBaan.soort === 'water' && tijd >= onkwetsbaar) {
+      if (zichtBaan.dingen.some((d) => d.gevaar?.some(([l, r]) => zx > d.x + l && zx < d.x + r))) sterf('au');
     }
     if (!dood && ster && ster.rij === rij && Math.abs(ster.x - px) < 0.6) {
       ster.el.remove();

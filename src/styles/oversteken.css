@@ -689,16 +689,20 @@
   opacity: 0;
 }
 .ov-aan--aan { opacity: 1; }
-/* Stroom: blauwe vonkjes over de hele baan, flakkerend. */
-.ov-aan--stroom {
-  background:
-    repeating-linear-gradient(115deg, transparent 0 14px, rgba(190, 235, 255, 0.95) 14px 17px, transparent 17px 26px, rgba(120, 200, 255, 0.8) 26px 28px, transparent 28px 40px),
-    linear-gradient(rgba(40, 140, 255, 0.15), rgba(60, 170, 255, 0.55) 50%, rgba(40, 140, 255, 0.15));
-  box-shadow: inset 0 0 18px 4px rgba(80, 180, 255, 0.9);
+/* Stroom: gloeiende rails en bliksemschichten (stroomSvg), drie beeldjes die flakkeren. */
+.ov-aan--stroom { background: radial-gradient(ellipse at 50% 50%, rgba(60, 160, 255, 0.35), rgba(10, 30, 80, 0.45)); }
+.ov-aan--stroom svg { display: block; width: 100%; height: 100%; overflow: visible; filter: drop-shadow(0 0 4px #8fd0ff); }
+.ov-aan--stroom path { vector-effect: non-scaling-stroke; }
+.ov-vonk { opacity: 0; animation: ov-vonk 0.21s steps(1) infinite; }
+.ov-vonk:nth-of-type(2) { animation-delay: -0.07s; }
+.ov-vonk:nth-of-type(3) { animation-delay: -0.14s; }
+@keyframes ov-vonk {
+  0% { opacity: 1; }
+  33.4% { opacity: 0; }
 }
-.ov-aan--aan.ov-aan--stroom { animation: ov-stroom-aan 0.12s steps(2) infinite; }
+.ov-aan--aan.ov-aan--stroom { animation: ov-stroom-aan 0.09s steps(2) infinite; }
 @keyframes ov-stroom-aan {
-  50% { background-position: 9px 0, 0 0; filter: brightness(1.4); }
+  50% { filter: brightness(1.35); }
 }
 /* Vuur: vlammen die vanaf de draak (links) over de baan schieten. */
 .ov-aan--vuur {
@@ -904,4 +908,17 @@
 
 @media (prefers-reduced-motion: reduce) {
   .ov-storm, .ov-lawine::before, .ov-aan--aan.ov-aan--stroom, .ov-aan--aan.ov-aan--vuur { animation: none; }
+  .ov-vonk { animation: none; }
+  .ov-vonk:first-of-type { opacity: 1; }
 }
+
+/* Dieren die op een wagon in het ravijn staan (vanaf level 6): niet op springen. */
+.ov-passagier {
+  position: absolute;
+  top: calc(var(--c) * 0.1);
+  width: calc(var(--c) * 0.8);
+  height: calc(var(--c) * 0.8);
+  object-fit: contain;
+  filter: drop-shadow(0 2px 0 rgba(0, 0, 0, 0.3));
+}
+.ov-passagier--om { scale: -1 1; }

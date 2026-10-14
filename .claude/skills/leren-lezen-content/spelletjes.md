@@ -84,13 +84,17 @@ edge, theme decorations) through lanes seen from above. Tile icon: Fluent traffi
   what floats, else a splash), `finish`. Hazard lanes per level: 3,3,4,4,5,5,6,6,7,7,8
   (kleuter 3,3,3,4,4,5,5,6), capped by screen height; from 5 lanes (or with water) split by
   a middle strip. From level 4 (kleuter 5) the upper half is the theme's `rivier` (every
-  theme has one). A `Rivier` is any ground you can only cross on what moves over it: water
+  theme has one). From level 7 (kleuter 8), half the time the lower half is widened to 4–5
+  road lanes (within `maxBanen()`; not with lavaland), otherwise those few lanes were trivial. A `Rivier` is any ground you can only cross on what moves over it: water
   and lava, but also bouw `bouwput` (rijplaten, stalen balken), trein `ravijn` (platte
   wagons over two rails), ruimte `leegte` (planetoïden, zonnepanelen), zee `diepzee`
   (luchtbedden, zwembanden) and onderwater `trog` (luchtbellen, wrakhout). `val` picks the
   fall effect (`.ov-plons--stof` dust ring, `--ster` dotted gold, default splash). The
   drawn rafts are in `oversteek-vlotten.ts` (`VLOT_TEKENINGEN`, merged into
-  `RAFT_TEKENING`; type `Vlot`). Each lane gets one `Soort` (shuffled, neighbours differ),
+  `RAFT_TEKENING`; type `Vlot`). `Rivier.passagiers` (trein: farm animals) puts an animal
+  (`.ov-passagier`, 0.8 cell, `PASSAGIER`) on half the rafts of ≥ 2.2 cells from level 6
+  (kleuter 7), leaving ≥ 1.1 cell free on one side; its measured span is `Ding.gevaar` and
+  touching it costs a heart (checked in the visible lane, like road hits). Each lane gets one `Soort` (shuffled, neighbours differ),
   directions alternate.
 - **Difficulty (kept gentle on purpose; level 3 used to jump to 5 split lanes + water):**
   speed ×(1 + 0.08/level, max 2; kleuter ×0.72). Gaps are measured between the *visible*
@@ -99,7 +103,9 @@ edge, theme decorations) through lanes seen from above. Tile icon: Fluent traffi
   level since the water started. From level 6 (kleuter 7) one lane, from 9 two, become a
   `zeldzaam` lane: one fast thing at a time, announced 1.5 s ahead by a blinking crossing
   light (`.ov-lamp`) and red lane pulse (`.ov-baan--let-op`), with a two-note bell if the
-  player is within 2 rows. Trains (`sporadisch: true`) always work that way.
+  player is within 2 rows. Trains (`sporadisch: true`) always work that way. From level 4
+  (kleuter 5) half the sporadic lanes start with their thing already 35–80% across
+  (end of `bouwLevel`), so you can't just rush through before anything arrives.
 - **Uitdagingen (level 10 and 15, also kleuter):** each theme has 2–3 `uitdagingen` in
   `oversteek-themas.ts`. `start()` shuffles them per game; from level 10 the first is
   active, from 15 the first two (`UITDAGING_VANAF`). The banner of the level where one is
@@ -108,6 +114,8 @@ edge, theme decorations) through lanes seen from above. Tile icon: Fluent traffi
   - `baan-aan` (trein stroom, kasteel drakenvuur, ruimte ufo-laser): one road lane without
     traffic; off 2.4–4.4 s, then 1.5 s lamp in its own colour (`.ov-lamp--stroom` blue,
     `--vuur` orange) + lane pulse, then the whole lane is deadly for 1.8 s (`.ov-aan--aan`).
+    Stroom draws `stroomSvg()` anew each time: glowing rails plus lightning bolts between
+    them in three frames (`.ov-vonk`) that flicker in turn.
   - `inslag` (bouw bakstenen, ruimte meteorieten, dino lavabommen, herfst kastanjes): every
     1.1–2.1 s a growing shadow on a cell (half of them near the player, never on start or
     finish), it lands after `VAL` (1.4 s) and hits if you are on that cell.

@@ -16,6 +16,9 @@ export interface Rivier {
   water: string; // grond (css: .ov-grond--<water>)
   drijvers: Soort[];
   val?: 'plons' | 'stof' | 'ster';
+  // Vanaf level 6 (kleuters 7) staat er op een deel van de vlotten een dier: daar mag je
+  // niet op springen (het kost een hartje), alleen op het lege stuk ernaast.
+  passagiers?: string[];
 }
 
 export interface Soort {
@@ -331,7 +334,13 @@ export const OVERSTEEK_THEMAS: Record<ThemaId, OversteekThema> = {
     ],
     zeldzaam: [{ teken: 'trein', maat: 1, wagons: [5, 6], goederen: true, sporadisch: true, snel: 3 }],
     // Een ravijn met alleen rails eroverheen: spring van platte wagon naar platte wagon.
-    rivier: { water: 'ravijn', val: 'stof', drijvers: [{ teken: 'wagon', maat: 1 }] },
+    // Vanaf level 6 staan er dieren op sommige wagons: daar spring je omheen.
+    rivier: {
+      water: 'ravijn',
+      val: 'stof',
+      drijvers: [{ teken: 'wagon', maat: 1 }],
+      passagiers: [a('koe'), a('schaap'), a('varken'), w('geit'), w('kip'), w('ezel'), w('hond')],
+    },
     overkant: [a('locomotief'), w('klok'), o('verkeerslicht'), w('tas'), a('locomotief')],
     uitdagingen: [
       // Stroom op de rails: een hele baan, met een blauw lampje vooraf.
