@@ -11,7 +11,7 @@ import { GNOE } from '../../achtergrond/savanne.ts';
 import { TREIN_LOC, treinWagons } from '../../achtergrond/trein.ts';
 import { OVERSTEEK_THEMAS, type Rivier, type Soort, type Tekening, type Uitdaging, type Vlot } from './oversteek-themas.ts';
 import { VLOT_TEKENINGEN } from './oversteek-vlotten.ts';
-import { STEGOSAURUS, TRICERATOPS } from './oversteek-tekeningen.ts';
+import { PACHY, RAPTOR, STEGOSAURUS, TRICERATOPS } from './oversteek-tekeningen.ts';
 
 // Oversteken (een soort Frogger): je eigen figuurtje staat onderaan en moet naar de
 // overkant, baan voor baan, tussen wat er langs raast door. Wat dat is hangt af van de
@@ -66,12 +66,12 @@ interface Ding {
   // Dieren die op dit vlot staan (vanaf x, vakjes): daar botst het.
   gevaar?: [number, number][];
   // Het dier zelf, p: plek vanaf x; v: loopt heen en weer (vakjes/s, + is naar rechts).
-  dier?: { el: HTMLImageElement; src: string; p: number; v: number };
+  dier?: { el: HTMLElement; src: string; p: number; v: number };
 }
 
 // Een dier dat naar de volgende wagon springt (vanaf level 15): eerst wiebelt het even,
 // dan vliegt het in een boogje over het gat.
-interface DierSprong { el: HTMLImageElement; van: Ding; naar: Ding; p0: number; p1: number; t: number; src: string; v: number }
+interface DierSprong { el: HTMLElement; van: Ding; naar: Ding; p0: number; p1: number; t: number; src: string; v: number }
 
 // Botsen gaat zoals in de echte Frogger (na de bekende reparatie): één punt, het midden
 // van het figuurtje, tegen de echte breedte van wat er rijdt. Die breedte meten we aan de
@@ -83,6 +83,8 @@ const RANDEN = new Map<string, [number, number]>();
 const TEKENINGEN: Record<Tekening, { svg: string; verhouding: number }> = {
   gnoe: { svg: GNOE, verhouding: 200 / 150 },
   stegosaurus: { svg: STEGOSAURUS, verhouding: 1 },
+  raptor: { svg: RAPTOR, verhouding: 1 },
+  pachy: { svg: PACHY, verhouding: 1 },
   triceratops: { svg: TRICERATOPS, verhouding: 220 / 150 },
 };
 const isTekening = (t: Soort['teken']): t is Tekening => !!t && t in TEKENINGEN;
@@ -546,7 +548,7 @@ export function OversteekScreen(manager: ScreenManager): Screen {
     const p = willekeurig(ding.links, ding.rechts - PASSAGIER);
     return vrij(p) >= 1 ? p : Math.random() < 0.5 ? ding.links : ding.rechts - PASSAGIER;
   }
-  function zetDier(ding: Ding, img: HTMLImageElement, src: string, p: number, v = 0): void {
+  function zetDier(ding: Ding, img: HTMLElement, src: string, p: number, v = 0): void {
     img.style.left = `calc(var(--c) * ${p.toFixed(3)})`;
     img.style.transform = '';
     ding.el.appendChild(img);
@@ -555,11 +557,20 @@ export function OversteekScreen(manager: ScreenManager): Screen {
     ding.dier = { el: img, src, p, v };
   }
   function zetPassagier(ding: Ding, lijst: string[], loopt: boolean): void {
-    const src = icoonSrc(lijst[Math.floor(Math.random() * lijst.length)]);
-    const img = document.createElement('img');
+    const naam = lijst[Math.floor(Math.random() * lijst.length)];
+    const src = icoonSrc(naam);
+    let img: HTMLElement;
+    if (isTekening(naam as Tekening)) {
+      // Eigen tekening inline, dan lopen de pootjes en zwiept de staart.
+      img = document.createElement('div');
+      img.innerHTML = TEKENINGEN[naam as Tekening].svg.trim();
+      img.firstElementChild!.setAttribute('class', `ov-tekening ov-tekening--${naam}`);
+    } else {
+      img = document.createElement('img');
+      (img as HTMLImageElement).src = src;
+      (img as HTMLImageElement).alt = '';
+    }
     img.className = 'ov-passagier';
-    img.src = src;
-    img.alt = '';
     zetDier(ding, img, src, plekOp(ding), loopt ? (Math.random() < 0.5 ? -1 : 1) * willekeurig(0.3, kleuter ? 0.4 : 0.55) : 0);
     // Lopers kijken de kant op waar ze heen gaan (de plaatjes kijken naar links).
     img.classList.toggle('ov-passagier--om', loopt ? ding.dier!.v > 0 : Math.random() < 0.5);

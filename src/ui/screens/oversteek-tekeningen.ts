@@ -61,3 +61,40 @@ export const TRICERATOPS = `
     <path d="M22 92 C28 98 36 99 42 96" fill="none" stroke="#2f5d2a" stroke-width="2.5" stroke-linecap="round"/>
   </g>
 </svg>`;
+
+// Kleine dino's die op de lavastenen staan (lavaland): een raptor en een
+// pachycephalosaurus met zijn bolle kop. Vierkant, kijken naar links, zelfde delen.
+export const RAPTOR = `
+<svg viewBox="0 0 120 120" aria-hidden="true">
+  <path class="dier__poot dier__poot--b" d="M66 62 L59 82 L65 97 L55 99" fill="none" stroke="#263845" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/>
+  <path class="dier__staart" d="M80 50 C96 44 108 40 118 34 C111 45 99 55 82 61 Z" fill="#7f9db3" stroke="#263845" stroke-width="3" stroke-linejoin="round"/>
+  <path d="M84 54 C82 44 64 40 50 44 C44 46 41 42 39 36 C36 29 30 25 22 25 C14 25 5 29 5 35 C5 40 10 42 16 42 L30 43 C32 49 36 56 44 62 C56 72 80 68 84 54 Z"
+        fill="#7f9db3" stroke="#263845" stroke-width="3" stroke-linejoin="round"/>
+  <path d="M54 44 l4 8 M62 42 l4 9 M70 44 l3 8 M77 47 l2 7" stroke="#34495e" stroke-width="3.5" stroke-linecap="round"/>
+  <path d="M45 59 C55 66 71 66 79 59" fill="none" stroke="#c9dbe6" stroke-width="4" stroke-linecap="round"/>
+  <path d="M11 42 l2 4 l2 -4 Z M17 42 l2 4 l2 -4 Z M23 42 l2 4 l2 -4 Z" fill="#fff" stroke="#263845" stroke-width="1"/>
+  <circle cx="23" cy="32" r="4.2" fill="#fff"/>
+  <circle cx="22" cy="32" r="2.4" fill="#1b1b1b"/>
+  <path d="M17 27 L29 29" stroke="#263845" stroke-width="2.5" stroke-linecap="round"/>
+  <path d="M44 56 L39 64 L34 64" fill="none" stroke="#263845" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+  <path class="dier__poot dier__poot--a" d="M72 60 L67 80 L73 96 L62 98" fill="none" stroke="#5f7f96" stroke-width="7.5" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>`;
+
+export const PACHY = `
+<svg viewBox="0 0 120 120" aria-hidden="true">
+  <rect class="dier__poot dier__poot--b" x="68" y="70" width="12" height="27" rx="5" fill="#673ab7" stroke="#311b92" stroke-width="3"/>
+  <path class="dier__staart" d="M86 60 C100 58 112 54 118 47 C113 61 101 70 86 73 Z" fill="#9575cd" stroke="#311b92" stroke-width="3" stroke-linejoin="round"/>
+  <ellipse cx="66" cy="62" rx="25" ry="17" fill="#9575cd" stroke="#311b92" stroke-width="3"/>
+  <circle cx="62" cy="54" r="3.5" fill="#d1c4e9"/>
+  <circle cx="74" cy="56" r="3" fill="#d1c4e9"/>
+  <circle cx="68" cy="66" r="2.6" fill="#d1c4e9"/>
+  <path d="M40 46 C46 52 50 54 52 58 L45 67 C39 61 35 55 32 50 Z" fill="#9575cd" stroke="#311b92" stroke-width="3" stroke-linejoin="round"/>
+  <path d="M45 51 C51 45 51 30 41 23 C31 17 18 22 16 35 C11 39 5 46 8 51 C13 57 35 57 45 51 Z" fill="#9575cd" stroke="#311b92" stroke-width="3" stroke-linejoin="round"/>
+  <path d="M21 30 C25 22 37 20 43 27" fill="none" stroke="#d1c4e9" stroke-width="5" stroke-linecap="round"/>
+  <g fill="#5e35b1"><circle cx="48" cy="37" r="2.6"/><circle cx="46" cy="45" r="2.4"/><circle cx="45" cy="29" r="2.4"/></g>
+  <circle cx="24" cy="41" r="3.8" fill="#fff"/>
+  <circle cx="23" cy="41.5" r="2.2" fill="#1b1b1b"/>
+  <path d="M11 50 Q17 53 25 51" fill="none" stroke="#311b92" stroke-width="2" stroke-linecap="round"/>
+  <path d="M46 62 L41 69" stroke="#311b92" stroke-width="4" stroke-linecap="round"/>
+  <rect class="dier__poot dier__poot--a" x="54" y="72" width="12" height="25" rx="5" fill="#7e57c2" stroke="#311b92" stroke-width="3"/>
+</svg>`;

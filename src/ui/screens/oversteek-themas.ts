@@ -5,7 +5,7 @@ import type { ThemaId } from '../../achtergrond/achtergrond.ts';
 // dan spiegelt het spel ze als ze naar links gaan (en de rest als ze naar rechts gaan).
 
 // Eigen tekeningen die lopen (OversteekScreen: TEKENINGEN).
-export type Tekening = 'gnoe' | 'stegosaurus' | 'triceratops';
+export type Tekening = 'gnoe' | 'stegosaurus' | 'triceratops' | 'raptor' | 'pachy';
 // Getekende vlotten, zo lang als nodig (OversteekScreen en oversteek-vlotten.ts).
 export type Vlot = 'boomstam' | 'schots' | 'vlot' | 'rijplaat' | 'balk' | 'wagon' | 'paneel' | 'luchtbed' | 'bellen' | 'regenboog';
 
@@ -197,7 +197,7 @@ export const OVERSTEEK_THEMAS: Record<ThemaId, OversteekThema> = {
     rivier: { water: 'lava', drijvers: [{ src: o('steen'), maat: 1, aantal: [2, 3], kijkt: 'geen' }] },
     overkant: [o('vulkaan'), w('ei'), a('boomvaren'), w('ei'), o('vulkaan')],
     uitdagingen: [
-      { wat: 'lavaland', icoon: o('vulkaan'), passagiers: ['stegosaurus', 'triceratops', o('sauropode'), w('diplodocus')] },
+      { wat: 'lavaland', icoon: o('vulkaan'), passagiers: ['raptor', 'pachy', 'raptor', w('hagedis'), a('schildpad')] },
       // Lavabommen uit de vulkaan.
       { wat: 'inslag', src: o('steen'), gloed: true, icoon: w('vuur') },
     ],

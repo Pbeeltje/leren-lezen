@@ -142,8 +142,9 @@ edge, theme decorations) through lanes seen from above. Tile icon: Fluent traffi
     lanes above get `deelVan` (collision via `dingenVan`) and the same direction, and
     blink along (`mede`). A herd (`aantal`) is built as one row per lane (`maakKudde`).
   - `lavaland` (dino): all hazard lanes are lava with stones, but only on the level where it
-    is added and then one level in three (random). Its `passagiers` (dinos; a picture path or
-    a `Tekening` name) stand on half the rocks, walk back and forth to the rock's edges
+    is added and then one level in three (random). Its `passagiers` (small animals: own drawings `raptor` and
+    `pachy` from `oversteek-tekeningen.ts`, inline so legs/tail move, plus Fluent hagedis and
+    schildpad; a picture path or a `Tekening` name) stand on half the rocks, walk back and forth to the rock's edges
     (`werkLopers`, `dier.v`, facing where they walk) and hop between rocks from the start
     (`Baan.dierLoopt`).
   - `lawine` (winter): after 5 s snow climbs from the bottom at 0.21 rows/s (kleuter 0.15).
