@@ -920,7 +920,7 @@ export function OversteekScreen(manager: ScreenManager): Screen {
         // Komt af en toe, met lamp en knipperende banen vooraf (alle banen die hij vult).
         b.bron = kolos.ding;
         b.sporadisch = true;
-        b.v = Math.min(5, willekeurig(1.1, 1.4) * (kolos.ding.snel ?? 1) * f);
+        b.v = Math.min(7.5, willekeurig(1.1, 1.4) * (kolos.ding.snel ?? 1) * f);
         b.tussen = kleuter ? [6, 10] : [4.5, 8];
         b.wacht = willekeurig(2.5, 4);
         b.lamp = maakLamp(bel, b.richting === 1 ? 'links' : 'rechts');

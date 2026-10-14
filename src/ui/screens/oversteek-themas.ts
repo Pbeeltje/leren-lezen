@@ -108,7 +108,7 @@ export const OVERSTEEK_THEMAS: Record<ThemaId, OversteekThema> = {
     uitdagingen: [
       { wat: 'inslag', src: o('baksteen'), icoon: o('baksteen') },
       // Uitzonderlijk transport: een reuzentruck over twee rijbanen.
-      { wat: 'kolos', ding: { src: o('oplegger'), maat: 2.2, banen: 2, snel: 1.2 }, icoon: o('oplegger') },
+      { wat: 'kolos', ding: { src: o('oplegger'), maat: 2.2, banen: 2, snel: 2.4 }, icoon: o('oplegger') },
     ],
   },
   savanne: {

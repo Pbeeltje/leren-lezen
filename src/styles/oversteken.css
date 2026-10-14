@@ -577,15 +577,15 @@
 .ov-grond--lava ~ .ov-uitleg-vlot img { filter: brightness(0.5) sepia(0.5); }
 
 /* ---------- 'rivieren' zonder water (Rivier in oversteek-themas.ts, vlotten in oversteek-vlotten.ts) ---------- */
-/* Bouwput: een diepe, donkere put. Lichte zandranden boven en onder, in het midden bijna
-   zwart, met roestige betonijzers die omhoog steken en een paar losse steentjes. */
+/* Bouwput: een uitgegraven sleuf. Damwanden van roestig staal boven en onder, een donkere
+   betonvloer diep beneden en stalen stempels (buizen) van wand naar wand. */
 .ov-grond--bouwput {
   background:
-    linear-gradient(90deg, transparent 0 46%, #a4532a 46% 54%, transparent 54%) 0 38% / 37px 34% repeat-x,
-    linear-gradient(90deg, transparent 0 46%, #7d3c1c 46% 54%, transparent 54%) 19px 50% / 53px 28% repeat-x,
-    radial-gradient(circle 2px at 30% 40%, rgba(255, 200, 140, 0.18) 0 60%, transparent 70%) 0 0 / 23px 17px,
-    linear-gradient(#8a5a30, #4a2c15 14%, #160b04 38%, #070302 50%, #160b04 62%, #4a2c15 86%, #8a5a30);
-  box-shadow: inset 0 10px 10px -4px rgba(0, 0, 0, 0.7), inset 0 -6px 8px -4px rgba(0, 0, 0, 0.6);
+    linear-gradient(90deg, transparent 0 calc(50% - 4px), #5d6268 calc(50% - 4px), #a9afb5 calc(50% - 1px), #4a4f55 calc(50% + 4px), transparent calc(50% + 4px)) 0 0 / 140px 100% repeat-x,
+    repeating-linear-gradient(90deg, #4a2e1a 0 5px, #2c1a0d 5px 8px, #5e3b21 8px 13px, #2c1a0d 13px 16px) 0 0 / 100% 15% no-repeat,
+    repeating-linear-gradient(90deg, #4a2e1a 0 5px, #2c1a0d 5px 8px, #5e3b21 8px 13px, #2c1a0d 13px 16px) 0 100% / 100% 15% no-repeat,
+    radial-gradient(ellipse 22px 6px at 50% 50%, rgba(0, 0, 0, 0.35) 0 60%, transparent 70%) 30px 0 / 97px 100%,
+    linear-gradient(#0c0c0d 15%, #26272a 32%, #2e2f32 50%, #26272a 68%, #0c0c0d 85%);
 }
 /* Ravijn: diepte met alleen twee rails eroverheen. */
 .ov-grond--ravijn {
