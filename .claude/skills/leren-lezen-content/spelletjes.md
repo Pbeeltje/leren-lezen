@@ -85,7 +85,9 @@ edge, theme decorations) through lanes seen from above. Tile icon: Fluent traffi
   (kleuter 3,3,3,4,4,5,5,6), capped by screen height; from 5 lanes (or with water) split by
   a middle strip. From level 4 (kleuter 5) the upper half is the theme's `rivier` (every
   theme has one). From level 7 (kleuter 8), half the time the lower half is widened to 4–5
-  road lanes (within `maxBanen()`; not with lavaland), otherwise those few lanes were trivial. A `Rivier` is any ground you can only cross on what moves over it: water
+  road lanes (not with lavaland), otherwise those few lanes were trivial; the upper half
+  gives up lanes (min 2) so the field doesn't grow and cells stay big on phones. From
+  level 20 there is no middle `veilig` strip (a hit sends you back to the start). A `Rivier` is any ground you can only cross on what moves over it: water
   and lava, but also bouw `bouwput` (rijplaten, stalen balken), trein `ravijn` (platte
   wagons over two rails), ruimte `leegte` (planetoïden, zonnepanelen), zee `diepzee`
   (luchtbedden, zwembanden) and onderwater `trog` (luchtbellen, wrakhout). `val` picks the
@@ -148,7 +150,7 @@ edge, theme decorations) through lanes seen from above. Tile icon: Fluent traffi
     that follows the player (`--lx/--ly`); lamps sit above it (z 4).
   - `zinken` (savanne, boerderij, herfst, winter, kasteel, kermis): in about a third of the water
     lanes 60% of the rafts cycle wiggle 1.1 s → under 1.6 s (`onder`, doesn't carry) → up.
-  - `keren` (kermis botsauto's, trein rangeren): 1–2 ordinary road lanes brake, stand still
+  - `keren` (kermis botsauto's; trein rangeren was dropped: a reversing train flashed away and back): 1–2 ordinary road lanes brake, stand still
     0.5 s (blinking `keren.svg` signs at both edges), and reverse. `dingen` is reversed,
     spans are mirrored and `.ov-ding--om` mirrors the picture.
   - `leegte` (kasteel: regenboogbruggen over a `sterrennacht` void): the upper half of the

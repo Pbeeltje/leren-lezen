@@ -345,8 +345,7 @@ export const OVERSTEEK_THEMAS: Record<ThemaId, OversteekThema> = {
     uitdagingen: [
       // Stroom op de rails: een hele baan, met een blauw lampje vooraf.
       { wat: 'baan-aan', stijl: 'stroom', icoon: w('bliksem') },
-      // Rangeren: de locjes stoppen en rijden terug.
-      { wat: 'keren', icoon: o('keren') },
+      // (Rangeren met 'keren' is eraf: een trein die achteruit reed, flitste weg en terug.)
     ],
   },
 };

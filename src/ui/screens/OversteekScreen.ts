@@ -959,14 +959,17 @@ export function OversteekScreen(manager: ScreenManager): Screen {
     const plan: BaanSoort[] = ['start'];
     if (n >= 5 || water) {
       // Vanaf level 7 (kleuters 8) is de onderste helft de helft van de keren 4 of 5 banen
-      // breed, anders loop je de paar wegen onder het water zo voorbij.
+      // breed, anders loop je de paar wegen onder het water zo voorbij. De bovenste helft
+      // levert dan in (tot minstens 2), zodat het veld niet hoger wordt en de vakjes op een
+      // telefoon niet kleiner.
       let onder = Math.ceil(n / 2);
       if (!lavaland && level >= (kleuter ? 8 : 7) && Math.random() < 0.5) {
-        onder = Math.max(onder, Math.min(heelGetal([4, 5]), maxBanen() - (n - onder)));
+        onder = Math.max(onder, Math.min(heelGetal([4, 5]), n - 2));
       }
       for (let k = 0; k < onder; k++) plan.push(lavaland ? 'water' : 'weg');
-      plan.push('veilig');
-      for (let k = 0; k < n - Math.ceil(n / 2); k++) plan.push(water ? 'water' : 'weg');
+      // Vanaf level 20 geen veilige strook meer in het midden.
+      if (level < 20) plan.push('veilig');
+      for (let k = 0; k < n - onder; k++) plan.push(water ? 'water' : 'weg');
     } else {
       for (let k = 0; k < n; k++) plan.push('weg');
     }
