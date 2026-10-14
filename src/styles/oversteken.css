@@ -922,3 +922,6 @@
   filter: drop-shadow(0 2px 0 rgba(0, 0, 0, 0.3));
 }
 .ov-passagier--om { scale: -1 1; }
+/* Vanaf level 15: even wiebelen, dan springt het dier naar de volgende wagon. */
+.ov-passagier--klaar { animation: ov-wiebel 0.12s ease-in-out infinite alternate; }
+.ov-baan > .ov-passagier { z-index: 3; }

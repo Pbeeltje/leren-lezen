@@ -94,7 +94,11 @@ edge, theme decorations) through lanes seen from above. Tile icon: Fluent traffi
   `RAFT_TEKENING`; type `Vlot`). `Rivier.passagiers` (trein: farm animals) puts an animal
   (`.ov-passagier`, 0.8 cell, `PASSAGIER`) on half the rafts of ≥ 2.2 cells from level 6
   (kleuter 7), leaving ≥ 1.1 cell free on one side; its measured span is `Ding.gevaar` and
-  touching it costs a heart (checked in the visible lane, like road hits). Each lane gets one `Soort` (shuffled, neighbours differ),
+  touching it costs a heart (checked in the visible lane, like road hits). From level 15
+  (`DIER_SPRINGT`) every 2–4.5 s per lane an animal may hop to the neighbouring wagon
+  (`werkDierSprongen`, `Baan.sprongen`) if it is free and on screen: it wiggles 0.6 s
+  (`.ov-passagier--klaar`), then flies 0.45 s in an arc, moved into the lane element; the hazard
+  moves to the new wagon halfway through the flight. It lands on the near end. Each lane gets one `Soort` (shuffled, neighbours differ),
   directions alternate.
 - **Difficulty (kept gentle on purpose; level 3 used to jump to 5 split lanes + water):**
   speed ×(1 + 0.08/level, max 2; kleuter ×0.72). Gaps are measured between the *visible*
@@ -114,6 +118,8 @@ edge, theme decorations) through lanes seen from above. Tile icon: Fluent traffi
   - `baan-aan` (trein stroom, kasteel drakenvuur, ruimte ufo-laser): one road lane without
     traffic; off 2.4–4.4 s, then 1.5 s lamp in its own colour (`.ov-lamp--stroom` blue,
     `--vuur` orange) + lane pulse, then the whole lane is deadly for 1.8 s (`.ov-aan--aan`).
+    From level 15 two lanes, partnered via `aan.maat`: when one switches off, the other
+    warns 0.3–1.2 s later, and the first waits until that one is done (they take turns).
     Stroom draws `stroomSvg()` anew each time: glowing rails plus lightning bolts between
     them in three frames (`.ov-vonk`) that flicker in turn.
   - `inslag` (bouw bakstenen, ruimte meteorieten, dino lavabommen, herfst kastanjes): every

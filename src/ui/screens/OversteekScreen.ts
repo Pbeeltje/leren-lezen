@@ -44,7 +44,10 @@ const UITDAGING_VANAF = [10, 15];
 const HARTJE_VANAF = 10; // vanaf hier om het level een hartje om op te rapen // op deze levels komt er een uitdaging van de achtergrond bij
 const VAL = 1.4; // s dat iets uit de lucht valt (inslag), met een schaduw die groeit
 const NPC_HOP = 0.24;
-const PASSAGIER = 0.8; // vakjes: zo groot is een dier op een wagon // s per sprongetje van een overstekertje
+const PASSAGIER = 0.8; // vakjes: zo groot is een dier op een wagon
+const DIER_SPRINGT = 15; // vanaf dit level springen de dieren soms naar de volgende wagon
+const DIER_KLAAR = 0.6; // s wiebelen voor de sprong
+const DIER_VLUCHT = 0.45; // s in de lucht // s per sprongetje van een overstekertje
 
 type BaanSoort = 'start' | 'veilig' | 'finish' | 'weg' | 'water';
 type Richting = 'op' | 'neer' | 'links' | 'rechts';
@@ -61,7 +64,12 @@ interface Ding {
   onder?: boolean;
   // Dieren die op dit vlot staan (vanaf x, vakjes): daar botst het.
   gevaar?: [number, number][];
+  dier?: { el: HTMLImageElement; src: string; p: number }; // het dier zelf, p: plek vanaf x
 }
+
+// Een dier dat naar de volgende wagon springt (vanaf level 15): eerst wiebelt het even,
+// dan vliegt het in een boogje over het gat.
+interface DierSprong { el: HTMLImageElement; van: Ding; naar: Ding; p0: number; p1: number; t: number; src: string }
 
 // Botsen gaat zoals in de echte Frogger (na de bekende reparatie): één punt, het midden
 // van het figuurtje, tegen de echte breedte van wat er rijdt. Die breedte meten we aan de
@@ -141,11 +149,14 @@ interface Baan {
   // Uitdagingen (vanaf level 10):
   deelVan: number | null; // bovenste stuk van een kolos die in baan `deelVan` rijdt
   mede: Baan[]; // kolos: de banen erboven (die knipperen mee)
-  aan: { fase: 'uit' | 'let-op' | 'aan'; t: number; el: HTMLElement } | null; // hele baan gevaarlijk
+  // Hele baan gevaarlijk. Met een `maat` (vanaf level 15) gaan twee banen om de beurt.
+  aan: { fase: 'uit' | 'let-op' | 'aan'; t: number; el: HTMLElement; maat: Baan | null } | null;
   keer: { fase: 'rijden' | 'remmen' | 'stil' | 'optrekken'; t: number; v: number; el: HTMLElement } | null;
   duikKans: number; // zinken/leegte: zoveel van de vlotten zakt af en toe weg (0 = geen)
   val: NonNullable<Rivier['val']>; // rivier: plons, stofwolk of sterretjes als je ernaast springt
   passagiers: string[]; // rivier: dieren die op een deel van de vlotten staan
+  sprongen: DierSprong[];
+  springWacht: number;
 }
 
 interface Inslag { el: HTMLElement; x: number; r: number; t: number; geland: boolean }
@@ -526,20 +537,84 @@ export function OversteekScreen(manager: ScreenManager): Screen {
 
   // Een dier dat op een vlot staat, ergens op de lengte, maar zo dat er aan één kant
   // minstens een vakje vrij blijft om op te landen.
+  function plekOp(ding: Ding): number {
+    const vrij = (p: number): number => Math.max(p - ding.links, ding.rechts - p - PASSAGIER);
+    const p = willekeurig(ding.links, ding.rechts - PASSAGIER);
+    return vrij(p) >= 1.1 ? p : Math.random() < 0.5 ? ding.links : ding.rechts - PASSAGIER;
+  }
+  function zetDier(ding: Ding, img: HTMLImageElement, src: string, p: number): void {
+    img.style.left = `calc(var(--c) * ${p.toFixed(3)})`;
+    img.style.transform = '';
+    ding.el.appendChild(img);
+    const [l, r] = rand({ maat: PASSAGIER }, src);
+    ding.gevaar = [[p + l * PASSAGIER, p + r * PASSAGIER]];
+    ding.dier = { el: img, src, p };
+  }
   function zetPassagier(ding: Ding, lijst: string[]): void {
     const src = lijst[Math.floor(Math.random() * lijst.length)];
-    const vrij = (p: number): number => Math.max(p - ding.links, ding.rechts - p - PASSAGIER);
-    let p = willekeurig(ding.links, ding.rechts - PASSAGIER);
-    if (vrij(p) < 1.1) p = Math.random() < 0.5 ? ding.links : ding.rechts - PASSAGIER;
     const img = document.createElement('img');
     img.className = 'ov-passagier';
     img.src = src;
     img.alt = '';
-    img.style.left = `calc(var(--c) * ${p.toFixed(3)})`;
     if (Math.random() < 0.5) img.classList.add('ov-passagier--om');
-    ding.el.appendChild(img);
-    const [l, r] = rand({ maat: PASSAGIER }, src);
-    ding.gevaar = [[p + l * PASSAGIER, p + r * PASSAGIER]];
+    zetDier(ding, img, src, plekOp(ding));
+  }
+
+  // Vanaf level 15: af en toe springt een dier naar de wagon ervoor of erachter, als daar
+  // nog niemand staat. Zo kan je lege plekje ineens bezet raken.
+  function werkDierSprongen(b: Baan, dt: number): void {
+    for (const sp of b.sprongen) {
+      sp.t += dt;
+      const weg = !b.dingen.includes(sp.van) || !b.dingen.includes(sp.naar) || sp.naar.dier;
+      if (weg) {
+        sp.t = Infinity;
+        // Nog niet gesprongen: dan blijft het gewoon staan.
+        if (sp.van.dier?.el === sp.el) sp.el.classList.remove('ov-passagier--klaar');
+        else sp.el.remove();
+        continue;
+      }
+      if (sp.t < DIER_KLAAR) continue;
+      if (sp.van.dier) {
+        // Opstijgen: van de wagon af, de baan in, en het gevaar gaat mee.
+        sp.el.classList.remove('ov-passagier--klaar');
+        sp.el.style.left = '0';
+        b.el.appendChild(sp.el);
+        sp.van.dier = undefined;
+        sp.van.gevaar = undefined;
+      }
+      const f = Math.min(1, (sp.t - DIER_KLAAR) / DIER_VLUCHT);
+      if (f >= 1) {
+        zetDier(sp.naar, sp.el, sp.src, sp.p1);
+        sp.t = Infinity;
+        continue;
+      }
+      const x = sp.van.x + sp.p0 + (sp.naar.x + sp.p1 - sp.van.x - sp.p0) * f;
+      sp.el.style.transform = `translate3d(${(x * c).toFixed(1)}px, ${(-Math.sin(f * Math.PI) * 0.6 * c).toFixed(1)}px, 0)`;
+      // Halverwege komt het boven de andere wagon: daar botst het dan al.
+      if (f > 0.5) {
+        const [l, r] = rand({ maat: PASSAGIER }, sp.src);
+        sp.naar.gevaar = [[sp.p1 + l * PASSAGIER, sp.p1 + r * PASSAGIER]];
+      }
+    }
+    b.sprongen = b.sprongen.filter((sp) => sp.t !== Infinity);
+    b.springWacht -= dt;
+    if (b.springWacht > 0) return;
+    b.springWacht = willekeurig(2, 4.5);
+    const kan = b.dingen.flatMap((d, i) =>
+      d.dier && !b.sprongen.some((sp) => sp.van === d)
+        ? [b.dingen[i - 1], b.dingen[i + 1]]
+            .filter((n): n is Ding => !!n && !n.dier && !n.gevaar && !b.sprongen.some((sp) => sp.naar === n) && n.lengte >= 2.2 && n.x > -1 && n.x + n.lengte < Wc + 1)
+            .map((naar) => ({ van: d, naar }))
+        : [],
+    );
+    if (!kan.length) return;
+    const { van, naar } = kan[Math.floor(Math.random() * kan.length)];
+    const dier = van.dier!;
+    // Het landt aan de kant van de wagon waar het vandaan komt.
+    const vanLinks = van.x < naar.x;
+    const p1 = vanLinks ? naar.links + willekeurig(0, 0.4) : naar.rechts - PASSAGIER - willekeurig(0, 0.4);
+    dier.el.classList.add('ov-passagier--klaar');
+    b.sprongen.push({ el: dier.el, van, naar, p0: dier.p, p1, t: 0, src: dier.src });
   }
 
   function nieuwDing(b: Baan): Ding {
@@ -626,6 +701,12 @@ export function OversteekScreen(manager: ScreenManager): Screen {
       a.fase = 'uit';
       a.t = kleuter ? willekeurig(3.5, 5.5) : willekeurig(2.4, 4.4);
       a.el.classList.remove('ov-aan--aan');
+      // Twee banen: nu is de ander aan de beurt, en deze wacht tot die klaar is.
+      const m = a.maat?.aan;
+      if (m && m.fase === 'uit') {
+        m.t = willekeurig(0.3, 1.2);
+        a.t = m.t + 1.5 + (kleuter ? 1.4 : 1.8) + willekeurig(0.6, 2);
+      }
     }
   }
 
@@ -932,7 +1013,8 @@ export function OversteekScreen(manager: ScreenManager): Screen {
     }
     for (const r of uitschieters) vrij.delete(r);
     const baanAan = uitdaging('baan-aan');
-    const aanRij = baanAan ? husselen([...vrij])[0] : undefined;
+    // Vanaf level 15 twee banen, die om de beurt aan gaan.
+    const aanRijen = baanAan ? husselen([...vrij]).slice(0, level >= 15 ? 2 : 1) : [];
     const waterRijen = plan.flatMap((s, r) => (s === 'water' ? [r] : []));
     const duikRijen = new Set(uitdaging('zinken') ? husselen(waterRijen).slice(0, Math.max(1, Math.round(waterRijen.length / 3))) : []);
     let richting: 1 | -1 = Math.random() < 0.5 ? 1 : -1;
@@ -974,6 +1056,8 @@ export function OversteekScreen(manager: ScreenManager): Screen {
         duikKans: r >= leegteVanaf ? 1 : duikRijen.has(r) ? 0.6 : 0,
         val: soort === 'water' ? (rivierVan(r).val ?? 'plons') : 'plons',
         passagiers: soort === 'water' && level >= (kleuter ? 7 : 6) ? (rivierVan(r).passagiers ?? []) : [],
+        sprongen: [],
+        springWacht: willekeurig(1, 3),
       };
       if (r === kolosRij && kolos) {
         // Komt af en toe, met lamp en knipperende banen vooraf (alle banen die hij vult).
@@ -987,7 +1071,7 @@ export function OversteekScreen(manager: ScreenManager): Screen {
         b.deelVan = kolosRij;
         b.lamp = maakLamp(bel, b.richting === 1 ? 'links' : 'rechts');
         banen[kolosRij].mede.push(b);
-      } else if (r === aanRij && baanAan) {
+      } else if (aanRijen.includes(r) && baanAan) {
         // Geen verkeer: de hele baan gaat af en toe aan (stroom, vuur, laser).
         const laag = document.createElement('div');
         laag.className = `ov-aan ov-aan--${baanAan.stijl}`;
@@ -1001,7 +1085,14 @@ export function OversteekScreen(manager: ScreenManager): Screen {
         }
         bel.classList.add(`ov-baan--${baanAan.stijl}`);
         b.lamp = maakLamp(bel, 'rechts', `ov-lamp--${baanAan.stijl}`);
-        b.aan = { fase: 'uit', t: willekeurig(1.5, 3), el: laag };
+        b.aan = { fase: 'uit', t: willekeurig(1.5, 3), el: laag, maat: null };
+        // De tweede wacht tot de eerste klaar is (werkBaanAan geeft daarna de beurt door).
+        const eerste = banen.find((x) => x.aan);
+        if (eerste) {
+          b.aan.maat = eerste;
+          eerste.aan!.maat = b;
+          b.aan.t = eerste.aan!.t + 3.6;
+        }
       } else if (soort === 'weg') {
         const zeldzaam = uitschieters.has(r);
         const s = zeldzaam
@@ -1258,6 +1349,7 @@ export function OversteekScreen(manager: ScreenManager): Screen {
       if (!b.bron) continue;
       if (b.keer) werkKeer(b, dt);
       if (b.duikKans) werkDuikers(b, dt);
+      if (b.passagiers.length && level >= DIER_SPRINGT) werkDierSprongen(b, dt);
       const dx = b.v * b.richting * dt;
       for (const d of b.dingen) d.x += dx;
       b.dingen = b.dingen.filter((d) => {
