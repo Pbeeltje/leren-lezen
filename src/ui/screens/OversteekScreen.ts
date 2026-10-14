@@ -407,11 +407,18 @@ export function OversteekScreen(manager: ScreenManager): Screen {
         img.src = src;
         img.alt = '';
         if (kleur) img.style.filter = kleur;
-        if (s.lang) img.classList.add('ov-stuk__beeld--lang');
+        // Lang voertuig: een SVG houdt in een <img> zijn eigen verhouding (object-fit: fill
+        // rekt hem niet), dus vierkant tekenen en met scaleX uitrekken tot de hele maat.
+        if (s.lang) {
+          img.classList.add('ov-stuk__beeld--lang');
+          img.style.width = `calc(var(--c) * ${hoogte})`;
+        }
         binnen = img;
       }
       binnen.classList.add('ov-stuk__beeld');
-      const draaiing = [spiegel ? 'scaleX(-1)' : '', s.draai ? `rotate(${s.draai}deg)` : ''].filter(Boolean).join(' ');
+      const rek = s.lang && !tekening ? s.maat / hoogte : 1;
+      const schaal = (spiegel ? -1 : 1) * rek;
+      const draaiing = [schaal !== 1 ? `scaleX(${schaal.toFixed(3)})` : '', s.draai ? `rotate(${s.draai}deg)` : ''].filter(Boolean).join(' ');
       if (draaiing) (binnen as HTMLElement).style.transform = draaiing;
       if (s.spin) {
         binnen.classList.add('ov-stuk--spin');

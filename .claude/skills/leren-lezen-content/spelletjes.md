@@ -155,7 +155,7 @@ edge, theme decorations) through lanes seen from above. Tile icon: Fluent traffi
   64 px canvas once and keeps the first/last column with alpha > 60 (`RANDEN`; the gnoe
   drawings are measured from a data URL with their own aspect ratio, `tekeningSrc`). A picture is at most `HOOG_MAX` (1.15) cells tall, so a
   square Fluent picture is at most that wide; `maat` is only the slot. Long vehicles
-  (`lang`: bus, truck, fire engine, ship, trains) are stretched to their full `maat`. Each
+  (`lang`: bus, truck, fire engine, ship, trains) are stretched to their full `maat`: drawn square and widened with `scaleX` (an SVG in an `<img>` ignores `object-fit: fill`). Each
   `Ding` keeps `links`/`rechts` (visible span from `x`, mirrored when needed). The lane
   checked is the one where the figure is visible: the old lane for the first half of a hop
   (Frogger has the same two-stage check). Water: the centre must be over a floater's
