@@ -170,8 +170,9 @@ export function TafeltennisScreen(manager: ScreenManager): Screen {
     const w = veld.clientWidth;
     const h = veld.clientHeight;
     figuurMaat = Math.round(Math.min(96, Math.max(56, Math.min(w, h) * 0.14)));
-    // Bovenaan blijft ruimte voor de terugknop en de stand.
-    const boven = 104;
+    // Bovenaan blijft ruimte voor de terugknop en de stand: de tegenstander loopt over de
+    // hele breedte, dus hij begint onder de balk met ladder en hartjes.
+    const boven = Math.max(104, balk.getBoundingClientRect().bottom - veld.getBoundingClientRect().top + 8);
     tegenLijn = boven + figuurMaat * 0.85;
     spelerLijn = h - 8 - figuurMaat * 0.85;
     const lengte = spelerLijn - tegenLijn;
@@ -570,11 +571,11 @@ export function TafeltennisScreen(manager: ScreenManager): Screen {
     mount(root) {
       root.appendChild(el);
       root.appendChild(terug);
+      tekenStand(); // eerst, meet() kijkt hoe hoog de balk is
       meet();
       bx = B / 2;
       by = (tegenLijn + spelerLijn) / 2;
       zetTegenstander();
-      tekenStand();
       teken();
       opGrootte.observe(veld);
       window.addEventListener('keydown', toetsNeer);

@@ -384,9 +384,16 @@ export function OversteekScreen(manager: ScreenManager): Screen {
   function maatVeld(): void {
     if (!N) return;
     // Onder de balk (die op smalle schermen over twee regels loopt).
-    const boven = Math.max(70, balk.getBoundingClientRect().bottom + 10);
-    const beschikbaarH = window.innerHeight - boven - 10;
-    const beschikbaarB = window.innerWidth;
+    // Binnen de veilige randen (camera/inkeping, zie --veilig-* in global.css).
+    const probe = document.createElement('div');
+    probe.style.cssText = 'position:fixed;visibility:hidden;inset:var(--veilig-boven) var(--veilig-rechts) var(--veilig-onder) var(--veilig-links)';
+    document.body.appendChild(probe);
+    const veilig = probe.getBoundingClientRect();
+    probe.remove();
+    const boven = Math.max(veilig.top + 70, balk.getBoundingClientRect().bottom + 10);
+    const beschikbaarH = veilig.bottom - boven - 10;
+    const beschikbaarB = veilig.width;
+    veld.style.left = `${veilig.left + veilig.width / 2}px`;
     c = Math.max(24, Math.floor(Math.min(96, beschikbaarH / N, beschikbaarB / KOLOMMEN_MIN)));
     Wc = Math.min(KOLOMMEN_MAX, beschikbaarB / c);
     veld.style.setProperty('--c', `${c}px`);
@@ -1669,7 +1676,8 @@ export function OversteekScreen(manager: ScreenManager): Screen {
 
   // ---------- besturing ----------
 
-  // Tikken: die kant op, gezien vanaf het figuurtje (boven = vooruit). Vegen kan ook.
+  // Tikken: die kant op, gezien vanaf het figuurtje (boven = vooruit). Alleen waar je
+  // neertikt telt; vegen stuurt niet (dat gaf verwarring).
   let neer: { x: number; y: number; id: number } | null = null;
   const tikNeer = (e: PointerEvent): void => {
     if (overlay || (e.target as HTMLElement).closest('button')) return;
@@ -1678,20 +1686,12 @@ export function OversteekScreen(manager: ScreenManager): Screen {
   };
   const tikOp = (e: PointerEvent): void => {
     if (!neer || neer.id !== e.pointerId) return;
-    const sx = e.clientX - neer.x;
-    const sy = e.clientY - neer.y;
+    const { x, y } = neer;
     neer = null;
-    let dx: number;
-    let dy: number;
-    if (Math.hypot(sx, sy) > Math.max(24, c * 0.4)) {
-      dx = sx;
-      dy = sy;
-    } else {
-      const r = speler.getBoundingClientRect();
-      dx = e.clientX - (r.left + r.width / 2);
-      dy = e.clientY - (r.top + r.height / 2);
-      if (Math.hypot(dx, dy) < c * 0.55) dy = -1; // op het figuurtje zelf: vooruit
-    }
+    const r = speler.getBoundingClientRect();
+    const dx = x - (r.left + r.width / 2);
+    let dy = y - (r.top + r.height / 2);
+    if (Math.hypot(dx, dy) < c * 0.55) dy = -1; // op het figuurtje zelf: vooruit
     hop(Math.abs(dx) > Math.abs(dy) ? (dx > 0 ? 'rechts' : 'links') : dy < 0 ? 'op' : 'neer');
   };
   el.addEventListener('pointerdown', tikNeer);

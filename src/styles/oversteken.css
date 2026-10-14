@@ -23,7 +23,7 @@
 .ov-scherm .vang-balk {
   flex-wrap: wrap;
   justify-content: flex-end;
-  max-width: calc(100vw - 120px);
+  max-width: calc(100vw - 120px - var(--veilig-links) - var(--veilig-rechts));
 }
 
 /* ---------- banen ---------- */
