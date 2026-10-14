@@ -2820,6 +2820,19 @@
   user-select: none;
   -webkit-user-select: none;
 }
+/* Breed scherm (laptop, liggende tablet): het veld blijft hoger dan breed (hooguit 3:4),
+   in het midden. Een rand en een getinte sluier over de achtergrond aan de zijkanten, in
+   de kleuren van de pingpongtafel per thema (--pong-tafel / --pong-rand). */
+@media (min-aspect-ratio: 3/4) {
+  .vang-veld {
+    flex: 1;
+    width: 75dvh;
+    align-self: center;
+    box-shadow:
+      0 0 0 4px var(--pong-rand, #fff),
+      0 0 0 100vmax color-mix(in srgb, var(--pong-tafel, #1f6fd1) 55%, transparent);
+  }
+}
 .vang-balk {
   position: absolute;
   top: 24px;
@@ -3003,18 +3016,18 @@
   box-shadow: 0 8px 0 rgba(0, 0, 0, 0.25);
   pointer-events: none;
 }
-.thema-ruimte .pong-tafel { --pong-tafel: #2f3480; --pong-rand: #c5cae9; }
-.thema-dino .pong-tafel { --pong-tafel: #3f7d3a; --pong-rand: #f1e3b6; }
-.thema-zee .pong-tafel { --pong-tafel: #1a8fa8; --pong-rand: #fff3d6; }
-.thema-onderwater .pong-tafel { --pong-tafel: #166a80; --pong-rand: #b2ebf2; }
-.thema-boerderij .pong-tafel { --pong-tafel: #4a8f3c; --pong-rand: #fff; }
-.thema-herfst .pong-tafel { --pong-tafel: #8d4a25; --pong-rand: #ffe0b2; }
-.thema-winter .pong-tafel { --pong-tafel: #4f8fc0; --pong-rand: #fff; }
-.thema-kasteel .pong-tafel { --pong-tafel: #5b3a8c; --pong-rand: #ffd54f; }
-.thema-kermis .pong-tafel { --pong-tafel: #a8385a; --pong-rand: #fff3e0; }
-.thema-bouw .pong-tafel { --pong-tafel: #4b5563; --pong-rand: #fbc02d; }
-.thema-trein .pong-tafel { --pong-tafel: #2e6b4f; --pong-rand: #fff; }
-.thema-savanne .pong-tafel { --pong-tafel: #a8742c; --pong-rand: #fff3d6; }
+.thema-ruimte .pong-tafel, .thema-ruimte .vang-scherm { --pong-tafel: #2f3480; --pong-rand: #c5cae9; }
+.thema-dino .pong-tafel, .thema-dino .vang-scherm { --pong-tafel: #3f7d3a; --pong-rand: #f1e3b6; }
+.thema-zee .pong-tafel, .thema-zee .vang-scherm { --pong-tafel: #1a8fa8; --pong-rand: #fff3d6; }
+.thema-onderwater .pong-tafel, .thema-onderwater .vang-scherm { --pong-tafel: #166a80; --pong-rand: #b2ebf2; }
+.thema-boerderij .pong-tafel, .thema-boerderij .vang-scherm { --pong-tafel: #4a8f3c; --pong-rand: #fff; }
+.thema-herfst .pong-tafel, .thema-herfst .vang-scherm { --pong-tafel: #8d4a25; --pong-rand: #ffe0b2; }
+.thema-winter .pong-tafel, .thema-winter .vang-scherm { --pong-tafel: #4f8fc0; --pong-rand: #fff; }
+.thema-kasteel .pong-tafel, .thema-kasteel .vang-scherm { --pong-tafel: #5b3a8c; --pong-rand: #ffd54f; }
+.thema-kermis .pong-tafel, .thema-kermis .vang-scherm { --pong-tafel: #a8385a; --pong-rand: #fff3e0; }
+.thema-bouw .pong-tafel, .thema-bouw .vang-scherm { --pong-tafel: #4b5563; --pong-rand: #fbc02d; }
+.thema-trein .pong-tafel, .thema-trein .vang-scherm { --pong-tafel: #2e6b4f; --pong-rand: #fff; }
+.thema-savanne .pong-tafel, .thema-savanne .vang-scherm { --pong-tafel: #a8742c; --pong-rand: #fff3d6; }
 .pong-tafel__lijn {
   position: absolute;
   top: 0;

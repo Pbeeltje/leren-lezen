@@ -67,6 +67,10 @@ pay coins (coins come from learning); records are per profile.
   pauses the game; the `matchMedia` in `VangScreen.ts` must stay identical to that
   media query (it adds `pointer: coarse`).
 - Record: `haalRecord('vangspel')`. Start/end screens are pictures only.
+- Wide screens (laptop, landscape tablet; `min-aspect-ratio: 3/4`): `.vang-veld` is at most
+  75dvh wide (always taller than wide), centred, with a rim and a tinted veil over the
+  background at the sides in the theme's ping-pong table colours (`--pong-tafel`/`--pong-rand`,
+  set on `.thema-* .vang-scherm`). All game logic uses the field's own width.
 - Check: `node tests/vangspel.mjs <map>`, `node tests/vangspel-thema.mjs <map>`.
 
 ## Oversteken (`ui/screens/OversteekScreen.ts`, themes in `oversteek-themas.ts`)
