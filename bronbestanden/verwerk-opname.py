@@ -11,6 +11,7 @@ Gebruik: python verwerk-opname.py <opname.m4a> <opnamelijst.json> [--schrijf]
 4. Pas met --schrijf worden de mp3's naar hun plek in public/ geschreven.
 """
 import json
+import os
 import re
 import subprocess
 import sys
@@ -18,7 +19,8 @@ import tempfile
 from difflib import SequenceMatcher
 from pathlib import Path
 
-FFMPEG = r"C:/Users/machi/AppData/Local/Temp/claude/c--Users-machi--claude-skills-sf-mcp-skills-temp/ab9469b5-59ec-440c-a83b-60eff32b10fc/scratchpad/ffm/node_modules/ffmpeg-static/ffmpeg.exe"
+# Portable ffmpeg (npm i ffmpeg-static in de scratchpad); pad via de omgeving FFMPEG.
+FFMPEG = os.environ.get("FFMPEG", "ffmpeg")
 ROOT = Path(__file__).resolve().parent.parent
 
 

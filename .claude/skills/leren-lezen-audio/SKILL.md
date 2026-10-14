@@ -24,8 +24,9 @@ clips by one position, "Bijna!" played on correct answers), so **every step is v
 ## 2. Process a recording
 Run `python bronbestanden/verwerk-opname.py <opname.m4a> <opnamelijst.json>` (dry run).
 It needs `pip install faster-whisper` (if PyAV complains about `metadata_errors`, run
-`pip install "av==13.1.0"`) and portable ffmpeg (`npm i ffmpeg-static` in the scratchpad;
-the path is at the top of the script).
+`pip install "av==13.1.0"`) and portable ffmpeg (`npm i ffmpeg-static` in the scratchpad,
+then set the `FFMPEG` environment variable to its `ffmpeg.exe`). For the check in step 3,
+load Whisper with `device='cpu'`: there is no CUDA (`cublas64_12.dll` missing).
 - Split on pauses (`silencedetect -30dB, 0.5 s`), then transcribe each piece (Whisper
   `small`, `nl`, with the list as a vocabulary hint).
 - Align the pieces to the list in order: match, extra take (skipped), line missing, two

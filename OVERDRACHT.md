@@ -2,8 +2,6 @@
 
 ## Waiting on the owner
 
-- [ ] **Recording list 12** (`bronbestanden/opnamelijst-12-deel-1.txt`): the three instructions of Ontdekken → Op volgorde. Until they are recorded the game shows the text without sound.
-
 - [ ] **Recording list 6** (`bronbestanden/opnamelijst-6-deel-1.txt`).
   - Re-record "Tik het woord aan dat bij het plaatje hoort", "Knap gedaan!", "Wat knap!", "Schrijf de j van jas" and the word "muis" (muis was re-cut from the first recording on 1 October, but a fresh take is better).
   - Once `opname6-deel1.m4a` is in `bronbestanden/`, process it with the `leren-lezen-audio` skill (`verwerk-opname.py`).
