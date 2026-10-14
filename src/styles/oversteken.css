@@ -576,6 +576,78 @@
 }
 .ov-grond--lava ~ .ov-uitleg-vlot img { filter: brightness(0.5) sepia(0.5); }
 
+/* ---------- 'rivieren' zonder water (Rivier in oversteek-themas.ts, vlotten in oversteek-vlotten.ts) ---------- */
+/* Bouwput: diep uitgegraven zand, donkerder naar de randen. */
+.ov-grond--bouwput {
+  background:
+    radial-gradient(circle 2px at 30% 40%, rgba(255, 220, 160, 0.25) 0 60%, transparent 70%) 0 0 / 23px 17px,
+    radial-gradient(circle 3px at 70% 60%, rgba(40, 20, 5, 0.35) 0 60%, transparent 70%) 0 0 / 31px 23px,
+    linear-gradient(#3e2614, #6b4524 30%, #6b4524 70%, #3e2614);
+}
+/* Ravijn: diepte met alleen twee rails eroverheen. */
+.ov-grond--ravijn {
+  background:
+    linear-gradient(transparent 26%, #9aa3ab 26% 31%, transparent 31% 69%, #9aa3ab 69% 74%, transparent 74%),
+    radial-gradient(ellipse 30px 8px at 50% 60%, rgba(0, 0, 0, 0.25) 0 60%, transparent 70%) 0 0 / 70px 100%,
+    linear-gradient(#24170f, #4a3424 50%, #24170f);
+}
+/* Lege ruimte: inktzwart met paarse nevel en sterretjes die langzaam voorbij drijven. */
+.ov-grond--leegte {
+  background:
+    radial-gradient(circle 1.5px at 20% 30%, #fff 0 60%, transparent 70%) 0 0 / 37px 29px,
+    radial-gradient(circle 1px at 60% 70%, #cfe0ff 0 60%, transparent 70%) 0 0 / 23px 19px,
+    radial-gradient(ellipse 60% 120% at 50% 50%, rgba(120, 60, 200, 0.35), transparent 70%),
+    #05030f;
+  animation: ov-sterren 6s linear infinite;
+}
+@keyframes ov-sterren {
+  to { background-position: 37px 0, 23px 0, 0 0, 0 0; }
+}
+/* Diepe zee: donkerder blauw dan de vaargeul, met golfjes. */
+.ov-grond--diepzee {
+  background-image: radial-gradient(ellipse 14px 3px at 50% 40%, rgba(255, 255, 255, 0.4) 0 60%, transparent 70%), linear-gradient(#1c64a8, #154f88);
+  background-size: 46px 100%, 100% 100%;
+  animation: ov-stroom 2.4s linear infinite;
+}
+/* Onderwatertrog: een donkere diepte met een paar opstijgende belletjes. */
+.ov-grond--trog {
+  background:
+    radial-gradient(circle 3px at 50% 50%, rgba(180, 230, 255, 0.35) 0 60%, transparent 80%) 0 0 / 41px 33px,
+    linear-gradient(#06162c, #020a17 50%, #06162c);
+  animation: ov-bellen 3s linear infinite;
+}
+@keyframes ov-bellen {
+  to { background-position: 0 -33px, 0 0; }
+}
+/* Sterrennacht bij het kasteel: de leegte onder de regenboogbruggen. */
+.ov-grond--sterrennacht {
+  background:
+    radial-gradient(circle 2px at 30% 40%, #fff7c2 0 60%, transparent 70%) 0 0 / 41px 31px,
+    radial-gradient(circle 1px at 70% 70%, #fff 0 60%, transparent 70%) 0 0 / 19px 17px,
+    linear-gradient(#1b0f3d, #2c1660 50%, #1b0f3d);
+  animation: ov-sterren 8s linear infinite;
+}
+/* Regenboogbruggen flikkeren voor ze verdwijnen, en zijn dan bijna onzichtbaar. */
+.ov-grond--sterrennacht .ov-ding--wiebel { animation: ov-flikker 0.18s steps(1) infinite; }
+@keyframes ov-flikker {
+  50% { opacity: 0.35; }
+}
+.ov-grond--sterrennacht .ov-ding--onder { opacity: 0.08; }
+.ov-grond--sterrennacht .ov-ding--drijver { filter: drop-shadow(0 0 6px rgba(255, 255, 255, 0.6)); }
+/* Ernaast gesprongen: een stofwolk in de put of het ravijn, sterretjes in de leegte. */
+.ov-plons--stof {
+  border-color: rgba(214, 180, 130, 0.95);
+  background: radial-gradient(circle, rgba(200, 160, 110, 0.6), transparent 70%);
+}
+.ov-plons--ster {
+  border-style: dotted;
+  border-color: #ffe36a;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ov-grond--leegte, .ov-grond--diepzee, .ov-grond--trog, .ov-grond--sterrennacht { animation: none; }
+}
+
 /* Hartje om op te rapen (om het level vanaf level 10): rood gloeiend in plaats van geel. */
 .ov-baan .ov-ster.ov-hartje { filter: drop-shadow(0 0 1.5px #7a0018) drop-shadow(0 0 8px rgba(255, 80, 110, 0.95)); }
 

@@ -9,7 +9,8 @@ import { confetti } from '../../three/particles.ts';
 import { huidigThema } from '../../achtergrond/achtergrond.ts';
 import { GNOE } from '../../achtergrond/savanne.ts';
 import { TREIN_LOC, treinWagons } from '../../achtergrond/trein.ts';
-import { OVERSTEEK_THEMAS, type Soort, type Tekening, type Uitdaging } from './oversteek-themas.ts';
+import { OVERSTEEK_THEMAS, type Rivier, type Soort, type Tekening, type Uitdaging, type Vlot } from './oversteek-themas.ts';
+import { VLOT_TEKENINGEN } from './oversteek-vlotten.ts';
 import { STEGOSAURUS, TRICERATOPS } from './oversteek-tekeningen.ts';
 
 // Oversteken (een soort Frogger): je eigen figuurtje staat onderaan en moet naar de
@@ -139,7 +140,8 @@ interface Baan {
   mede: Baan[]; // kolos: de banen erboven (die knipperen mee)
   aan: { fase: 'uit' | 'let-op' | 'aan'; t: number; el: HTMLElement } | null; // hele baan gevaarlijk
   keer: { fase: 'rijden' | 'remmen' | 'stil' | 'optrekken'; t: number; v: number; el: HTMLElement } | null;
-  duikers: boolean; // zinken: een deel van de vlotten zakt af en toe weg
+  duikKans: number; // zinken/leegte: zoveel van de vlotten zakt af en toe weg (0 = geen)
+  val: NonNullable<Rivier['val']>; // rivier: plons, stofwolk of sterretjes als je ernaast springt
 }
 
 interface Inslag { el: HTMLElement; x: number; r: number; t: number; geland: boolean }
@@ -187,7 +189,8 @@ function vlot(lengte: number): string {
     <rect x="2" y="64" width="${L - 4}" height="7" rx="3" fill="#e8d6a8" stroke="#8a6a3a" stroke-width="2"/>
   </svg>`;
 }
-const RAFT_TEKENING = { boomstam, schots, vlot };
+const RAFT_TEKENING: Record<Vlot, (lengte: number) => string> = { boomstam, schots, vlot, ...VLOT_TEKENINGEN };
+const isVlot = (t: Soort['teken']): t is Vlot => !!t && t in RAFT_TEKENING;
 
 // IJsschots van bovenaf: een grillige witte plaat met een blauwe rand.
 function schots(lengte: number): string {
@@ -211,7 +214,8 @@ export function OversteekScreen(manager: ScreenManager): Screen {
   const thema = OVERSTEEK_THEMAS[themaId];
   // Meten kost een paar milliseconden per plaatje; klaar voordat je op start drukt.
   const kolossen = thema.uitdagingen.flatMap((u) => (u.wat === 'kolos' ? [u.ding] : []));
-  for (const sr of [...thema.vijanden, ...thema.zeldzaam, ...(thema.rivier?.drijvers ?? []), ...kolossen]) {
+  const leegtes = thema.uitdagingen.flatMap((u) => (u.wat === 'leegte' ? u.rivier.drijvers : []));
+  for (const sr of [...thema.vijanden, ...thema.zeldzaam, ...(thema.rivier?.drijvers ?? []), ...kolossen, ...leegtes]) {
     if (isTekening(sr.teken)) meetRand(tekeningSrc(sr.teken), 0, TEKENINGEN[sr.teken].verhouding);
     if (sr.src) meetRand(sr.src, sr.draai);
     if (sr.wagon) meetRand(sr.wagon, sr.draai);
@@ -348,12 +352,12 @@ export function OversteekScreen(manager: ScreenManager): Screen {
   function maakDing(s: Soort, richting: 1 | -1, rek: number, drijft: boolean): Ding {
     const d = document.createElement('div');
     d.className = 'ov-ding';
-    if (s.teken === 'boomstam' || s.teken === 'schots' || s.teken === 'vlot') {
+    if (isVlot(s.teken)) {
       d.innerHTML = RAFT_TEKENING[s.teken](rek);
       d.classList.add('ov-ding--drijver');
       d.style.width = `calc(var(--c) * ${rek})`;
-      // Boomstam en schots zijn tot vlak bij de rand getekend.
-      const r = s.teken === 'schots' ? 0.04 : 0.03;
+      // De tekeningen lopen tot vlak bij de rand.
+      const r = s.teken === 'boomstam' || s.teken === 'vlot' ? 0.03 : 0.04;
       return { el: d, x: 0, lengte: rek, links: r, rechts: rek - r };
     }
     if (s.teken === 'trein') return maakTrein(d, s, richting);
@@ -490,7 +494,7 @@ export function OversteekScreen(manager: ScreenManager): Screen {
   function nieuwDing(b: Baan): Ding {
     const s = b.bron!;
     const ding = s.banen && s.aantal ? maakKudde(s, b.richting) : maakDing(s, b.richting, willekeurig(b.rek[0], b.rek[1]), b.soort === 'water');
-    if (b.duikers && Math.random() < 0.6) ding.duik = { fase: 'boven', t: willekeurig(1, 3.5) };
+    if (Math.random() < b.duikKans) ding.duik = { fase: 'boven', t: willekeurig(1, 3.5) };
     // Alleen in de dev-server: tests tekenen hiermee de botsrand over het plaatje.
     if (import.meta.env.DEV) Object.assign(ding.el.dataset, { links: String(ding.links), rechts: String(ding.rechts) });
     b.el.appendChild(ding.el);
@@ -835,7 +839,18 @@ export function OversteekScreen(manager: ScreenManager): Screen {
     const Lw = Math.max(0, level - waterVanaf); // levels sinds het water begon
     // Elke baan een ander soort, zolang de lijst strekt.
     const vijanden = [...thema.vijanden].sort(() => Math.random() - 0.5);
-    const drijvers = thema.rivier ? [...thema.rivier.drijvers].sort(() => Math.random() - 0.5) : [];
+    // Leegte (uitdaging): de bovenste helft van de rivierbanen is een andere rivier.
+    const leegte = uitdaging('leegte');
+    const rivierRijen = plan.flatMap((s, r) => (s === 'water' ? [r] : []));
+    const leegteVanaf = leegte && rivierRijen.length ? rivierRijen[Math.floor(rivierRijen.length / 2)] : Infinity;
+    const rivierVan = (r: number): Rivier => (r >= leegteVanaf ? leegte!.rivier : thema.rivier!);
+    // Per rivier de drijvers in een gehusselde volgorde, zodat buren verschillen.
+    const drijverRij = new Map<Rivier, { lijst: Soort[]; n: number }>();
+    const volgendeDrijver = (rv: Rivier): Soort => {
+      let d = drijverRij.get(rv);
+      if (!d) drijverRij.set(rv, (d = { lijst: husselen(rv.drijvers), n: 0 }));
+      return d.lijst[d.n++ % d.lijst.length];
+    };
     const wegRijen = plan.flatMap((s, r) => (s === 'weg' ? [r] : []));
     const vrij = new Set(wegRijen); // wegen zonder bijzondere taak
     // Kolos: aaneengesloten weg van `banen` hoog (of minder als dat niet past). Hij rijdt in
@@ -864,13 +879,12 @@ export function OversteekScreen(manager: ScreenManager): Screen {
     const duikRijen = new Set(uitdaging('zinken') ? husselen(waterRijen).slice(0, Math.max(1, Math.round(waterRijen.length / 3))) : []);
     let richting: 1 | -1 = Math.random() < 0.5 ? 1 : -1;
     let wegTeller = 0;
-    let waterTeller = 0;
 
     plan.forEach((soort, r) => {
       const bel = document.createElement('div');
       bel.className = `ov-baan ov-baan--${soort}`;
       bel.style.top = `calc(var(--c) * ${N - 1 - r})`;
-      const grond = soort === 'weg' ? thema.weg : soort === 'water' ? thema.rivier!.water : thema.veilig;
+      const grond = soort === 'weg' ? thema.weg : soort === 'water' ? rivierVan(r).water : thema.veilig;
       bel.classList.add(`ov-grond--${grond}`);
       if (soort === 'weg' && plan[r + 1] === 'weg') bel.classList.add('ov-baan--streep');
       // Een berm naast de weg: daar mag het gras over de rand groeien (alleen savanne).
@@ -898,7 +912,9 @@ export function OversteekScreen(manager: ScreenManager): Screen {
         mede: [],
         aan: null,
         keer: null,
-        duikers: duikRijen.has(r),
+        // Op de leegte verdwijnt alles af en toe; bij Zinken 60% van de vlotten.
+        duikKans: r >= leegteVanaf ? 1 : duikRijen.has(r) ? 0.6 : 0,
+        val: soort === 'water' ? (rivierVan(r).val ?? 'plons') : 'plons',
       };
       if (r === kolosRij && kolos) {
         // Komt af en toe, met lamp en knipperende banen vooraf (alle banen die hij vult).
@@ -941,7 +957,7 @@ export function OversteekScreen(manager: ScreenManager): Screen {
           b.lamp = maakLamp(bel, b.richting === 1 ? 'links' : 'rechts');
         }
       } else if (soort === 'water') {
-        const s = drijvers[waterTeller++ % drijvers.length];
+        const s = volgendeDrijver(rivierVan(r));
         b.bron = s;
         b.v = Math.min(3, willekeurig(0.7, 1.25) * f * (s.snel ?? 1));
         const lang = Math.max(1.6, 2.8 - 0.2 * Lw) + (kleuter ? 0.6 : 0);
@@ -1106,7 +1122,7 @@ export function OversteekScreen(manager: ScreenManager): Screen {
       speelDrum('snare');
       speelDrum('bekken', 0.04);
       const plons = document.createElement('div');
-      plons.className = 'ov-plons';
+      plons.className = `ov-plons ov-plons--${banen[rij].val}`;
       plons.style.left = `${px * c}px`;
       plons.style.top = `${(N - 1 - rij + 0.5) * c}px`;
       veld.appendChild(plons);
@@ -1170,7 +1186,7 @@ export function OversteekScreen(manager: ScreenManager): Screen {
       if (b.aan) werkBaanAan(b, r, dt);
       if (!b.bron) continue;
       if (b.keer) werkKeer(b, dt);
-      if (b.duikers) werkDuikers(b, dt);
+      if (b.duikKans) werkDuikers(b, dt);
       const dx = b.v * b.richting * dt;
       for (const d of b.dingen) d.x += dx;
       b.dingen = b.dingen.filter((d) => {
@@ -1345,7 +1361,7 @@ export function OversteekScreen(manager: ScreenManager): Screen {
   // figuurtje dat zinkt met een plons (fout).
   function waterPlaatjes(rivier: NonNullable<typeof thema.rivier>): { goed: string; fout: string } {
     const vlotSoort = rivier.drijvers.find((d) => d.teken !== 'boomstam') ?? rivier.drijvers[0];
-    const vlotHtml = vlotSoort.teken === 'boomstam' || vlotSoort.teken === 'schots' || vlotSoort.teken === 'vlot'
+    const vlotHtml = isVlot(vlotSoort.teken)
       ? RAFT_TEKENING[vlotSoort.teken](2)
       : `<img src="${vlotSoort.src}" alt=""><img src="${vlotSoort.src}" alt="">`;
     const plas = `<span class="ov-uitleg-water ov-grond--${rivier.water}"></span>`;

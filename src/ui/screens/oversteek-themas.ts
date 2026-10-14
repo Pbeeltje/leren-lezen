@@ -6,10 +6,21 @@ import type { ThemaId } from '../../achtergrond/achtergrond.ts';
 
 // Eigen tekeningen die lopen (OversteekScreen: TEKENINGEN).
 export type Tekening = 'gnoe' | 'stegosaurus' | 'triceratops';
+// Getekende vlotten, zo lang als nodig (OversteekScreen en oversteek-vlotten.ts).
+export type Vlot = 'boomstam' | 'schots' | 'vlot' | 'rijplaat' | 'balk' | 'wagon' | 'paneel' | 'luchtbed' | 'bellen' | 'regenboog';
+
+// Een 'rivier': banen waar je alleen kunt staan op wat erover drijft of rijdt. Water, lava,
+// maar ook een bouwput, een ravijn of de leegte. `val`: wat je ziet als je ernaast springt
+// (plons in water of lava, stofwolk in een put of ravijn, sterretjes in de leegte).
+export interface Rivier {
+  water: string; // grond (css: .ov-grond--<water>)
+  drijvers: Soort[];
+  val?: 'plons' | 'stof' | 'ster';
+}
 
 export interface Soort {
   src?: string; // plaatje; zonder src een eigen tekening (`teken`)
-  teken?: Tekening | 'boomstam' | 'schots' | 'vlot' | 'trein'; // trein: de trein uit de achtergrond
+  teken?: Tekening | Vlot | 'trein'; // trein: de trein uit de achtergrond
   goederen?: boolean; // trein: goederenwagons in plaats van reizigers
   // Breedte van het vak voor één plaatje, in vakjes. Getekend wordt het hooguit HOOG_MAX
   // (1,15) breed, behalve met `lang`; de rest van het vak is ruimte, geen botsing.
@@ -46,6 +57,8 @@ export type Uitdaging = { icoon: string } & (
   | { wat: 'donker'; mist?: boolean } // je ziet alleen een kring om je heen
   | { wat: 'zinken' } // sommige vlotten zakken even onder water
   | { wat: 'keren' } // het verkeer in een baan stopt en rijdt de andere kant op
+  // De bovenste helft van de rivierbanen wordt een andere rivier, waarvan alles af en toe verdwijnt.
+  | { wat: 'leegte'; rivier: Rivier }
 );
 
 export interface OversteekThema {
@@ -56,7 +69,7 @@ export interface OversteekThema {
   zeldzaam: Soort[];
   // Water vanaf level 4: alleen staan op wat drijft. Geen dieren als vlot: kinderen zien
   // een dier als gevaar (zoals op de weg) en durfden er niet op.
-  rivier?: { water: string; drijvers: Soort[] };
+  rivier?: Rivier;
   overkant: string[]; // versiering op de finish
   uitdagingen: Uitdaging[];
 }
@@ -89,6 +102,8 @@ export const OVERSTEEK_THEMAS: Record<ThemaId, OversteekThema> = {
       { src: w('ambulance'), maat: 1.45, lang: true, snel: 2.4 },
       { src: o('raceauto'), maat: 1.5, kijkt: 'r', snel: 2.8 },
     ],
+    // De bouwput: oversteken over rijplaten en stalen balken.
+    rivier: { water: 'bouwput', val: 'stof', drijvers: [{ teken: 'rijplaat', maat: 1 }, { teken: 'balk', maat: 1 }] },
     overkant: [o('bouwkraan'), o('afzetting'), w('huis'), o('afzetting'), o('bouwkraan')],
     uitdagingen: [
       { wat: 'inslag', src: o('baksteen'), icoon: o('baksteen') },
@@ -153,6 +168,8 @@ export const OVERSTEEK_THEMAS: Record<ThemaId, OversteekThema> = {
       { src: w('raket'), maat: 1.4, kijkt: 'r', draai: 45, snel: 2.8 },
       { src: o('satelliet'), maat: 1.6, kijkt: 'geen', spin: true, snel: 1.6 },
     ],
+    // De lege ruimte: van planetoïde naar zonnepaneel.
+    rivier: { water: 'leegte', val: 'ster', drijvers: [{ src: o('steen'), maat: 1, aantal: [2, 3], kijkt: 'geen' }, { teken: 'paneel', maat: 1 }] },
     overkant: [o('planeet'), w('maan'), w('raket'), w('maan'), o('planeet')],
     uitdagingen: [
       { wat: 'inslag', src: i('meteoor'), gloed: true, icoon: i('meteoor') },
@@ -191,6 +208,8 @@ export const OVERSTEEK_THEMAS: Record<ThemaId, OversteekThema> = {
       { src: w('dolfijn'), maat: 1.2, aantal: [2, 3], dobber: true, snel: 1.3 },
     ],
     zeldzaam: [{ src: o('speedboot'), maat: 1.5, snel: 2.8, dobber: true }],
+    // De diepe zee: luchtbedden en zwembanden.
+    rivier: { water: 'diepzee', drijvers: [{ teken: 'luchtbed', maat: 1 }, { src: o('zwemband'), maat: 1, aantal: [2, 3], kijkt: 'geen', kleuren: true, dobber: true }] },
     overkant: [a('vuurtoren'), w('parasol'), a('krab'), w('emmer'), a('vuurtoren')],
     uitdagingen: [
       // Een cruiseschip, twee banen breed.
@@ -210,6 +229,8 @@ export const OVERSTEEK_THEMAS: Record<ThemaId, OversteekThema> = {
       { src: o('walvis'), maat: 1.15, snel: 0.5, dobber: true },
     ],
     zeldzaam: [{ src: w('haai'), maat: 1.6, snel: 2.6, dobber: true }],
+    // De onderwatertrog: op luchtbelletjes en wrakhout.
+    rivier: { water: 'trog', val: 'ster', drijvers: [{ teken: 'bellen', maat: 1 }, { teken: 'vlot', maat: 1 }] },
     overkant: [a('schelp'), a('octopus'), a('schildpad'), a('krab'), a('schelp')],
     uitdagingen: [
       // Roze kwallen zwemmen de andere kant op.
@@ -273,6 +294,8 @@ export const OVERSTEEK_THEMAS: Record<ThemaId, OversteekThema> = {
       // Een draak aan de kant blaast vuur over een hele baan.
       { wat: 'baan-aan', stijl: 'vuur', bron: w('draak'), icoon: w('draak') },
       ZINKEN(o('lotus')),
+      // De leegte met regenboogbruggen die verdwijnen en weer verschijnen (boven de gracht).
+      { wat: 'leegte', rivier: { water: 'sterrennacht', val: 'ster', drijvers: [{ teken: 'regenboog', maat: 1 }] }, icoon: o('regenboog') },
     ],
   },
   kermis: {
@@ -307,6 +330,8 @@ export const OVERSTEEK_THEMAS: Record<ThemaId, OversteekThema> = {
       { teken: 'trein', maat: 1, wagons: [0, 1], goederen: true, snel: 1 },
     ],
     zeldzaam: [{ teken: 'trein', maat: 1, wagons: [5, 6], goederen: true, sporadisch: true, snel: 3 }],
+    // Een ravijn met alleen rails eroverheen: spring van platte wagon naar platte wagon.
+    rivier: { water: 'ravijn', val: 'stof', drijvers: [{ teken: 'wagon', maat: 1 }] },
     overkant: [a('locomotief'), w('klok'), o('verkeerslicht'), w('tas'), a('locomotief')],
     uitdagingen: [
       // Stroom op de rails: een hele baan, met een blauw lampje vooraf.

@@ -83,8 +83,15 @@ edge, theme decorations) through lanes seen from above. Tile icon: Fluent traffi
 - **Lanes:** `start`, `weg` (hazards), `veilig` (middle strip), `water` (stand only on
   what floats, else a splash), `finish`. Hazard lanes per level: 3,3,4,4,5,5,6,6,7,7,8
   (kleuter 3,3,3,4,4,5,5,6), capped by screen height; from 5 lanes (or with water) split by
-  a middle strip. Water replaces the upper half from level 4 (kleuter 5) for themes with a
-  `rivier`. Each lane gets one `Soort` (shuffled, neighbours differ), directions alternate.
+  a middle strip. From level 4 (kleuter 5) the upper half is the theme's `rivier` (every
+  theme has one). A `Rivier` is any ground you can only cross on what moves over it: water
+  and lava, but also bouw `bouwput` (rijplaten, stalen balken), trein `ravijn` (platte
+  wagons over two rails), ruimte `leegte` (planetoïden, zonnepanelen), zee `diepzee`
+  (luchtbedden, zwembanden) and onderwater `trog` (luchtbellen, wrakhout). `val` picks the
+  fall effect (`.ov-plons--stof` dust ring, `--ster` dotted gold, default splash). The
+  drawn rafts are in `oversteek-vlotten.ts` (`VLOT_TEKENINGEN`, merged into
+  `RAFT_TEKENING`; type `Vlot`). Each lane gets one `Soort` (shuffled, neighbours differ),
+  directions alternate.
 - **Difficulty (kept gentle on purpose; level 3 used to jump to 5 split lanes + water):**
   speed ×(1 + 0.08/level, max 2; kleuter ×0.72). Gaps are measured between the *visible*
   spans (`vul` uses `links`/`rechts`): 3.8 cells, −0.18/level, min 1.6 (kleuter 4.4,
@@ -124,6 +131,10 @@ edge, theme decorations) through lanes seen from above. Tile icon: Fluent traffi
   - `keren` (kermis botsauto's, trein rangeren): 1–2 ordinary road lanes brake, stand still
     0.5 s (blinking `keren.svg` signs at both edges), and reverse. `dingen` is reversed,
     spans are mirrored and `.ov-ding--om` mirrors the picture.
+  - `leegte` (kasteel: regenboogbruggen over a `sterrennacht` void): the upper half of the
+    river lanes uses the challenge's own `Rivier`; the moat stays below. Every bridge there
+    vanishes now and then (`duikKans` 1, same cycle as `zinken`, flickering and fading to
+    almost nothing).
   Check: `node tests/oversteken-uitdagingen.mjs <map> <thema:wat+wat,...> [level] [BxH] [ms]
   [onsterfelijk]` (dev hooks `__oversteekUitdagingen` pick the order,
   `__oversteekOnsterfelijk` stops `sterf`).
