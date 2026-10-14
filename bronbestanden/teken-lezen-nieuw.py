@@ -62,18 +62,54 @@ BLOK = '''  <path d="M20 44 L60 22 L100 44 L60 66 Z" fill="#ffcc80" stroke="#e65
   <path d="M20 44 L20 86 L60 108 L60 66 Z" fill="#ffb74d" stroke="#e65100" stroke-width="3" stroke-linejoin="round"/>
   <path d="M100 44 L100 86 L60 108 L60 66 Z" fill="#ffa726" stroke="#e65100" stroke-width="3" stroke-linejoin="round"/>'''
 
-DAG = '''  <circle cx="60" cy="48" r="22" fill="#ffcc33" stroke="#f9a825" stroke-width="3"/>
-  <g stroke="#ffb020" stroke-width="4" stroke-linecap="round">
-    <path d="M60 8 V16 M60 80 V88 M20 48 H28 M92 48 H100 M32 20 L38 26 M82 70 L88 76 M88 20 L82 26 M38 70 L32 76"/>
+# Huis wat kleiner en lager, met een dikke blauwe pijl die op het dak wijst.
+DAK = '''  <g transform="translate(0 12) scale(0.88)">
+    <path d="M10 62 L60 14 L110 62 Z" fill="#e53935" stroke="#b71c1c" stroke-width="3" stroke-linejoin="round"/>
+    <path d="M24 62 V108 H96 V62" fill="#ffe0b2" stroke="#ef6c00" stroke-width="3"/>
+    <rect x="48" y="78" width="24" height="30" rx="2" fill="#6d4c41" stroke="#3e2723" stroke-width="2.5"/>
+    <rect x="30" y="72" width="16" height="14" fill="#81d4fa" stroke="#0277bd" stroke-width="2"/>
   </g>
-  <rect x="22" y="84" width="76" height="28" rx="6" fill="#fff" stroke="#90a4ae" stroke-width="3"/>
-  <path d="M22 96 H98" stroke="#ef5350" stroke-width="4"/>
-  <g fill="#546e7a"><circle cx="40" cy="104" r="3"/><circle cx="60" cy="104" r="3"/><circle cx="80" cy="104" r="3"/></g>'''
+  <path d="M0 0 L-17 -14 L-17 -6 L-40 -6 L-40 6 L-17 6 L-17 14 Z" transform="translate(76 45) rotate(133) scale(1.25)"
+    fill="#1e88e5" stroke="#0d47a1" stroke-width="3" stroke-linejoin="round"/>'''
 
-DAK = '''  <path d="M10 62 L60 14 L110 62 Z" fill="#e53935" stroke="#b71c1c" stroke-width="3" stroke-linejoin="round"/>
-  <path d="M24 62 V108 H96 V62" fill="#ffe0b2" stroke="#ef6c00" stroke-width="3"/>
-  <rect x="48" y="78" width="24" height="30" rx="2" fill="#6d4c41" stroke="#3e2723" stroke-width="2.5"/>
-  <rect x="30" y="72" width="16" height="14" fill="#81d4fa" stroke="#0277bd" stroke-width="2"/>'''
+# Waslijn tussen twee palen met een T-shirt en een geruit tafelkleed, in Fluent-stijl
+# (zachte kleurverlopen, geen lijnen), zodat hij past bij de emoji-plaatjes zoals kikker.
+WAS = '''  <defs>
+    <linearGradient id="was-paal" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#b07a52"/><stop offset="1" stop-color="#7a4b2c"/>
+    </linearGradient>
+    <linearGradient id="was-shirt" x1="0" y1="0" x2="0.4" y2="1">
+      <stop offset="0" stop-color="#5fd0ff"/><stop offset="1" stop-color="#1c7fe0"/>
+    </linearGradient>
+    <linearGradient id="was-kleed" x1="0" y1="0" x2="0.3" y2="1">
+      <stop offset="0" stop-color="#ff6f61"/><stop offset="1" stop-color="#d9302c"/>
+    </linearGradient>
+    <linearGradient id="was-gras" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#8fd14f"/><stop offset="1" stop-color="#4fa83a"/>
+    </linearGradient>
+    <clipPath id="was-kleedvorm">
+      <path d="M17.2 9.1 Q22 9 26.6 7.6 L27.2 22.2 Q25.6 21.4 24 22.4 Q22.3 23.3 20.6 22.5 Q18.9 21.8 17.4 22.8 Z"/>
+    </clipPath>
+  </defs>
+  <path d="M1 29.5 Q16 27 31 29.5 Q31 31 29.5 31 H2.5 Q1 31 1 29.5 Z" fill="url(#was-gras)"/>
+  <rect x="2.4" y="5" width="2" height="25" rx="1" fill="url(#was-paal)"/>
+  <rect x="27.6" y="5" width="2" height="25" rx="1" fill="url(#was-paal)"/>
+  <path d="M3.4 7 Q16 11.2 28.6 7" fill="none" stroke="#9e9e9e" stroke-width="0.6"/>
+  <g transform="rotate(5 10 8.4)">
+    <path d="M5.8 8.6 L8.5 8 C9.1 9.3 10.9 9.3 11.5 8 L14.2 8.6 L16.2 12.2 L13.9 13.2 L13.9 18.8 C11.3 19.4 8.7 19.4 6.1 18.8 L6.1 13.2 L3.8 12.2 Z"
+      fill="url(#was-shirt)"/>
+    <path d="M6.1 13.2 L6.6 12.3 M13.9 13.2 L13.4 12.3" stroke="#1565c0" stroke-width="0.5" stroke-linecap="round" opacity="0.6"/>
+    <circle cx="10" cy="14" r="1.8" fill="#ffd54f"/>
+  </g>
+  <path d="M17.2 9.1 Q22 9 26.6 7.6 L27.2 22.2 Q25.6 21.4 24 22.4 Q22.3 23.3 20.6 22.5 Q18.9 21.8 17.4 22.8 Z" fill="url(#was-kleed)"/>
+  <g clip-path="url(#was-kleedvorm)" fill="#fff" opacity="0.55">
+    <rect x="18.6" y="6" width="1.7" height="18"/><rect x="21.9" y="6" width="1.7" height="18"/><rect x="25.2" y="6" width="1.7" height="18"/>
+    <rect x="16" y="11.4" width="12" height="1.7"/><rect x="16" y="15" width="12" height="1.7"/><rect x="16" y="18.6" width="12" height="1.7"/>
+  </g>
+  <g fill="#c58b4e">
+    <rect x="6.2" y="6.6" width="1.2" height="2.8" rx="0.5"/><rect x="12.6" y="7.4" width="1.2" height="2.8" rx="0.5"/>
+    <rect x="17.6" y="7.6" width="1.2" height="2.8" rx="0.5"/><rect x="25.4" y="6.6" width="1.2" height="2.8" rx="0.5"/>
+  </g>'''
 
 HAK = '''  <path d="M18 52 H78 C96 52 104 64 100 78 H28 Z" fill="#ec407a" stroke="#ad1457" stroke-width="3" stroke-linejoin="round"/>
   <path d="M22 78 V98 H36 V78" fill="#ad1457" stroke="#880e4f" stroke-width="3"/>
@@ -214,7 +250,7 @@ def main() -> None:
     kopieer(ICONS / 'avatar-papegaai.svg', 'papegaai')
     eigen = {
         'mes': (MES, 'Een mes'), 'kok': (KOK, 'Een kok met koksmuts'), 'blok': (BLOK, 'Eén blok'),
-        'dag': (DAG, 'Zon en een dag op de kalender'), 'dak': (DAK, 'Een huis met een dak'),
+        'dak': (DAK, 'Een huis met een pijl naar het dak'),
         'hak': (HAK, 'Een schoen met hak'), 'kast': (KAST, 'Een kast'),
         'verf': (VERF, 'Een pot verf'), 'kwast': (KWAST, 'Een kwast'), 'molen': (MOLEN, 'Een molen'),
         'kegel': (KEGEL, 'Een kegel'), 'ketting': (KETTING, 'Een ketting'), 'kijk': (KIJK, 'Een oog dat kijkt'),
@@ -224,6 +260,7 @@ def main() -> None:
     }
     for naam, (inhoud, notitie) in eigen.items():
         schrijf(naam, svg(inhoud, notitie))
+    schrijf('was', svg(WAS, 'Een waslijn met een T-shirt en een tafelkleed', '0 0 32 32'))
 
     twee = [(8, 20, 52), (60, 28, 52)]
     drie = [(4, 28, 44), (40, 12, 44), (72, 32, 44)]

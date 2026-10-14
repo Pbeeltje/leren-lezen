@@ -1,7 +1,7 @@
 import type { Kern, Woord, ZinsVoorbeeld } from '../../types.ts';
 
 // Nieuwe leesvolgorde: CVC → lange klinkers → clusters → tweeklanken → thema → meervoud.
-// Twaalf woorden per hoofdstuk. Voortgang van de oude kern-ids vervalt.
+// Twaalf woorden per hoofdstuk (hoofdstuk 3 elf: 'dag' is eruit, geen plaatje dat een kind herkent). Voortgang van de oude kern-ids vervalt.
 
 const WEER = new Set(['zon', 'regen', 'wind', 'wolk', 'onweer', 'bliksem', 'hagel', 'regenboog', 'sneeuw']);
 
@@ -45,7 +45,7 @@ const pot = w('pot'), ik = w('ik', true), en = w('en', true), kom = w('kom'), me
 const kat = w('kat'), tak = w('tak'), ram = w('ram'), bal = w('bal'), das = w('das'), tas = w('tas');
 const hut = w('hut'), bus = w('bus'), bad = w('bad'), kar = w('kar'), bel = w('bel'), blok = w('blok');
 const weg = w('weg'), wol = w('wol'), web = w('web'), jas = w('jas'), was = w('was');
-const bed = w('bed'), bos = w('bos'), mol = w('mol'), lam = w('lam'), dag = w('dag', true), dak = w('dak'), hak = w('hak');
+const bed = w('bed'), bos = w('bos'), mol = w('mol'), lam = w('lam'), dak = w('dak'), hak = w('hak');
 const maan = w('maan'), aap = w('aap'), kaas = w('kaas'), raam = w('raam'), vaas = w('vaas'), roos = w('roos');
 const noot = w('noot'), oog = w('oog'), oor = w('oor'), doos = w('doos'), boom = w('boom'), haan = w('haan');
 const teen = w('teen'), een = w('een', true), been = w('been'), beer = w('beer'), peer = w('peer'), heet = w('heet', true);
@@ -122,7 +122,7 @@ export const LEZEN_HOOFDSTUKKEN: Kern[] = [
       zin('Ik doe water in het ___.', bad, bal, tas),
     ]),
   hoofdstuk(3, 'Jas en bed', ['w', 'j', 'z', 'g'],
-    [weg, wol, web, jas, was, bed, bos, mol, lam, dag, dak, hak], [
+    [weg, wol, web, jas, was, bed, bos, mol, lam, dak, hak], [
       zin('De auto rijdt over de ___.', weg, bos, dak),
       zin('Doe je ___ aan, het regent.', jas, wol, hak),
       zin('In het ___ staan heel veel bomen.', bos, weg, bed),

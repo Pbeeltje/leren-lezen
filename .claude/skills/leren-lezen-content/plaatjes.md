@@ -4,9 +4,8 @@
 images (the app will be sold). Own drawings come from scripts in `bronbestanden/`:
 `teken-woorden.py`, `teken-weer.py`, `teken-lezen-nieuw.py`, `teken-lange-woorden.py`,
 `teken-kasteel.py`, `teken-volgorde-icoon.mts`,
-and inline SVG in the background/game code (e.g. `games/kleuter/volgordeTekeningen.ts`). Exception still in the repo:
-`woorden/was.svg` (game-icons clothesline, CC BY 3.0, listed in `ATTRIBUTIONS.md`
-— keep that file up to date if anything non-MIT is ever added).
+and inline SVG in the background/game code (e.g. `games/kleuter/volgordeTekeningen.ts`).
+Nothing non-MIT is in the repo any more; if that ever changes, list it in `ATTRIBUTIONS.md`.
 
 ## Fluent Emoji
 
@@ -33,6 +32,10 @@ nothing) — use flat colours.
 - `voet.svg`: skin-coloured footprint (Fluent "Footprints", one foot, recoloured);
   `teen.svg` embeds it (`inbed(..., bron=WOORDEN)` in teken-woorden.py) with a red
   circle round the big toe.
+- `dak.svg`: house with a big blue arrow pointing at the roof (a plain house read as "huis").
+- `was.svg`: own Fluent-style drawing (gradients, no outlines, 32×32 viewBox) of a
+  clothesline with a T-shirt and a checked tablecloth.
+- `dag` was dropped from chapter 3: no picture a child recognises.
 - `heet.svg`: red thermometer with heat waves (no longer a copy of `vuur.svg`).
 - `bloem` is a daisy; plurals are 2–3 copies of the singular.
 - `veer.svg`: Fluent "Feather" (copy in `icons/veer.svg`), with its darker band layer

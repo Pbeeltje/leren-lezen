@@ -1,1 +1,39 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 512 512"><path fill="#1b1b2f" d="M23.97 71.4v414.3H57.3V71.4zm109.83 37.7c-12.1-.2-23.6 3.9-32.8 11.2c3.5.4 7 1.1 10.4 2c9.4 2.6 20.2 5.4 28.4 7.7c7.8 2 14.5 7.1 18.5 14.1c.3.6.6 1.2.9 1.7c3.5 6.5 4.6 14.3 2.5 21.9c-4.1 15.6-19.8 25-35.4 21.6c-14.3-4.3-28.59-6.3-41.23-11.8c5.51 15 17.93 27.1 34.53 31.6c27.1 7.2 55-8.9 62.3-36c7.2-27.1-8.9-55-36-62.2c-4.1-1.1-8.1-1.7-12.1-1.8m48.6 2.1c4.8 4.9 8.9 10.6 12.1 16.7H490v-16.7zm-91.16 25.1c-8.82-.1-17.66 1.6-25.9 5.2a64.38 64.38 0 0 0 34.6 23.6c9.36 2.5 20.16 5.4 28.36 7.6c3.5.9 7.3.4 10.5-1.5c3.1-1.7 5.4-4.7 6.4-8.3c.9-3.6.4-7.3-1.4-10.4c-1.8-3.2-4.8-5.6-8.4-6.5c-8.2-2.2-18.9-5.1-28.4-7.6c-5.2-1.4-10.46-2.1-15.76-2.1m277.06 46.6V275l90.4 20V182.9zm-151.4.1l15 236.9l40-10s7.1-92.7 10.6-139c.1-1.1.9-1.9 2-1.9c1 0 1.9.8 1.9 1.9c3.6 46.3 10.6 139 10.6 139l40 10L352 183zm-22.4 9.1c-3.2 6.2-7.3 11.8-12.1 16.6h20.1v-16.6zm278.6 0v16.7H490v-16.7z"/></svg>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
+  <!-- Een waslijn met een T-shirt en een tafelkleed, zelf getekend voor leren-lezen. -->
+  <defs>
+    <linearGradient id="was-paal" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#b07a52"/><stop offset="1" stop-color="#7a4b2c"/>
+    </linearGradient>
+    <linearGradient id="was-shirt" x1="0" y1="0" x2="0.4" y2="1">
+      <stop offset="0" stop-color="#5fd0ff"/><stop offset="1" stop-color="#1c7fe0"/>
+    </linearGradient>
+    <linearGradient id="was-kleed" x1="0" y1="0" x2="0.3" y2="1">
+      <stop offset="0" stop-color="#ff6f61"/><stop offset="1" stop-color="#d9302c"/>
+    </linearGradient>
+    <linearGradient id="was-gras" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#8fd14f"/><stop offset="1" stop-color="#4fa83a"/>
+    </linearGradient>
+    <clipPath id="was-kleedvorm">
+      <path d="M17.2 9.1 Q22 9 26.6 7.6 L27.2 22.2 Q25.6 21.4 24 22.4 Q22.3 23.3 20.6 22.5 Q18.9 21.8 17.4 22.8 Z"/>
+    </clipPath>
+  </defs>
+  <path d="M1 29.5 Q16 27 31 29.5 Q31 31 29.5 31 H2.5 Q1 31 1 29.5 Z" fill="url(#was-gras)"/>
+  <rect x="2.4" y="5" width="2" height="25" rx="1" fill="url(#was-paal)"/>
+  <rect x="27.6" y="5" width="2" height="25" rx="1" fill="url(#was-paal)"/>
+  <path d="M3.4 7 Q16 11.2 28.6 7" fill="none" stroke="#9e9e9e" stroke-width="0.6"/>
+  <g transform="rotate(5 10 8.4)">
+    <path d="M5.8 8.6 L8.5 8 C9.1 9.3 10.9 9.3 11.5 8 L14.2 8.6 L16.2 12.2 L13.9 13.2 L13.9 18.8 C11.3 19.4 8.7 19.4 6.1 18.8 L6.1 13.2 L3.8 12.2 Z"
+      fill="url(#was-shirt)"/>
+    <path d="M6.1 13.2 L6.6 12.3 M13.9 13.2 L13.4 12.3" stroke="#1565c0" stroke-width="0.5" stroke-linecap="round" opacity="0.6"/>
+    <circle cx="10" cy="14" r="1.8" fill="#ffd54f"/>
+  </g>
+  <path d="M17.2 9.1 Q22 9 26.6 7.6 L27.2 22.2 Q25.6 21.4 24 22.4 Q22.3 23.3 20.6 22.5 Q18.9 21.8 17.4 22.8 Z" fill="url(#was-kleed)"/>
+  <g clip-path="url(#was-kleedvorm)" fill="#fff" opacity="0.55">
+    <rect x="18.6" y="6" width="1.7" height="18"/><rect x="21.9" y="6" width="1.7" height="18"/><rect x="25.2" y="6" width="1.7" height="18"/>
+    <rect x="16" y="11.4" width="12" height="1.7"/><rect x="16" y="15" width="12" height="1.7"/><rect x="16" y="18.6" width="12" height="1.7"/>
+  </g>
+  <g fill="#c58b4e">
+    <rect x="6.2" y="6.6" width="1.2" height="2.8" rx="0.5"/><rect x="12.6" y="7.4" width="1.2" height="2.8" rx="0.5"/>
+    <rect x="17.6" y="7.6" width="1.2" height="2.8" rx="0.5"/><rect x="25.4" y="6.6" width="1.2" height="2.8" rx="0.5"/>
+  </g>
+</svg>
