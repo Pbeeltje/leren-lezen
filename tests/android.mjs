@@ -21,7 +21,8 @@ console.log('webview', await page.evaluate(() => [innerWidth, innerHeight, navig
 console.log('veilige rand boven:', await page.evaluate(() => getComputedStyle(document.documentElement).getPropertyValue('--safe-area-inset-top') || '(geen var)'), 'terug-knop top:', await page.evaluate(() => getComputedStyle(document.querySelector('.scherm')).paddingTop));
 foto('1-start');
 // Profiel maken met het schermtoetsenbord
-await page.locator('.icoon-tegel', { hasText: 'Nieuw profiel' }).click(); await wacht(800);
+// Zonder profielen opent de app meteen op "Maak je profiel".
+if (await page.locator('.icoon-tegel', { hasText: 'Nieuw profiel' }).count()) { await page.locator('.icoon-tegel', { hasText: 'Nieuw profiel' }).click(); await wacht(800); }
 await page.locator('.typen-invoer').click(); await wacht(1200); adb('shell input text mila'); await wacht(800); foto('2a-toetsenbord'); adb('shell input keyevent 111'); await wacht(600);
 if (!(await page.locator('.typen-invoer').inputValue())) await page.locator('.typen-invoer').fill('mila');
 console.log('naam ingevuld:', await page.locator('.typen-invoer').inputValue());
@@ -29,8 +30,8 @@ await page.locator('.avatar-keuze').nth(1).click(); await wacht(300);
 foto('2-nieuw-profiel');
 const verder = page.locator('button', { hasText: 'Aan de slag' }).last();
 console.log('knop:', await verder.textContent()); await verder.click(); await wacht(1200);
-// Leeftijd 6 als dat gevraagd wordt
-if (await page.locator('.icoon-tegel', { hasText: '6' }).count()) { await page.locator('.icoon-tegel', { hasText: '6' }).last().click(); await wacht(1000); }
+// Groep 3 als dat gevraagd wordt
+if (await page.locator('.icoon-tegel', { hasText: 'Groep 3' }).count()) { await page.locator('.icoon-tegel', { hasText: 'Groep 3' }).click(); await wacht(1000); }
 foto('3-onderwerpen');
 await page.locator('.icoon-tegel', { hasText: 'Leren lezen' }).click(); await wacht(900);
 if (await page.locator('.icoon-tegel', { hasText: 'Woorden lezen' }).count()) { await page.locator('.icoon-tegel', { hasText: 'Woorden lezen' }).click(); await wacht(900); }
@@ -58,4 +59,4 @@ foto('6-na-herstel');
 // Terugknop op profielscherm -> app naar achtergrond
 adb('shell input keyevent 4'); await wacht(1500);
 console.log('voorgrond na terugknop op profielscherm:', adb('shell dumpsys activity activities').toString().match(/topResumedActivity=.*?\{[^}]*\}/)?.[0]?.slice(0, 120));
-console.log('fouten', fouten); await b.close();
+console.log('fouten', fouten); await b.close(); await toestel.close();
