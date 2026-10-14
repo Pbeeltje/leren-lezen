@@ -6,6 +6,11 @@ import { GRATIS_FIGUREN } from '../../engine/winkel.ts';
 import { AVATAR_KLEUREN, avatarFilter, avatarPad, haalProfielen, maakProfiel, MAX_NAAM_LENGTE, zetActiefProfiel } from '../../engine/profielStore.ts';
 import { speelSchermOvergang } from '../../three/transitions.ts';
 import { GroepKiesScreen } from './GroepKiesScreen.ts';
+import { voegMuntenToe } from '../../engine/progressStore.ts';
+
+// Tijdelijk, om sneller te testen: een nieuw profiel begint met munten. Op 0 zetten
+// (of weghalen) voordat de app echt uitkomt.
+const START_MUNTEN = 2000;
 
 export function NewProfileScreen(manager: ScreenManager): Screen {
   const el = document.createElement('div');
@@ -115,6 +120,7 @@ export function NewProfileScreen(manager: ScreenManager): Screen {
     if (submitKnop.disabled || !gekozenIcoon) return;
     const profiel = maakProfiel(invoer.value, gekozenIcoon, gekozenKleur);
     zetActiefProfiel(profiel.id);
+    if (START_MUNTEN > 0) voegMuntenToe(START_MUNTEN);
     pasAchtergrondVanProfielToe();
     pasSchriftVanProfielToe();
     speelSchermOvergang();
