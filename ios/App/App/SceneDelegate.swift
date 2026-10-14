@@ -23,11 +23,36 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     }
 }
 
-// Vegen vanaf de boven- en onderrand eerst "uitstellen": de eerste veeg laat alleen een
-// streepje zien, pas een tweede veeg opent het berichtencentrum of gaat naar het
-// beginscherm. Zo sluiten kinderen de app niet per ongeluk. De statusbalk zelf verbergt
-// SystemBars (capacitor.config.ts, hidden: true).
+// Kindslot: tijdens een oefening of spel (native.ts zetKindslot) de statusbalk weg en vegen
+// vanaf de boven- en onderrand eerst "uitstellen": de eerste veeg laat alleen een streepje
+// zien, pas een tweede veeg opent het berichtencentrum of gaat naar het beginscherm. In
+// menu's staat alles gewoon, zodat een ouder er makkelijk uit kan.
 class MainViewController: CAPBridgeViewController {
-    override var preferredScreenEdgesDeferringSystemGestures: UIRectEdge { [.top, .bottom] }
-    override var prefersHomeIndicatorAutoHidden: Bool { true }
+    var kindslot = false {
+        didSet {
+            bridge?.statusBarVisible = !kindslot
+            setNeedsUpdateOfScreenEdgesDeferringSystemGestures()
+        }
+    }
+
+    override var preferredScreenEdgesDeferringSystemGestures: UIRectEdge { kindslot ? [.top, .bottom] : [] }
+
+    override func capacitorDidLoad() {
+        bridge?.registerPluginInstance(KindslotPlugin())
+    }
+}
+
+@objc(KindslotPlugin)
+public class KindslotPlugin: CAPPlugin, CAPBridgedPlugin {
+    public let identifier = "KindslotPlugin"
+    public let jsName = "Kindslot"
+    public let pluginMethods: [CAPPluginMethod] = [CAPPluginMethod(name: "zet", returnType: CAPPluginReturnPromise)]
+
+    @objc func zet(_ call: CAPPluginCall) {
+        let aan = call.getBool("aan") ?? false
+        DispatchQueue.main.async {
+            (self.bridge?.viewController as? MainViewController)?.kindslot = aan
+            call.resolve()
+        }
+    }
 }

@@ -1725,6 +1725,7 @@ export function OversteekScreen(manager: ScreenManager): Screen {
   });
 
   return {
+    kindslot: true,
     mount(root) {
       root.appendChild(el);
       root.appendChild(terug);

@@ -342,6 +342,7 @@ export function TekenScreen(manager: ScreenManager): Screen {
   const opGrootte = new ResizeObserver(pasGrootteAan);
 
   return {
+    kindslot: true,
     mount(root) {
       root.appendChild(el);
       opGrootte.observe(canvas);

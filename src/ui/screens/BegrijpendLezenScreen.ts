@@ -175,6 +175,7 @@ export function BegrijpendVerhaalScreen(manager: ScreenManager, verhaal: Begrijp
   let instructieGespeeld = false;
 
   return {
+    kindslot: true,
     mount(root) {
       root.appendChild(el);
       root.appendChild(terug);

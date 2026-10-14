@@ -282,6 +282,7 @@ export function RekenOefeningScreen(
   let topRechts: ReturnType<typeof maakTopRechtsBalk> | null = null;
 
   return {
+    kindslot: true,
     mount(root) {
       actief = true;
       root.appendChild(el);

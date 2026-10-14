@@ -1,9 +1,21 @@
-import { Capacitor } from '@capacitor/core';
+import { Capacitor, registerPlugin } from '@capacitor/core';
 
 // Alles wat alleen in de Android-/iPhone-app (Capacitor) nodig is. In de browser doet dit
 // niets, zodat de webversie precies zo blijft werken.
 
 export const isApp = Capacitor.isNativePlatform();
+
+// Kindslot (eigen stukje in de app: MainActivity.java / SceneDelegate.swift): tijdens een
+// oefening of spel de status- en navigatiebalk weg en de randen beschermd, zodat een kind
+// niet per ongeluk de app uit veegt. In menu's staat alles gewoon, zodat een ouder er
+// makkelijk uit kan. Alleen een wijziging doorgeven.
+const Kindslot = registerPlugin<{ zet(opties: { aan: boolean }): Promise<void> }>('Kindslot');
+let kindslotAan: boolean | undefined;
+export function zetKindslot(aan: boolean): void {
+  if (!isApp || aan === kindslotAan) return;
+  kindslotAan = aan;
+  Kindslot.zet({ aan }).catch(() => undefined);
+}
 
 const OPSLAG_SLEUTEL = 'leren-lezen-opslag';
 const VOORVOEGSEL = 'leren-lezen:';

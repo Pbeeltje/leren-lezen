@@ -257,6 +257,7 @@ export function OefeningScreen(
   let topRechts: ReturnType<typeof maakTopRechtsBalk> | null = null;
 
   return {
+    kindslot: true,
     mount(root) {
       gemountOp = performance.now();
       root.appendChild(el);

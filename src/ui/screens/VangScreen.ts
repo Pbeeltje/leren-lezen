@@ -540,6 +540,7 @@ export function VangScreen(manager: ScreenManager): Screen {
   });
 
   return {
+    kindslot: true,
     mount(root) {
       root.appendChild(el);
       root.appendChild(terug);

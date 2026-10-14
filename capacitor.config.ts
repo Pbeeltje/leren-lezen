@@ -15,13 +15,12 @@ const config: CapacitorConfig = {
     contentInset: 'never',
   },
   plugins: {
-    // Status- en navigatiebalk verborgen, zodat kinderen niet per ongeluk de snelle
-    // instellingen openen of naar het beginscherm gaan: een veeg vanaf de rand laat de
-    // balken eerst even zien, pas een tweede veeg doet iets (Android: MainActivity, iPhone:
-    // MainViewController in SceneDelegate.swift). Donker met lichte iconen als ze even
-    // verschijnen; de app houdt via --safe-area-inset-* afstand van een camera-uitsparing.
+    // Balken zichtbaar, donker met lichte iconen; de app loopt eronder door (edge-to-edge)
+    // en houdt via --safe-area-inset-* afstand. Tijdens een oefening of spel verbergt de
+    // kindslot ze (native.ts zetKindslot, MainActivity.java, SceneDelegate.swift): een veeg
+    // vanaf de rand laat ze dan eerst even zien, pas een tweede veeg doet iets.
     SystemBars: {
-      hidden: true,
+      hidden: false,
       style: 'DARK',
       insetsHandling: 'css',
       initialViewportFitValueHint: 'cover',

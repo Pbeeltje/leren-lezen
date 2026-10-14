@@ -1,9 +1,13 @@
 // Minimale scherm-stack navigator: geen URL-routing nodig voor dit aantal schermen.
 import { stopAudio } from './audioManager.ts';
+import { zetKindslot } from './native.ts';
 
 export interface Screen {
   mount(root: HTMLElement): void;
   unmount(): void;
+  /** Oefening of spel: in de app gaan dan de systeembalken weg en is de onderrand
+   *  beschermd tegen per ongeluk weggaan (zie zetKindslot). Menu's laten ze staan. */
+  kindslot?: boolean;
 }
 
 export type ScreenFactory = (manager: ScreenManager) => Screen;
@@ -22,6 +26,7 @@ export class ScreenManager {
     const scherm = fabriek(this);
     this.stack.push(scherm);
     scherm.mount(this.root);
+    zetKindslot(!!scherm.kindslot);
   }
 
   pop(): void {
@@ -30,6 +35,7 @@ export class ScreenManager {
     this.huidig()?.unmount();
     this.stack.pop();
     this.huidig()?.mount(this.root);
+    zetKindslot(!!this.huidig()?.kindslot);
   }
 
   /**
@@ -55,6 +61,7 @@ export class ScreenManager {
     const scherm = fabriek(this);
     this.stack.push(scherm);
     scherm.mount(this.root);
+    zetKindslot(!!scherm.kindslot);
   }
 
   private huidig(): Screen | undefined {

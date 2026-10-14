@@ -115,6 +115,7 @@ export function BoekjeScreen(manager: ScreenManager, boekje: Boekje): Screen {
   let topRechts: ReturnType<typeof maakTopRechtsBalk> | null = null;
 
   return {
+    kindslot: true,
     mount(root) {
       root.appendChild(el);
       root.appendChild(terug);

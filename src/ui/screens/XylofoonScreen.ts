@@ -63,6 +63,7 @@ export function XylofoonScreen(manager: ScreenManager): Screen {
   const terug = maakTerugKnop(() => manager.pop());
 
   return {
+    kindslot: true,
     mount(root) {
       melodie = maakXylofoon([0, 1, 2, 3, 4, 5, 6, 7], undefined, huidigInstrument());
       kit = maakDrumstel(['bas', 'snare', 'tom', 'bekken', 'crash']);

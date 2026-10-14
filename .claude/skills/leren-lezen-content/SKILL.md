@@ -20,6 +20,8 @@ commit (describe the current state; don't append dated "latest round" notes).
   on any screen that can also be reached via `replace()`.
 - **Components with subscriptions** (`MuntenTeller`, `ProfielMenu`) are created in
   `mount()` and torn down in `unmount()`, never in the factory body.
+- **A new activity screen (exercise or game)** sets `kindslot: true` on its `Screen`
+  object (hides the system bars in the app, see app.md).
 - **A new activity screen with the top-right bar** must rebuild its question after
   a shop visit (`onderbroken`), see navigatie-voortgang.md.
 - **`el.hidden` toggles** need a `.class[hidden] { display: none; }` rule.

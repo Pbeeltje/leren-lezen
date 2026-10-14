@@ -85,6 +85,7 @@ export function GeheugenScreen(manager: ScreenManager, aantalParen = 4): Screen 
   let topRechts: ReturnType<typeof maakTopRechtsBalk> | null = null;
 
   return {
+    kindslot: true,
     mount(root) {
       root.appendChild(el);
       root.appendChild(terug);
