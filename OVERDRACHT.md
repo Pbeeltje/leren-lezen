@@ -2,6 +2,8 @@
 
 ## Waiting on the owner
 
+- [ ] **Before release: set `START_MUNTEN` to 0** in `src/ui/screens/NewProfileScreen.ts`. It gives every new profile 2000 coins for testing (14 Oct), on the website too.
+
 - [ ] **Recording list 6** (`bronbestanden/opnamelijst-6-deel-1.txt`).
   - Re-record "Tik het woord aan dat bij het plaatje hoort", "Knap gedaan!", "Wat knap!", "Schrijf de j van jas" and the word "muis" (muis was re-cut from the first recording on 1 October, but a fresh take is better).
   - Once `opname6-deel1.m4a` is in `bronbestanden/`, process it with the `leren-lezen-audio` skill (`verwerk-opname.py`).
