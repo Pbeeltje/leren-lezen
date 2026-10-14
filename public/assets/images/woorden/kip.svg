@@ -1,15 +1,12 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 180">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="24 36 140 138">
   <defs>
     <linearGradient id="kp-lijf" x1="0" y1="0" x2="0" y2="1">
       <stop offset="0" stop-color="#fff7ea"/>
       <stop offset="1" stop-color="#f0dcc0"/>
     </linearGradient>
   </defs>
-  <!-- nestje -->
-  <path d="M20 150 C30 132 170 132 180 150 C176 170 24 170 20 150 Z" fill="#d8a656" stroke="#8a5f22" stroke-width="3"/>
-  <path d="M30 146 C60 140 80 150 110 142 C130 138 150 146 172 142 M34 156 C70 150 110 160 166 152" fill="none" stroke="#a87a33" stroke-width="2.5" stroke-linecap="round"/>
-  <!-- eitje naast de kip -->
-  <ellipse cx="152" cy="134" rx="14" ry="18" fill="#fffaf2" stroke="#b9a890" stroke-width="2.5"/>
+  <!-- pootjes met tenen -->
+  <path d="M80 140 V164 M80 164 L70 170 M80 164 L80 171 M80 164 L90 170 M106 140 V164 M106 164 L96 170 M106 164 L106 171 M106 164 L116 170" fill="none" stroke="#e8922a" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"/>
   <!-- ronde kip (hen): klein kammetje, kort staartje -->
   <path d="M40 104 C32 88 38 74 50 70 C48 82 52 90 60 94 Z" fill="#e8cfa9" stroke="#8a6a44" stroke-width="3" stroke-linejoin="round"/>
   <ellipse cx="92" cy="112" rx="50" ry="34" fill="url(#kp-lijf)" stroke="#8a6a44" stroke-width="3"/>
