@@ -23,8 +23,15 @@
   ANDROID_HOME set: `gradlew assembleRelease bundleRelease`. Output to
   `C:\claude\leren-lezen-preview\`. Raise `versionCode` for every Play upload.
 - Android e2e: Playwright `_android.devices()` → `device.webView({ pkg })`
-  (connectOverCDP doesn't work); typing via `adb shell input text`. A stale strip
-  under the status bar on the emulator (Chrome 133 WebView) is a display glitch.
+  (connectOverCDP doesn't work); typing via `adb shell input text`.
+- `MainActivity` calls `setTheme(R.style.AppTheme_NoActionBar)` before `EdgeToEdge.enable`:
+  that call creates the window, and with the launch theme still active it got a native
+  title bar ("Leren..." + stretched splash) under the status bar, on real phones too.
+- App icon: drawn by `bronbestanden/maak-app-icoon.mjs` (open book, see-through pages,
+  glow, floating Andika letters). It writes the Android adaptive layers (no inset in
+  `mipmap-anydpi-v26/*.xml`; the foreground is scaled to fit the launcher's middle 72 dp),
+  legacy/round icons, `public/app/icoon-*.png` and the iOS 1024 icon. Change the drawing
+  there and rerun; pass a png path for a preview of the launcher crops.
 - iOS: `.github/workflows/ios-prototype.yml` (macos-26, Xcode 26) builds for the
   simulator, injects `.github/ios-demo.js` to click through, uploads screenshots.
   Signing/TestFlight not set up; see `C:\claude\leren-lezen-iphone-plan.md`.

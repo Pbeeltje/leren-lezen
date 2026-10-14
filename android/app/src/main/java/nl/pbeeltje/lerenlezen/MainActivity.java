@@ -14,6 +14,10 @@ public class MainActivity extends BridgeActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        // Eerst het gewone app-thema (zonder titelbalk). EdgeToEdge.enable maakt het venster al
+        // aan; met nog het opstart-thema kreeg dat een titelbalk ("Leren..." met het
+        // opstartplaatje uitgerekt erachter) die onder de statusbalk bleef staan.
+        setTheme(R.style.AppTheme_NoActionBar);
         // Aanbevolen door Capacitor 8 (SystemBars, insetsHandling 'css'): de webview loopt
         // tot de randen, de CSS houdt met --safe-area-inset-* rekening met de balken.
         EdgeToEdge.enable(this);
