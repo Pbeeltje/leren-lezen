@@ -4,15 +4,20 @@
 `C:\claude\leren-lezen-preview\README.md`. Only build/test the apps when the owner asks.)
 
 - `capacitor.config.ts`: appId `nl.pbeeltje.lerenlezen`, webDir `dist`, SystemBars
-  visible + DARK, `insetsHandling: 'css'` (Capacitor injects `--safe-area-inset-*`;
+  **hidden** + DARK, `insetsHandling: 'css'` (Capacitor injects `--safe-area-inset-*`;
   CSS uses `--veilig-boven/onder/links/rechts` from global.css).
 - `src/engine/native.ts` (no-op in the browser): mirrors every `leren-lezen:*`
   localStorage key to `@capacitor/preferences` and restores it on start when
   localStorage is empty; Android back button = close shop window/menu, else click
   `.terug-knop`, else minimize. `main.ts` awaits the restore before mounting.
-- Android navigation bar hidden (MainActivity `verbergNavigatieknoppen()`, immersive
-  with BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE, re-applied on focus): kids kept
-  tapping back/home. A swipe up shows it briefly.
+- Leaving by accident: both system bars hidden (MainActivity `verbergBalken()`, immersive
+  with BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE, re-applied on focus): the first edge swipe
+  only shows the bars, a second one opens quick settings / goes home. The bottom 200 dp
+  (Android's maximum) of the left/right edges, 40 dp wide, is excluded from the back
+  gesture (`houdOnderrandVrij`, dragging in Vangspel/Tafeltennis). iPhone: `MainViewController`
+  in `SceneDelegate.swift` defers top/bottom edge gestures and auto-hides the home
+  indicator. The emulator ignores injected back swipes, so check the exclusion with
+  `adb shell dumpsys window | grep -i gestureexclusion`.
 - Fonts are bundled (`src/assets/fonts`, `styles/fonts.css`), no Google Fonts.
   `navigator.audioSession.type = 'playback'` so the iOS silent switch doesn't mute
   Web Audio.

@@ -15,12 +15,13 @@ const config: CapacitorConfig = {
     contentInset: 'never',
   },
   plugins: {
-    // Statusbalk zichtbaar maar donker met lichte iconen; de app loopt eronder door
-    // (edge-to-edge) en houdt via --safe-area-inset-* afstand. Verbergen gaf op Android met
-    // een oudere webview (< Chrome 140) een niet-hertekende strook bovenaan, plus een
-    // "volledig scherm"-melding.
+    // Status- en navigatiebalk verborgen, zodat kinderen niet per ongeluk de snelle
+    // instellingen openen of naar het beginscherm gaan: een veeg vanaf de rand laat de
+    // balken eerst even zien, pas een tweede veeg doet iets (Android: MainActivity, iPhone:
+    // MainViewController in SceneDelegate.swift). Donker met lichte iconen als ze even
+    // verschijnen; de app houdt via --safe-area-inset-* afstand van een camera-uitsparing.
     SystemBars: {
-      hidden: false,
+      hidden: true,
       style: 'DARK',
       insetsHandling: 'css',
       initialViewportFitValueHint: 'cover',
