@@ -666,6 +666,9 @@ export function OversteekScreen(manager: ScreenManager): Screen {
 
   // Knipperlicht en knipperende baan aan of uit (bij een kolos ook de banen erboven), met
   // een belletje als je in de buurt bent.
+  // Vanaf level 12 (kleuters 13) gaat het lampje 1 s van tevoren knipperen in plaats van 1,5 s.
+  const laatWaarschuwen = (): boolean => level >= (kleuter ? 13 : 12);
+
   function waarschuw(b: Baan, r: number, aan: boolean): void {
     for (const x of [b, ...b.mede]) {
       x.lamp?.classList.toggle('ov-lamp--aan', aan);
@@ -1005,11 +1008,21 @@ export function OversteekScreen(manager: ScreenManager): Screen {
     }
     for (let j = 0; j < kolosHoog; j++) vrij.delete(kolosRij + j);
     const isKolosBoven = (r: number): boolean => r > kolosRij && r < kolosRij + kolosHoog;
-    // Uitschieters: vanaf level 6 (kleuters 7) één baan, vanaf level 9 twee.
+    // Uitschieters: vanaf level 6 (kleuters 7) één baan, vanaf level 9 twee. Vanaf level 8
+    // (kleuters 9) liefst tussen twee drukke wegen in, niet naast een veilige strook: anders
+    // wacht je aan de rand op het lampje en ben je er in één sprong overheen.
+    const ingeklemd = level >= (kleuter ? 9 : 8);
+    const tussenWegen = (r: number): boolean => plan[r - 1] === 'weg' && plan[r + 1] === 'weg';
     const uitschieters = new Set<number>();
     if (thema.zeldzaam.length && level >= (kleuter ? 7 : 6)) {
       const aantal = level >= 9 && wegRijen.length >= 6 ? 2 : 1;
-      for (const r of husselen([...vrij]).slice(0, aantal)) uitschieters.add(r);
+      const kandidaten = husselen([...vrij]).sort((a, b) => (ingeklemd ? Number(tussenWegen(b)) - Number(tussenWegen(a)) : 0));
+      for (const r of kandidaten) {
+        if (uitschieters.size >= aantal) break;
+        // Twee uitschieters niet naast elkaar (dan klemmen ze elkaar in, niet het drukke verkeer).
+        if (ingeklemd && (uitschieters.has(r - 1) || uitschieters.has(r + 1))) continue;
+        uitschieters.add(r);
+      }
     }
     for (const r of uitschieters) vrij.delete(r);
     const baanAan = uitdaging('baan-aan');
@@ -1095,14 +1108,21 @@ export function OversteekScreen(manager: ScreenManager): Screen {
         }
       } else if (soort === 'weg') {
         const zeldzaam = uitschieters.has(r);
+        // Een gewone baan aan de rand krijgt vanaf level 8 geen vijand die af en toe komt
+        // (treinen op de trein-achtergrond): die horen tussen het drukke verkeer.
+        const gewoon = vijanden.filter((v) => !v.sporadisch);
+        const naastUitschieter = uitschieters.has(r - 1) || uitschieters.has(r + 1) || !!banen[r - 1]?.sporadisch;
+        const lijst = ingeklemd && (!tussenWegen(r) || naastUitschieter) && gewoon.length ? gewoon : vijanden;
         const s = zeldzaam
           ? thema.zeldzaam[Math.floor(Math.random() * thema.zeldzaam.length)]
-          : vijanden[wegTeller++ % vijanden.length];
+          : lijst[wegTeller++ % lijst.length];
         b.bron = s;
         b.sporadisch = zeldzaam || !!s.sporadisch;
         b.v = Math.min(7.5, willekeurig(1, 1.7) * (s.snel ?? 1) * f);
         if (b.sporadisch) {
           b.tussen = [Math.max(1.6, (kleuter ? 6 : 5.5) - 0.3 * level), Math.max(3, (kleuter ? 10 : 9.5) - 0.4 * level)];
+          // Vanaf level 12 (kleuters 13) komen ze vaker.
+          if (laatWaarschuwen()) b.tussen = [Math.max(1.2, b.tussen[0] * 0.75), Math.max(2.2, b.tussen[1] * 0.75)];
           b.wacht = willekeurig(1.6, 3.5);
           b.lamp = maakLamp(bel, b.richting === 1 ? 'links' : 'rechts');
         }
@@ -1360,7 +1380,7 @@ export function OversteekScreen(manager: ScreenManager): Screen {
       if (b.sporadisch) {
         if (b.dingen.length) continue;
         b.wacht -= dt;
-        waarschuw(b, r, b.wacht < 1.5);
+        waarschuw(b, r, b.wacht < (laatWaarschuwen() ? 1 : 1.5));
         if (b.wacht <= 0) {
           const d = nieuwDing(b);
           d.x = b.richting === 1 ? -d.lengte : Wc;

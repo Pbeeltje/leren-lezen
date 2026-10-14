@@ -110,6 +110,11 @@ edge, theme decorations) through lanes seen from above. Tile icon: Fluent traffi
   player is within 2 rows. Trains (`sporadisch: true`) always work that way. From level 4
   (kleuter 5) half the sporadic lanes start with their thing already 35–80% across
   (end of `bouwLevel`), so you can't just rush through before anything arrives.
+  From level 8 (kleuter 9, `ingeklemd`) warned lanes sit between two busy road lanes
+  (`tussenWegen`), never next to a safe strip or another warned lane; edge lanes then get
+  only non-sporadic `vijanden` (on trein: shunting trains). From level 12 (kleuter 13,
+  `laatWaarschuwen`) the lamp starts 1 s ahead instead of 1.5 s and `tussen` is ×0.75
+  (min 1.2 / 2.2 s).
 - **Uitdagingen (level 10 and 15, also kleuter):** each theme has 2–3 `uitdagingen` in
   `oversteek-themas.ts`. `start()` shuffles them per game; from level 10 the first is
   active, from 15 the first two (`UITDAGING_VANAF`). The banner of the level where one is
