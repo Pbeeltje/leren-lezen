@@ -35,7 +35,9 @@ nothing) — use flat colours.
 - `dak.svg`: house with a big blue arrow pointing at the roof (a plain house read as "huis").
 - `was.svg`: own Fluent-style drawing (gradients, no outlines, 32×32 viewBox) of a
   clothesline with a T-shirt and a checked tablecloth.
-- `dag` was dropped from chapter 3: no picture a child recognises.
+- `dag` (chapter 3) and `weeg` (chapter 5, the scale read as "weegschaal") were dropped:
+  no picture a child reads as that word. Replaced by `mug` (Fluent "Mosquito") and
+  `muur` (Fluent "Brick").
 - `heet.svg`: red thermometer with heat waves (no longer a copy of `vuur.svg`).
 - `bloem` is a daisy; plurals are 2–3 copies of the singular.
 - `veer.svg`: Fluent "Feather" (copy in `icons/veer.svg`), with its darker band layer

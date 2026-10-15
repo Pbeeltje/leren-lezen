@@ -1,7 +1,7 @@
 import type { Kern, Woord, ZinsVoorbeeld } from '../../types.ts';
 
 // Nieuwe leesvolgorde: CVC → lange klinkers → clusters → tweeklanken → thema → meervoud.
-// Twaalf woorden per hoofdstuk (hoofdstuk 3 elf: 'dag' is eruit, geen plaatje dat een kind herkent). Voortgang van de oude kern-ids vervalt.
+// Twaalf woorden per hoofdstuk. Voortgang van de oude kern-ids vervalt.
 
 const WEER = new Set(['zon', 'regen', 'wind', 'wolk', 'onweer', 'bliksem', 'hagel', 'regenboog', 'sneeuw']);
 
@@ -44,12 +44,12 @@ const vis = w('vis'), sok = w('sok'), pen = w('pen'), kip = w('kip'), vos = w('v
 const pot = w('pot'), ik = w('ik', true), en = w('en', true), kom = w('kom'), mes = w('mes'), kok = w('kok');
 const kat = w('kat'), tak = w('tak'), ram = w('ram'), bal = w('bal'), das = w('das'), tas = w('tas');
 const hut = w('hut'), bus = w('bus'), bad = w('bad'), kar = w('kar'), bel = w('bel'), blok = w('blok');
-const weg = w('weg'), wol = w('wol'), web = w('web'), jas = w('jas'), was = w('was');
+const weg = w('weg'), wol = w('wol'), web = w('web'), jas = w('jas'), was = w('was'), mug = w('mug');
 const bed = w('bed'), bos = w('bos'), mol = w('mol'), lam = w('lam'), dak = w('dak'), hak = w('hak');
 const maan = w('maan'), aap = w('aap'), kaas = w('kaas'), raam = w('raam'), vaas = w('vaas'), roos = w('roos');
 const noot = w('noot'), oog = w('oog'), oor = w('oor'), doos = w('doos'), boom = w('boom'), haan = w('haan');
 const teen = w('teen'), een = w('een', true), been = w('been'), beer = w('beer'), peer = w('peer'), heet = w('heet', true);
-const zee = w('zee'), zeep = w('zeep'), vuur = w('vuur'), weeg = w('weeg'), fee = w('fee'), veer = w('veer');
+const zee = w('zee'), zeep = w('zeep'), vuur = w('vuur'), muur = w('muur'), fee = w('fee'), veer = w('veer');
 const poes = w('poes'), koek = w('koek'), boek = w('boek'), hoed = w('hoed'), soep = w('soep'), koe = w('koe');
 const voet = w('voet'), riem = w('riem'), mier = w('mier'), wiel = w('wiel'), gier = w('gier'), riet = w('riet');
 const hand = w('hand'), tand = w('tand'), mond = w('mond'), hond = w('hond'), tent = w('tent'), lamp = w('lamp');
@@ -122,13 +122,14 @@ export const LEZEN_HOOFDSTUKKEN: Kern[] = [
       zin('Ik doe water in het ___.', bad, bal, tas),
     ]),
   hoofdstuk(3, 'Jas en bed', ['w', 'j', 'z', 'g'],
-    [weg, wol, web, jas, was, bed, bos, mol, lam, dak, hak], [
+    [weg, wol, web, jas, was, bed, bos, mol, lam, dak, hak, mug], [
       zin('De auto rijdt over de ___.', weg, bos, dak),
       zin('Doe je ___ aan, het regent.', jas, wol, hak),
       zin('In het ___ staan heel veel bomen.', bos, weg, bed),
       zin('Ik slaap in mijn ___.', bed, jas, dak),
       zin('De spin maakt een ___.', web, wol, was),
       zin('De ___ komt uit zijn hoop.', mol, lam, jas),
+      zin('Bzzz! Een ___ prikt in mijn arm.', mug, mol, web),
     ]),
   hoofdstuk(4, 'Maan en roos', ['aa', 'oo'],
     [maan, aap, kaas, raam, vaas, roos, noot, oog, oor, doos, boom, haan], [
@@ -140,13 +141,14 @@ export const LEZEN_HOOFDSTUKKEN: Kern[] = [
       zin('De ___ kraait in de ochtend.', haan, aap, boom),
     ]),
   hoofdstuk(5, 'Beer en zee', ['ee', 'uu', 'f'],
-    [teen, een, been, beer, peer, heet, zee, zeep, vuur, weeg, fee, veer], [
+    [teen, een, been, beer, peer, heet, zee, zeep, vuur, muur, fee, veer], [
       zin('Ik heb ___ neus en twee ogen.', een, teen, beer),
       zin('Aan mijn voet zit een grote ___.', teen, been, veer),
       zin('Pas op, de soep is nog ___!', heet, zee, vuur),
       zin('Ik was mijn handen met ___.', zeep, zee, peer),
       zin('Pas op! Het ___ is heel heet.', vuur, zee, beer),
       zin('De ___ woont in een kasteel in het bos.', fee, beer, veer),
+      zin('Het huis heeft een ___ van stenen.', muur, zeep, peer),
     ]),
   hoofdstuk(6, 'Poes en koek', ['oe', 'ie'],
     [poes, koek, boek, hoed, soep, koe, voet, riem, mier, wiel, gier, riet], [
