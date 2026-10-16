@@ -7,6 +7,7 @@ import {
   wisTekening,
   type Lijn,
 } from '../../engine/tekeningenStore.ts';
+import { haalActiefProfielId } from '../../engine/profielStore.ts';
 
 // Vrij tekenen met de vinger (onder Spelletjes). Zo groot mogelijk blad en alleen
 // tekenknoppen plus terug (in de balk): geen profielmenu of munten, want daar tikten de
@@ -20,6 +21,17 @@ const KLEUREN = ['#1b1b2f', '#e53935', '#fb8c00', '#fdd835', '#43a047', '#1e88e5
 const DIKTES = [{ naam: 'dun', px: 6 }, { naam: 'dik', px: 18 }];
 const GUM = 'gum';
 
+// Het blad waar je mee bezig was blijft (per profiel) staan als je het tekenen verlaat en
+// terugkomt, zolang de app open is. Alleen in het geheugen: na het sluiten van de app een
+// nieuw blad. Bewaren gaat bij het verlaten; de lijnen zelf zijn gewoon dezelfde array.
+interface Blad {
+  lijnen: Lijn[];
+  plek: number | null;
+  gewijzigd: boolean;
+  kleur: string;
+  dikte: number;
+}
+const openBladen = new Map<string, Blad>();
 
 export function TekenScreen(manager: ScreenManager): Screen {
   const el = document.createElement('div');
@@ -45,9 +57,11 @@ export function TekenScreen(manager: ScreenManager): Screen {
   terug.addEventListener('click', () => manager.pop());
   balk.appendChild(terug);
 
-  const lijnen: Lijn[] = [];
-  let kleur = KLEUREN[1];
-  let dikte = DIKTES[0].px;
+  const profiel = haalActiefProfielId() ?? 'gast';
+  const vorig = openBladen.get(profiel);
+  const lijnen: Lijn[] = vorig?.lijnen ?? [];
+  let kleur = vorig?.kleur ?? KLEUREN[1];
+  let dikte = vorig?.dikte ?? DIKTES[0].px;
   let huidige: Lijn | null = null;
   const hoofdCtx = canvas.getContext('2d')!;
   const ctx = hoofdCtx;
@@ -85,7 +99,7 @@ export function TekenScreen(manager: ScreenManager): Screen {
     });
     return b;
   });
-  dikteKnoppen[0].classList.add('teken-knop--actief');
+  dikteKnoppen[Math.max(0, DIKTES.findIndex((d) => d.px === dikte))].classList.add('teken-knop--actief');
   knop('teken-actie', '↶', 'terug', () => {
     lijnen.pop();
     gewijzigd = true;
@@ -102,8 +116,8 @@ export function TekenScreen(manager: ScreenManager): Screen {
 
   // In welk plekje deze tekening staat (null: nog niet bewaard), en of er sinds het
   // bewaren (of openen) nog iets is getekend.
-  let plek: number | null = null;
-  let gewijzigd = false;
+  let plek: number | null = vorig?.plek ?? null;
+  let gewijzigd = vorig?.gewijzigd ?? false;
 
   function nieuwBlad(): void {
     lijnen.length = 0;
@@ -348,6 +362,8 @@ export function TekenScreen(manager: ScreenManager): Screen {
       opGrootte.observe(canvas);
     },
     unmount() {
+      huidige = null;
+      openBladen.set(profiel, { lijnen, plek, gewijzigd, kleur, dikte });
       opGrootte.disconnect();
       sluitLijst();
       el.remove();

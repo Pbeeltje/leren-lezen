@@ -120,3 +120,8 @@ base64 chars), a few KB total. Saving a drawing opened from a slot overwrites it
 when full the list opens in "welke mag weg?" mode. Delete needs two taps (first
 wiggles). "Nieuw blad" asks first (big ✕ / ✓) when there are unsaved lines. The
 list window is appended to `document.body`. Check: `node tests/tekeningen.mjs <map>`.
+
+The sheet in progress survives leaving and re-entering Tekenen: on `unmount` the
+lines, slot, "gewijzigd" flag, colour and thickness go into a module-level
+`openBladen` map per profile (memory only, so the app starts with an empty sheet
+after it is closed or the page is reloaded).
