@@ -1,0 +1,14 @@
+[
+  {
+    "n": 1,
+    "slug": "mug",
+    "text": "mug",
+    "path": "public/assets/audio/woorden/mug.mp3"
+  },
+  {
+    "n": 2,
+    "slug": "muur",
+    "text": "muur",
+    "path": "public/assets/audio/woorden/muur.mp3"
+  }
+]
