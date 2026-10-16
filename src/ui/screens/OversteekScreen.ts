@@ -34,6 +34,19 @@ const STER = 'assets/images/woorden/ster.svg';
 const HART = 'assets/icons/bewaar.svg';
 const VLAG = 'assets/oversteken/finish.svg';
 const LEVENS = 3;
+
+// Per ongeluk weg uit een lopend spel: level, hartjes en score blijven (per profiel) staan
+// zolang de app open is; terugkomen en op start drukken gaat verder bij het begin van dat
+// level. Ook op een andere achtergrond: alleen de volgorde van de uitdagingen hoort bij de
+// achtergrond, die wordt dan opnieuw gehusseld.
+interface LopendSpel {
+  themaId: string;
+  level: number;
+  levens: number;
+  score: number;
+  uitdagingVolgorde: Uitdaging[];
+}
+const lopendeSpellen = new Map<string, LopendSpel>();
 const HOP = 0.13; // s per sprongetje
 const DOOD_DUUR = 1; // s tussen een klap en weer verder
 const TUSSEN_DUUR = 2; // s feest aan de overkant
@@ -300,6 +313,7 @@ export function OversteekScreen(manager: ScreenManager): Screen {
   el.appendChild(draai);
 
   const profiel = haalActiefProfiel();
+  const profielSleutel = profiel?.id ?? 'gast';
   const tint = avatarFilter(profiel?.kleur);
   const speler = document.createElement('div');
   speler.className = 'ov-speler';
@@ -1566,13 +1580,20 @@ export function OversteekScreen(manager: ScreenManager): Screen {
     overlay?.remove();
     overlay = null;
     overlayActie = null;
+    const verder = lopendeSpellen.get(profielSleutel);
+    lopendeSpellen.delete(profielSleutel);
     // Alleen in de dev-server: een test kan meteen op een hoger level beginnen.
-    level = (import.meta.env.DEV ? (window as { __oversteekLevel?: number }).__oversteekLevel : undefined) ?? 1;
+    level = verder?.level ?? (import.meta.env.DEV ? (window as { __oversteekLevel?: number }).__oversteekLevel : undefined) ?? 1;
     // Welke uitdaging eerst komt is elk spel anders (een test kan de volgorde kiezen).
     const kies = import.meta.env.DEV ? (window as { __oversteekUitdagingen?: string[] }).__oversteekUitdagingen : undefined;
-    uitdagingVolgorde = kies ? kies.flatMap((w) => thema.uitdagingen.filter((u) => u.wat === w)) : husselen(thema.uitdagingen);
-    zetScore(0);
-    levens = LEVENS;
+    uitdagingVolgorde =
+      verder?.themaId === themaId
+        ? verder.uitdagingVolgorde
+        : kies
+          ? kies.flatMap((w) => thema.uitdagingen.filter((u) => u.wat === w))
+          : husselen(thema.uitdagingen);
+    zetScore(verder?.score ?? 0);
+    levens = verder?.levens ?? LEVENS;
     tekenHartjes();
     tijd = 0;
     onkwetsbaar = 0;
@@ -1729,6 +1750,13 @@ export function OversteekScreen(manager: ScreenManager): Screen {
     mount(root) {
       root.appendChild(el);
       root.appendChild(terug);
+      // Een bewaard spel staat al in de balk (en het veld) achter het startvenster.
+      const verder = lopendeSpellen.get(profielSleutel);
+      if (verder) {
+        level = verder.level;
+        levens = verder.levens;
+        zetScore(verder.score);
+      }
       tekenHartjes();
       bouwLevel();
       veld.appendChild(speler);
@@ -1741,6 +1769,16 @@ export function OversteekScreen(manager: ScreenManager): Screen {
       frame = requestAnimationFrame(stap);
     },
     unmount() {
+      // Midden in een spel weg (niet net af): bewaren. Aan de overkant telt het volgende level.
+      if ((fase === 'spel' || fase === 'tussen') && levens > 0) {
+        lopendeSpellen.set(profielSleutel, {
+          themaId,
+          level: fase === 'tussen' ? level + 1 : level,
+          levens,
+          score,
+          uitdagingVolgorde,
+        });
+      }
       fase = 'uit';
       actief = false;
       cancelAnimationFrame(frame);

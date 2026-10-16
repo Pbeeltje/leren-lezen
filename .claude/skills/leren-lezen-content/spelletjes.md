@@ -84,6 +84,12 @@ edge, theme decorations) through lanes seen from above. Tile icon: Fluent traffi
 - **Controls:** a tap is read relative to the figure (above = forward, the dominant axis
   wins, a tap on the figure = forward); a swipe works too; arrows/WASD. One hop is buffered
   during a hop (0.13 s). Three white arrows round the figure until the first hop.
+- **Leaving mid-game:** `unmount` during `spel`/`tussen` with hearts left stores level
+  (next level if already across), hearts and score in the module-level `lopendeSpellen`
+  map per profile (memory only, gone when the app closes). Re-entering shows them in the
+  bar behind the start window; start continues at the beginning of that level. Works on
+  another background too: the challenge order is kept only for the same theme, else
+  reshuffled. Game over or a fresh start clears it.
 - **Lanes:** `start`, `weg` (hazards), `veilig` (middle strip), `water` (stand only on
   what floats, else a splash), `finish`. Hazard lanes per level: 3,3,4,4,5,5,6,6,7,7,8
   (kleuter 3,3,3,4,4,5,5,6), capped by screen height; from 5 lanes (or with water) split by
