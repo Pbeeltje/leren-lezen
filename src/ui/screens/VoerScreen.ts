@@ -1,6 +1,6 @@
 import type { Screen, ScreenManager } from '../../engine/screenManager.ts';
 import { maakTerugKnop } from '../components/TerugKnop.ts';
-import { flitsIn } from '../components/spelFiguur.ts';
+import { figuurMetBeker, flitsIn } from '../components/spelFiguur.ts';
 import { avatarFilter, avatarPad, haalActiefProfiel } from '../../engine/profielStore.ts';
 import { haalGroep } from '../../engine/progressStore.ts';
 import { haalRecord, zetRecord } from '../../engine/records.ts';
@@ -12,8 +12,9 @@ import { huidigThema, type ThemaId } from '../../achtergrond/achtergrond.ts';
 // achtergrond). Elk roept om eten in een tekstballon ("Boe!", "Mèèèh!"). Sleep eten uit de
 // bak op een dier; je eigen figuurtje gooit het dan. Goed: het dier springt blij en loopt
 // door. Fout: het schudt terwijl het omdraait en wegstapt, en dat kost een hartje. Het
-// volgende dier wacht daar niet op. Drie keer fout is klaar. Geen tijdsdruk. Record per
-// profiel; geen munten.
+// volgende dier wacht daar niet op. Drie keer fout is klaar; vijftien sterren is gewonnen:
+// alle gevoerde dieren staan dan samen met een grote beker. Geen tijdsdruk. Record per
+// profiel (ook bij tussentijds weggaan); geen munten.
 //
 // Eerst komt er één dier tegelijk, later twee (kleuters) of drie (groep 3). In de bak ligt
 // dan voor elk dier één goed ding plus één ding dat geen van hen eet. Dieren in één groepje
@@ -189,11 +190,13 @@ const THEMA_DIEREN: Record<ThemaId, string[]> = {
 };
 
 const STER = w('ster');
+const TROFEE = 'assets/icons/trofee.svg';
 const HART = 'assets/icons/bewaar.svg';
 const LEVENS = 3;
 const KEUZES = 3; // zoveel dingen liggen er minstens in de bak bij een nieuw groepje
 const TWEE_VANAF = 6; // score
-const DRIE_VANAF = 14; // score, alleen groep 3
+const DRIE_VANAF = 10; // score, alleen groep 3
+const DOEL = 15; // sterren: dan is het spel gewonnen
 
 const willekeurig = <T,>(lijst: readonly T[]): T => lijst[Math.floor(Math.random() * lijst.length)];
 function schud<T>(lijst: T[]): T[] {
@@ -265,6 +268,8 @@ export function VoerScreen(manager: ScreenManager): Screen {
   let kruipers: Gast[] = []; // slakken en schildpadden die nog wegkruipen, los van het groepje
   let vorigeDieren: string[] = [];
   let noot = 0;
+  let gevoerd: Dier[] = []; // elke soort één keer, voor het feest aan het eind
+  let recordBijStart = 0;
   let overlay: HTMLElement | null = null;
   let sleep: { knop: HTMLButtonElement; eten: Eten; img: HTMLImageElement; dx: number; dy: number; id: number } | null = null;
 
@@ -993,6 +998,9 @@ export function VoerScreen(manager: ScreenManager): Screen {
     img.remove();
     const mond = mondPunt(g);
     zetScore(score + 1);
+    // De muisjes horen bij de muis: op het feest staat er één muis.
+    const soort = g.dier.id === 'muisje' ? DIEREN.find((d) => d.id === 'muis')! : g.dier;
+    if (!gevoerd.includes(soort)) gevoerd.push(soort);
     speelNoot(TONEN[noot % TONEN.length]);
     speelNoot(TONEN[(noot + 2) % TONEN.length], 0.1);
     noot++;
@@ -1007,6 +1015,10 @@ export function VoerScreen(manager: ScreenManager): Screen {
     } else ballon?.classList.remove('voer-ballon--zie');
     const plaatje = g.el.querySelector('.voer-dier__plaatje')!;
     plaatje.classList.add('voer-dier__plaatje--blij');
+    if (score >= doel()) {
+      void gewonnen();
+      return;
+    }
     await slaap(1000);
     if (mijn !== spel) return;
     plaatje.classList.remove('voer-dier__plaatje--blij');
@@ -1278,9 +1290,9 @@ export function VoerScreen(manager: ScreenManager): Screen {
     for (const g of [...gasten, ...kruipers]) g.el.remove();
     gasten = [];
     kruipers = [];
-    for (const x of veld.querySelectorAll('.voer-vlieg, .voer-spoor, .voer-hartje, .voer-druppel, .vang-plop')) x.remove();
+    for (const x of veld.querySelectorAll('.voer-vlieg, .voer-spoor, .voer-hartje, .voer-druppel, .vang-plop, .voer-feest')) x.remove();
     veld.classList.remove('voer-veld--dreun');
-    speler.classList.remove('voer-speler--bah', 'voer-speler--gooi');
+    speler.classList.remove('voer-speler--bah', 'voer-speler--gooi', 'voer-speler--feest');
     bak.classList.add('voer-bak--weg');
     bak.replaceChildren();
   }
@@ -1295,6 +1307,8 @@ export function VoerScreen(manager: ScreenManager): Screen {
     tekenHartjes();
     noot = 0;
     vorigeDieren = [];
+    gevoerd = [];
+    recordBijStart = haalRecord('voeren');
     zetMaten();
     flitsIn(speler, veld);
     void volgendGroepje();
@@ -1308,21 +1322,130 @@ export function VoerScreen(manager: ScreenManager): Screen {
     }, 400);
   }
 
-  function toonVenster(eind: boolean): void {
+  // Alleen in de dev-server: een test kan het doel lager zetten om het einde snel te zien.
+  const doel = (): number => (import.meta.env.DEV ? (window as { __voerDoel?: number }).__voerDoel : undefined) ?? DOEL;
+
+  // Tussentijds weg (terugknop, app naar de achtergrond): de score telt toch als record.
+  function bewaarScore(): void {
+    if (!overlay && score > haalRecord('voeren')) zetRecord('voeren', score);
+  }
+  const bijVerbergen = (): void => {
+    if (document.visibilityState === 'hidden') bewaarScore();
+  };
+
+  // Vijftien sterren: het laatste dier springt nog blij, dan komen alle gevoerde dieren samen
+  // terug en houden een grote beker omhoog. Daarna het eindvenster.
+  async function gewonnen(): Promise<void> {
+    for (const g of gasten) zetStaat(g, 'weg');
+    stopSleepLuisteraars();
+    sleep?.img.remove();
+    sleep = null;
+    bak.classList.add('voer-bak--weg');
+    const mijn = ++spel;
+    await slaap(1000);
+    if (mijn !== spel) return;
+    ruimOp();
+    const duur = toonFeest();
+    await slaap(duur + 3200);
+    if (mijn !== spel) return;
+    toonVenster(true, true);
+  }
+
+  // Het groepje staat rechts van het figuurtje in rijen achter elkaar (de grootste achteraan),
+  // ieder kijkt naar het midden. Geeft terug hoe lang het duurt tot iedereen er staat.
+  function toonFeest(): number {
+    const feest = document.createElement('div');
+    feest.className = 'voer-feest';
+    const dieren = [...gevoerd].sort((p, q) => q.schaal - p.schaal);
+    const n = Math.max(1, dieren.length);
+    const links = spelerRechts() + 8;
+    const ruimte = breedte() - links - randRechts();
+    const cx = links + ruimte / 2;
+    const STAP = 0.45; // elke rij verder naar achteren staat zoveel maten hoger
+    let rijen = 1;
+    let m = 0;
+    for (let r = 1; r <= 4; r++) {
+      const perRij = Math.ceil(n / r);
+      const kan = Math.min(ruimte / (perRij * 0.8 + 0.2), (hoogte() * 0.55) / (1 + (r - 1) * STAP), dierMaat() * 1.1);
+      if (kan > m + 4) {
+        m = kan;
+        rijen = r;
+      }
+    }
+    const perRij = Math.ceil(n / rijen);
+    let i = 0;
+    for (let r = 0; r < rijen; r++) {
+      const rij = dieren.slice(r * perRij, (r + 1) * perRij);
+      const voet = grond() - (rijen - 1 - r) * STAP * m;
+      rij.forEach((d, k) => {
+        const maat = m * Math.min(1.1, 0.8 + 0.2 * spreid(d.schaal));
+        const x = cx + (k - (rij.length - 1) / 2) * m * 0.8 + (r % 2 ? m * 0.2 : 0);
+        const div = document.createElement('div');
+        div.className = 'voer-dier voer-feest__dier';
+        div.style.setProperty('--voer-dier', `${maat}px`);
+        div.style.left = `${x - maat / 2}px`;
+        div.style.top = `${voet - maat}px`;
+        div.style.zIndex = String(2 + r);
+        div.style.animationDelay = `${i * 110}ms`;
+        div.innerHTML = `<div class="voer-dier__lijf"><img class="voer-dier__plaatje" src="${d.plaatje}" alt=""></div>`;
+        const lijf = div.querySelector<HTMLElement>('.voer-dier__lijf')!;
+        const richting = x < cx ? 'rechts' : 'links';
+        const spiegel = d.kijkt !== 'voor' && d.kijkt !== richting;
+        lijf.style.transform = [spiegel ? 'scaleX(-1)' : '', d.draai ? `rotate(${d.draai}deg)` : ''].join(' ').trim();
+        div.querySelector<HTMLElement>('.voer-dier__plaatje')!.style.animationDelay = `${-Math.random()}s`;
+        feest.appendChild(div);
+        speelNoot(TONEN[i % TONEN.length], i * 0.11);
+        i++;
+      });
+    }
+    // De beker boven de koppen, er net een beetje overheen, alsof ze hem samen optillen.
+    const kop = grond() - m - (rijen - 1) * STAP * m;
+    const onder = kop + m * 0.2;
+    const maat = Math.max(60, Math.min(ruimte * 0.42, hoogte() * 0.32, 280, onder - 70));
+    const beker = document.createElement('div');
+    beker.className = 'voer-feest__beker';
+    beker.style.width = beker.style.height = `${maat}px`;
+    beker.style.left = `${cx - maat / 2}px`;
+    beker.style.top = `${onder - maat}px`;
+    const bekerNa = i * 110 + 300;
+    beker.style.animationDelay = `${bekerNa}ms`;
+    beker.innerHTML = `<img src="${TROFEE}" alt="">`;
+    // De stralen staan achter de dieren, anders lijken die in de achterste rij doorzichtig.
+    const stralen = document.createElement('div');
+    stralen.className = 'voer-feest__stralen';
+    const sm = maat * 2;
+    stralen.style.width = stralen.style.height = `${sm}px`;
+    stralen.style.left = `${cx - sm / 2}px`;
+    stralen.style.top = `${onder - maat / 2 - sm / 2}px`;
+    stralen.style.animationDelay = `${bekerNa}ms, ${bekerNa}ms`;
+    feest.append(stralen, beker);
+    veld.insertBefore(feest, bak);
+    speler.classList.add('voer-speler--feest');
+    const mijn = spel;
+    window.setTimeout(() => {
+      if (mijn !== spel) return;
+      [0, 2, 4, 7, 4, 7].forEach((k, j) => speelNoot(TONEN[k] * (j > 3 ? 2 : 1), j * 0.13));
+      speelDrum('bekken', 0.5);
+      confetti.vuurwerk('groot');
+    }, bekerNa);
+    return bekerNa;
+  }
+
+  function toonVenster(eind: boolean, gewonnen = false): void {
     overlay?.remove();
     const vw = document.createElement('div');
     vw.className = 'vang-venster';
     const doos = document.createElement('div');
     doos.className = 'vang-venster__doos';
     if (eind) {
-      const record = haalRecord('voeren');
-      const nieuw = score > record;
-      if (nieuw) zetRecord('voeren', score);
+      const nieuw = score > recordBijStart;
+      if (score > haalRecord('voeren')) zetRecord('voeren', score);
+      const figuur = `<img class="vang-venster__figuur" src="${speler.src}" alt="">`;
       doos.innerHTML = `
-        <img class="vang-venster__figuur" src="${speler.src}" alt="">
+        ${gewonnen ? figuurMetBeker(figuur) : figuur}
         <div class="vang-venster__score"><img src="${STER}" alt=""><span>${score}</span></div>
-        <p class="vang-venster__record">${nieuw ? 'Nieuw record!' : `Record: ${record}`}</p>`;
-      if (nieuw && score > 0) confetti.vuurwerk('klein');
+        <p class="vang-venster__record">${nieuw ? 'Nieuw record!' : `Record: ${haalRecord('voeren')}`}</p>`;
+      if (nieuw && score > 0 && !gewonnen) confetti.vuurwerk('klein');
     } else {
       doos.innerHTML = `
         <img class="vang-venster__figuur" src="${speler.src}" alt="">
@@ -1366,9 +1489,12 @@ export function VoerScreen(manager: ScreenManager): Screen {
       zetMaten();
       opGrootte.observe(veld);
       window.addEventListener('keydown', toetsNeer);
+      document.addEventListener('visibilitychange', bijVerbergen);
       toonVenster(false);
     },
     unmount() {
+      bewaarScore();
+      document.removeEventListener('visibilitychange', bijVerbergen);
       spel++;
       ruimOp();
       opGrootte.disconnect();

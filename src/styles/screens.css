@@ -3144,6 +3144,7 @@
 
 /* ---------- Dieren voeren ---------- */
 .voer-scherm { position: fixed; inset: 0; }
+.voer-scherm > .vang-venster { z-index: 10; }
 .voer-veld {
   position: absolute;
   inset: var(--veilig-boven) var(--veilig-rechts) var(--veilig-onder) var(--veilig-links);
@@ -3277,6 +3278,46 @@
   40% { transform: translateY(-16%) scale(0.96, 1.05); }
 }
 .voer-dier--zweeft .voer-dier__plaatje { animation: voer-zweef 1.1s ease-in-out infinite alternate; }
+/* Gewonnen: alle gevoerde dieren springen samen onder een grote beker. */
+/* z-index: eigen stapel, zodat het eindvenster er gewoon overheen valt. */
+.voer-feest { position: absolute; inset: 0; z-index: 1; pointer-events: none; }
+.voer-feest__dier { animation: voer-feest-in 0.45s cubic-bezier(0.3, 1.6, 0.5, 1) both; transform-origin: center bottom; }
+.voer-feest__dier .voer-dier__plaatje { animation: voer-blij 0.7s ease-out infinite; }
+@keyframes voer-feest-in {
+  from { transform: scale(0); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
+.voer-feest__beker {
+  position: absolute;
+  z-index: 8;
+  animation: voer-feest-beker 0.9s cubic-bezier(0.3, 1.4, 0.5, 1) both;
+}
+.voer-feest__beker img {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  filter: drop-shadow(0 0 14px rgba(255, 215, 64, 0.95));
+  animation: voer-feest-zwaai 0.9s ease-in-out 0.9s infinite alternate;
+}
+@keyframes voer-feest-zwaai {
+  from { rotate: -6deg; translate: 0 0; }
+  to { rotate: 6deg; translate: 0 -6%; }
+}
+.voer-feest__stralen {
+  position: absolute;
+  z-index: 1;
+  border-radius: 50%;
+  background: repeating-conic-gradient(rgba(255, 228, 120, 0.55) 0deg 10deg, transparent 10deg 24deg);
+  mask: radial-gradient(circle, #000 30%, transparent 70%);
+  animation: voer-feest-licht 0.9s ease-out both, voer-stralen 8s linear infinite;
+}
+@keyframes voer-feest-licht { from { opacity: 0; } to { opacity: 1; } }
+@keyframes voer-feest-beker {
+  from { transform: translateY(60%) scale(0.2); opacity: 0; }
+  to { transform: translateY(0) scale(1); opacity: 1; }
+}
+@keyframes voer-stralen { to { rotate: 360deg; } }
+.voer-speler--feest { animation: voer-blij 0.7s ease-out infinite; }
 @keyframes voer-zweef {
   from { transform: translateY(-6%) rotate(-3deg); }
   to { transform: translateY(6%) rotate(3deg); }

@@ -36,7 +36,8 @@ pay coins (coins come from learning); records are per profile.
   window figure so it holds the trophy up. Vangspel: when the round is played out (not on
   losing all hearts), trophy in the game for 1.5 s, then in the end window. Tafeltennis:
   trophy in the game when a match is won, small in the next "VS" window, big after all
-  three opponents. Oversteken and Dieren voeren have no winning end.
+  three opponents. Dieren voeren: see its section (the whole crowd holds a big cup).
+  Oversteken has no winning end.
 - Dev hooks to see the endings: `window.__vangEindeNa` (seconds before the big enemy),
   `window.__pongTegenSlaapt` (opponent stops aiming).
 
@@ -82,7 +83,8 @@ edge, theme decorations) through lanes seen from above. Tile icon: Fluent traffi
   speeds (cells/s), gaps. `maatVeld()` sizes cells from the height under the bar and at
   least 7 columns wide (max 15, then the field is centred). Resizing needs no rebuild.
 - **Controls:** a tap is read relative to the figure (above = forward, the dominant axis
-  wins, a tap on the figure = forward); a swipe works too; arrows/WASD. One hop is buffered
+  wins, a tap on the figure = forward). Only the touch-down point counts; swiping does
+  not steer (removed Oct 2026: tap and swipe together confused). Arrows/WASD. One hop is buffered
   during a hop (0.13 s). Three white arrows round the figure until the first hop.
 - **Leaving mid-game:** `unmount` during `spel`/`tussen` with hearts left stores level
   (next level if already across), hearts and score in the module-level `lopendeSpellen`
@@ -270,7 +272,19 @@ dinos stamp it flat, hedgehog and shell animals bounce it, everyone else drops
 it); the animal stands still 150 ms, then shudders while it turns and walks off a
 bit slower (shell animals keep crawl speed). It moves to `kruipers` at once so the
 next group doesn't wait. −1 heart; three wrong = end. Record per profile
-(`haalRecord('voeren')`), no timer.
+(`haalRecord('voeren')`), no timer. **The record is also saved when you leave
+mid-game** (`bewaarScore()` in `unmount` and on `visibilitychange` hidden, so also when
+the app goes to the background); "Nieuw record!" compares with `recordBijStart`.
+- **Winning at 15 stars (`DOEL`):** the 15th animal still hops, then `gewonnen()` stops
+  everything and `toonFeest()` brings back every species you fed (`gevoerd`, muisje
+  counts as muis) as a crowd right of your figure: rows (the biggest at the back, each
+  row 0.45 size higher), popping in one by one with a note each, all hopping and
+  facing the middle. A big Fluent trophy (`.voer-feest__beker`) rises above their heads
+  with rotating rays behind the animals (`.voer-feest__stralen`, z-index below them, or
+  the back row looks see-through), fanfare and big confetti. ~3 s later the end window,
+  with the figure holding a cup (`figuurMetBeker`). `.voer-feest` has its own z-index and
+  `.voer-scherm > .vang-venster` z-index 10, so the window sits on top. Dev hook
+  `window.__voerDoel` sets a lower target.
 - `DIEREN`: per animal `goed` (what it eats) and an explicit `fout` list (only those
   are used as wrong options). `kijkt` (left/right/front) mirrors to the walking
   direction. `schaal` 0.8–1.2 is stretched by `spreid()` (×1.75 around 1, min 0.4)
@@ -292,7 +306,7 @@ next group doesn't wait. −1 heart; three wrong = end. Record per profile
   arrived), kronkelt (snake), graaft (mole rises out of the ground with
   clip-path, dirt clods `.voer-druppel--aarde`, sinks back to leave). Extras:
   `slaapt` (lion, sloth "Zzz…"), `spuit` (elephant fountain).
-- Groups: 1 animal, from score 6 sometimes 2, groep 3 from 14 up to 3 (max 2 when
+- Groups: 1 animal, from score 6 sometimes 2, groep 3 from 10 up to 3 (max 2 when
   width < 560). Animals in a group never share a good food and never stand next to
   their prey (`PROOI`/`lust`: cat/snake/owl–mouse, wolf–sheep/lamb, fox–chicken/hen,
   fish eaters–tropical fish). `SAMEN`:
@@ -310,6 +324,7 @@ next group doesn't wait. −1 heart; three wrong = end. Record per profile
   sauropod, butterfly, chipmunk `eekhoorn`; own `zeewier.svg`, `bamboe.svg`, and
   `zeeschildpad.svg` = the Fluent turtle with its legs swapped for own flippers). Dragging shows a big white hand cursor
   (`.voer-sleept`) and a fading trail.
-- Check: `node tests/voeren.mjs <map> [kleuter]`; forced groups via dev hook
+- Check: `node tests/voeren.mjs <map> [kleuter]` (stays under 15), `node tests/voeren-feest.mjs <map>`
+  (plays to 15: crowd + end window, and leaving mid-game keeps the record); forced groups via dev hook
   `window.__voerGroepjes`: `node tests/voeren-dieren.mjs <map> [w] [h]`
   (`ALLEEN=n` runs the first n groups).

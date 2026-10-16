@@ -1,6 +1,6 @@
 import { chromium } from 'playwright';
 // Dieren voeren: tegel onder Spelletjes, slepen (screenshot halverwege), goed voeren tot er
-// groepjes van meer dieren komen, dan drie keer fout tot het eindscherm.
+// groepjes van meer dieren komen (onder de 15 sterren blijven), dan drie keer fout tot het eindscherm.
 // Gebruik: node tests/voeren.mjs <map> [groep3|kleuter]
 const OUT = process.argv[2] + '/';
 const leeftijd = process.argv[3] === 'kleuter' ? 4 : 6;
@@ -61,7 +61,7 @@ for (const [bw, bh, tag] of [[390, 844, 'tel'], [844, 390, 'liggend'], [1280, 80
   };
 
   let gevoerd = 0; let meest = 0; let fotoGroep = false;
-  for (let i = 0; i < 40 && gevoerd < 18; i++) {
+  for (let i = 0; i < 40 && gevoerd < 12; i++) { // onder de 15: dan is het gewonnen
     if (!(await wachtOpBak())) break;
     await w(150);
     const z = await voer(true, i === 0);
