@@ -54,6 +54,8 @@ const KOLOMMEN_MIN = 7; // het veld is altijd minstens zo breed (in vakjes)
 const KOLOMMEN_MAX = 15;
 const HOOG_MAX = 1.15; // vakjes: hoger mag een plaatje niet, anders loopt het over de buurbanen
 const UITDAGING_VANAF = [10, 15];
+const LAVA_NA = 10; // lavaland (dino) op level 13, 16, 19, ...
+const LAVA_ELKE = 3;
 const HARTJE_VANAF = 10; // vanaf hier om het level een hartje om op te rapen // op deze levels komt er een uitdaging van de achtergrond bij
 const VAL = 1.4; // s dat iets uit de lucht valt (inslag), met een schaduw die groeit
 const NPC_HOP = 0.24;
@@ -378,6 +380,10 @@ export function OversteekScreen(manager: ScreenManager): Screen {
   function uitdaging<W extends Uitdaging['wat']>(wat: W): Extract<Uitdaging, { wat: W }> | undefined {
     return uitdagingen.find((u) => u.wat === wat) as Extract<Uitdaging, { wat: W }> | undefined;
   }
+  // Lavaland (dino) is geen uitdaging uit de husselvolgorde maar een vast ritme: level 13, 16,
+  // 19, ... alles lava met stenen. Zo is het nooit lava achter elkaar en blijft hij terugkomen.
+  const lavalandUitdaging = thema.uitdagingen.find((u) => u.wat === 'lavaland') as Extract<Uitdaging, { wat: 'lavaland' }> | undefined;
+  const isLavaland = (l: number): boolean => !!thema.rivier && !!lavalandUitdaging && l > LAVA_NA && (l - LAVA_NA) % LAVA_ELKE === 0;
   const icoonSrc = (icoon: string): string => (isTekening(icoon as Soort['teken']) ? tekeningSrc(icoon as Tekening) : icoon);
   const binnenVeld = (x: number): number => Math.min(Wc - 0.5, Math.max(0.5, x));
   // Waar het figuurtje te zien is: tijdens een sprong eerst nog de oude rij, daarna de nieuwe.
@@ -1011,9 +1017,7 @@ export function OversteekScreen(manager: ScreenManager): Screen {
     const n = Math.min(reeks[Math.min(level - 1, reeks.length - 1)], maxBanen());
     // Water vanaf level 4 (kleuters 5). Lavaland: alle banen lava met stenen.
     const waterVanaf = kleuter ? 5 : 4;
-    // Lavaland niet elk level: op het level waar hij erbij komt wel, daarna één op de drie.
-    const lavaland =
-      !!thema.rivier && !!uitdaging('lavaland') && (uitdagingVolgorde[UITDAGING_VANAF.indexOf(level)]?.wat === 'lavaland' || Math.random() < 1 / 3);
+    const lavaland = isLavaland(level);
     const water = !!thema.rivier && ((level >= waterVanaf && n >= 4) || lavaland);
     const plan: BaanSoort[] = ['start'];
     if (n >= 5 || water) {
@@ -1131,7 +1135,7 @@ export function OversteekScreen(manager: ScreenManager): Screen {
         duikKans: r >= leegteVanaf ? 1 : duikRijen.has(r) ? 0.6 : 0,
         val: soort === 'water' ? (rivierVan(r).val ?? 'plons') : 'plons',
         passagiers:
-          soort !== 'water' ? [] : lavaland ? (uitdaging('lavaland')?.passagiers ?? []) : level >= (kleuter ? 7 : 6) ? (rivierVan(r).passagiers ?? []) : [],
+          soort !== 'water' ? [] : lavaland ? (lavalandUitdaging?.passagiers ?? []) : level >= (kleuter ? 7 : 6) ? (rivierVan(r).passagiers ?? []) : [],
         dierLoopt: soort === 'water' && lavaland,
         sprongen: [],
         springWacht: willekeurig(1, 3),
@@ -1405,7 +1409,7 @@ export function OversteekScreen(manager: ScreenManager): Screen {
   function gehaald(): void {
     fase = 'tussen';
     // Komt er volgend level een uitdaging bij? Dan staat die in de banner (en duurt het iets langer).
-    const nieuw = uitdagingVolgorde[UITDAGING_VANAF.indexOf(level + 1)] as Uitdaging | undefined;
+    const nieuw = (uitdagingVolgorde[UITDAGING_VANAF.indexOf(level + 1)] as Uitdaging | undefined) ?? (isLavaland(level + 1) ? lavalandUitdaging : undefined);
     tussenTot = tijd + TUSSEN_DUUR + (nieuw ? 1 : 0);
     zetScore(score + 10);
     toonPlop(px, rij, '+10');
@@ -1590,8 +1594,8 @@ export function OversteekScreen(manager: ScreenManager): Screen {
       verder?.themaId === themaId
         ? verder.uitdagingVolgorde
         : kies
-          ? kies.flatMap((w) => thema.uitdagingen.filter((u) => u.wat === w))
-          : husselen(thema.uitdagingen);
+          ? kies.flatMap((w) => thema.uitdagingen.filter((u) => u.wat === w && u.wat !== 'lavaland'))
+          : husselen(thema.uitdagingen.filter((u) => u.wat !== 'lavaland'));
     zetScore(verder?.score ?? 0);
     levens = verder?.levens ?? LEVENS;
     tekenHartjes();
