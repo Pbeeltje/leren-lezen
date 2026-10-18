@@ -53,10 +53,10 @@ const TUSSEN_DUUR = 2; // s feest aan de overkant
 const KOLOMMEN_MIN = 7; // het veld is altijd minstens zo breed (in vakjes)
 const KOLOMMEN_MAX = 15;
 const HOOG_MAX = 1.15; // vakjes: hoger mag een plaatje niet, anders loopt het over de buurbanen
-const UITDAGING_VANAF = [10, 15];
-const LAVA_NA = 10; // lavaland (dino) op level 13, 16, 19, ...
+const UITDAGING_VANAF = [10, 15]; // op deze levels komt er een uitdaging van de achtergrond bij
+const LAVA_VANAF = 10; // lavaland (dino) op level 10, 13, 16, ...
 const LAVA_ELKE = 3;
-const HARTJE_VANAF = 10; // vanaf hier om het level een hartje om op te rapen // op deze levels komt er een uitdaging van de achtergrond bij
+const HARTJE_VANAF = 10; // vanaf hier om het level een hartje om op te rapen
 const VAL = 1.4; // s dat iets uit de lucht valt (inslag), met een schaduw die groeit
 const NPC_HOP = 0.24;
 const PASSAGIER = 0.8; // vakjes: zo groot is een dier op een wagon
@@ -380,10 +380,10 @@ export function OversteekScreen(manager: ScreenManager): Screen {
   function uitdaging<W extends Uitdaging['wat']>(wat: W): Extract<Uitdaging, { wat: W }> | undefined {
     return uitdagingen.find((u) => u.wat === wat) as Extract<Uitdaging, { wat: W }> | undefined;
   }
-  // Lavaland (dino) is geen uitdaging uit de husselvolgorde maar een vast ritme: level 13, 16,
-  // 19, ... alles lava met stenen. Zo is het nooit lava achter elkaar en blijft hij terugkomen.
+  // Lavaland (dino) is geen uitdaging uit de husselvolgorde maar een vast ritme: level 10, 13,
+  // 16, ... alles lava met stenen. Zo is het nooit lava achter elkaar en blijft hij terugkomen.
   const lavalandUitdaging = thema.uitdagingen.find((u) => u.wat === 'lavaland') as Extract<Uitdaging, { wat: 'lavaland' }> | undefined;
-  const isLavaland = (l: number): boolean => !!thema.rivier && !!lavalandUitdaging && l > LAVA_NA && (l - LAVA_NA) % LAVA_ELKE === 0;
+  const isLavaland = (l: number): boolean => !!thema.rivier && !!lavalandUitdaging && l >= LAVA_VANAF && (l - LAVA_VANAF) % LAVA_ELKE === 0;
   const icoonSrc = (icoon: string): string => (isTekening(icoon as Soort['teken']) ? tekeningSrc(icoon as Tekening) : icoon);
   const binnenVeld = (x: number): number => Math.min(Wc - 0.5, Math.max(0.5, x));
   // Waar het figuurtje te zien is: tijdens een sprong eerst nog de oude rij, daarna de nieuwe.

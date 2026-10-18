@@ -153,8 +153,8 @@ edge, theme decorations) through lanes seen from above. Tile icon: Fluent traffi
     the `Soort` has `banen`. It is a sporadic thing in the lowest of N adjacent road lanes. The
     lanes above get `deelVan` (collision via `dingenVan`) and the same direction, and
     blink along (`mede`). A herd (`aantal`) is built as one row per lane (`maakKudde`).
-  - `lavaland` (dino): all hazard lanes are lava with stones on a fixed rhythm, levels 13, 16,
-    19, ... (`isLavaland`, `LAVA_NA`/`LAVA_ELKE`). It is kept out of the shuffled
+  - `lavaland` (dino): all hazard lanes are lava with stones on a fixed rhythm, levels 10, 13,
+    16, ... (`isLavaland`, `LAVA_VANAF`/`LAVA_ELKE`). It is kept out of the shuffled
     `uitdagingVolgorde`, so the dino's other challenge (`inslag`) always comes at 10; the level
     banner shows the volcano before every lava level. Its `passagiers` (small animals: own drawings `raptor` and
     `pachy` from `oversteek-tekeningen.ts`, inline so legs/tail move, plus Fluent hagedis and
