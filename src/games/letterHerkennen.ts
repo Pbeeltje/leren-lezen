@@ -1,6 +1,6 @@
 import type { OefeningDefinitie } from '../content/types.ts';
 import { toonGoedFeedback, toonFoutFeedback } from '../ui/components/FeedbackOverlay.ts';
-import { schud } from '../engine/oefeningGenerator.ts';
+import { schud } from '../engine/toeval.ts';
 
 type Oefening = Extract<OefeningDefinitie, { type: 'letter-herkennen' }>;
 

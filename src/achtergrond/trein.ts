@@ -1,5 +1,6 @@
 import type { Decor } from './achtergrond.ts';
 import { el, kortAan, plaatje, svgUitTekst, zetOpPad } from './hulp.ts';
+import { kies, schud } from '../engine/toeval.ts';
 
 // Treinreis: groene heuvels met een spoorlijn langs de onderkant, een stenen brug over een
 // riviertje, links een station (loopt een stukje buiten beeld) en rechts een sein. Af en toe
@@ -320,7 +321,7 @@ export function treinWagons(goederen: boolean, n: number): WagonStuk[] {
     }
     return lijst;
   }
-  const kleuren = [...WAGONKLEUREN].sort(() => Math.random() - 0.5);
+  const kleuren = schud(WAGONKLEUREN);
   for (let i = 0; i < n - 1; i++) lijst.push({ svg: wagon(...kleuren[i % kleuren.length]), soort: 'personen' });
   if (n >= 3 && Math.random() < 0.5) lijst[0] = { svg: container(...kies(CONTAINERKLEUREN), kies(LADINGEN)), soort: 'container' };
   if (n > 0) lijst.push({ svg: POST, soort: 'post' });
@@ -362,8 +363,6 @@ interface Trein {
   loc: HTMLElement;
   stop: () => void;
 }
-
-const kies = <T,>(lijst: T[]): T => lijst[Math.floor(Math.random() * lijst.length)];
 
 export function maakTreinDecor(): Decor {
   const root = el('div', 'decor decor-trein');
@@ -521,7 +520,7 @@ export function maakTreinDecor(): Decor {
   // Goederentrein: langer, alleen stenen, gastanks en containers.
   const vulReizigers = (t: HTMLElement) => {
     if (Math.random() < 0.5) maakWagon(t, container(...kies(CONTAINERKLEUREN), kies(LADINGEN)), 'container');
-    const kleuren = [...WAGONKLEUREN].sort(() => Math.random() - 0.5);
+    const kleuren = schud(WAGONKLEUREN);
     const n = 2 + Math.floor(Math.random() * 2);
     for (let i = 0; i < n; i++) maakWagon(t, wagon(...kleuren[i]), 'personen');
     maakWagon(t, POST, 'post');

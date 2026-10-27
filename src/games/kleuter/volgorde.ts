@@ -3,7 +3,7 @@ import { instructieAudioPad } from '../../engine/audioManager.ts';
 import { toonGoedFeedback, toonFoutFeedback } from '../../ui/components/FeedbackOverlay.ts';
 import { GETEKENDE_REEKSEN } from './volgordeTekeningen.ts';
 import { plaatjesPool } from './vergelijken.ts';
-import { kies, schud } from './hulp.ts';
+import { kies, schud } from '../../engine/toeval.ts';
 
 // Op volgorde: drie of vier plaatjes in de goede volgorde zetten. Het kind tikt ze één
 // voor één aan; het goede plaatje vliegt naar het volgende genummerde vak, een fout

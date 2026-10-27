@@ -1,12 +1,9 @@
 import type { RekenOefeningDefinitie } from '../content/tellen/types.ts';
 import { toonGoedFeedback, toonFoutFeedback } from '../ui/components/FeedbackOverlay.ts';
 import { maakDobbelsteen } from '../ui/components/Dobbelsteen.ts';
+import { schud } from '../engine/toeval.ts';
 
 type Oefening = Extract<RekenOefeningDefinitie, { type: 'dubbele-dobbelsteen-naar-cijfer' }>;
-
-function schudArray<T>(items: T[]): T[] {
-  return [...items].sort(() => Math.random() - 0.5);
-}
 
 export function renderDubbeleDobbelsteenNaarCijfer(
   container: HTMLElement,
@@ -33,7 +30,7 @@ export function renderDubbeleDobbelsteenNaarCijfer(
   keuzeRij.className = 'keuze-rij';
   kaart.appendChild(keuzeRij);
 
-  const opties_ = schudArray([oefening.cijfer, ...oefening.afleiders]);
+  const opties_ = schud([oefening.cijfer, ...oefening.afleiders]);
   let afgehandeld = false;
 
   for (const getal of opties_) {

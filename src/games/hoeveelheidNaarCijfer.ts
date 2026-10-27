@@ -1,11 +1,8 @@
 import type { RekenOefeningDefinitie } from '../content/tellen/types.ts';
 import { toonGoedFeedback, toonFoutFeedback } from '../ui/components/FeedbackOverlay.ts';
+import { schud } from '../engine/toeval.ts';
 
 type Oefening = Extract<RekenOefeningDefinitie, { type: 'hoeveelheid-naar-cijfer' }>;
-
-function schudArray<T>(items: T[]): T[] {
-  return [...items].sort(() => Math.random() - 0.5);
-}
 
 export function renderHoeveelheidNaarCijfer(
   container: HTMLElement,
@@ -35,7 +32,7 @@ export function renderHoeveelheidNaarCijfer(
   keuzeRij.className = 'keuze-rij';
   kaart.appendChild(keuzeRij);
 
-  const opties_ = schudArray([oefening.aantal, ...oefening.afleiders]);
+  const opties_ = schud([oefening.aantal, ...oefening.afleiders]);
   let afgehandeld = false;
 
   for (const getal of opties_) {

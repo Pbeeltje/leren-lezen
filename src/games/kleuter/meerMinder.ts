@@ -1,7 +1,8 @@
 import type { RondeVraag } from '../../ui/screens/RondeScreen.ts';
 import { instructieAudioPad } from '../../engine/audioManager.ts';
 import { toonGoedFeedback, toonFoutFeedback } from '../../ui/components/FeedbackOverlay.ts';
-import { geheelTussen, kies } from './hulp.ts';
+import { geheelTussen } from './hulp.ts';
+import { kies } from '../../engine/toeval.ts';
 
 // Meer / minder / evenveel (groep 2 begrip): twee groepjes van hetzelfde ding, tik het
 // groepje met meer (of minder). De "="-knop in het midden is goed als het er evenveel zijn.

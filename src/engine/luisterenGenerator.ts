@@ -1,14 +1,11 @@
 import type { Woord } from '../content/types.ts';
 import { KERNEN } from '../content/lezen/kernen/kernen.index.ts';
 import { ALLEEN_LUISTEREN } from '../content/luisteren/hoofdstukken.ts';
+import { schud } from './toeval.ts';
 
 export interface LuisterVraag {
   doel: Woord;
   opties: Woord[]; // geschud, bevat doel + afleiders
-}
-
-function schud<T>(items: T[]): T[] {
-  return [...items].sort(() => Math.random() - 0.5);
 }
 
 // Eén platte, gedupliceerde-namen-vrije pool van alle woorden uit alle lees-kernen

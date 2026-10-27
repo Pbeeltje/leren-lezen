@@ -4,6 +4,7 @@ import { figuurMetBeker, flitsIn, flitstNog, houdBekerOmhoog } from '../componen
 import { AVATAR_ICONEN, AVATAR_KLEUREN, avatarFilter, avatarPad, haalActiefProfiel } from '../../engine/profielStore.ts';
 import { haalGroep } from '../../engine/progressStore.ts';
 import { haalRecord, zetRecord } from '../../engine/records.ts';
+import { maakDraaiMelding, maakVenster, startKnop, toetsenHint, toonPlop } from '../components/spelScherm.ts';
 import { TONEN, speelDrum, speelNoot } from '../../engine/muziek.ts';
 import { confetti } from '../../three/particles.ts';
 
@@ -14,6 +15,8 @@ import { confetti } from '../../three/particles.ts';
 // Ze lopen leeg bij een punt en ploppen pas weer vol als de nieuwe tegenstander écht speelt,
 // niet al op het venster dat hem aankondigt. Geen munten: munten verdien je met leren.
 // Record per profiel: hoeveel tegenstanders je op rij verslaat (te zien in Records).
+// Ga je tussendoor weg, dan gaat het bij terugkomen verder waar je was (zelfde tegenstanders,
+// stand en reeks), zolang de app openblijft.
 
 const HART = 'assets/icons/bewaar.svg';
 const DOELEN = 3;
@@ -48,6 +51,16 @@ interface Tegenstander {
   kleur: number;
 }
 
+interface LopendeWedstrijd {
+  tegenstanders: Tegenstander[];
+  ronde: number;
+  gescoord: number;
+  tegen: number;
+  opRij: number;
+}
+// Per profiel, alleen in het geheugen (weg als de app dichtgaat), net als bij Oversteken.
+const lopendeWedstrijden = new Map<string, LopendeWedstrijd>();
+
 function kiesTegenstanders(eigen: string | undefined): Tegenstander[] {
   const pot = AVATAR_ICONEN.filter((id) => id !== eigen);
   const gekozen: Tegenstander[] = [];
@@ -62,6 +75,7 @@ function kiesTegenstanders(eigen: string | undefined): Tegenstander[] {
 export function TafeltennisScreen(manager: ScreenManager): Screen {
   const kleuter = haalGroep() === 'kleuter';
   const profiel = haalActiefProfiel();
+  const profielSleutel = profiel?.id ?? 'gast';
   const eigenPad = avatarPad(profiel?.icoonId ?? 'kat');
   const eigenTint = avatarFilter(profiel?.kleur);
 
@@ -115,11 +129,9 @@ export function TafeltennisScreen(manager: ScreenManager): Screen {
   el.appendChild(balk);
 
   // Liggende telefoon: zelfde draai-melding als het vangspel (zelfde media query in screens.css).
-  const draaiNodig = window.matchMedia('(orientation: landscape) and (max-height: 500px) and (pointer: coarse)');
-  const draai = document.createElement('div');
-  draai.className = 'vang-draai';
-  draai.innerHTML = '<div class="vang-draai__telefoon"></div><p>Draai je telefoon</p>';
-  el.appendChild(draai);
+  const draai = maakDraaiMelding();
+  const draaiNodig = draai.nodig;
+  el.appendChild(draai.el);
 
   let tegenstanders = kiesTegenstanders(profiel?.icoonId);
   let ronde = 0; // welke tegenstander
@@ -136,6 +148,10 @@ export function TafeltennisScreen(manager: ScreenManager): Screen {
   let overlay: HTMLElement | null = null;
   let beker: HTMLElement | null = null; // na een gewonnen wedstrijd omhoog naast je figuur
   let pauzeTimer: number | undefined;
+  let gestart = false; // deze keer al gespeeld; alleen dan valt er bij weggaan iets te bewaren
+  let kampioen = false; // alle drie verslagen; de knop haalt drie nieuwe tegenstanders
+  let verder = lopendeWedstrijden.get(profielSleutel) ?? null;
+  if (verder) ({ tegenstanders, ronde, gescoord, tegen, opRij } = verder);
 
   // Afmetingen (in px binnen .pong-veld), opnieuw berekend bij elke grootteverandering.
   let B = 0; // tafelbreedte
@@ -312,13 +328,7 @@ export function TafeltennisScreen(manager: ScreenManager): Screen {
   }
 
   function plop(tekst: string, y: number): void {
-    const p = document.createElement('div');
-    p.className = 'vang-plop';
-    p.textContent = tekst;
-    p.style.left = `${x0 + B / 2}px`;
-    p.style.top = `${y}px`;
-    veld.appendChild(p);
-    window.setTimeout(() => p.remove(), 700);
+    toonPlop(veld, x0 + B / 2, y, tekst);
   }
 
   function doelpunt(voorSpeler: boolean): void {
@@ -345,14 +355,11 @@ export function TafeltennisScreen(manager: ScreenManager): Screen {
       opRij++;
       beker = houdBekerOmhoog(spelerFiguur, veld);
       if (opRij > haalRecord('tafeltennis')) zetRecord('tafeltennis', opRij);
-      confetti.vuurwerk(ronde === NIVEAUS.length - 1 ? 'groot' : 'klein');
-      pauzeTimer = window.setTimeout(() => {
-        if (ronde === NIVEAUS.length - 1) toonVenster('gewonnen');
-        else {
-          ronde++;
-          toonVenster('volgende');
-        }
-      }, 1100);
+      kampioen = ronde === NIVEAUS.length - 1;
+      confetti.vuurwerk(kampioen ? 'groot' : 'klein');
+      // Meteen door naar de volgende: weggaan tijdens de pauze bewaart dan de goede.
+      if (!kampioen) ronde++;
+      pauzeTimer = window.setTimeout(() => toonVenster(kampioen ? 'gewonnen' : 'volgende'), 1100);
       return;
     }
     if (tegen >= DOELEN) {
@@ -484,14 +491,24 @@ export function TafeltennisScreen(manager: ScreenManager): Screen {
 
   function startWedstrijd(): void {
     // Hartjes blijven op het aankondigingsvenster zoals de vorige wedstrijd eindigde.
-    // Ze ploppen pas vol als deze tegenstander echt aan de beurt is.
-    const vulOp = gescoord > 0 || tegen > 0;
+    // Ze ploppen pas vol als deze tegenstander echt aan de beurt is. Een bewaarde wedstrijd
+    // gaat verder met de stand van toen.
+    const hervat = verder;
+    verder = null;
+    lopendeWedstrijden.delete(profielSleutel);
+    gestart = true;
+    if (kampioen) {
+      tegenstanders = kiesTegenstanders(profiel?.icoonId);
+      ronde = 0;
+      kampioen = false;
+    }
+    const vulOp = !hervat && (gescoord > 0 || tegen > 0);
     overlay?.remove();
     overlay = null;
     beker?.remove();
     beker = null;
-    gescoord = 0;
-    tegen = 0;
+    gescoord = hervat?.gescoord ?? 0;
+    tegen = hervat?.tegen ?? 0;
     zetTegenstander();
     tekenStand(vulOp);
     spelerX = doelX = tegenX = tegenDoel = B / 2;
@@ -518,10 +535,7 @@ export function TafeltennisScreen(manager: ScreenManager): Screen {
   function toonVenster(soort: 'start' | 'volgende' | 'verloren' | 'gewonnen'): void {
     overlay?.remove();
     tekenStand();
-    const v = document.createElement('div');
-    v.className = 'vang-venster';
-    const doos = document.createElement('div');
-    doos.className = 'vang-venster__doos';
+    const { venster, doos } = maakVenster();
     const t = tegenstanders[ronde];
     // Gewonnen: je figuur houdt een beker omhoog (groot na alle drie, klein na één).
     if (soort === 'gewonnen') {
@@ -535,29 +549,11 @@ export function TafeltennisScreen(manager: ScreenManager): Screen {
         </div>`;
     }
     doos.appendChild(ladder.cloneNode(true));
-    if (soort === 'start' && matchMedia('(hover: hover) and (pointer: fine)').matches) {
-      const hint = document.createElement('p');
-      hint.className = 'vang-venster__toetsen';
-      hint.innerHTML = '<kbd>←</kbd><kbd>→</kbd>';
-      hint.setAttribute('aria-label', 'pijltjestoetsen');
-      doos.appendChild(hint);
-    }
-    const knop = document.createElement('button');
-    knop.type = 'button';
-    knop.className = 'vang-venster__start';
-    knop.innerHTML = '<img src="assets/icons/vangspel-start.svg" alt="">';
-    knop.setAttribute('aria-label', soort === 'verloren' ? 'nog een keer' : 'spelen');
-    knop.addEventListener('click', () => {
-      if (soort === 'gewonnen') {
-        tegenstanders = kiesTegenstanders(profiel?.icoonId);
-        ronde = 0;
-      }
-      startWedstrijd();
-    });
-    doos.appendChild(knop);
-    v.appendChild(doos);
-    el.appendChild(v);
-    overlay = v;
+    const hint = soort === 'start' ? toetsenHint(['←', '→'], 'pijltjestoetsen') : null;
+    if (hint) doos.appendChild(hint);
+    doos.appendChild(startKnop(soort === 'verloren' ? 'nog een keer' : 'spelen', startWedstrijd));
+    el.appendChild(venster);
+    overlay = venster;
   }
 
   const terug = maakTerugKnop(() => manager.pop());
@@ -584,6 +580,18 @@ export function TafeltennisScreen(manager: ScreenManager): Screen {
       toonVenster('start');
     },
     unmount() {
+      // Gespeeld en weg: bij terugkomen verder. Een uitgespeelde wedstrijd begint dan opnieuw
+      // tegen dezelfde (verloren) of de volgende (gewonnen; die staat al in `ronde`).
+      if (gestart) {
+        const uit = gescoord >= DOELEN || tegen >= DOELEN;
+        lopendeWedstrijden.set(profielSleutel, {
+          tegenstanders: kampioen ? kiesTegenstanders(profiel?.icoonId) : tegenstanders,
+          ronde: kampioen ? 0 : ronde,
+          gescoord: uit ? 0 : gescoord,
+          tegen: uit ? 0 : tegen,
+          opRij,
+        });
+      }
       actief = false;
       bezig = false;
       cancelAnimationFrame(frame);

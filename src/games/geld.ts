@@ -2,14 +2,11 @@ import type { RekenOefeningDefinitie } from '../content/tellen/types.ts';
 import { schrijfBedrag } from '../content/tellen/som.ts';
 import { toonFoutFeedback, toonGoedFeedback } from '../ui/components/FeedbackOverlay.ts';
 import { koppelSchermToetsenbord } from '../ui/components/SchermToetsenbord.ts';
+import { schud } from '../engine/toeval.ts';
 
 type Keuze = Extract<RekenOefeningDefinitie, { type: 'geld-keuze' }>;
 type Typen = Extract<RekenOefeningDefinitie, { type: 'geld-typen' }>;
 type Stukken = { munten: number[]; briefjes?: number[] };
-
-function schudArray<T>(items: T[]): T[] {
-  return [...items].sort(() => Math.random() - 0.5);
-}
 
 function muntKlasse(cent: number): string {
   if (cent >= 100) return 'geld-munt geld-munt--groot';
@@ -53,7 +50,7 @@ export function renderGeldKeuze(
   keuzeRij.className = 'keuze-rij';
   kaart.appendChild(keuzeRij);
 
-  const keuzes = schudArray([oefening.antwoordCent, ...oefening.afleidersCent]);
+  const keuzes = schud([oefening.antwoordCent, ...oefening.afleidersCent]);
   let afgehandeld = false;
 
   for (const cent of keuzes) {

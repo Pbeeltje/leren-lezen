@@ -3,7 +3,7 @@ import type { RondeVraag } from '../../ui/screens/RondeScreen.ts';
 import { KERNEN } from '../../content/lezen/kernen/kernen.index.ts';
 import { instructieAudioPad } from '../../engine/audioManager.ts';
 import { toonGoedFeedback, toonFoutFeedback } from '../../ui/components/FeedbackOverlay.ts';
-import { kies, schud } from './hulp.ts';
+import { kies, schud } from '../../engine/toeval.ts';
 
 // Vergelijken (groep 1-2 begrip): groot/klein, zwaar/licht, lang/kort. Twee keuzes,
 // altijd opnieuw proberen. Bij zwaar/licht zijn beide plaatjes bewust even groot, zodat

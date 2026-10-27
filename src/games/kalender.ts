@@ -1,6 +1,7 @@
 import '../styles/kalender.css';
 import type { RekenOefeningDefinitie } from '../content/tellen/types.ts';
 import { toonFoutFeedback, toonGoedFeedback } from '../ui/components/FeedbackOverlay.ts';
+import { schud } from '../engine/toeval.ts';
 
 // Dagen van de week en maanden van het jaar (Tijd lezen). De namen zijn leestekst: geen
 // audio, in het leeslettertype.
@@ -10,10 +11,6 @@ type Volgorde = Extract<RekenOefeningDefinitie, { type: 'dag-volgorde' | 'maand-
 type VoorNa = Extract<RekenOefeningDefinitie, { type: 'dag-voor-na' | 'maand-voor-na' }>;
 type Opties = { herkansingToegestaan: boolean };
 type Resultaat = { vernietig: () => void };
-
-function schudArray<T>(items: T[]): T[] {
-  return [...items].sort(() => Math.random() - 0.5);
-}
 
 function maakKaart(): HTMLDivElement {
   const kaart = document.createElement('div');
@@ -48,7 +45,7 @@ function maakKeuzes(
   keuzeRij.className = 'keuze-rij';
   kaart.appendChild(keuzeRij);
   let afgehandeld = false;
-  for (const naam of schudArray([antwoord, ...afleiders])) {
+  for (const naam of schud([antwoord, ...afleiders])) {
     const knop = document.createElement('button');
     knop.className = 'keuze-knop kalender-knop';
     knop.textContent = naam;
@@ -148,8 +145,8 @@ export function renderKalenderVolgorde(
   kaart.appendChild(keuzeRij);
 
   // Nooit al in de goede volgorde beginnen.
-  let geschud = schudArray(oefening.rij);
-  while (geschud.every((naam, i) => naam === oefening.rij[i])) geschud = schudArray(oefening.rij);
+  let geschud = schud(oefening.rij);
+  while (geschud.every((naam, i) => naam === oefening.rij[i])) geschud = schud(oefening.rij);
 
   let volgende = 0;
   let afgehandeld = false;

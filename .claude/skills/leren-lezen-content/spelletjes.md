@@ -18,6 +18,19 @@ pay coins (coins come from learning); records are per profile.
 - Geheugenspel (pays coins, no score) and Tekenen have no record.
 - A new game with a score: add it to `RecordSpel` and to `SPELLEN` in `RecordsScreen.ts`.
 
+## Shared: bar, rotate overlay, windows (`ui/components/spelScherm.ts`, CSS `.vang-*` in screens.css)
+
+Every game builds these from here instead of its own copy (a new game too):
+- `maakTeller(icoon, klasse?)` (score/level in the bar, `.zet(n)`), `maakHartjes(n)`
+  (`.teken(over)`, lost ones grey), `toonPlop(ouder, x, y, tekst)` (px in `ouder`).
+- `maakDraaiMelding()` returns the "Draai je telefoon" overlay and its `MediaQueryList`
+  (`nodig`); that query is the only copy and must stay identical to `.vang-draai` in screens.css.
+- Windows: `maakVenster()` gives `{ venster, doos }`; the game fills `doos` and appends
+  `startKnop(label, actie)`; `toetsenHint(['←', '→'], label)` returns null without a mouse.
+- `recordRegel(spel, score, vorige?)` saves a new record and returns the "Nieuw record!" /
+  "Record: n" line plus `nieuw`. Voeren passes the record from the start (`recordBijStart`),
+  because leaving mid-game may already have raised it.
+
 ## Shared: start flash and trophy (`ui/components/spelFiguur.ts`, CSS in components.css)
 
 - `flitsIn(figuur, ouder?)`: the own figure flashes white twice (filter switches, so real
@@ -65,8 +78,7 @@ pay coins (coins come from learning); records are per profile.
   (grayscale → sepia + hue-rotate to one strong red, red glow). Never use red
   things as good items.
 - Portrait only: on a sideways phone a "Draai je telefoon" overlay (`.vang-draai`)
-  pauses the game; the `matchMedia` in `VangScreen.ts` must stay identical to that
-  media query (it adds `pointer: coarse`).
+  pauses the game (`maakDraaiMelding()`, see Shared above; the query adds `pointer: coarse`).
 - Record: `haalRecord('vangspel')`. Start/end screens are pictures only.
 - Wide screens (laptop, landscape tablet; `min-aspect-ratio: 3/4`): `.vang-veld` is at most
   75dvh wide (always taller than wide), centred, with a rim and a tinted veil over the
@@ -261,6 +273,12 @@ getting better. In landscape the table uses the full width.
   `--pong-tafel`/`--pong-rand`).
 - Record: opponents beaten in a row (`opRij`, carries over a trophy, a loss resets it);
   saved silently, shown only on the Records screen (the windows stay pictures only).
+- **Leaving mid-game:** once a match has been started, `unmount` stores opponents, `ronde`,
+  the score and `opRij` per profile in the module-level `lopendeWedstrijden` map (memory
+  only, like Oversteken). Re-entering shows that opponent and score behind the start window;
+  start continues the match. A finished match stores 0–0: same opponent after a loss, the
+  next after a win (`ronde` goes up at the winning point, not when the window shows), three
+  new ones after the trophy (`kampioen`). Starting clears the stored state.
 - Check: `node tests/tafeltennis.mjs <map> [mis-kans]`.
 
 ## Dieren voeren (`ui/screens/VoerScreen.ts`, carrot icon `icons/voeren.svg`)

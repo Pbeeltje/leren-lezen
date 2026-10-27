@@ -3,7 +3,7 @@ import { maakTerugKnop } from '../components/TerugKnop.ts';
 import { flitsIn, flitstNog } from '../components/spelFiguur.ts';
 import { avatarFilter, avatarPad, haalActiefProfiel } from '../../engine/profielStore.ts';
 import { haalGroep } from '../../engine/progressStore.ts';
-import { haalRecord, zetRecord } from '../../engine/records.ts';
+import { maakDraaiMelding, maakHartjes, maakTeller, maakVenster, recordRegel, startKnop, toetsenHint, toonPlop as plopIn } from '../components/spelScherm.ts';
 import { TONEN, speelDrum, speelNoot } from '../../engine/muziek.ts';
 import { confetti } from '../../three/particles.ts';
 import { huidigThema } from '../../achtergrond/achtergrond.ts';
@@ -12,6 +12,7 @@ import { TREIN_LOC, treinWagons } from '../../achtergrond/trein.ts';
 import { OVERSTEEK_THEMAS, type Rivier, type Soort, type Tekening, type Uitdaging, type Vlot } from './oversteek-themas.ts';
 import { VLOT_TEKENINGEN } from './oversteek-vlotten.ts';
 import { PACHY, RAPTOR, STEGOSAURUS, TRICERATOPS } from './oversteek-tekeningen.ts';
+import { schud } from '../../engine/toeval.ts';
 
 // Oversteken (een soort Frogger): je eigen figuurtje staat onderaan en moet naar de
 // overkant, baan voor baan, tussen wat er langs raast door. Wat dat is hangt af van de
@@ -58,12 +59,12 @@ const LAVA_VANAF = 10; // lavaland (dino) op level 10, 13, 16, ...
 const LAVA_ELKE = 3;
 const HARTJE_VANAF = 10; // vanaf hier om het level een hartje om op te rapen
 const VAL = 1.4; // s dat iets uit de lucht valt (inslag), met een schaduw die groeit
-const NPC_HOP = 0.24;
+const NPC_HOP = 0.24; // s per sprongetje van een overstekertje
 const PASSAGIER = 0.8; // vakjes: zo groot is een dier op een wagon
 const DIER_RUIMTE = PASSAGIER + 1; // zo lang moet een vlot zijn voor een dier erop (ook twee lavastenen)
 const DIER_SPRINGT = 15; // vanaf dit level springen de dieren soms naar de volgende wagon
 const DIER_KLAAR = 0.6; // s wiebelen voor de sprong
-const DIER_VLUCHT = 0.45; // s in de lucht // s per sprongetje van een overstekertje
+const DIER_VLUCHT = 0.45; // s in de lucht
 
 type BaanSoort = 'start' | 'veilig' | 'finish' | 'weg' | 'water';
 type Richting = 'op' | 'neer' | 'links' | 'rechts';
@@ -184,7 +185,6 @@ interface Overstekertje { el: HTMLElement; r: number; vanR: number; x: number; h
 
 const willekeurig = (a: number, b: number): number => a + Math.random() * (b - a);
 const heelGetal = ([a, b]: [number, number]): number => a + Math.floor(Math.random() * (b - a + 1));
-const husselen = <T>(lijst: T[]): T[] => [...lijst].sort(() => Math.random() - 0.5);
 
 // Boomstam van bovenaf, zo lang als gevraagd (viewBox: 100 per vakje).
 function boomstam(lengte: number): string {
@@ -295,24 +295,18 @@ export function OversteekScreen(manager: ScreenManager): Screen {
 
   const balk = document.createElement('div');
   balk.className = 'vang-balk';
-  const levelEl = document.createElement('div');
-  levelEl.className = 'vang-score ov-level';
-  levelEl.innerHTML = `<img src="${VLAG}" alt=""><span>1</span>`;
-  const scoreEl = document.createElement('div');
-  scoreEl.className = 'vang-score';
-  scoreEl.innerHTML = `<img src="${STER}" alt=""><span>0</span>`;
-  const hartjes = document.createElement('div');
-  hartjes.className = 'vang-hartjes';
-  balk.append(levelEl, scoreEl, hartjes);
+  const levelTeller = maakTeller(VLAG, 'vang-score ov-level');
+  levelTeller.zet(1);
+  const scoreTeller = maakTeller(STER);
+  const hartjes = maakHartjes(LEVENS);
+  balk.append(levelTeller.el, scoreTeller.el, hartjes.el);
   el.appendChild(balk);
 
   // Liggende telefoon: te weinig hoogte voor alle banen. Zelfde melding en media query
-  // als het vangspel (.vang-draai in screens.css).
-  const draaiNodig = window.matchMedia('(orientation: landscape) and (max-height: 500px) and (pointer: coarse)');
-  const draai = document.createElement('div');
-  draai.className = 'vang-draai';
-  draai.innerHTML = '<div class="vang-draai__telefoon"></div><p>Draai je telefoon</p>';
-  el.appendChild(draai);
+  // als het vangspel.
+  const draai = maakDraaiMelding();
+  const draaiNodig = draai.nodig;
+  el.appendChild(draai.el);
 
   const profiel = haalActiefProfiel();
   const profielSleutel = profiel?.id ?? 'gast';
@@ -1046,7 +1040,7 @@ export function OversteekScreen(manager: ScreenManager): Screen {
     const gatExtra = kleuter ? 2.8 : 2.6;
     const Lw = Math.max(0, level - waterVanaf); // levels sinds het water begon
     // Elke baan een ander soort, zolang de lijst strekt.
-    const vijanden = [...thema.vijanden].sort(() => Math.random() - 0.5);
+    const vijanden = schud(thema.vijanden);
     // Leegte (uitdaging): de bovenste helft van de rivierbanen is een andere rivier.
     const leegte = uitdaging('leegte');
     const rivierRijen = plan.flatMap((s, r) => (s === 'water' ? [r] : []));
@@ -1056,7 +1050,7 @@ export function OversteekScreen(manager: ScreenManager): Screen {
     const drijverRij = new Map<Rivier, { lijst: Soort[]; n: number }>();
     const volgendeDrijver = (rv: Rivier): Soort => {
       let d = drijverRij.get(rv);
-      if (!d) drijverRij.set(rv, (d = { lijst: husselen(rv.drijvers), n: 0 }));
+      if (!d) drijverRij.set(rv, (d = { lijst: schud(rv.drijvers), n: 0 }));
       return d.lijst[d.n++ % d.lijst.length];
     };
     const wegRijen = plan.flatMap((s, r) => (s === 'weg' ? [r] : []));
@@ -1082,7 +1076,7 @@ export function OversteekScreen(manager: ScreenManager): Screen {
     const uitschieters = new Set<number>();
     if (thema.zeldzaam.length && level >= (kleuter ? 7 : 6)) {
       const aantal = level >= 9 && wegRijen.length >= 6 ? 2 : 1;
-      const kandidaten = husselen([...vrij]).sort((a, b) => (ingeklemd ? Number(tussenWegen(b)) - Number(tussenWegen(a)) : 0));
+      const kandidaten = schud([...vrij]).sort((a, b) => (ingeklemd ? Number(tussenWegen(b)) - Number(tussenWegen(a)) : 0));
       for (const r of kandidaten) {
         if (uitschieters.size >= aantal) break;
         // Twee uitschieters niet naast elkaar (dan klemmen ze elkaar in, niet het drukke verkeer).
@@ -1093,9 +1087,9 @@ export function OversteekScreen(manager: ScreenManager): Screen {
     for (const r of uitschieters) vrij.delete(r);
     const baanAan = uitdaging('baan-aan');
     // Vanaf level 15 twee banen, die om de beurt aan gaan.
-    const aanRijen = baanAan ? husselen([...vrij]).slice(0, level >= 15 ? 2 : 1) : [];
+    const aanRijen = baanAan ? schud([...vrij]).slice(0, level >= 15 ? 2 : 1) : [];
     const waterRijen = plan.flatMap((s, r) => (s === 'water' ? [r] : []));
-    const duikRijen = new Set(uitdaging('zinken') ? husselen(waterRijen).slice(0, Math.max(1, Math.round(waterRijen.length / 3))) : []);
+    const duikRijen = new Set(uitdaging('zinken') ? schud(waterRijen).slice(0, Math.max(1, Math.round(waterRijen.length / 3))) : []);
     let richting: 1 | -1 = Math.random() < 0.5 ? 1 : -1;
     let wegTeller = 0;
 
@@ -1233,7 +1227,7 @@ export function OversteekScreen(manager: ScreenManager): Screen {
 
     // Keren: een of twee gewone wegen stoppen af en toe en rijden dan de andere kant op.
     if (uitdaging('keren')) {
-      const kan = husselen(banen.filter((b) => b.soort === 'weg' && b.bron && !b.sporadisch));
+      const kan = schud(banen.filter((b) => b.soort === 'weg' && b.bron && !b.sporadisch));
       for (const b of kan.slice(0, Math.min(2, Math.ceil(kan.length / 3)))) {
         const el = document.createElement('div');
         el.className = 'ov-keer';
@@ -1246,7 +1240,6 @@ export function OversteekScreen(manager: ScreenManager): Screen {
       const el = document.createElement('div');
       el.className = 'ov-lawine';
       veld.appendChild(el);
-      el.hidden = true;
       el.hidden = true;
       lawine = { el, h: 0, wacht: kleuter ? 7 : 5 };
     }
@@ -1299,7 +1292,7 @@ export function OversteekScreen(manager: ScreenManager): Screen {
     vanRij = 0;
     hopT = HOP;
     buffer = null;
-    levelEl.querySelector('span')!.textContent = String(level);
+    levelTeller.zet(level);
     for (const b of banen) for (const d of b.dingen) tekenDing(d);
     tekenSpeler();
   }
@@ -1554,30 +1547,17 @@ export function OversteekScreen(manager: ScreenManager): Screen {
   // ---------- balk, vensters ----------
 
   function tekenHartjes(): void {
-    hartjes.replaceChildren(
-      ...Array.from({ length: LEVENS }, (_, k) => {
-        const h = document.createElement('img');
-        h.src = HART;
-        h.alt = '';
-        if (k >= levens) h.className = 'vang-hart--weg';
-        return h;
-      }),
-    );
+    hartjes.teken(levens);
   }
 
   function zetScore(n: number): void {
     score = n;
-    scoreEl.querySelector('span')!.textContent = String(score);
+    scoreTeller.zet(score);
   }
 
+  // In vakjes: x en rij.
   function toonPlop(x: number, r: number, tekst: string): void {
-    const plop = document.createElement('div');
-    plop.className = 'vang-plop';
-    plop.textContent = tekst;
-    plop.style.left = `${x * c}px`;
-    plop.style.top = `${(N - 1 - r + 0.3) * c}px`;
-    veld.appendChild(plop);
-    window.setTimeout(() => plop.remove(), 700);
+    plopIn(veld, x * c, (N - 1 - r + 0.3) * c, tekst);
   }
 
   function start(): void {
@@ -1595,7 +1575,7 @@ export function OversteekScreen(manager: ScreenManager): Screen {
         ? verder.uitdagingVolgorde
         : kies
           ? kies.flatMap((w) => thema.uitdagingen.filter((u) => u.wat === w && u.wat !== 'lavaland'))
-          : husselen(thema.uitdagingen.filter((u) => u.wat !== 'lavaland'));
+          : schud(thema.uitdagingen.filter((u) => u.wat !== 'lavaland'));
     zetScore(verder?.score ?? 0);
     levens = verder?.levens ?? LEVENS;
     tekenHartjes();
@@ -1610,16 +1590,6 @@ export function OversteekScreen(manager: ScreenManager): Screen {
     bouwLevel();
     // De flits is op de wikkel (div), want het plaatje zelf knippert al als je onkwetsbaar bent.
     flitsIn(speler, veld);
-  }
-
-  function knop(klasse: string, html: string, label: string, actie: () => void): HTMLButtonElement {
-    const b = document.createElement('button');
-    b.type = 'button';
-    b.className = klasse;
-    b.innerHTML = html;
-    b.setAttribute('aria-label', label);
-    b.addEventListener('click', actie);
-    return b;
   }
 
   // Twee stukjes water voor het startvenster: het figuurtje op een vlot (goed) en het
@@ -1640,21 +1610,16 @@ export function OversteekScreen(manager: ScreenManager): Screen {
   // Begin- en eindscherm: plaatjes in plaats van uitleg (overkant ✓, verkeer ✕).
   function toonVenster(eind: boolean): void {
     overlay?.remove();
-    const v = document.createElement('div');
-    v.className = 'vang-venster';
-    const doos = document.createElement('div');
-    doos.className = 'vang-venster__doos';
+    const { venster, doos } = maakVenster();
     const figuur = `<img class="vang-venster__figuur" src="${spelerImg.src}" alt="">`;
     if (eind) {
-      const record = haalRecord('oversteken');
-      const nieuw = score > record;
-      if (nieuw) zetRecord('oversteken', score);
+      const { html: recordHtml, nieuw } = recordRegel('oversteken', score);
       doos.innerHTML = `${figuur}
         <div class="ov-eind">
           <div class="vang-venster__score"><img src="${STER}" alt=""><span>${score}</span></div>
           <div class="vang-venster__score ov-eind__level"><img src="${VLAG}" alt=""><span>${level}</span></div>
         </div>
-        <p class="vang-venster__record">${nieuw ? 'Nieuw record!' : `Record: ${record}`}</p>`;
+        ${recordHtml}`;
       if (nieuw && score > 0) confetti.vuurwerk('klein');
     } else {
       // Een gevaar als plaatje: Fluent-plaatje, of de trein / een eigen tekening inline.
@@ -1674,20 +1639,14 @@ export function OversteekScreen(manager: ScreenManager): Screen {
           <span class="vang-uitleg__vak vang-uitleg__vak--goed"><img src="${VLAG}" alt="">${water?.goed ?? ''}<b>✓</b></span>
           <span class="vang-uitleg__vak vang-uitleg__vak--fout">${gevaar.map(plaatje).join('')}${water?.fout ?? ''}<b>✕</b></span>
         </div>`;
-      if (matchMedia('(hover: hover) and (pointer: fine)').matches) {
-        const hint = document.createElement('p');
-        hint.className = 'vang-venster__toetsen';
-        hint.innerHTML = '<kbd>←</kbd><kbd>↑</kbd><kbd>→</kbd><kbd>↓</kbd>';
-        hint.setAttribute('aria-label', 'pijltjestoetsen');
-        doos.appendChild(hint);
-      }
+      const hint = toetsenHint(['←', '↑', '→', '↓'], 'pijltjestoetsen');
+      if (hint) doos.appendChild(hint);
     }
     const fig = doos.querySelector<HTMLImageElement>('.vang-venster__figuur');
     if (fig && tint) fig.style.filter = tint;
-    doos.appendChild(knop('vang-venster__start', '<img src="assets/icons/vangspel-start.svg" alt="">', eind ? 'nog een keer' : 'start', start));
-    v.appendChild(doos);
-    el.appendChild(v);
-    overlay = v;
+    doos.appendChild(startKnop(eind ? 'nog een keer' : 'start', start));
+    el.appendChild(venster);
+    overlay = venster;
     overlayActie = start;
   }
 

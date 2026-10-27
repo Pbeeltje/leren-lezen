@@ -1,7 +1,8 @@
 import type { RekenOefeningDefinitie, RekenSom } from '../content/tellen/types.ts';
 import { schrijfSom } from '../content/tellen/som.ts';
 import { toonFoutFeedback, toonGoedFeedback } from '../ui/components/FeedbackOverlay.ts';
-import { schud, schudAnders } from '../engine/oefeningGenerator.ts';
+import { schudAnders } from '../engine/oefeningGenerator.ts';
+import { schud } from '../engine/toeval.ts';
 
 type Oefening = Extract<RekenOefeningDefinitie, { type: 'som-koppelen' }>;
 

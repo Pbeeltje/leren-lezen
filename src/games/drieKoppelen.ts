@@ -1,6 +1,7 @@
 import type { OefeningDefinitie, Woord } from '../content/types.ts';
 import { toonGoedFeedback, toonFoutFeedback } from '../ui/components/FeedbackOverlay.ts';
-import { schud, schudAnders } from '../engine/oefeningGenerator.ts';
+import { schudAnders } from '../engine/oefeningGenerator.ts';
+import { schud } from '../engine/toeval.ts';
 
 type Oefening = Extract<OefeningDefinitie, { type: 'drie-koppelen' }>;
 

@@ -11,7 +11,7 @@ import { naHuidigeAudio, speelAf, woordAudioPad, instructieAudioPad } from '../.
 import { isOpgenomen } from '../../engine/opnames.ts';
 import { voegMuntenToe, volgendeBegrijpendVraag } from '../../engine/progressStore.ts';
 import { MUNTEN_BEGRIJPEND } from '../../engine/rewards.ts';
-import { schud } from '../../engine/oefeningGenerator.ts';
+import { schud } from '../../engine/toeval.ts';
 import { LerenLezenKiesScreen } from './LerenLezenKiesScreen.ts';
 
 const KAFT_KLEUREN = ['#ff7a3d', '#3dbdff', '#3ecf6e', '#b36bff', '#ff5d8f'];

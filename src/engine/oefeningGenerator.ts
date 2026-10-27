@@ -1,6 +1,7 @@
 import type { Kern, OefeningDefinitie, OefeningType, Woord } from '../content/types.ts';
 import { haalGroep } from './progressStore.ts';
 import { KLEUTER_WOORDEN } from '../content/lezen/kernen/kleuter-letters.ts';
+import { schud } from './toeval.ts';
 
 export type OefenModus = 'oefenen' | 'toets';
 export type OefeningNummer = 1 | 2 | 3;
@@ -39,16 +40,6 @@ function kiesType(typen: OefeningType[]): OefeningType {
 const KLANKEN = ['eeuw', 'ieuw', 'aai', 'ooi', 'oei', 'sch', 'ng', 'nk', 'ch', 'ee', 'ie', 'oe', 'oo', 'aa', 'eu', 'au', 'ou', 'ui', 'ij', 'ei', 'uu'];
 // Klanken die hetzelfde klinken: een afleider met de "tweeling" is geen eerlijk fout antwoord.
 const ZELFDE_KLANK: Record<string, string[]> = { ei: ['ij'], ij: ['ei'], au: ['ou'], ou: ['au'] };
-
-/** Fisher-Yates; sort(() => random - 0.5) is scheef verdeeld. */
-export function schud<T>(items: T[]): T[] {
-  const kopie = [...items];
-  for (let i = kopie.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [kopie[i], kopie[j]] = [kopie[j], kopie[i]];
-  }
-  return kopie;
-}
 
 /** Schudt, maar nooit terug in de oorspronkelijke volgorde (als dat kan): anders staat het antwoord er al. */
 export function schudAnders<T>(items: T[], gelijk: (a: T, b: T) => boolean = (a, b) => a === b): T[] {

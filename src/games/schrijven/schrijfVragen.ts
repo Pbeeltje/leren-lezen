@@ -5,7 +5,7 @@ import { LETTERS, LIJNEN, woordFiguur, type Figuur, type Punt } from '../../cont
 import { woordFiguurAanElkaar } from '../../content/schrijven/aanElkaar.ts';
 import { huidigSchrift } from '../../engine/schrift.ts';
 import { maakOvertrekker } from './overtrekken.ts';
-import { kies } from '../kleuter/hulp.ts';
+import { kies } from '../../engine/toeval.ts';
 
 // De drie schrijfspellen: lijnen (vanaf 3 jaar), letters (5-6) en woordjes (6).
 // Letters en woordjes volgen het schrift van het profiel: los of aan elkaar.

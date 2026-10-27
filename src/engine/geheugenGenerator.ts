@@ -1,13 +1,10 @@
 import type { Woord } from '../content/types.ts';
 import { kiesVerschillendePlaatjes, woordenpool } from './luisterenGenerator.ts';
+import { schud } from './toeval.ts';
 
 export interface GeheugenKaart {
   id: number; // uniek per kaart (twee kaarten kunnen hetzelfde woord hebben)
   woord: Woord;
-}
-
-function schud<T>(items: T[]): T[] {
-  return [...items].sort(() => Math.random() - 0.5);
 }
 
 /** `aantalParen` woorden × 2 kaarten, geschud. */

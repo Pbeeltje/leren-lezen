@@ -10,6 +10,7 @@ import type {
 } from '../content/tellen/types.ts';
 import { klokUur, zelfdeKlokstand } from '../content/tellen/klok.ts';
 import { type KalenderSoort, kalenderLijst } from '../content/tijd/kalender.ts';
+import { schud } from './toeval.ts';
 
 export type RekenModus = 'oefenen' | 'toets';
 
@@ -25,10 +26,6 @@ const ALLE_TYPEN: RekenOefeningType[] = [
   'optellen',
   'bussom',
 ];
-
-function schud<T>(items: T[]): T[] {
-  return [...items].sort(() => Math.random() - 0.5);
-}
 
 function kiesObject(objecten: TelObject[]): TelObject {
   return objecten[Math.floor(Math.random() * objecten.length)];

@@ -1,12 +1,9 @@
 import type { RekenOefeningDefinitie } from '../content/tellen/types.ts';
 import { schrijfSom } from '../content/tellen/som.ts';
 import { toonGoedFeedback, toonFoutFeedback } from '../ui/components/FeedbackOverlay.ts';
+import { schud } from '../engine/toeval.ts';
 
 type Oefening = Extract<RekenOefeningDefinitie, { type: 'som-keuze' }>;
-
-function schudArray<T>(items: T[]): T[] {
-  return [...items].sort(() => Math.random() - 0.5);
-}
 
 export function renderSomKeuze(
   container: HTMLElement,
@@ -28,7 +25,7 @@ export function renderSomKeuze(
   keuzeRij.className = 'keuze-rij';
   kaart.appendChild(keuzeRij);
 
-  const keuzes = schudArray([oefening.antwoord, ...oefening.afleiders]);
+  const keuzes = schud([oefening.antwoord, ...oefening.afleiders]);
   let afgehandeld = false;
 
   for (const getal of keuzes) {

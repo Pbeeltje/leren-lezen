@@ -4,9 +4,11 @@ import { figuurMetBeker, flitsIn } from '../components/spelFiguur.ts';
 import { avatarFilter, avatarPad, haalActiefProfiel } from '../../engine/profielStore.ts';
 import { haalGroep } from '../../engine/progressStore.ts';
 import { haalRecord, zetRecord } from '../../engine/records.ts';
+import { maakHartjes, maakTeller, maakVenster, recordRegel, startKnop, toonPlop } from '../components/spelScherm.ts';
 import { TONEN, speelDrum, speelNoot } from '../../engine/muziek.ts';
 import { confetti } from '../../three/particles.ts';
 import { huidigThema, type ThemaId } from '../../achtergrond/achtergrond.ts';
+import { kies, schud } from '../../engine/toeval.ts';
 
 // Dieren voeren: dieren lopen het scherm in (van rechts, vooraan, dus het past op elke
 // achtergrond). Elk roept om eten in een tekstballon ("Boe!", "Mèèèh!"). Sleep eten uit de
@@ -198,14 +200,6 @@ const TWEE_VANAF = 6; // score
 const DRIE_VANAF = 10; // score, alleen groep 3
 const DOEL = 15; // sterren: dan is het spel gewonnen
 
-const willekeurig = <T,>(lijst: readonly T[]): T => lijst[Math.floor(Math.random() * lijst.length)];
-function schud<T>(lijst: T[]): T[] {
-  for (let i = lijst.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [lijst[i], lijst[j]] = [lijst[j], lijst[i]];
-  }
-  return lijst;
-}
 const slaap = (ms: number): Promise<void> => new Promise((r) => window.setTimeout(r, ms));
 
 // Iets dat geen van deze dieren eet (en dat ook bij niemand als goed telt).
@@ -240,12 +234,9 @@ export function VoerScreen(manager: ScreenManager): Screen {
 
   const balk = document.createElement('div');
   balk.className = 'vang-balk voer-balk';
-  const scoreEl = document.createElement('div');
-  scoreEl.className = 'vang-score';
-  scoreEl.innerHTML = `<img src="${STER}" alt=""><span>0</span>`;
-  const hartjes = document.createElement('div');
-  hartjes.className = 'vang-hartjes';
-  balk.append(scoreEl, hartjes);
+  const scoreTeller = maakTeller(STER);
+  const hartjes = maakHartjes(LEVENS);
+  balk.append(scoreTeller.el, hartjes.el);
   veld.appendChild(balk);
 
   const profiel = haalActiefProfiel();
@@ -307,20 +298,12 @@ export function VoerScreen(manager: ScreenManager): Screen {
   }
 
   function tekenHartjes(): void {
-    hartjes.replaceChildren(
-      ...Array.from({ length: LEVENS }, (_, i) => {
-        const h = document.createElement('img');
-        h.src = HART;
-        h.alt = '';
-        if (i >= levens) h.className = 'vang-hart--weg';
-        return h;
-      }),
-    );
+    hartjes.teken(levens);
   }
 
   function zetScore(n: number): void {
     score = n;
-    scoreEl.querySelector('span')!.textContent = String(score);
+    scoreTeller.zet(score);
   }
 
   const gastTransform = (g: Gast, x: number, dy = 0): string => `translate(${x - g.maat / 2}px, ${grond() - g.maat - g.zweef + dy}px)`;
@@ -665,7 +648,7 @@ export function VoerScreen(manager: ScreenManager): Screen {
     const gekozen: Dier[] = [];
     for (let poging = 0; poging < 60 && gekozen.length < n; poging++) {
       const bron = poging < 30 && poel.length ? poel : vrij;
-      const kandidaat = willekeurig(bron);
+      const kandidaat = kies(bron);
       if (gekozen.includes(kandidaat)) continue;
       if (n === 1 && vorigeDieren.includes(kandidaat.id) && poging < 20) continue;
       if (gekozen.some((d) => d.goed.some((e) => kandidaat.goed.includes(e)))) continue;
@@ -681,7 +664,7 @@ export function VoerScreen(manager: ScreenManager): Screen {
         if (gekozen.length < 3 && Math.random() < samen.drie) gekozen.push(kandidaat);
       }
     }
-    return gekozen.length ? gekozen : [willekeurig(vrij)];
+    return gekozen.length ? gekozen : [kies(vrij)];
   }
 
   async function volgendGroepje(): Promise<void> {
@@ -696,7 +679,7 @@ export function VoerScreen(manager: ScreenManager): Screen {
       const stil = dieren.indexOf(dier) !== slot;
       const g: Gast = {
         dier,
-        wil: willekeurig(dier.goed),
+        wil: kies(dier.goed),
         el: document.createElement('div'),
         x: breedte() + maat / 2 + 10,
         doelX: 0,
@@ -1004,7 +987,7 @@ export function VoerScreen(manager: ScreenManager): Screen {
     speelNoot(TONEN[noot % TONEN.length]);
     speelNoot(TONEN[(noot + 2) % TONEN.length], 0.1);
     noot++;
-    toonPlop(mond.x, mond.y - 20, '+1');
+    toonPlop(veld, mond.x, mond.y - 20, '+1');
     toonHartje(mond.x, mond.y);
     if (score % 5 === 0) confetti.vuurwerk('klein');
     const ballon = g.el.querySelector('.voer-ballon');
@@ -1237,16 +1220,6 @@ export function VoerScreen(manager: ScreenManager): Screen {
     if (mijn === spel) void volgendGroepje();
   }
 
-  function toonPlop(x: number, y: number, tekst: string): void {
-    const plop = document.createElement('div');
-    plop.className = 'vang-plop';
-    plop.textContent = tekst;
-    plop.style.left = `${x}px`;
-    plop.style.top = `${y}px`;
-    veld.appendChild(plop);
-    window.setTimeout(() => plop.remove(), 700);
-  }
-
   function toonHartje(x: number, y: number): void {
     const h = document.createElement('img');
     h.className = 'voer-hartje';
@@ -1433,18 +1406,15 @@ export function VoerScreen(manager: ScreenManager): Screen {
 
   function toonVenster(eind: boolean, gewonnen = false): void {
     overlay?.remove();
-    const vw = document.createElement('div');
-    vw.className = 'vang-venster';
-    const doos = document.createElement('div');
-    doos.className = 'vang-venster__doos';
+    const { venster, doos } = maakVenster();
     if (eind) {
-      const nieuw = score > recordBijStart;
-      if (score > haalRecord('voeren')) zetRecord('voeren', score);
+      // Tegen het record bij de start: tussentijds bewaren (bewaarScore) kan het al hebben opgehoogd.
+      const { html: recordHtml, nieuw } = recordRegel('voeren', score, recordBijStart);
       const figuur = `<img class="vang-venster__figuur" src="${speler.src}" alt="">`;
       doos.innerHTML = `
         ${gewonnen ? figuurMetBeker(figuur) : figuur}
         <div class="vang-venster__score"><img src="${STER}" alt=""><span>${score}</span></div>
-        <p class="vang-venster__record">${nieuw ? 'Nieuw record!' : `Record: ${haalRecord('voeren')}`}</p>`;
+        ${recordHtml}`;
       if (nieuw && score > 0 && !gewonnen) confetti.vuurwerk('klein');
     } else {
       doos.innerHTML = `
@@ -1456,16 +1426,9 @@ export function VoerScreen(manager: ScreenManager): Screen {
     }
     const figuur = doos.querySelector<HTMLImageElement>('.vang-venster__figuur');
     if (figuur) figuur.style.filter = tint;
-    const b = document.createElement('button');
-    b.type = 'button';
-    b.className = 'vang-venster__start';
-    b.innerHTML = '<img src="assets/icons/vangspel-start.svg" alt="">';
-    b.setAttribute('aria-label', eind ? 'nog een keer' : 'start');
-    b.addEventListener('click', start);
-    doos.appendChild(b);
-    vw.appendChild(doos);
-    el.appendChild(vw);
-    overlay = vw;
+    doos.appendChild(startKnop(eind ? 'nog een keer' : 'start', start));
+    el.appendChild(venster);
+    overlay = venster;
   }
 
   const terug = maakTerugKnop(() => manager.pop());

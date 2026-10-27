@@ -1,11 +1,8 @@
 import type { RekenOefeningDefinitie } from '../content/tellen/types.ts';
 import { toonGoedFeedback, toonFoutFeedback } from '../ui/components/FeedbackOverlay.ts';
+import { schud } from '../engine/toeval.ts';
 
 type Oefening = Extract<RekenOefeningDefinitie, { type: 'optellen' }>;
-
-function schudArray<T>(items: T[]): T[] {
-  return [...items].sort(() => Math.random() - 0.5);
-}
 
 export function renderOptellen(
   container: HTMLElement,
@@ -27,7 +24,7 @@ export function renderOptellen(
   keuzeRij.className = 'keuze-rij';
   kaart.appendChild(keuzeRij);
 
-  const opties_ = schudArray([oefening.antwoord, ...oefening.afleiders]);
+  const opties_ = schud([oefening.antwoord, ...oefening.afleiders]);
   let afgehandeld = false;
 
   for (const getal of opties_) {

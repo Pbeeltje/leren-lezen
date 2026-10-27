@@ -1,5 +1,6 @@
 import type { RekenOefeningDefinitie } from '../content/tellen/types.ts';
 import { toonGoedFeedback, toonFoutFeedback } from '../ui/components/FeedbackOverlay.ts';
+import { schud } from '../engine/toeval.ts';
 
 type Oefening = Extract<RekenOefeningDefinitie, { type: 'bussom' }>;
 
@@ -24,10 +25,6 @@ function poppetje(index: number): SVGSVGElement {
     svg.appendChild(el);
   }
   return svg;
-}
-
-function schudArray<T>(items: T[]): T[] {
-  return [...items].sort(() => Math.random() - 0.5);
 }
 
 export function renderBussom(
@@ -83,7 +80,7 @@ export function renderBussom(
   kaart.appendChild(keuzeRij);
 
   let afgehandeld = false;
-  for (const getal of schudArray([oefening.antwoord, ...oefening.afleiders])) {
+  for (const getal of schud([oefening.antwoord, ...oefening.afleiders])) {
     const knop = document.createElement('button');
     knop.className = 'keuze-knop';
     knop.textContent = String(getal);

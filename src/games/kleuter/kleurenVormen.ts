@@ -1,7 +1,8 @@
 import type { RondeVraag } from '../../ui/screens/RondeScreen.ts';
 import { instructieAudioPad } from '../../engine/audioManager.ts';
 import { toonGoedFeedback, toonFoutFeedback } from '../../ui/components/FeedbackOverlay.ts';
-import { geheelTussen, kies, schud } from './hulp.ts';
+import { geheelTussen } from './hulp.ts';
+import { kies, schud } from '../../engine/toeval.ts';
 
 // Zoek alle ... (groep 1-2: kleuren en vormen). Een voorbeeld bovenaan laat zien waar het
 // om gaat, zodat het ook zonder voorlezen werkt: bij kleuren een verfvlek (geen vorm),

@@ -4,6 +4,7 @@ import { klokUur, schrijfTijd, tijdInWoorden, zelfdeKlokstand } from '../content
 import { toonFoutFeedback, toonGoedFeedback } from '../ui/components/FeedbackOverlay.ts';
 import { koppelSchermToetsenbord } from '../ui/components/SchermToetsenbord.ts';
 import { bewaakVeld } from './geld.ts';
+import { schud } from '../engine/toeval.ts';
 
 type KiesKlok = Extract<RekenOefeningDefinitie, { type: 'klok-kies-klok' }>;
 type KiesTijd = Extract<RekenOefeningDefinitie, { type: 'klok-kies-tijd' }>;
@@ -21,10 +22,6 @@ function svgEl<K extends keyof SVGElementTagNameMap>(naam: K, attrs: Record<stri
   const el = document.createElementNS(SVG_NS, naam);
   for (const [k, v] of Object.entries(attrs)) el.setAttribute(k, String(v));
   return el;
-}
-
-function schudArray<T>(items: T[]): T[] {
-  return [...items].sort(() => Math.random() - 0.5);
 }
 
 interface Klok {
@@ -137,7 +134,7 @@ export function renderKlokKiesKlok(container: HTMLElement, oefening: KiesKlok, o
 
   koppelKeuzes(
     keuzeRij,
-    schudArray([oefening.tijd, ...oefening.afleiders]),
+    schud([oefening.tijd, ...oefening.afleiders]),
     (tijd) => {
       const knop = document.createElement('button');
       knop.className = 'keuze-knop keuze-knop--klok';
@@ -167,7 +164,7 @@ export function renderKlokKiesTijd(container: HTMLElement, oefening: KiesTijd, o
 
   koppelKeuzes(
     keuzeRij,
-    schudArray([oefening.tijd, ...oefening.afleiders]),
+    schud([oefening.tijd, ...oefening.afleiders]),
     (tijd) => {
       const knop = document.createElement('button');
       knop.className = 'keuze-knop klok-tijd-knop';

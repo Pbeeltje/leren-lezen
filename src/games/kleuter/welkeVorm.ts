@@ -1,7 +1,7 @@
 import type { RondeVraag } from '../../ui/screens/RondeScreen.ts';
 import { instructieAudioPad } from '../../engine/audioManager.ts';
 import { toonGoedFeedback, toonFoutFeedback } from '../../ui/components/FeedbackOverlay.ts';
-import { kies, schud } from './hulp.ts';
+import { kies, schud } from '../../engine/toeval.ts';
 
 // Welke vorm? Het kind hoort "Waar is de ruit?" en tikt de juiste vorm uit drie. Een stap
 // verder dan kleuren & vormen: meer vormen, en vaak een lijkt-erop-vorm ernaast

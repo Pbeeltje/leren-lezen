@@ -3,7 +3,7 @@ import { maakTerugKnop } from '../components/TerugKnop.ts';
 import { figuurMetBeker, flitsIn, flitstNog, houdBekerOmhoog } from '../components/spelFiguur.ts';
 import { avatarFilter, avatarPad, haalActiefProfiel } from '../../engine/profielStore.ts';
 import { haalGroep } from '../../engine/progressStore.ts';
-import { haalRecord, zetRecord } from '../../engine/records.ts';
+import { maakDraaiMelding, maakHartjes, maakTeller, maakVenster, recordRegel, startKnop, toetsenHint, toonPlop } from '../components/spelScherm.ts';
 import { TONEN, speelDrum, speelNoot } from '../../engine/muziek.ts';
 import { confetti } from '../../three/particles.ts';
 import { huidigThema, type ThemaId } from '../../achtergrond/achtergrond.ts';
@@ -85,25 +85,19 @@ export function VangScreen(manager: ScreenManager): Screen {
 
   const balk = document.createElement('div');
   balk.className = 'vang-balk';
-  const scoreEl = document.createElement('div');
-  scoreEl.className = 'vang-score';
-  scoreEl.innerHTML = `<img src="${STER}" alt=""><span>0</span>`;
+  const scoreTeller = maakTeller(STER);
   const reeksEl = document.createElement('div');
   reeksEl.className = 'vang-reeks';
   reeksEl.hidden = true;
-  const hartjes = document.createElement('div');
-  hartjes.className = 'vang-hartjes';
-  balk.append(scoreEl, reeksEl, hartjes);
+  const hartjes = maakHartjes(LEVENS);
+  balk.append(scoreTeller.el, reeksEl, hartjes.el);
   el.appendChild(balk);
 
   // Liggende telefoon: te weinig hoogte om de dingen op tijd te zien vallen. Dan vraagt een
-  // draaiend telefoontje om de telefoon rechtop te houden, en staat het spel stil. Moet
-  // gelijk blijven aan de media query van .vang-draai in screens.css.
-  const draaiNodig = window.matchMedia('(orientation: landscape) and (max-height: 500px) and (pointer: coarse)');
-  const draai = document.createElement('div');
-  draai.className = 'vang-draai';
-  draai.innerHTML = '<div class="vang-draai__telefoon"></div><p>Draai je telefoon</p>';
-  el.appendChild(draai);
+  // draaiend telefoontje om de telefoon rechtop te houden, en staat het spel stil.
+  const draai = maakDraaiMelding();
+  const draaiNodig = draai.nodig;
+  el.appendChild(draai.el);
 
   const profiel = haalActiefProfiel();
   const tint = avatarFilter(profiel?.kleur);
@@ -157,20 +151,12 @@ export function VangScreen(manager: ScreenManager): Screen {
   }
 
   function tekenHartjes(): void {
-    hartjes.replaceChildren(
-      ...Array.from({ length: LEVENS }, (_, i) => {
-        const h = document.createElement('img');
-        h.src = HART;
-        h.alt = '';
-        if (i >= levens) h.className = 'vang-hart--weg';
-        return h;
-      }),
-    );
+    hartjes.teken(levens);
   }
 
   function zetScore(n: number): void {
     score = n;
-    scoreEl.querySelector('span')!.textContent = String(score);
+    scoreTeller.zet(score);
   }
 
   function tekenReeks(): void {
@@ -292,18 +278,8 @@ export function VangScreen(manager: ScreenManager): Screen {
     speelNoot(TONEN[noot % TONEN.length]);
     if (d.soort === 'ster') speelNoot(TONEN[7], 0.08);
     noot++;
-    toonPlop(d.x, d.y, `+${punten}`);
+    toonPlop(veld, d.x, d.y, `+${punten}`);
     if (d.slot === 'ster') hierna = 'einde';
-  }
-
-  function toonPlop(x: number, y: number, tekst: string): void {
-    const plop = document.createElement('div');
-    plop.className = 'vang-plop';
-    plop.textContent = tekst;
-    plop.style.left = `${x}px`;
-    plop.style.top = `${y}px`;
-    veld.appendChild(plop);
-    window.setTimeout(() => plop.remove(), 700);
   }
 
   // Groot, maar er blijft een strook over die breder is dan het figuurtje.
@@ -348,7 +324,7 @@ export function VangScreen(manager: ScreenManager): Screen {
     gewonnen = true;
     if (heelGebleven) {
       zetScore(score + HEEL_BONUS);
-      toonPlop(spelerX, hoogte() - spelerMaat(), `+${HEEL_BONUS}`);
+      toonPlop(veld, spelerX, hoogte() - spelerMaat(), `+${HEEL_BONUS}`);
     }
     klaar();
   }
@@ -464,32 +440,17 @@ export function VangScreen(manager: ScreenManager): Screen {
     frame = requestAnimationFrame(stap);
   }
 
-  function knop(klasse: string, html: string, label: string, actie: () => void): HTMLButtonElement {
-    const b = document.createElement('button');
-    b.type = 'button';
-    b.className = klasse;
-    b.innerHTML = html;
-    b.setAttribute('aria-label', label);
-    b.addEventListener('click', actie);
-    return b;
-  }
-
   // Begin- en eindscherm: plaatjes in plaats van uitleg (vangen ✓, meteoor ✕).
   function toonVenster(eind: boolean): void {
     overlay?.remove();
-    const v = document.createElement('div');
-    v.className = 'vang-venster';
-    const doos = document.createElement('div');
-    doos.className = 'vang-venster__doos';
+    const { venster, doos } = maakVenster();
     if (eind) {
-      const record = haalRecord('vangspel');
-      const nieuw = score > record;
-      if (nieuw) zetRecord('vangspel', score);
+      const { html: recordHtml, nieuw } = recordRegel('vangspel', score);
       const fig = `<img class="vang-venster__figuur" src="${speler.src}" alt="">`;
       doos.innerHTML = `
         ${gewonnen ? figuurMetBeker(fig) : fig}
         <div class="vang-venster__score"><img src="${STER}" alt=""><span>${score}</span></div>
-        <p class="vang-venster__record">${nieuw ? 'Nieuw record!' : `Record: ${record}`}</p>
+        ${recordHtml}
         ${heelGebleven ? `<p class="vang-venster__bonus"><img src="${HART}" alt=""><img src="${HART}" alt=""><img src="${HART}" alt=""><span>+${HEEL_BONUS}</span></p>` : ''}`;
       if (nieuw && score > 0) confetti.vuurwerk('klein');
     } else {
@@ -499,20 +460,14 @@ export function VangScreen(manager: ScreenManager): Screen {
           <span class="vang-uitleg__vak vang-uitleg__vak--goed"><img src="${LEKKERS[0]}" alt=""><img src="${LEKKERS[1]}" alt=""><b>✓</b></span>
           <span class="vang-uitleg__vak vang-uitleg__vak--fout"><img src="${thema.gevaar}" alt=""${thema.rood ? ' class="vang-ding--rood"' : ''}><b>✕</b></span>
         </div>`;
-      if (matchMedia('(hover: hover) and (pointer: fine)').matches) {
-        const hint = document.createElement('p');
-        hint.className = 'vang-venster__toetsen';
-        hint.innerHTML = '<kbd>←</kbd><kbd>→</kbd><kbd>↑</kbd>';
-        hint.setAttribute('aria-label', 'pijltjestoetsen, omhoog is springen');
-        doos.appendChild(hint);
-      }
+      const hint = toetsenHint(['←', '→', '↑'], 'pijltjestoetsen, omhoog is springen');
+      if (hint) doos.appendChild(hint);
     }
     const figuur = doos.querySelector<HTMLImageElement>('.vang-venster__figuur');
     if (figuur) figuur.style.filter = tint;
-    doos.appendChild(knop('vang-venster__start', '<img src="assets/icons/vangspel-start.svg" alt="">', eind ? 'nog een keer' : 'start', start));
-    v.appendChild(doos);
-    el.appendChild(v);
-    overlay = v;
+    doos.appendChild(startKnop(eind ? 'nog een keer' : 'start', start));
+    el.appendChild(venster);
+    overlay = venster;
   }
 
   function klaar(): void {

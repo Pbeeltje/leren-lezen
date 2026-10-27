@@ -31,6 +31,9 @@ commit (describe the current state; don't append dated "latest round" notes).
 - **Content-Security-Policy:** `vite.config.ts` adds a CSP meta tag to the build only
   (no external scripts/connections; images may be `data:`). Loading anything from
   another domain, or an inline `<script>`, means extending that policy.
+- **Randomness:** shuffle with `schud` and pick with `kies` from `engine/toeval.ts`.
+  Never `sort(() => Math.random() - 0.5)` or a local copy: that order is skewed, so
+  answer options landed in the same spot more often.
 - **Group lists:** reading screens use `leesKernen()`, math screens `rekenKernen()`
   (`engine/leeftijdGrens.ts`), never `KERNEN` / `REKEN_KERNEN` directly.
 
