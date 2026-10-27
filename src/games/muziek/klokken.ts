@@ -1,3 +1,5 @@
+import type { Uiterlijk } from './uiterlijk.ts';
+
 // Klokken: een houten klokkenrek (twee palen met bolletjes, een gesneden kroonlijst met een
 // rozet, koperen stangen, gedraaide poten op krulvoeten) met koperen klokjes aan leren
 // riempjes. Bovenaan de lage tonen (grote klokken), onderaan de hoge. Het rek is versiering;
@@ -93,7 +95,7 @@ const GOLVEN = `<svg viewBox="0 0 180 80">
   </g>
 </svg>`;
 
-export function klokHtml(): string {
+function klokHtml(): string {
   return `<span class="luiklok"><span class="luiklok__lijf">${KLOK}</span><span class="luiklok__golven">${GOLVEN}</span></span>`;
 }
 
@@ -108,7 +110,9 @@ const VORMEN = [
 const BOVEN = 175; // de eerste stang
 const ONDER = 85; // van de laatste rij tot de grond
 
-export function legKlokken(vak: HTMLElement, rek: HTMLElement, staven: HTMLElement[]): void {
+function legKlokken(vak: HTMLElement, staven: HTMLElement[]): void {
+  const rek = vak.querySelector<HTMLElement>('.klokken-rek');
+  if (!rek) return;
   const w = vak.clientWidth - 16;
   const h = vak.clientHeight - 16;
   if (w <= 0 || h <= 0) return;
@@ -146,3 +150,17 @@ export function legKlokken(vak: HTMLElement, rek: HTMLElement, staven: HTMLEleme
     }
   });
 }
+
+// Het rek staat achter de klokken; per knop een klok, groot bij lage tonen, klein bij hoge.
+export const KLOKKEN: Uiterlijk = {
+  achter() {
+    const rek = document.createElement('div');
+    rek.className = 'klokken-rek';
+    return rek;
+  },
+  knop(staaf, toon) {
+    staaf.style.setProperty('--klok', (1 - toon * 0.035).toFixed(3));
+    staaf.insertAdjacentHTML('beforeend', klokHtml());
+  },
+  leg: legKlokken,
+};

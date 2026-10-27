@@ -1,13 +1,11 @@
 import { STAAF_KLEUREN, TONEN, speelInstrument, type Instrument } from '../../engine/muziek.ts';
-import { NOOT, kikkerSvg } from './kikker.ts';
-import { klokHtml, legKlokken } from './klokken.ts';
-import { legTrompetten, trompetHtml } from './trompet.ts';
-import { BELLEN, LIBEL, STRUIK, WATER, WOLK, lelieSvg, rietSvg, verPadSvg } from './vijver.ts';
+import { UITERLIJK } from './uiterlijk.ts';
 
 // Een xylofoon van gekleurde staven, lang (laag) naar kort (hoog). Tikken speelt een toon;
 // met de vinger eroverheen glijden speelt ze allemaal (glissando). tonen = indexen in TONEN.
-// Dezelfde knoppen worden met zetInstrument een harp (snaren), een fluit
-// (gaatjes), een keyboard, een kikkerkoor, trompetten of klokken. Elke toon houdt zijn kleur, zodat de
+// Dezelfde knoppen worden met zetInstrument een ander instrument (harp, fluit, keyboard,
+// kikkerkoor, trompetten, klokken): wat dat instrument erbij tekent staat in uiterlijk.ts,
+// en alleen het gekozen instrument wordt gebouwd. Elke toon houdt zijn kleur, zodat de
 // stippen van Speel na blijven kloppen.
 export function maakXylofoon(
   tonen: number[],
@@ -22,109 +20,45 @@ export function maakXylofoon(
   opruimen: () => void;
 } {
   const el = document.createElement('div');
-  const vijver = document.createElement('div');
-  vijver.className = 'kikker-vijver';
-  const pol = (extra: string, lis = false) =>
-    `<div class="kikker-riet ${extra}"><div class="kikker-riet__zwaai">${rietSvg(lis)}</div></div>`;
-  vijver.innerHTML =
-    `<div class="kikker-water">${WATER}</div>` +
-    [1, 2, 3, 4].map((n) => `<div class="kikker-wolk kikker-wolk--${n}">${WOLK}</div>`).join('') +
-    [1, 2, 3, 4, 5, 6].map((n) => `<div class="kikker-bos kikker-bos--${n}">${STRUIK}</div>`).join('') +
-    `<div class="kikker-verpad kikker-verpad--1">${verPadSvg(false)}</div>` +
-    `<div class="kikker-verpad kikker-verpad--2">${verPadSvg(true)}</div>` +
-    `<div class="kikker-verpad kikker-verpad--3">${verPadSvg(false)}</div>` +
-    `<div class="kikker-verpad kikker-verpad--4">${verPadSvg(true)}</div>` +
-    `<div class="kikker-bellen">${BELLEN}</div>` +
-    `<div class="kikker-libel">${LIBEL}</div>` +
-    pol('kikker-riet--achter kikker-riet--a1') +
-    pol('kikker-riet--achter kikker-riet--a2') +
-    pol('kikker-riet--achter kikker-riet--a3') +
-    pol('kikker-riet--achter kikker-riet--a4') +
-    pol('kikker-riet--achter kikker-riet--a5');
-  el.appendChild(vijver);
-  const rek = document.createElement('div');
-  rek.className = 'klokken-rek';
-  el.appendChild(rek);
-  const voor = document.createElement('div');
-  voor.className = 'kikker-voor';
-  voor.innerHTML =
-    pol('kikker-riet--links', true) +
-    pol('kikker-riet--midden') +
-    pol('kikker-riet--ver') +
-    pol('kikker-riet--rechts', true);
   let huidig = instrument;
   let actief = true;
   // Per vinger de staaf waar hij nu op zit. Eén gedeelde "laatste" liet twee vingers elkaar
   // steeds overschrijven: elke trilling van een vinger speelde dan opnieuw (oorverdovend).
   const vingers = new Map<number, HTMLElement | null>();
+  let staven: HTMLButtonElement[] = [];
 
-  const staven = tonen.map((toon, positie) => {
+  function maakStaaf(toon: number, positie: number): HTMLButtonElement {
     const staaf = document.createElement('button');
     staaf.type = 'button';
     staaf.className = 'xylofoon__staaf';
     staaf.style.setProperty('--kleur', STAAF_KLEUREN[toon]);
     staaf.style.setProperty('--lengte', `${100 - (toon / 7) * 42}%`);
-    staaf.style.setProperty('--dikte', `${Math.round(11 - toon * 0.8)}px`);
-    // Kikkerkoor: blaadjes niet op één lijn. Andere instrumenten gebruiken --pad niet.
-    const i = positie % 8;
-    staaf.style.setProperty('--pad', ['0', '5', '2', '7', '1', '6', '3', '4'][i]);
-    staaf.style.setProperty('--draai', ['-7', '5', '-2', '8', '-5', '6', '-3', '2'][i] + 'deg');
-    staaf.style.setProperty('--groot', ['1.12', '0.98', '1.06', '1', '1.14', '0.96', '1.04', '1.08'][i]);
-    staaf.style.setProperty('--knip', ['0s', '-1.4s', '-3.1s', '-0.6s', '-2.2s', '-4.4s', '-1.8s', '-2.9s'][i]);
-    staaf.style.setProperty('--adem', ['3.2s', '3.8s', '2.6s', '4.2s', '3.4s', '2.5s', '3.9s', '2.9s'][i]);
-    staaf.style.setProperty('--rij', String(positie % 2));
-    staaf.style.setProperty('--stap', String(positie));
-    // Trompetten: lage tonen een grote beker, hoge tonen een smalle.
-    staaf.style.setProperty('--beker', (1.3 - toon * 0.08).toFixed(2));
-    // Klokken: lage tonen een grote klok, hoge een kleine.
-    staaf.style.setProperty('--klok', (1 - toon * 0.035).toFixed(3));
-    staaf.style.setProperty('--blad', ['-18', '14', '4', '-10', '20', '-16', '8', '-4'][i] + 'deg');
-    const zit = document.createElement('span');
-    zit.className = 'kikker-zitting';
-    const blad = document.createElement('span');
-    blad.className = 'kikker-blad';
-    blad.innerHTML = lelieSvg();
-    const pop = document.createElement('span');
-    pop.className = 'kikker-pop';
-    pop.innerHTML = kikkerSvg(positie, (i % 4) as 0 | 1 | 2 | 3);
-    const noot = document.createElement('span');
-    noot.className = 'kikker-noot';
-    noot.innerHTML = NOOT;
-    zit.append(blad, pop, noot);
-    staaf.appendChild(zit);
-    staaf.insertAdjacentHTML('beforeend', trompetHtml() + klokHtml());
     staaf.dataset.positie = String(positie);
-    // Keyboard: een zwarte toets (alleen versiering) rechts van do, re, fa, sol en la, als
-    // de volgende witte toets er ook is.
-    if ([0, 1, 3, 4, 5].includes(toon) && tonen[positie + 1] === toon + 1) staaf.dataset.zwart = '';
     staaf.setAttribute('aria-label', `toon ${positie + 1}`);
     staaf.addEventListener('animationend', (e) => {
       if (e.target === staaf) staaf.classList.remove('xylofoon__staaf--aan');
     });
-    noot.addEventListener('animationend', () => staaf.classList.remove('xylofoon__staaf--aan'));
-    el.appendChild(staaf);
+    UITERLIJK[huidig].knop?.(staaf, toon, positie, tonen);
     return staaf;
-  });
-  el.appendChild(voor);
+  }
+
+  // Alles opnieuw voor het gekozen instrument: versiering achter, de knoppen, versiering voor.
+  function bouw(): void {
+    const u = UITERLIJK[huidig];
+    staven = tonen.map(maakStaaf);
+    vingers.clear();
+    el.replaceChildren(...[u.achter?.(), ...staven, u.voor?.()].filter((x): x is HTMLElement => !!x));
+    zetKlasse();
+    leg();
+  }
 
   function zetKlasse(): void {
-    el.className =
-      huidig === 'xylofoon'
-        ? 'xylofoon'
-        : huidig === 'keyboard'
-          ? 'xylofoon xylofoon--keyboard'
-          : huidig === 'fluit'
-            ? 'xylofoon xylofoon--fluit'
-            : `xylofoon xylofoon--${huidig}`;
+    el.className = `xylofoon xylofoon--${huidig}`;
     el.classList.toggle('xylofoon--wacht', !actief);
   }
-  zetKlasse();
 
   // Trompetten (schuin) en klokken (het rek) hangen af van de maat van het vak.
-  const leg = (): void => {
-    if (huidig === 'trompet') legTrompetten(el, staven);
-    if (huidig === 'klokken') legKlokken(el, rek, staven);
-  };
+  const leg = (): void => UITERLIJK[huidig].leg?.(el, staven);
   const kijker = new ResizeObserver(leg);
   kijker.observe(el);
 
@@ -166,6 +100,8 @@ export function maakXylofoon(
   window.addEventListener('pointerup', los);
   window.addEventListener('pointercancel', los);
 
+  bouw();
+
   return {
     element: el,
     licht,
@@ -175,9 +111,9 @@ export function maakXylofoon(
       zetKlasse();
     },
     zetInstrument: (nieuw) => {
+      if (nieuw === huidig) return;
       huidig = nieuw;
-      zetKlasse();
-      leg();
+      bouw();
     },
     opruimen: () => {
       kijker.disconnect();

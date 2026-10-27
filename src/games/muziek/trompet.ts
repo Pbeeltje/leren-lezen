@@ -1,3 +1,5 @@
+import type { Uiterlijk } from './uiterlijk.ts';
+
 // Trompetten: acht lange, dunne herauttrompetten naast elkaar, schuin van linksonder naar
 // rechtsboven, elk met een donkerrood vaantje. De knop zelf is een gedraaide strook (zo
 // breed als de ruimte tussen twee trompetten), dus tikken en glijden raken precies één
@@ -36,7 +38,18 @@ const KLANK = `<svg viewBox="0 0 60 100">
   </g>
 </svg>`;
 
-export function trompetHtml(): string {
+// Per knop: de trompet, de maat van de beker (lage tonen een grote, hoge een smalle) en een
+// eigen tempo voor het wapperende vaantje.
+export const TROMPETTEN: Uiterlijk = {
+  knop(staaf, toon, positie) {
+    staaf.style.setProperty('--beker', (1.3 - toon * 0.08).toFixed(2));
+    staaf.style.setProperty('--knip', ['0s', '-1.4s', '-3.1s', '-0.6s', '-2.2s', '-4.4s', '-1.8s', '-2.9s'][positie % 8]);
+    staaf.insertAdjacentHTML('beforeend', trompetHtml());
+  },
+  leg: legTrompetten,
+};
+
+function trompetHtml(): string {
   return `<span class="trompet">
     <span class="trompet__buis"></span>
     <span class="trompet__knop trompet__knop--1"></span>
@@ -51,7 +64,7 @@ export function trompetHtml(): string {
 // de hoeken (linksboven, rechtsonder) zouden heel kort zijn, dus daar blijft ruimte over.
 // De beker zit aan de bovenkant (of rechterkant) van het vak, de buis loopt linksonder het
 // vak uit. Op een liggend vak liggen ze platter, op een staand vak staan ze steiler.
-export function legTrompetten(vak: HTMLElement, staven: HTMLElement[]): void {
+function legTrompetten(vak: HTMLElement, staven: HTMLElement[]): void {
   const w = vak.clientWidth;
   const h = vak.clientHeight;
   if (!w || !h) return;

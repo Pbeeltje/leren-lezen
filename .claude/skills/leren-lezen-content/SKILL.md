@@ -46,7 +46,7 @@ commit (describe the current state; don't append dated "latest round" notes).
 | [tellen.md](tellen.md) | math chapters and exercise types, sums, money, kleuter counting |
 | [audio.md](audio.md) | playing clips, replay buttons, feedback timing (`naHuidigeAudio`), mute |
 | [kleuter-onderwerpen.md](kleuter-onderwerpen.md) | Luisteren, Geheugenspel, Ontdekken, Schrijven (tracing), Tekenen |
-| [muziek.md](muziek.md) | xylophone, Speel na, Ritme, levels, drum kit, shop instruments (harp, fluit, keyboard, kikkerkoor) |
+| [muziek.md](muziek.md) | xylophone, Speel na, Ritme, levels, drum kit, shop instruments (harp, fluit, keyboard, kikkerkoor, trompetten, klokken), code layout and adding an instrument |
 | [spelletjes.md](spelletjes.md) | Vangspel, Oversteken (Frogger), Tafeltennis, Dieren voeren |
 | [achtergronden.md](achtergronden.md) | background themes, adding a theme |
 | [winkel-profiel.md](winkel-profiel.md) | shop, profile menu, avatars and tints |

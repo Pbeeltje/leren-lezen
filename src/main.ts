@@ -2,6 +2,7 @@ import './styles/fonts.css';
 import './styles/global.css';
 import './styles/components.css';
 import './styles/screens.css';
+import './styles/muziek.css';
 import './styles/achtergrond.css';
 import './styles/achtergrond-onderwater.css';
 import './styles/achtergrond-herfst.css';

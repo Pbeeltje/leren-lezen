@@ -1,11 +1,42 @@
 # Muziek: xylophone, Speel na, Ritme, drum kit, instruments
 
+## Code layout
+
+- **Sound:** `engine/muziek.ts` is the entry point for the whole app (`TONEN`, `VIJFTONIG`,
+  `STAAF_KLEUREN`, `INSTRUMENTEN`, `speelInstrument`, `speelNoot`, `speelDrum`); it only
+  holds shared data and the `KLANKEN` table. `engine/muziek/klank.ts` is the machine: the
+  context, `uitgang`, `nieuweStem`, `begrensStemmen`, `maakGalm`, `naarUit`, `ruis`,
+  `omhulling`. Each instrument has its own file in `engine/muziek/` (`xylofoon`, `harp`,
+  `fluit`, `keyboard`, `kikker`, `trompet`, `klokken`, `drums`), with the signature
+  `(c, toon, t, nr)`, where `nr` is the note index 0–7.
+- **Look:** `games/muziek/xylofoon.ts` (`maakXylofoon`) is the shared component. Each
+  instrument's extras are an `Uiterlijk` in `games/muziek/uiterlijk.ts`: `achter`/`voor`
+  (decor behind or in front of the buttons), `knop` (parts and CSS variables for one button)
+  and `leg` (box-size layout, rerun by the ResizeObserver). Kikkerkoor is in `kikkerkoor.ts`
+  (using `kikker.ts` and `vijver.ts`), trompetten in `trompet.ts`, klokken in `klokken.ts`.
+  **Only the selected instrument is built**; `zetInstrument` rebuilds the buttons.
+  (Previously every button carried every instrument: 1252 elements with 8 visible, and
+  hidden parts leaked into other instruments.)
+- **CSS:** `styles/muziek.css`, imported right after `screens.css`. `.xylofoon__staaf` is
+  neutral (flex, relative, transparent). Every instrument, the xylophone included
+  (`.xylofoon--xylofoon`), draws its own button, so there are no reset rules or
+  extra-specific selectors.
+- **Adding an instrument:**
+  1. Write a sound file in `engine/muziek/` and add it to `KLANKEN`.
+  2. Add a line to `INSTRUMENTEN` and to the `Instrument` type.
+  3. Add an `Uiterlijk` (it may be `{}`).
+  4. Add a CSS block under `.xylofoon--<id>`. Use class names nobody else has: `.klok`
+     already belonged to the clock game.
+  5. Draw an icon.
+
+  Then check with `node tests/instrument-vak.mjs <map>`: the "aan" part covers every
+  instrument.
+
 ## Sound
 
-Synthesised in `engine/muziek.ts` with Web Audio (nothing recorded): xylophone =
-three decaying sine partials; drums = falling sine thump plus noise. Respects
-mute. The AudioContext starts lazily on the first tap
-(`navigator.audioSession.type = 'playback'` on iOS, see [app.md](app.md)).
+Synthesised with Web Audio (nothing recorded): xylophone = three decaying sine partials;
+drums = falling sine thump plus noise. Respects mute. The AudioContext starts lazily on
+the first tap (`navigator.audioSession.type = 'playback'` on iOS, see [app.md](app.md)).
 
 Everything goes through `uitgang(c)`, never `c.destination` directly. That is a
 limiter (compressor at −3 dB, ratio 20) plus a soft clip above 0.8: single notes
@@ -13,7 +44,10 @@ stay as loud as before, and 20 harp notes at once stay under 0.96 instead of
 hard-clipping. New sounds must use `uitgang` too. Melody voices also go through
 `nieuweStem(c, 'instrument:toon', t)`: re-striking the same note fades out its
 previous voice in about 15 ms, so fast repeats don't pile up. Different notes keep ringing, so
-chords still work.
+chords still work. Long sounds also cap how many ring at once with
+`begrensStemmen(groep, max, …)`: klokken allow 5, and the fluit allows 1 (the oldest fades out).
+Reverb comes from `maakGalm`: a fixed decaying-noise convolver with no feedback, so it can't build
+up. There are two kinds: `kamer` (1.4 s, for strings and keyboard) and `klok` (2 s, darker).
 
 `games/muziek/xylofoon.ts`: tap plays a bar, a gliding finger plays each bar
 once. The "last bar" is tracked **per `pointerId`**. With one shared variable,
@@ -72,7 +106,7 @@ Check: `node tests/drumstel.mjs <map>`.
   `gekocht`). Choice remembered per profile (`VoortgangData.instrument`, read via
   `huidigInstrument()` in `engine/winkel.ts`, falls back to xylofoon).
 - Harp: Karplus-Strong (`snaarBuffer`, 3-tap, dark, 20% reverb), matched to
-  `bronbestanden/harp.m4a`. Fluit: `speelSteel` (one voice, sine+triangle, short
+  `bronbestanden/harp.m4a`. Fluit: `speelFluit` (one voice, sine+triangle, short
   swell); old key `instrument:steelgitaar` counts as fluit. Keyboard: 2-operator FM
   (`speelKeyboard`). Banjo/gitaar were dropped.
 - Kikkerkoor (`speelKikker`): one tap = one frog = one croak. A sawtooth an octave
@@ -97,33 +131,33 @@ Check: `node tests/drumstel.mjs <map>`.
   Look: `games/muziek/trompet.ts`, `.xylofoon--trompet`.
   Eight long herald trumpets on parallel diagonal lines (bottom-left to top-right), each
   with a dark red flag whose round emblem has the note colour. Bell size per note (`--beker`,
-  1.3 for low do down to 0.74 for high do); the layout insets bigger bells further. `legTrompetten()` computes
-  the layout from the box size (ResizeObserver in `maakXylofoon`, plus on `zetInstrument`):
+  1.3 for low do down to 0.74 for high do); the layout insets bigger bells further. `legTrompetten()` (the
+  `leg` of `TROMPETTEN`) computes the layout from the box size:
   angle `26° + 0.55·atan(h/w)`, lines spread across the box minus the short corner chords,
   bell tip just inside the top/right edge, tube runs out of the box bottom-left. It sets
   `--s` (strip width), `--hoek`, and per trumpet `--bx/--by` (bell tip) and `--tl`
   (length); each button IS the rotated strip, so taps and glides hit one trumpet. A press
   recoils the trumpet, squashes and stretches the bell, flaps the flag and blows waves in
   the note colour; the button's own `trompet-aan` glow is the longest animation, so its
-  `animationend` clears `--aan`. Check: `node tests/trompetten.mjs <map>`.
+  `animationend` clears `--aan`. Check: `node tests/instrument-vak.mjs <map> trompet`.
 - Klokken (`speelKlok`, at pitch): nine sine partials (hum 0.5, strike 1 plus a 1.0035
   twin for the shimmer, 2, 2.4, 3, 4.2, 5.4, 6.8), each with its own decay (low bells ring
-  longer), plus a highpassed noise tick. Own reverb `klokGalm` (2 s convolver, darker, no
-  feedback, so it can't build up) and at most `KLOK_MAX` = 5 bells ringing; the oldest fades in
+  longer), plus a highpassed noise tick. Own reverb `maakGalm(c, 'klok', …)` (2 s, darker) and at most `KLOK_MAX` = 5 bells ringing
+  (`begrensStemmen`); the oldest fades in
   ~0.1 s. Measured: 16 bells struck fast peak at 0.82. Look: `games/muziek/klokken.ts`,
   `.xylofoon--klokken`. A wooden rack (finials, carved crest with rosette, brass rods, turned
-  posts, scroll feet) built by `rekSvg()`; `legKlokken()` (ResizeObserver) picks 4 bells per
+  posts, scroll feet) built by `rekSvg()`; `legKlokken()` (the `leg` of `KLOKKEN`) picks 4 bells per
   rod (wide box) or 2 per rod (portrait phone), whichever gives bigger bells, and sets px vars
   per bell (`--kl/--kt/--kw/--kh`, bell width `--kb` times `--klok` per note). A strike swings
   the bell on its strap (damped, 1.6 s), the clapper lags behind, rings in the note colour
   radiate out; the button's `klok-aan` (1.7 s) is the longest. **Class names are `luiklok*`**:
-  `.klok` already belongs to the clock game (`klok.css`) and its rules made the hidden bells
-  show up on every instrument. Check: `node tests/klokken.mjs <map>`.
+  `.klok` already belongs to the clock game (`klok.css`) and its rules made the bells show up on
+  every instrument. Check: `node tests/instrument-vak.mjs <map> klokken`.
 - Keyboard look: white keys with a coloured patch, decorative black keys via
   `[data-zwart]::after`; tapping a black key plays its white key.
-- `maakXylofoon(tonen, opTik, instrument)` is the component for all: same buttons
-  (`.xylofoon__staaf`), `zetInstrument()` switches the look (`.xylofoon--<id>`,
-  CSS in screens.css), `speel(positie, wanneer)` plays. Strings keep
+- `maakXylofoon(tonen, opTik, instrument)` is the component for all (see Code layout):
+  same buttons (`.xylofoon__staaf`), `zetInstrument()` rebuilds them for another instrument
+  (`.xylofoon--<id>`), `speel(positie, wanneer)` plays. Strings keep
   `STAAF_KLEUREN`. Harp keys ~120px wide; frame `harp-kast.svg` (CSS
   `url("/assets/icons/harp-kast.svg")` — absolute, see CLAUDE.md). Size via
   `--harp-breedte`; in Vrij spelen `min(100cqw, 133cqh, 1100px)` of the card. That rule
@@ -137,4 +171,4 @@ Check: `node tests/drumstel.mjs <map>`.
   right; a right column when ≤820px high, two columns on a landscape phone); `maakSpeelNaVragen(niveau, naarWinkel)`.
 - Icons `harp.svg`, `harp-kast.svg`, `fluit.svg`, `keyboard.svg`, `xylofoon.svg`,
   `kikker.svg`, `trompet.svg`, `klokken.svg` are our own drawings.
-- Check: `node tests/instrumenten.mjs <map>`.
+- Check: `node tests/instrumenten.mjs <map>` (picker, shop) and `node tests/instrument-vak.mjs <map>`.
