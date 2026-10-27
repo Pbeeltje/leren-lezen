@@ -25,18 +25,25 @@ const paal = (x: number, stangen: number[], rij: number, hoog: number): string =
 const voet = (x: number, y: number, spiegel: boolean): string => `
   <path transform="translate(${x} ${y}) scale(${spiegel ? -1 : 1} 1)" d="M-60 0 C-62 -28 -46 -48 -16 -52 L16 -52 C46 -48 62 -28 60 0 L36 0 C34 -18 22 -26 0 -26 C-22 -26 -34 -18 -36 0 Z" fill="${HOUT}" stroke="${RAND}" stroke-width="4" stroke-linejoin="round"/>
   <circle cx="${x + (spiegel ? 44 : -44)}" cy="${y - 14}" r="9" fill="${DONKER}"/>`;
-const stang = (y: number): string => `
-  <rect x="120" y="${y - 8}" width="760" height="16" rx="8" fill="#c99a3c" stroke="#5e4515" stroke-width="3"/>
-  <rect x="126" y="${y - 5}" width="748" height="4" rx="2" fill="#f1d88a"/>`;
-const zigzag = Array.from({ length: 24 }, (_, i) => {
-  const x = 126 + i * 31;
-  return `M${x} 150 L${x + 15.5} 164 L${x + 31} 150 Z`;
-}).join(' ');
+const stang = (y: number, breed: number): string => `
+  <rect x="120" y="${y - 8}" width="${breed - 240}" height="16" rx="8" fill="#c99a3c" stroke="#5e4515" stroke-width="3"/>
+  <rect x="126" y="${y - 5}" width="${breed - 252}" height="4" rx="2" fill="#f1d88a"/>`;
+const zigzag = (breed: number): string =>
+  Array.from({ length: Math.floor((breed - 252) / 31) }, (_, i) => {
+    const x = 126 + i * 31;
+    return `M${x} 150 L${x + 15.5} 164 L${x + 31} 150 Z`;
+  }).join(' ');
 
-function rekSvg(stangen: number[], rij: number, hoog: number): string {
+// Een breder rek (één lange stang) houdt dezelfde kroonlijst in het midden; links en rechts
+// loopt de lijst recht door tot de palen.
+function rekSvg(stangen: number[], rij: number, hoog: number, breed: number): string {
   const lat = hoog - 100; // de onderste dwarslat
-  return `<svg viewBox="0 0 1000 ${hoog}" preserveAspectRatio="none">
-  <ellipse cx="500" cy="${hoog - 10}" rx="480" ry="12" fill="rgba(60,30,10,0.22)"/>
+  const d = breed - 1000;
+  return `<svg viewBox="0 0 ${breed} ${hoog}" preserveAspectRatio="none">
+  <ellipse cx="${breed / 2}" cy="${hoog - 10}" rx="${breed / 2 - 20}" ry="12" fill="rgba(60,30,10,0.22)"/>
+  ${d > 0 ? `<rect x="118" y="108" width="${breed - 236}" height="50" fill="${HOUT}" stroke="${RAND}" stroke-width="4"/>
+  <rect x="130" y="116" width="${breed - 260}" height="12" fill="${LICHT}"/>` : ''}
+  <g transform="translate(${d / 2} 0)">
   <path d="M118 158 L118 108 C240 108 330 52 440 50 L560 50 C670 52 760 108 882 108 L882 158 Z" fill="${HOUT}" stroke="${RAND}" stroke-width="4" stroke-linejoin="round"/>
   <path d="M130 116 C240 116 330 64 440 60 L440 72 C340 76 250 126 130 128 Z" fill="${LICHT}"/>
   <path d="M870 116 C760 116 670 64 560 60 L560 72 C660 76 750 126 870 128 Z" fill="${LICHT}"/>
@@ -52,18 +59,19 @@ function rekSvg(stangen: number[], rij: number, hoog: number): string {
   <circle cx="500" cy="48" r="38" fill="${HOUT}" stroke="${RAND}" stroke-width="4"/>
   <circle cx="500" cy="48" r="25" fill="${LICHT}" stroke="${RAND}" stroke-width="3"/>
   <circle cx="500" cy="48" r="12" fill="${HOUT}" stroke="${RAND}" stroke-width="3"/>
-  <path d="${zigzag}" fill="${DONKER}"/>
-  <rect x="118" y="146" width="764" height="6" fill="${DONKER}"/>
-  <rect x="118" y="${lat}" width="764" height="20" rx="10" fill="${HOUT}" stroke="${RAND}" stroke-width="4"/>
-  <rect x="124" y="${lat + 4}" width="752" height="5" rx="2" fill="${LICHT}"/>
-  ${[300, 500, 700].map((x) => `<ellipse cx="${x}" cy="${lat + 10}" rx="${x === 500 ? 30 : 16}" ry="${x === 500 ? 18 : 14}" fill="${HOUT}" stroke="${RAND}" stroke-width="4"/>`).join('')}
-  ${stangen.map(stang).join('')}
+  </g>
+  <path d="${zigzag(breed)}" fill="${DONKER}"/>
+  <rect x="118" y="146" width="${breed - 236}" height="6" fill="${DONKER}"/>
+  <rect x="118" y="${lat}" width="${breed - 236}" height="20" rx="10" fill="${HOUT}" stroke="${RAND}" stroke-width="4"/>
+  <rect x="124" y="${lat + 4}" width="${breed - 248}" height="5" rx="2" fill="${LICHT}"/>
+  ${[0.3, 0.5, 0.7].map((f) => `<ellipse cx="${breed * f}" cy="${lat + 10}" rx="${f === 0.5 ? 30 : 16}" ry="${f === 0.5 ? 18 : 14}" fill="${HOUT}" stroke="${RAND}" stroke-width="4"/>`).join('')}
+  ${stangen.map((y) => stang(y, breed)).join('')}
   ${paal(100, stangen, rij, hoog)}
-  ${paal(900, stangen, rij, hoog)}
+  ${paal(breed - 100, stangen, rij, hoog)}
   ${voet(100, hoog - 10, false)}
-  ${voet(900, hoog - 10, true)}
-  <path d="M928 190 L946 196 L946 380 C946 392 936 398 926 396" fill="none" stroke="#c99a3c" stroke-width="7" stroke-linecap="round"/>
-  <circle cx="922" cy="395" r="9" fill="#c99a3c" stroke="#5e4515" stroke-width="3"/>
+  ${voet(breed - 100, hoog - 10, true)}
+  <path d="M${breed - 72} 190 L${breed - 54} 196 L${breed - 54} 380 C${breed - 54} 392 ${breed - 64} 398 ${breed - 74} 396" fill="none" stroke="#c99a3c" stroke-width="7" stroke-linecap="round"/>
+  <circle cx="${breed - 78}" cy="395" r="9" fill="#c99a3c" stroke="#5e4515" stroke-width="3"/>
 </svg>`;
 }
 
@@ -99,13 +107,16 @@ function klokHtml(): string {
   return `<span class="luiklok"><span class="luiklok__lijf">${KLOK}</span><span class="luiklok__golven">${GOLVEN}</span></span>`;
 }
 
-// Twee vormen: vier klokken per stang (breed rek) of twee per stang (hoog rek, voor een
-// staand vak). legKlokken kiest de vorm waarin de klokken het grootst worden, maakt het rek
+// Drie vormen: vier klokken per stang (breed rek), twee per stang (hoog rek, voor een staand
+// vak) of alles aan één lange stang (extra breed rek, voor een liggende telefoon).
+// legKlokken kiest de vorm waarin de klokken het grootst worden (de lange stang alleen als de
+// klokken daar echt groter worden, anders blijven pc en tablet zoals ze waren), maakt het rek
 // zo groot als past en zet per klok de plek in px: --kl/--kt (linksboven van het vak onder de
 // stang), --kw/--kh (maat van dat vak) en --kb (breedte van de grootste klok; --klok per toon).
 const VORMEN = [
-  { kolommen: 4, klok: 152 },
-  { kolommen: 2, klok: 250 },
+  { kolommen: 4, klok: 152, voorkeur: 1 },
+  { kolommen: 2, klok: 250, voorkeur: 1 },
+  { kolommen: 8, klok: 150, voorkeur: 1.2 },
 ];
 const BOVEN = 175; // de eerste stang
 const ONDER = 85; // van de laatste rij tot de grond
@@ -121,27 +132,31 @@ function legKlokken(vak: HTMLElement, staven: HTMLElement[]): void {
     const rijen = Math.ceil(n / v.kolommen);
     const rij = v.klok * 1.4 + 55;
     const hoog = Math.round(BOVEN + rijen * rij + ONDER);
-    return { ...v, rijen, rij, hoog, schaal: Math.min(w / 1000, h / hoog) };
+    // 130 aan elke kant voor de palen; minstens 1000 (het gewone rek).
+    const breed = Math.round(Math.max(1000, 260 + Math.min(n, v.kolommen) * v.klok * 1.15));
+    return { ...v, rijen, rij, hoog, breed, schaal: Math.min(w / breed, h / hoog) };
   });
-  const { schaal, rijen, rij, hoog, klok } = keuzes.reduce((a, b) => (b.schaal * b.klok > a.schaal * a.klok ? b : a));
-  const rw = 1000 * schaal;
+  const maat = (k: (typeof keuzes)[number]): number => (k.schaal * k.klok) / k.voorkeur;
+  const { schaal, rijen, rij, hoog, breed: rekBreed, klok } = keuzes.reduce((a, b) => (maat(b) > maat(a) ? b : a));
+  const rw = rekBreed * schaal;
   const rx = (vak.clientWidth - rw) / 2;
   const ry = (vak.clientHeight - hoog * schaal) / 2;
   const stangen = Array.from({ length: rijen }, (_, i) => BOVEN + i * rij);
-  const vorm = `${rijen}:${hoog}`;
+  const vorm = `${rijen}:${hoog}:${rekBreed}`;
   if (rek.dataset.vorm !== vorm) {
     rek.dataset.vorm = vorm;
-    rek.innerHTML = rekSvg(stangen, rij, hoog);
+    rek.innerHTML = rekSvg(stangen, rij, hoog, rekBreed);
   }
   Object.assign(rek.style, { left: `${rx}px`, top: `${ry}px`, width: `${rw}px`, height: `${hoog * schaal}px` });
   // Eerlijk verdeeld over de rijen (8 over 2: 4 en 4; 5 over 2: 3 en 2).
   const per = Array.from({ length: rijen }, (_, i) => Math.floor(n / rijen) + (i < n % rijen ? 1 : 0));
   let positie = 0;
   per.forEach((m, r) => {
-    const breed = Math.min(740 / m, klok * 1.3);
+    const ruimte = rekBreed - 260;
+    const breed = Math.min(ruimte / m, klok * 1.3);
     for (let j = 0; j < m; j++, positie++) {
       const s = staven[positie].style;
-      const midden = 130 + (740 * (j + 0.5)) / m;
+      const midden = 130 + (ruimte * (j + 0.5)) / m;
       s.setProperty('--kl', `${rx + (midden - breed / 2) * schaal}px`);
       s.setProperty('--kt', `${ry + stangen[r] * schaal}px`);
       s.setProperty('--kw', `${breed * schaal}px`);

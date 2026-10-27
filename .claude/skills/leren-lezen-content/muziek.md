@@ -13,7 +13,7 @@
   instrument's extras are an `Uiterlijk` in `games/muziek/uiterlijk.ts`: `achter`/`voor`
   (decor behind or in front of the buttons), `knop` (parts and CSS variables for one button)
   and `leg` (box-size layout, rerun by the ResizeObserver). Kikkerkoor is in `kikkerkoor.ts`
-  (using `kikker.ts` and `vijver.ts`), trompetten in `trompet.ts`, klokken in `klokken.ts`.
+  (using `kikker.ts` and `vijver.ts`), harp in `harp.ts`, trompetten in `trompet.ts`, klokken in `klokken.ts`.
   **Only the selected instrument is built**; `zetInstrument` rebuilds the buttons.
   (Previously every button carried every instrument: 1252 elements with 8 visible, and
   hidden parts leaked into other instruments.)
@@ -150,7 +150,10 @@ Check: `node tests/drumstel.mjs <map>`.
   ~0.1 s. Measured: 16 bells struck fast peak at 0.82. Look: `games/muziek/klokken.ts`,
   `.xylofoon--klokken`. A wooden rack (finials, carved crest with rosette, brass rods, turned
   posts, scroll feet) built by `rekSvg()`; `legKlokken()` (the `leg` of `KLOKKEN`) picks 4 bells per
-  rod (wide box) or 2 per rod (portrait phone), whichever gives bigger bells, and sets px vars
+  rod (wide box), 2 per rod (portrait phone) or all 8 on one long rod (landscape phone; the rack
+  is then wider than 1000, `rekSvg(…, breed)` keeps the crest centred and runs the beam straight
+  out to the posts), whichever gives bigger bells. The long rod has `voorkeur` 1.2: it only wins
+  when its bells are clearly bigger, so PC and tablet keep 4+4. It sets px vars
   per bell (`--kl/--kt/--kw/--kh`, bell width `--kb` times `--klok` per note). A strike swings
   the bell on its strap (damped, 1.6 s), the clapper lags behind, rings in the note colour
   radiate out; the button's `klok-aan` (1.7 s) is the longest. **Class names are `luiklok*`**:
@@ -161,9 +164,15 @@ Check: `node tests/drumstel.mjs <map>`.
 - `maakXylofoon(tonen, opTik, instrument)` is the component for all (see Code layout):
   same buttons (`.xylofoon__staaf`), `zetInstrument()` rebuilds them for another instrument
   (`.xylofoon--<id>`), `speel(positie, wanneer)` plays. Strings keep
-  `STAAF_KLEUREN`. Harp keys ~120px wide; frame `harp-kast.svg` (CSS
-  `url("/assets/icons/harp-kast.svg")` — absolute, see CLAUDE.md). Size via
-  `--harp-breedte`; in Vrij spelen `min(100cqw, 133cqh, 1100px)` of the card. That rule
+  `STAAF_KLEUREN`. Harp look: `games/muziek/harp.ts` (`HARP`). A wooden harp seen from the
+  side in a 4:3 SVG (viewBox 400×300): pillar with a gold crown on the left, a curved neck
+  (one cubic Bezier `HALS`) and a soundbox whose soundboard is a straight line rising to the
+  right. Each string button is placed in % from that geometry: from the neck's underside
+  (`halsY`, found by bisection) down to the soundboard (`bladY`), so every string touches
+  both, with five or eight strings. A button is a column as wide as the string spacing, with
+  spans `.harp__snaar` (thin, bass thicker via `--dikte` × `--hb`, the box width set in
+  `leg`), `.harp__pen` (tuning pin) and `.harp__oog` (eyelet). The old `harp-kast.svg` with
+  fat bars was dropped (Oct 27). Size via `--harp-breedte`; in Vrij spelen `min(100cqw, 133cqh, 1100px)` of the card. That rule
   needs `.xylofoon.xylofoon--harp`: the Speel na rule for low landscape screens comes
   later and otherwise wins (harp was 233px wide on an 844×390 phone, Oct 2026). The fluit
   stands upright in Vrij spelen on a portrait screen.
@@ -172,6 +181,6 @@ Check: `node tests/drumstel.mjs <map>`.
   the coin button `.muziek-winkel-knop`. Vrij spelen: top row next to Drumstel
   (labels from 1440px wide). Speel na: `.muziek-instrumenten` in the card (top
   right; a right column when ≤820px high, two columns on a landscape phone); `maakSpeelNaVragen(niveau, naarWinkel)`.
-- Icons `harp.svg`, `harp-kast.svg`, `fluit.svg`, `keyboard.svg`, `xylofoon.svg`,
+- Icons `harp.svg`, `fluit.svg`, `keyboard.svg`, `xylofoon.svg`,
   `kikker.svg`, `trompet.svg`, `klokken.svg` are our own drawings.
 - Check: `node tests/instrumenten.mjs <map>` (picker, shop) and `node tests/instrument-vak.mjs <map>`.

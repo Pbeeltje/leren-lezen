@@ -1,4 +1,5 @@
 import type { Instrument } from '../../engine/muziek.ts';
+import { HARP } from './harp.ts';
 import { KIKKERKOOR } from './kikkerkoor.ts';
 import { KLOKKEN } from './klokken.ts';
 import { TROMPETTEN } from './trompet.ts';
@@ -27,7 +28,7 @@ const KEYBOARD: Uiterlijk = {
 
 export const UITERLIJK: Record<Instrument, Uiterlijk> = {
   xylofoon: {},
-  harp: {},
+  harp: HARP,
   fluit: {},
   keyboard: KEYBOARD,
   kikkerkoor: KIKKERKOOR,

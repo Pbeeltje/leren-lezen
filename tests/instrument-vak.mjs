@@ -4,9 +4,9 @@ import { chromium } from 'playwright';
 // knop, glijden speelt ze allemaal, en de instrumentknoppen passen. Daarna voor alle
 // instrumenten: na een tik gaat het oplichten (--aan) weer uit, en er is maar één
 // instrument gebouwd.
-// Gebruik: node tests/instrument-vak.mjs <map> [trompet klokken]
+// Gebruik: node tests/instrument-vak.mjs <map> [harp trompet klokken]
 const OUT = process.argv[2] + '/';
-const DEEL = { trompet: '.trompet__beker', klokken: '.luiklok__lijf' };
+const DEEL = { harp: '.harp__snaar', trompet: '.trompet__beker', klokken: '.luiklok__lijf' };
 const KIES = process.argv.length > 3 ? process.argv.slice(3) : Object.keys(DEEL);
 const ALLE = ['xylofoon', 'harp', 'fluit', 'keyboard', 'kikkerkoor', 'trompet', 'klokken'];
 const b = await chromium.launch(); const fouten = [];
