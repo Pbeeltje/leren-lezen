@@ -39,26 +39,26 @@ const KLANK = `<svg viewBox="0 0 60 100">
 </svg>`;
 
 // Burcht achter de trompetten: een kantelenmuur onderaan en links een ronde toren met een
-// spits dak. Een paar tinten lichter dan de lucht, zodat hij niet afleidt. De toren staat
+// spits dak. Zacht grijze steen tegen een zonnige lucht, zodat hij niet afleidt. De toren staat
 // linksboven, waar de trompetten de hoek vrij laten. De muur is lang en wordt rechts
 // afgesneden (xMinYMax slice), dus de kantelen houden overal dezelfde maat.
 const MUUR = `<svg viewBox="0 0 1600 100" preserveAspectRatio="xMinYMax slice">
-  <path d="M0 100 V30 ${Array.from({ length: 40 }, (_, i) => `H${i * 40 + 8} V8 H${i * 40 + 32} V30`).join(' ')} H1600 V100 Z" fill="#2c3b82"/>
-  <rect x="0" y="30" width="1600" height="7" fill="#25336f"/>
-  ${[120, 420, 700, 980, 1260].map((x) => `<rect x="${x}" y="52" width="7" height="22" rx="3.5" fill="#1d2860"/>`).join('')}
-  <path d="M520 100 V74 A26 26 0 0 1 572 74 V100 Z" fill="#1d2860"/>
+  <path d="M0 100 V30 ${Array.from({ length: 40 }, (_, i) => `H${i * 40 + 8} V8 H${i * 40 + 32} V30`).join(' ')} H1600 V100 Z" fill="#d6d9df"/>
+  <rect x="0" y="30" width="1600" height="7" fill="#b3b9c4"/>
+  ${[120, 420, 700, 980, 1260].map((x) => `<rect x="${x}" y="52" width="7" height="22" rx="3.5" fill="#8f96a4"/>`).join('')}
+  <path d="M520 100 V74 A26 26 0 0 1 572 74 V100 Z" fill="#8f96a4"/>
 </svg>`;
 
 const TOREN = `<svg viewBox="0 0 100 320" preserveAspectRatio="xMidYMax meet">
-  <path d="M50 4 V40" stroke="#3a4a92" stroke-width="3"/>
-  <path d="M50 6 L74 13 L50 20 Z" fill="#5a2a4a"/>
-  <rect x="16" y="120" width="68" height="200" fill="#2c3b82"/>
-  <rect x="62" y="120" width="22" height="200" fill="#27357a"/>
-  <path d="M10 106 H90 V124 H10 Z" fill="#25336f"/>
-  <path d="M4 110 L50 38 L96 110 Z" fill="#3d3478"/>
-  <path d="M50 38 L96 110 H70 Z" fill="#342d69"/>
-  <path d="M42 176 V162 A8 8 0 0 1 58 162 V176 Z" fill="#f2c14e" opacity="0.4"/>
-  <rect x="46" y="236" width="8" height="24" rx="4" fill="#1d2860"/>
+  <path d="M50 4 V40" stroke="#8f96a4" stroke-width="3"/>
+  <path d="M50 6 L74 13 L50 20 Z" fill="#d0473c"/>
+  <rect x="16" y="120" width="68" height="200" fill="#d6d9df"/>
+  <rect x="62" y="120" width="22" height="200" fill="#c2c7d0"/>
+  <path d="M10 106 H90 V124 H10 Z" fill="#b3b9c4"/>
+  <path d="M4 110 L50 38 L96 110 Z" fill="#c0665c"/>
+  <path d="M50 38 L96 110 H70 Z" fill="#a8564e"/>
+  <path d="M42 176 V162 A8 8 0 0 1 58 162 V176 Z" fill="#8f96a4"/>
+  <rect x="46" y="236" width="8" height="24" rx="4" fill="#8f96a4"/>
 </svg>`;
 
 // Per knop: de trompet, de maat van de beker (lage tonen een grote, hoge een smalle) en een
