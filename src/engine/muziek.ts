@@ -345,13 +345,38 @@ function speelKikker(c: AudioContext, toon: number, t: number): void {
   }
 }
 
-// Trompet (heraut): koper is een zaagtand door een filter dat met de adem opengaat. Eerst
-// een korte schetter (filter wijd open), dan een heldere toon; de lippen zetten de toon
-// iets te laag in en schuiven omhoog, en na een tel komt er een beetje vibrato bij.
-// Scherper en voller dan een keyboard: het filter gaat verder open met meer resonantie, een
-// piek rond 1300 Hz geeft het koperen "schetteren", een blokgolf onder de zaagtanden en een
-// opgetild laag-midden geven body, en een lichte vervorming maakt het rauwer.
-let koperVorm: Float32Array<ArrayBuffer> | null = null;
+// Trompet (heraut): de klankkleur komt uit een opname van echte trompetten. Daarin zijn de
+// boventonen tot ~3 kHz bijna even sterk als de grondtoon (met een bult rond 1,9 kHz), en
+// daarboven zakken ze ~20 dB per octaaf. KOPERKLEUR is die curve (Hz, dB); elke toon krijgt
+// een eigen golfvorm met die boventonen. Een filter dat in 40 ms opengaat laat de hoge
+// boventonen net na de lage binnenkomen (het koperen aanblazen), de lippen zetten de toon
+// iets te laag in, en er is meteen een licht vibrato (±10 cent, 5,3 Hz) zoals in de opname.
+// Twee stemmen een paar cent uit elkaar klinken als een groepje trompetten. Weinig galm.
+const KOPERKLEUR = [
+  [0, -7], [700, -7], [1000, -4], [1900, -1], [2400, -5], [3000, -6],
+  [3500, -11], [4500, -17], [6000, -23], [8000, -32], [11000, -38],
+] as const;
+const koperGolven = new Map<number, PeriodicWave>();
+function koperGolf(c: AudioContext, f: number): PeriodicWave {
+  const bewaard = koperGolven.get(f);
+  if (bewaard) return bewaard;
+  const n = Math.max(2, Math.floor(11000 / f));
+  const re = new Float32Array(n + 1);
+  const im = new Float32Array(n + 1);
+  for (let k = 1; k <= n; k++) {
+    const hz = k * f;
+    let i = 1;
+    while (i < KOPERKLEUR.length - 1 && KOPERKLEUR[i][0] < hz) i++;
+    const [f1, d1] = KOPERKLEUR[i - 1];
+    const [f2, d2] = KOPERKLEUR[i];
+    const db = d1 + ((d2 - d1) * (hz - f1)) / (f2 - f1);
+    im[k] = Math.pow(10, db / 20);
+  }
+  const golf = c.createPeriodicWave(re, im);
+  koperGolven.set(f, golf);
+  return golf;
+}
+
 function speelTrompet(c: AudioContext, toon: number, t: number): void {
   const f = toon * 0.5;
   const duur = 0.85;
@@ -359,64 +384,43 @@ function speelTrompet(c: AudioContext, toon: number, t: number): void {
 
   const filter = c.createBiquadFilter();
   filter.type = 'lowpass';
-  filter.Q.value = 3;
-  filter.frequency.setValueAtTime(f * 1.5, t);
-  filter.frequency.exponentialRampToValueAtTime(f * 16, t + 0.035);
-  filter.frequency.exponentialRampToValueAtTime(f * 8, t + 0.22);
-  filter.frequency.setValueAtTime(f * 8, eind - 0.2);
-  filter.frequency.exponentialRampToValueAtTime(f * 2, eind);
+  filter.Q.value = 0.7;
+  filter.frequency.setValueAtTime(f * 2, t);
+  filter.frequency.exponentialRampToValueAtTime(12000, t + 0.04);
+  filter.frequency.setValueAtTime(12000, eind - 0.15);
+  filter.frequency.exponentialRampToValueAtTime(f * 3, eind);
 
   const env = c.createGain();
   env.gain.setValueAtTime(0.0001, t);
-  env.gain.exponentialRampToValueAtTime(1, t + 0.018);
-  env.gain.exponentialRampToValueAtTime(0.78, t + 0.15);
-  env.gain.setValueAtTime(0.78, eind - 0.18);
+  env.gain.exponentialRampToValueAtTime(1, t + 0.03);
+  env.gain.linearRampToValueAtTime(0.9, t + 0.12);
+  env.gain.setValueAtTime(0.9, eind - 0.15);
   env.gain.exponentialRampToValueAtTime(0.0001, eind);
 
   const trilling = c.createOscillator();
-  trilling.frequency.value = 5.5;
+  trilling.frequency.value = 5.3;
   const trilDiepte = c.createGain();
   trilDiepte.gain.setValueAtTime(0, t);
-  trilDiepte.gain.setValueAtTime(0, t + 0.3);
-  trilDiepte.gain.linearRampToValueAtTime(12, t + 0.6);
+  trilDiepte.gain.setValueAtTime(0, t + 0.08);
+  trilDiepte.gain.linearRampToValueAtTime(10, t + 0.3);
   trilling.connect(trilDiepte);
 
-  const stemmen = ([[-7, 'sawtooth', 1], [7, 'sawtooth', 1], [0, 'square', 0.55]] as const).map(([cent, vorm, sterkte]) => {
+  const stemmen = [-5, 5].map((cent) => {
     const osc = c.createOscillator();
-    osc.type = vorm;
+    osc.setPeriodicWave(koperGolf(c, f));
     osc.detune.value = cent;
-    osc.frequency.setValueAtTime(f * 0.93, t);
-    osc.frequency.exponentialRampToValueAtTime(f, t + 0.04);
+    osc.frequency.setValueAtTime(f * 0.96, t);
+    osc.frequency.exponentialRampToValueAtTime(f, t + 0.035);
     trilDiepte.connect(osc.detune);
-    const g = c.createGain();
-    g.gain.value = sterkte;
-    osc.connect(g).connect(filter);
+    osc.connect(filter);
     return osc;
   });
 
-  // Rauw randje: zachte vervorming (tanh), daarna de koperpiek en het lijf.
-  if (!koperVorm) {
-    koperVorm = new Float32Array(1025);
-    for (let i = 0; i < koperVorm.length; i++) koperVorm[i] = Math.tanh(((i / 1024) * 2 - 1) * 1.8) / Math.tanh(1.8);
-  }
-  const rauw = c.createWaveShaper();
-  rauw.curve = koperVorm;
-  const schetter = c.createBiquadFilter();
-  schetter.type = 'peaking';
-  schetter.frequency.value = 1300;
-  schetter.Q.value = 1.2;
-  schetter.gain.value = 7;
-  const lijf = c.createBiquadFilter();
-  lijf.type = 'lowshelf';
-  lijf.frequency.value = 320;
-  lijf.gain.value = 5;
-  const zacht = c.createGain();
-  zacht.gain.value = 0.45; // voor de vervorming, zodat die niet hard gaat kraken
-  filter.connect(zacht).connect(rauw).connect(schetter).connect(lijf).connect(env);
+  filter.connect(env);
   const uit = c.createGain();
-  uit.gain.value = 0.2;
+  uit.gain.value = 0.19;
   env.connect(uit);
-  naarUit(c, uit.connect(nieuweStem(c, `trompet:${toon}`, t)), 0.3);
+  naarUit(c, uit.connect(nieuweStem(c, `trompet:${toon}`, t)), 0.12);
 
   // Een zuchtje adem bij het aanzetten.
   const adem = ruis(c, 0.07);

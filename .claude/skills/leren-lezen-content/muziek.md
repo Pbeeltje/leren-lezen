@@ -86,11 +86,15 @@ Check: `node tests/drumstel.mjs <map>`.
   560px the frogs sit in two staggered rows and the frog is the tap target (columns
   get `pointer-events: none`). `kikker.svg` (shop icon) is `kikkerSvg(0, 0)`
   without eyelids and throat sac.
-- Trompetten (`speelTrompet`, an octave down): two detuned sawtooths plus a square through a
-  resonant lowpass that opens on the attack (to 16f, settles at 8f), then soft tanh
-  saturation, a +7 dB peak at 1300 Hz (brass bite) and a +5 dB low shelf (body). Pitch scoops
-  up from 0.93, vibrato after 0.3 s, a breath of noise. The first version (lowpass only)
-  sounded like a keyboard, the owner said. Look: `games/muziek/trompet.ts`, `.xylofoon--trompet`.
+- Trompetten (`speelTrompet`, an octave down): the timbre is fitted to a recording of real
+  trumpets the owner supplied (Oct 27). `KOPERKLEUR` is the measured spectral envelope (Hz → dB:
+  near-flat to 3 kHz with a bump at 1.9 kHz, then ~−20 dB/octave). `koperGolf()` builds a cached
+  PeriodicWave per pitch from it. Two voices at ±5 cent run through a lowpass that opens in 40 ms
+  (attack). The pitch scoops up from 0.96, the vibrato is ±10 cent at 5.3 Hz from 0.08 s, and
+  there is a breath of noise and little reverb (0.12). Earlier versions (lowpass saw, then
+  saw+square+tanh) sounded like a keyboard. To re-check, render offline with
+  `node tests/trompet-klank.mjs <out.json>` (it swaps in OfflineAudioContext) and compare harmonics.
+  Look: `games/muziek/trompet.ts`, `.xylofoon--trompet`.
   Eight long herald trumpets on parallel diagonal lines (bottom-left to top-right), each
   with a dark red flag whose round emblem has the note colour. Bell size per note (`--beker`,
   1.3 for low do down to 0.74 for high do); the layout insets bigger bells further. `legTrompetten()` computes
