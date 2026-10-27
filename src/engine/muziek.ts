@@ -103,13 +103,14 @@ export function speelNoot(toon: number, wanneer = 0): void {
 
 // Melodie-instrumenten: de xylofoon is gratis, de rest koop je in de winkel. Ze spelen
 // dezelfde acht tonen (en dus dezelfde liedjes bij Speel na) met hun eigen klank.
-export type Instrument = 'xylofoon' | 'harp' | 'fluit' | 'keyboard' | 'kikkerkoor';
+export type Instrument = 'xylofoon' | 'harp' | 'fluit' | 'keyboard' | 'kikkerkoor' | 'trompet';
 export const INSTRUMENTEN: { id: Instrument; naam: string; icoon: string }[] = [
   { id: 'xylofoon', naam: 'Xylofoon', icoon: 'assets/icons/xylofoon.svg' },
   { id: 'harp', naam: 'Harp', icoon: 'assets/icons/harp.svg' },
   { id: 'fluit', naam: 'Fluit', icoon: 'assets/icons/fluit.svg' },
   { id: 'keyboard', naam: 'Keyboard', icoon: 'assets/icons/keyboard.svg' },
   { id: 'kikkerkoor', naam: 'Kikkerkoor', icoon: 'assets/icons/kikker.svg' },
+  { id: 'trompet', naam: 'Trompetten', icoon: 'assets/icons/trompet.svg' },
 ];
 
 // Harp: Karplus-Strong, een octaaf lager dan de xylofoon. Een kort stukje ruis dat
@@ -186,6 +187,10 @@ export function speelInstrument(instrument: Instrument, toon: number, wanneer = 
   }
   if (instrument === 'kikkerkoor') {
     speelKikker(c, toon, t);
+    return;
+  }
+  if (instrument === 'trompet') {
+    speelTrompet(c, toon, t);
     return;
   }
   const freq = toon * HARP.octaaf;
@@ -330,6 +335,69 @@ function speelKikker(c: AudioContext, toon: number, t: number): void {
   tik.start(t);
 
   for (const o of [stem, lfo]) {
+    o.start(t);
+    o.stop(eind + 0.05);
+  }
+}
+
+// Trompet (heraut): koper is een zaagtand door een filter dat met de adem opengaat. Eerst
+// een korte schetter (filter wijd open), dan een heldere toon; de lippen zetten de toon
+// iets te laag in en schuiven omhoog, en na een tel komt er een beetje vibrato bij.
+function speelTrompet(c: AudioContext, toon: number, t: number): void {
+  const f = toon * 0.5;
+  const duur = 0.85;
+  const eind = t + duur;
+
+  const filter = c.createBiquadFilter();
+  filter.type = 'lowpass';
+  filter.Q.value = 1.8;
+  filter.frequency.setValueAtTime(f * 1.2, t);
+  filter.frequency.exponentialRampToValueAtTime(f * 9, t + 0.05);
+  filter.frequency.exponentialRampToValueAtTime(f * 4.5, t + 0.25);
+  filter.frequency.setValueAtTime(f * 4.5, eind - 0.2);
+  filter.frequency.exponentialRampToValueAtTime(f * 1.5, eind);
+
+  const env = c.createGain();
+  env.gain.setValueAtTime(0.0001, t);
+  env.gain.exponentialRampToValueAtTime(1, t + 0.025);
+  env.gain.exponentialRampToValueAtTime(0.72, t + 0.15);
+  env.gain.setValueAtTime(0.72, eind - 0.18);
+  env.gain.exponentialRampToValueAtTime(0.0001, eind);
+
+  const trilling = c.createOscillator();
+  trilling.frequency.value = 5.5;
+  const trilDiepte = c.createGain();
+  trilDiepte.gain.setValueAtTime(0, t);
+  trilDiepte.gain.setValueAtTime(0, t + 0.3);
+  trilDiepte.gain.linearRampToValueAtTime(12, t + 0.6);
+  trilling.connect(trilDiepte);
+
+  const stemmen = [-6, 6].map((cent) => {
+    const osc = c.createOscillator();
+    osc.type = 'sawtooth';
+    osc.detune.value = cent;
+    osc.frequency.setValueAtTime(f * 0.93, t);
+    osc.frequency.exponentialRampToValueAtTime(f, t + 0.045);
+    trilDiepte.connect(osc.detune);
+    osc.connect(filter);
+    return osc;
+  });
+  filter.connect(env);
+  const uit = c.createGain();
+  uit.gain.value = 0.24;
+  env.connect(uit);
+  naarUit(c, uit.connect(nieuweStem(c, `trompet:${toon}`, t)), 0.3);
+
+  // Een zuchtje adem bij het aanzetten.
+  const adem = ruis(c, 0.07);
+  const ademFilter = c.createBiquadFilter();
+  ademFilter.type = 'bandpass';
+  ademFilter.frequency.value = 2500;
+  ademFilter.Q.value = 0.8;
+  adem.connect(ademFilter).connect(omhulling(c, t, 0.05, 0.07));
+  adem.start(t);
+
+  for (const o of [...stemmen, trilling]) {
     o.start(t);
     o.stop(eind + 0.05);
   }

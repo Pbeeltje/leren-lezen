@@ -1,11 +1,12 @@
 import { STAAF_KLEUREN, TONEN, speelInstrument, type Instrument } from '../../engine/muziek.ts';
 import { NOOT, kikkerSvg } from './kikker.ts';
+import { legTrompetten, trompetHtml } from './trompet.ts';
 import { BELLEN, LIBEL, STRUIK, WATER, WOLK, lelieSvg, rietSvg, verPadSvg } from './vijver.ts';
 
 // Een xylofoon van gekleurde staven, lang (laag) naar kort (hoog). Tikken speelt een toon;
 // met de vinger eroverheen glijden speelt ze allemaal (glissando). tonen = indexen in TONEN.
 // Dezelfde knoppen worden met zetInstrument een harp (snaren), een fluit
-// (gaatjes), een keyboard of een kikkerkoor. Elke toon houdt zijn kleur, zodat de
+// (gaatjes), een keyboard, een kikkerkoor of trompetten. Elke toon houdt zijn kleur, zodat de
 // stippen van Speel na blijven kloppen.
 export function maakXylofoon(
   tonen: number[],
@@ -69,6 +70,8 @@ export function maakXylofoon(
     staaf.style.setProperty('--adem', ['3.2s', '3.8s', '2.6s', '4.2s', '3.4s', '2.5s', '3.9s', '2.9s'][i]);
     staaf.style.setProperty('--rij', String(positie % 2));
     staaf.style.setProperty('--stap', String(positie));
+    // Trompetten: lage tonen een grote beker, hoge tonen een smalle.
+    staaf.style.setProperty('--beker', (1.3 - toon * 0.08).toFixed(2));
     staaf.style.setProperty('--blad', ['-18', '14', '4', '-10', '20', '-16', '8', '-4'][i] + 'deg');
     const zit = document.createElement('span');
     zit.className = 'kikker-zitting';
@@ -83,6 +86,7 @@ export function maakXylofoon(
     noot.innerHTML = NOOT;
     zit.append(blad, pop, noot);
     staaf.appendChild(zit);
+    staaf.insertAdjacentHTML('beforeend', trompetHtml());
     staaf.dataset.positie = String(positie);
     // Keyboard: een zwarte toets (alleen versiering) rechts van do, re, fa, sol en la, als
     // de volgende witte toets er ook is.
@@ -109,6 +113,13 @@ export function maakXylofoon(
     el.classList.toggle('xylofoon--wacht', !actief);
   }
   zetKlasse();
+
+  // Trompetten liggen schuin en hangen af van de maat van het vak.
+  const leg = (): void => {
+    if (huidig === 'trompet') legTrompetten(el, staven);
+  };
+  const kijker = new ResizeObserver(leg);
+  kijker.observe(el);
 
   function licht(positie: number): void {
     const s = staven[positie];
@@ -159,8 +170,10 @@ export function maakXylofoon(
     zetInstrument: (nieuw) => {
       huidig = nieuw;
       zetKlasse();
+      leg();
     },
     opruimen: () => {
+      kijker.disconnect();
       window.removeEventListener('pointerup', los);
       window.removeEventListener('pointercancel', los);
       el.remove();

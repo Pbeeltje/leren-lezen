@@ -64,7 +64,7 @@ cymbals and tom on top, snare and bass below; one row on low landscape screens).
 Level 3 uses the same `--5` sizing as a 2×2 grid without an empty crash slot.
 Check: `node tests/drumstel.mjs <map>`.
 
-## Instruments (shop items): harp, fluit, keyboard, kikkerkoor
+## Instruments (shop items): harp, fluit, keyboard, kikkerkoor, trompetten
 
 - `Instrument` / `INSTRUMENTEN` in `engine/muziek.ts`;
   `speelInstrument(instrument, toon, wanneer)`. Xylofoon is free; the others cost
@@ -86,6 +86,20 @@ Check: `node tests/drumstel.mjs <map>`.
   560px the frogs sit in two staggered rows and the frog is the tap target (columns
   get `pointer-events: none`). `kikker.svg` (shop icon) is `kikkerSvg(0, 0)`
   without eyelids and throat sac.
+- Trompetten (`speelTrompet`, an octave down): two detuned sawtooths through a lowpass
+  that opens on the attack (brassy blat, then settles), pitch scoops up from 0.93, vibrato
+  after 0.3 s, a breath of noise. Look: `games/muziek/trompet.ts`, `.xylofoon--trompet`.
+  Eight long herald trumpets on parallel diagonal lines (bottom-left to top-right), each
+  with a dark red flag whose round emblem has the note colour. Bell size per note (`--beker`,
+  1.3 for low do down to 0.74 for high do); the layout insets bigger bells further. `legTrompetten()` computes
+  the layout from the box size (ResizeObserver in `maakXylofoon`, plus on `zetInstrument`):
+  angle `26° + 0.55·atan(h/w)`, lines spread across the box minus the short corner chords,
+  bell tip just inside the top/right edge, tube runs out of the box bottom-left. It sets
+  `--s` (strip width), `--hoek`, and per trumpet `--bx/--by` (bell tip) and `--tl`
+  (length); each button IS the rotated strip, so taps and glides hit one trumpet. A press
+  recoils the trumpet, squashes and stretches the bell, flaps the flag and blows waves in
+  the note colour; the button's own `trompet-aan` glow is the longest animation, so its
+  `animationend` clears `--aan`. Check: `node tests/trompetten.mjs <map>`.
 - Keyboard look: white keys with a coloured patch, decorative black keys via
   `[data-zwart]::after`; tapping a black key plays its white key.
 - `maakXylofoon(tonen, opTik, instrument)` is the component for all: same buttons
@@ -103,5 +117,5 @@ Check: `node tests/drumstel.mjs <map>`.
   (labels from 1100px wide). Speel na: `.muziek-instrumenten` in the card (top
   right; a right column when ≤820px high); `maakSpeelNaVragen(niveau, naarWinkel)`.
 - Icons `harp.svg`, `harp-kast.svg`, `fluit.svg`, `keyboard.svg`, `xylofoon.svg`,
-  `kikker.svg` are our own drawings.
+  `kikker.svg`, `trompet.svg` are our own drawings.
 - Check: `node tests/instrumenten.mjs <map>`.
