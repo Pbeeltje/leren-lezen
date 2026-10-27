@@ -128,7 +128,10 @@ Check: `node tests/drumstel.mjs <map>`.
   there is a breath of noise and little reverb (0.12). Earlier versions (lowpass saw, then
   saw+square+tanh) sounded like a keyboard. To re-check, render offline with
   `node tests/trompet-klank.mjs <out.json>` (it swaps in OfflineAudioContext) and compare harmonics.
-  Look: `games/muziek/trompet.ts`, `.xylofoon--trompet`.
+  Look: `games/muziek/trompet.ts`, `.xylofoon--trompet`. Behind them (`achter`) a castle
+  `.trompet-burcht`, a few shades lighter than the night-blue sky so it doesn't distract:
+  a crenellated wall along the bottom (long SVG, `xMinYMax slice`, so merlons keep their size
+  and the right end is cut off) and a round tower with a pointed roof and pennant at the left.
   Eight long herald trumpets on parallel diagonal lines (bottom-left to top-right), each
   with a dark red flag whose round emblem has the note colour. Bell size per note (`--beker`,
   1.3 for low do down to 0.74 for high do); the layout insets bigger bells further. `legTrompetten()` (the

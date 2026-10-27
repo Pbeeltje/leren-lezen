@@ -38,9 +38,38 @@ const KLANK = `<svg viewBox="0 0 60 100">
   </g>
 </svg>`;
 
+// Burcht achter de trompetten: een kantelenmuur onderaan en links een ronde toren met een
+// spits dak. Een paar tinten lichter dan de lucht, zodat hij niet afleidt. De toren staat
+// linksboven, waar de trompetten de hoek vrij laten. De muur is lang en wordt rechts
+// afgesneden (xMinYMax slice), dus de kantelen houden overal dezelfde maat.
+const MUUR = `<svg viewBox="0 0 1600 100" preserveAspectRatio="xMinYMax slice">
+  <path d="M0 100 V30 ${Array.from({ length: 40 }, (_, i) => `H${i * 40 + 8} V8 H${i * 40 + 32} V30`).join(' ')} H1600 V100 Z" fill="#2c3b82"/>
+  <rect x="0" y="30" width="1600" height="7" fill="#25336f"/>
+  ${[120, 420, 700, 980, 1260].map((x) => `<rect x="${x}" y="52" width="7" height="22" rx="3.5" fill="#1d2860"/>`).join('')}
+  <path d="M520 100 V74 A26 26 0 0 1 572 74 V100 Z" fill="#1d2860"/>
+</svg>`;
+
+const TOREN = `<svg viewBox="0 0 100 320" preserveAspectRatio="xMidYMax meet">
+  <path d="M50 4 V40" stroke="#3a4a92" stroke-width="3"/>
+  <path d="M50 6 L74 13 L50 20 Z" fill="#5a2a4a"/>
+  <rect x="16" y="120" width="68" height="200" fill="#2c3b82"/>
+  <rect x="62" y="120" width="22" height="200" fill="#27357a"/>
+  <path d="M10 106 H90 V124 H10 Z" fill="#25336f"/>
+  <path d="M4 110 L50 38 L96 110 Z" fill="#3d3478"/>
+  <path d="M50 38 L96 110 H70 Z" fill="#342d69"/>
+  <path d="M42 176 V162 A8 8 0 0 1 58 162 V176 Z" fill="#f2c14e" opacity="0.4"/>
+  <rect x="46" y="236" width="8" height="24" rx="4" fill="#1d2860"/>
+</svg>`;
+
 // Per knop: de trompet, de maat van de beker (lage tonen een grote, hoge een smalle) en een
 // eigen tempo voor het wapperende vaantje.
 export const TROMPETTEN: Uiterlijk = {
+  achter() {
+    const burcht = document.createElement('div');
+    burcht.className = 'trompet-burcht';
+    burcht.innerHTML = `<span class="trompet-burcht__toren">${TOREN}</span><span class="trompet-burcht__muur">${MUUR}</span>`;
+    return burcht;
+  },
   knop(staaf, toon, positie) {
     staaf.style.setProperty('--beker', (1.3 - toon * 0.08).toFixed(2));
     staaf.style.setProperty('--knip', ['0s', '-1.4s', '-3.1s', '-0.6s', '-2.2s', '-4.4s', '-1.8s', '-2.9s'][positie % 8]);

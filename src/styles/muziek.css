@@ -618,6 +618,12 @@
   transform-origin: 100% 35%;
   transform: translate(calc(var(--bx, 0px) - var(--tl, 0px)), calc(var(--by, 0px) - var(--s, 0px) * 0.35)) rotate(calc(var(--hoek, 0rad) * -1));
 }
+/* Burcht achter de trompetten (trompet.ts): muur onderaan, toren linksboven in de lege hoek. */
+.xylofoon--trompet .trompet-burcht { display: block; position: absolute; inset: 0; pointer-events: none; }
+.trompet-burcht > span { position: absolute; display: block; }
+.trompet-burcht svg { width: 100%; height: 100%; display: block; }
+.trompet-burcht__muur { left: 0; right: 0; bottom: 0; height: min(22%, 150px); }
+.trompet-burcht__toren { left: 5%; bottom: min(15%, 100px); height: 72%; aspect-ratio: 100 / 320; max-width: 20%; }
 .xylofoon--trompet .trompet { display: block; position: absolute; inset: 0; pointer-events: none; }
 .trompet > span { position: absolute; display: block; }
 .trompet svg { width: 100%; height: 100%; display: block; overflow: visible; }
