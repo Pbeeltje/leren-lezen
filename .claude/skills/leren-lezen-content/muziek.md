@@ -64,7 +64,7 @@ cymbals and tom on top, snare and bass below; one row on low landscape screens).
 Level 3 uses the same `--5` sizing as a 2×2 grid without an empty crash slot.
 Check: `node tests/drumstel.mjs <map>`.
 
-## Instruments (shop items): harp, fluit, keyboard, kikkerkoor, trompetten
+## Instruments (shop items): harp, fluit, keyboard, kikkerkoor, trompetten, klokken
 
 - `Instrument` / `INSTRUMENTEN` in `engine/muziek.ts`;
   `speelInstrument(instrument, toon, wanneer)`. Xylofoon is free; the others cost
@@ -86,9 +86,11 @@ Check: `node tests/drumstel.mjs <map>`.
   560px the frogs sit in two staggered rows and the frog is the tap target (columns
   get `pointer-events: none`). `kikker.svg` (shop icon) is `kikkerSvg(0, 0)`
   without eyelids and throat sac.
-- Trompetten (`speelTrompet`, an octave down): two detuned sawtooths through a lowpass
-  that opens on the attack (brassy blat, then settles), pitch scoops up from 0.93, vibrato
-  after 0.3 s, a breath of noise. Look: `games/muziek/trompet.ts`, `.xylofoon--trompet`.
+- Trompetten (`speelTrompet`, an octave down): two detuned sawtooths plus a square through a
+  resonant lowpass that opens on the attack (to 16f, settles at 8f), then soft tanh
+  saturation, a +7 dB peak at 1300 Hz (brass bite) and a +5 dB low shelf (body). Pitch scoops
+  up from 0.93, vibrato after 0.3 s, a breath of noise. The first version (lowpass only)
+  sounded like a keyboard, the owner said. Look: `games/muziek/trompet.ts`, `.xylofoon--trompet`.
   Eight long herald trumpets on parallel diagonal lines (bottom-left to top-right), each
   with a dark red flag whose round emblem has the note colour. Bell size per note (`--beker`,
   1.3 for low do down to 0.74 for high do); the layout insets bigger bells further. `legTrompetten()` computes
@@ -100,6 +102,19 @@ Check: `node tests/drumstel.mjs <map>`.
   recoils the trumpet, squashes and stretches the bell, flaps the flag and blows waves in
   the note colour; the button's own `trompet-aan` glow is the longest animation, so its
   `animationend` clears `--aan`. Check: `node tests/trompetten.mjs <map>`.
+- Klokken (`speelKlok`, at pitch): nine sine partials (hum 0.5, strike 1 plus a 1.0035
+  twin for the shimmer, 2, 2.4, 3, 4.2, 5.4, 6.8), each with its own decay (low bells ring
+  longer), plus a highpassed noise tick. Own reverb `klokGalm` (2 s convolver, darker, no
+  feedback, so it can't build up) and at most `KLOK_MAX` = 5 bells ringing; the oldest fades in
+  ~0.1 s. Measured: 16 bells struck fast peak at 0.82. Look: `games/muziek/klokken.ts`,
+  `.xylofoon--klokken`. A wooden rack (finials, carved crest with rosette, brass rods, turned
+  posts, scroll feet) built by `rekSvg()`; `legKlokken()` (ResizeObserver) picks 4 bells per
+  rod (wide box) or 2 per rod (portrait phone), whichever gives bigger bells, and sets px vars
+  per bell (`--kl/--kt/--kw/--kh`, bell width `--kb` times `--klok` per note). A strike swings
+  the bell on its strap (damped, 1.6 s), the clapper lags behind, rings in the note colour
+  radiate out; the button's `klok-aan` (1.7 s) is the longest. **Class names are `luiklok*`**:
+  `.klok` already belongs to the clock game (`klok.css`) and its rules made the hidden bells
+  show up on every instrument. Check: `node tests/klokken.mjs <map>`.
 - Keyboard look: white keys with a coloured patch, decorative black keys via
   `[data-zwart]::after`; tapping a black key plays its white key.
 - `maakXylofoon(tonen, opTik, instrument)` is the component for all: same buttons
@@ -114,8 +129,8 @@ Check: `node tests/drumstel.mjs <map>`.
 - Picker: `ui/components/InstrumentKnoppen.ts` (`data-instrument`; not owned =
   grey + lock, tap opens `WinkelScreen(m, { soort: 'instrument', koop: id })`) plus
   the coin button `.muziek-winkel-knop`. Vrij spelen: top row next to Drumstel
-  (labels from 1100px wide). Speel na: `.muziek-instrumenten` in the card (top
-  right; a right column when ≤820px high); `maakSpeelNaVragen(niveau, naarWinkel)`.
+  (labels from 1440px wide). Speel na: `.muziek-instrumenten` in the card (top
+  right; a right column when ≤820px high, two columns on a landscape phone); `maakSpeelNaVragen(niveau, naarWinkel)`.
 - Icons `harp.svg`, `harp-kast.svg`, `fluit.svg`, `keyboard.svg`, `xylofoon.svg`,
-  `kikker.svg`, `trompet.svg` are our own drawings.
+  `kikker.svg`, `trompet.svg`, `klokken.svg` are our own drawings.
 - Check: `node tests/instrumenten.mjs <map>`.

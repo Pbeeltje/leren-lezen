@@ -2767,6 +2767,100 @@
   .xylofoon--trompet .xylofoon__staaf--aan .trompet__vaan,
   .xylofoon--trompet .xylofoon__staaf--aan .trompet__klank { animation: none; }
 }
+/* Klokken (klokken.ts): een houten rek met koperen stangen, klokjes aan riempjes. legKlokken
+   kiest het rek (vier of twee klokken per stang), zet de maat van .klokken-rek en per klok de
+   plek van zijn vak onder de stang (--kl, --kt, --kw, --kh) en de breedte van de klok (--kb). */
+.klokken-rek, .luiklok { display: none; }
+.xylofoon.xylofoon--klokken {
+  display: block;
+  position: relative;
+  overflow: hidden;
+  border-radius: 28px;
+  background:
+    radial-gradient(ellipse 70% 60% at 50% 35%, rgba(255, 250, 235, 0.8), transparent 70%),
+    linear-gradient(#f3e2bf, #e3c795 78%, #d3b07a 78%, #c99f66);
+  box-shadow: inset 0 -10px 0 rgba(0, 0, 0, 0.08);
+}
+.xylofoon--klokken .klokken-rek { display: block; position: absolute; pointer-events: none; }
+.klokken-rek svg { width: 100%; height: 100%; display: block; }
+.xylofoon--klokken .xylofoon__staaf,
+.muziek-kaart .xylofoon--klokken .xylofoon__staaf,
+.muziek-vrij-scherm .muziek-kaart--vrij .xylofoon--klokken .xylofoon__staaf {
+  position: absolute;
+  left: var(--kl, 0px);
+  top: var(--kt, 0px);
+  width: var(--kw, 0px);
+  height: var(--kh, 0px);
+  flex: none;
+  max-width: none;
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+}
+.xylofoon--klokken .xylofoon__staaf::before,
+.xylofoon--klokken .xylofoon__staaf::after { content: none; }
+.xylofoon--klokken .luiklok {
+  display: block;
+  position: absolute;
+  left: 50%;
+  top: calc(var(--kb) * -0.1);
+  width: var(--kb);
+  height: calc(var(--kb) * 1.4);
+  margin-left: calc(var(--kb) / -2);
+  transform-origin: 50% 7.14%;
+  pointer-events: none;
+}
+.luiklok > span { position: absolute; display: block; }
+.luiklok svg { width: 100%; height: 100%; display: block; overflow: visible; }
+.luiklok__lijf { inset: 0; }
+.luiklok__band { fill: var(--kleur); }
+.luiklok__klepel { transform-origin: 50px 40px; }
+.luiklok__golven { left: -40%; width: 180%; top: 35%; height: 57%; opacity: 0; }
+.luiklok__golf { stroke: var(--kleur); }
+/* Aanslaan: de klok zwaait uit en dempt (zoals een echte klok aan een riempje), de klepel
+   zwaait net achter, er komen klankringen af en de klok gloeit in zijn eigen kleur. De
+   gloed van de knop is het langst, want zijn animationend haalt --aan weer weg. */
+.xylofoon--klokken .xylofoon__staaf--aan { animation: klok-aan 1.7s ease-out; z-index: 2; }
+.xylofoon--klokken .xylofoon__staaf--aan .luiklok { animation: klok-zwaai 1.6s ease-in-out; }
+.xylofoon--klokken .xylofoon__staaf--aan .luiklok__klepel { animation: klok-klepel 1.6s ease-in-out; }
+.xylofoon--klokken .xylofoon__staaf--aan .luiklok__golven { animation: klok-golven 0.9s ease-out; }
+@keyframes klok-aan {
+  0% { filter: brightness(1.25) drop-shadow(0 0 calc(var(--kb) * 0.12) var(--kleur)); }
+  100% { filter: none; }
+}
+@keyframes klok-zwaai {
+  0% { transform: rotate(0deg); }
+  9% { transform: rotate(22deg); }
+  25% { transform: rotate(-16deg); }
+  41% { transform: rotate(11deg); }
+  57% { transform: rotate(-7deg); }
+  72% { transform: rotate(4deg); }
+  86% { transform: rotate(-1.5deg); }
+  100% { transform: rotate(0deg); }
+}
+@keyframes klok-klepel {
+  0% { transform: rotate(0deg); }
+  11% { transform: rotate(-26deg); }
+  28% { transform: rotate(20deg); }
+  46% { transform: rotate(-12deg); }
+  64% { transform: rotate(6deg); }
+  82% { transform: rotate(-2deg); }
+  100% { transform: rotate(0deg); }
+}
+@keyframes klok-golven {
+  0% { opacity: 1; transform: scale(0.7); }
+  50% { opacity: 1; }
+  100% { opacity: 0; transform: scale(1.3); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .xylofoon--klokken .xylofoon__staaf--aan .luiklok,
+  .xylofoon--klokken .xylofoon__staaf--aan .luiklok__klepel,
+  .xylofoon--klokken .xylofoon__staaf--aan .luiklok__golven { animation: none; }
+}
 @keyframes toets-aan {
   0% { transform: translateY(3px); background: color-mix(in srgb, var(--kleur) 30%, #fff); box-shadow: inset 0 -4px 0 #dcdcdc; }
   100% { transform: none; }
@@ -3601,8 +3695,9 @@
 @media (max-width: 640px) {
   .muziek-vrij-scherm .muziek-wissel { align-self: flex-end; }
 }
-/* Instrumenten en de munt: alleen met namen erbij als er echt ruimte is. */
-@media (max-width: 1099px) {
+/* Instrumenten en de munt: alleen met namen erbij als er echt ruimte is (acht knoppen met
+   naam hebben zo'n 1440px nodig). */
+@media (max-width: 1439px) {
   .muziek-vrij-scherm .muziek-wissel__knop { width: 56px; height: 56px; padding: 0; justify-content: center; }
   .muziek-vrij-scherm .muziek-wissel__knop > span { display: none; }
   .muziek-vrij-scherm .muziek-wissel__knop > img:first-child { width: 36px; height: 36px; }
@@ -3787,9 +3882,10 @@
   .muziek-kaart .drum-pad--bas { width: 130px; height: 130px; }
   .muziek-kaart .drum-pad--snare { width: 100px; height: 90px; }
   .muziek-kaart .drum-pad--bekken { width: 110px; height: 110px; }
-  /* Speel na: de instrumentknoppen als smalle kolom rechts in de kaart, niet erboven. */
-  .muziek-instrumenten { position: absolute; top: 50%; right: 8px; transform: translateY(-50%); flex-direction: column; gap: 3px; margin: 0; }
-  .muziek-kaart:has(> .muziek-instrumenten) { padding-right: 60px; }
+  /* Speel na: de instrumentknoppen rechts in de kaart, niet erboven. Acht knoppen passen
+     niet onder elkaar, dus twee smalle kolommen. */
+  .muziek-instrumenten { position: absolute; top: 50%; right: 8px; transform: translateY(-50%); display: grid; grid-template-columns: repeat(2, 34px); gap: 3px; margin: 0; }
+  .muziek-kaart:has(> .muziek-instrumenten) { padding-right: 90px; }
   .muziek-instrumenten .muziek-wissel__knop, .muziek-instrumenten .muziek-winkel-knop { width: 34px; height: 34px; }
   .muziek-instrumenten .muziek-wissel__knop > img:first-child { width: 24px; height: 24px; }
 }

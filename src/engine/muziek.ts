@@ -103,7 +103,7 @@ export function speelNoot(toon: number, wanneer = 0): void {
 
 // Melodie-instrumenten: de xylofoon is gratis, de rest koop je in de winkel. Ze spelen
 // dezelfde acht tonen (en dus dezelfde liedjes bij Speel na) met hun eigen klank.
-export type Instrument = 'xylofoon' | 'harp' | 'fluit' | 'keyboard' | 'kikkerkoor' | 'trompet';
+export type Instrument = 'xylofoon' | 'harp' | 'fluit' | 'keyboard' | 'kikkerkoor' | 'trompet' | 'klokken';
 export const INSTRUMENTEN: { id: Instrument; naam: string; icoon: string }[] = [
   { id: 'xylofoon', naam: 'Xylofoon', icoon: 'assets/icons/xylofoon.svg' },
   { id: 'harp', naam: 'Harp', icoon: 'assets/icons/harp.svg' },
@@ -111,6 +111,7 @@ export const INSTRUMENTEN: { id: Instrument; naam: string; icoon: string }[] = [
   { id: 'keyboard', naam: 'Keyboard', icoon: 'assets/icons/keyboard.svg' },
   { id: 'kikkerkoor', naam: 'Kikkerkoor', icoon: 'assets/icons/kikker.svg' },
   { id: 'trompet', naam: 'Trompetten', icoon: 'assets/icons/trompet.svg' },
+  { id: 'klokken', naam: 'Klokken', icoon: 'assets/icons/klokken.svg' },
 ];
 
 // Harp: Karplus-Strong, een octaaf lager dan de xylofoon. Een kort stukje ruis dat
@@ -191,6 +192,10 @@ export function speelInstrument(instrument: Instrument, toon: number, wanneer = 
   }
   if (instrument === 'trompet') {
     speelTrompet(c, toon, t);
+    return;
+  }
+  if (instrument === 'klokken') {
+    speelKlok(c, toon, t);
     return;
   }
   const freq = toon * HARP.octaaf;
@@ -343,6 +348,10 @@ function speelKikker(c: AudioContext, toon: number, t: number): void {
 // Trompet (heraut): koper is een zaagtand door een filter dat met de adem opengaat. Eerst
 // een korte schetter (filter wijd open), dan een heldere toon; de lippen zetten de toon
 // iets te laag in en schuiven omhoog, en na een tel komt er een beetje vibrato bij.
+// Scherper en voller dan een keyboard: het filter gaat verder open met meer resonantie, een
+// piek rond 1300 Hz geeft het koperen "schetteren", een blokgolf onder de zaagtanden en een
+// opgetild laag-midden geven body, en een lichte vervorming maakt het rauwer.
+let koperVorm: Float32Array<ArrayBuffer> | null = null;
 function speelTrompet(c: AudioContext, toon: number, t: number): void {
   const f = toon * 0.5;
   const duur = 0.85;
@@ -350,18 +359,18 @@ function speelTrompet(c: AudioContext, toon: number, t: number): void {
 
   const filter = c.createBiquadFilter();
   filter.type = 'lowpass';
-  filter.Q.value = 1.8;
-  filter.frequency.setValueAtTime(f * 1.2, t);
-  filter.frequency.exponentialRampToValueAtTime(f * 9, t + 0.05);
-  filter.frequency.exponentialRampToValueAtTime(f * 4.5, t + 0.25);
-  filter.frequency.setValueAtTime(f * 4.5, eind - 0.2);
-  filter.frequency.exponentialRampToValueAtTime(f * 1.5, eind);
+  filter.Q.value = 3;
+  filter.frequency.setValueAtTime(f * 1.5, t);
+  filter.frequency.exponentialRampToValueAtTime(f * 16, t + 0.035);
+  filter.frequency.exponentialRampToValueAtTime(f * 8, t + 0.22);
+  filter.frequency.setValueAtTime(f * 8, eind - 0.2);
+  filter.frequency.exponentialRampToValueAtTime(f * 2, eind);
 
   const env = c.createGain();
   env.gain.setValueAtTime(0.0001, t);
-  env.gain.exponentialRampToValueAtTime(1, t + 0.025);
-  env.gain.exponentialRampToValueAtTime(0.72, t + 0.15);
-  env.gain.setValueAtTime(0.72, eind - 0.18);
+  env.gain.exponentialRampToValueAtTime(1, t + 0.018);
+  env.gain.exponentialRampToValueAtTime(0.78, t + 0.15);
+  env.gain.setValueAtTime(0.78, eind - 0.18);
   env.gain.exponentialRampToValueAtTime(0.0001, eind);
 
   const trilling = c.createOscillator();
@@ -372,19 +381,40 @@ function speelTrompet(c: AudioContext, toon: number, t: number): void {
   trilDiepte.gain.linearRampToValueAtTime(12, t + 0.6);
   trilling.connect(trilDiepte);
 
-  const stemmen = [-6, 6].map((cent) => {
+  const stemmen = ([[-7, 'sawtooth', 1], [7, 'sawtooth', 1], [0, 'square', 0.55]] as const).map(([cent, vorm, sterkte]) => {
     const osc = c.createOscillator();
-    osc.type = 'sawtooth';
+    osc.type = vorm;
     osc.detune.value = cent;
     osc.frequency.setValueAtTime(f * 0.93, t);
-    osc.frequency.exponentialRampToValueAtTime(f, t + 0.045);
+    osc.frequency.exponentialRampToValueAtTime(f, t + 0.04);
     trilDiepte.connect(osc.detune);
-    osc.connect(filter);
+    const g = c.createGain();
+    g.gain.value = sterkte;
+    osc.connect(g).connect(filter);
     return osc;
   });
-  filter.connect(env);
+
+  // Rauw randje: zachte vervorming (tanh), daarna de koperpiek en het lijf.
+  if (!koperVorm) {
+    koperVorm = new Float32Array(1025);
+    for (let i = 0; i < koperVorm.length; i++) koperVorm[i] = Math.tanh(((i / 1024) * 2 - 1) * 1.8) / Math.tanh(1.8);
+  }
+  const rauw = c.createWaveShaper();
+  rauw.curve = koperVorm;
+  const schetter = c.createBiquadFilter();
+  schetter.type = 'peaking';
+  schetter.frequency.value = 1300;
+  schetter.Q.value = 1.2;
+  schetter.gain.value = 7;
+  const lijf = c.createBiquadFilter();
+  lijf.type = 'lowshelf';
+  lijf.frequency.value = 320;
+  lijf.gain.value = 5;
+  const zacht = c.createGain();
+  zacht.gain.value = 0.45; // voor de vervorming, zodat die niet hard gaat kraken
+  filter.connect(zacht).connect(rauw).connect(schetter).connect(lijf).connect(env);
   const uit = c.createGain();
-  uit.gain.value = 0.24;
+  uit.gain.value = 0.2;
   env.connect(uit);
   naarUit(c, uit.connect(nieuweStem(c, `trompet:${toon}`, t)), 0.3);
 
@@ -401,6 +431,93 @@ function speelTrompet(c: AudioContext, toon: number, t: number): void {
     o.start(t);
     o.stop(eind + 0.05);
   }
+}
+
+// Klokken: een koperen klok is een stel sinussen die niet netjes boven elkaar liggen (de
+// "zoem" een octaaf lager, de slagtoon, een kleine terts erboven, ...), elk met een eigen
+// uitsterftijd: de hoge glans is snel weg, de zoem blijft hangen. Twee bijna gelijke
+// slagtonen zweven tegen elkaar (het zingende), en de klepel geeft een tikje.
+const KLOK_DELEN: [number, number, number][] = [
+  // [factor, sterkte, uitsterftijd in s]
+  [0.5, 0.2, 2.6],
+  [1, 0.9, 2.3],
+  [1.0035, 0.45, 2.1],
+  [2, 0.4, 1.3],
+  [2.4, 0.2, 0.9],
+  [3, 0.17, 0.7],
+  [4.2, 0.1, 0.4],
+  [5.4, 0.07, 0.25],
+  [6.8, 0.04, 0.16],
+];
+
+// Eigen galm voor de klokken: wat langer en donkerder dan de kamergalm, maar zonder
+// terugkoppeling (een vaste nagalm van 2 s), dus hij kan nooit blijven aanzwellen.
+let klokGalmIn: GainNode | null = null;
+function klokGalm(c: AudioContext): GainNode {
+  if (klokGalmIn) return klokGalmIn;
+  const lengte = Math.floor(c.sampleRate * 2);
+  const impuls = c.createBuffer(2, lengte, c.sampleRate);
+  for (let kanaal = 0; kanaal < 2; kanaal++) {
+    const d = impuls.getChannelData(kanaal);
+    for (let i = 0; i < lengte; i++) d[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / lengte, 4);
+  }
+  const zaal = c.createConvolver();
+  zaal.buffer = impuls;
+  const donker = c.createBiquadFilter();
+  donker.type = 'lowpass';
+  donker.frequency.value = 3200;
+  klokGalmIn = c.createGain();
+  klokGalmIn.gain.value = 0.16;
+  klokGalmIn.connect(donker).connect(zaal).connect(uitgang(c));
+  return klokGalmIn;
+}
+
+// Hoogstens vijf klokken tegelijk: glijden over het hele rek liet anders acht lange klanken
+// (plus galm) op elkaar stapelen. De oudste dooft dan snel uit.
+const KLOK_MAX = 5;
+let klokStemmen: { toon: number; knip: GainNode; eind: number }[] = [];
+
+function speelKlok(c: AudioContext, toon: number, t: number): void {
+  const nr = Math.max(0, TONEN.findIndex((x) => Math.abs(x - toon) < 1));
+  const lang = 1.15 - nr * 0.05; // grote klokken klinken langer
+  const duur = 2.6 * lang;
+
+  // Uitgeklonken klokken en de vorige klank van deze toon (die dempt nieuweStem) tellen niet mee.
+  klokStemmen = klokStemmen.filter((s) => s.eind > t && s.toon !== toon);
+  while (klokStemmen.length >= KLOK_MAX) {
+    const oud = klokStemmen.shift()!;
+    oud.knip.gain.cancelScheduledValues(t);
+    oud.knip.gain.setTargetAtTime(0, t, 0.08);
+  }
+  const knip = nieuweStem(c, `klokken:${toon}`, t);
+  klokStemmen.push({ toon, knip, eind: t + duur });
+
+  const uit = c.createGain();
+  uit.gain.value = 0.26;
+  uit.connect(knip);
+  knip.connect(uitgang(c));
+  knip.connect(klokGalm(c));
+
+  for (const [factor, sterkte, tijd] of KLOK_DELEN) {
+    const osc = c.createOscillator();
+    osc.frequency.value = toon * factor;
+    const g = c.createGain();
+    const weg = Math.min(duur, tijd * lang);
+    g.gain.setValueAtTime(0, t);
+    g.gain.linearRampToValueAtTime(sterkte, t + 0.003);
+    g.gain.exponentialRampToValueAtTime(0.0001, t + weg);
+    osc.connect(g).connect(uit);
+    osc.start(t);
+    osc.stop(t + weg + 0.05);
+  }
+
+  // Het tikje van de klepel op het koper.
+  const tik = ruis(c, 0.03);
+  const tikFilter = c.createBiquadFilter();
+  tikFilter.type = 'highpass';
+  tikFilter.frequency.value = 3500;
+  tik.connect(tikFilter).connect(omhulling(c, t, 0.08, 0.03));
+  tik.start(t);
 }
 
 // Keyboard als een ouderwetse computer-MIDI (de FM-chip van een geluidskaart uit de jaren

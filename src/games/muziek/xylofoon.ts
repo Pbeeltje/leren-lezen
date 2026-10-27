@@ -1,12 +1,13 @@
 import { STAAF_KLEUREN, TONEN, speelInstrument, type Instrument } from '../../engine/muziek.ts';
 import { NOOT, kikkerSvg } from './kikker.ts';
+import { klokHtml, legKlokken } from './klokken.ts';
 import { legTrompetten, trompetHtml } from './trompet.ts';
 import { BELLEN, LIBEL, STRUIK, WATER, WOLK, lelieSvg, rietSvg, verPadSvg } from './vijver.ts';
 
 // Een xylofoon van gekleurde staven, lang (laag) naar kort (hoog). Tikken speelt een toon;
 // met de vinger eroverheen glijden speelt ze allemaal (glissando). tonen = indexen in TONEN.
 // Dezelfde knoppen worden met zetInstrument een harp (snaren), een fluit
-// (gaatjes), een keyboard, een kikkerkoor of trompetten. Elke toon houdt zijn kleur, zodat de
+// (gaatjes), een keyboard, een kikkerkoor, trompetten of klokken. Elke toon houdt zijn kleur, zodat de
 // stippen van Speel na blijven kloppen.
 export function maakXylofoon(
   tonen: number[],
@@ -41,6 +42,9 @@ export function maakXylofoon(
     pol('kikker-riet--achter kikker-riet--a4') +
     pol('kikker-riet--achter kikker-riet--a5');
   el.appendChild(vijver);
+  const rek = document.createElement('div');
+  rek.className = 'klokken-rek';
+  el.appendChild(rek);
   const voor = document.createElement('div');
   voor.className = 'kikker-voor';
   voor.innerHTML =
@@ -72,6 +76,8 @@ export function maakXylofoon(
     staaf.style.setProperty('--stap', String(positie));
     // Trompetten: lage tonen een grote beker, hoge tonen een smalle.
     staaf.style.setProperty('--beker', (1.3 - toon * 0.08).toFixed(2));
+    // Klokken: lage tonen een grote klok, hoge een kleine.
+    staaf.style.setProperty('--klok', (1 - toon * 0.035).toFixed(3));
     staaf.style.setProperty('--blad', ['-18', '14', '4', '-10', '20', '-16', '8', '-4'][i] + 'deg');
     const zit = document.createElement('span');
     zit.className = 'kikker-zitting';
@@ -86,7 +92,7 @@ export function maakXylofoon(
     noot.innerHTML = NOOT;
     zit.append(blad, pop, noot);
     staaf.appendChild(zit);
-    staaf.insertAdjacentHTML('beforeend', trompetHtml());
+    staaf.insertAdjacentHTML('beforeend', trompetHtml() + klokHtml());
     staaf.dataset.positie = String(positie);
     // Keyboard: een zwarte toets (alleen versiering) rechts van do, re, fa, sol en la, als
     // de volgende witte toets er ook is.
@@ -114,9 +120,10 @@ export function maakXylofoon(
   }
   zetKlasse();
 
-  // Trompetten liggen schuin en hangen af van de maat van het vak.
+  // Trompetten (schuin) en klokken (het rek) hangen af van de maat van het vak.
   const leg = (): void => {
     if (huidig === 'trompet') legTrompetten(el, staven);
+    if (huidig === 'klokken') legKlokken(el, rek, staven);
   };
   const kijker = new ResizeObserver(leg);
   kijker.observe(el);
