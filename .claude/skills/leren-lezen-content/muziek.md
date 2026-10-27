@@ -129,7 +129,7 @@ Check: `node tests/drumstel.mjs <map>`.
   saw+square+tanh) sounded like a keyboard. To re-check, render offline with
   `node tests/trompet-klank.mjs <out.json>` (it swaps in OfflineAudioContext) and compare harmonics.
   Look: `games/muziek/trompet.ts`, `.xylofoon--trompet`. Behind them (`achter`) a castle
-  `.trompet-burcht`, a few shades lighter than the night-blue sky so it doesn't distract:
+  `.trompet-burcht`, in soft grey stone with a red roof against a sunny sky (light blue, sun top left), so it doesn't distract:
   a crenellated wall along the bottom (long SVG, `xMinYMax slice`, so merlons keep their size
   and the right end is cut off) and a round tower with a pointed roof and pennant at the left.
   Eight long herald trumpets on parallel diagonal lines (bottom-left to top-right), each
