@@ -10,7 +10,7 @@ import type {
 } from '../content/tellen/types.ts';
 import { klokUur, zelfdeKlokstand } from '../content/tellen/klok.ts';
 import { type KalenderSoort, kalenderLijst } from '../content/tijd/kalender.ts';
-import { schud } from './toeval.ts';
+import { kies, schud } from './toeval.ts';
 
 export type RekenModus = 'oefenen' | 'toets';
 
@@ -376,10 +376,10 @@ const KWARTIEREN: KlokTijd['minuut'][] = [0, 15, 30, 45];
 
 // Een tijd die deze sessie nog niet op de klok stond (uur 1-12). Bij wijzers zetten nooit
 // 12 uur: daar staat de klok al op als je begint.
-function kiesKlokTijd(gebruikt: Set<string>, niet12: boolean): KlokTijd {
+function kiesKlokTijd(gebruikt: Set<string>, niet12: boolean, alleenHeleUren: boolean): KlokTijd {
   const kandidaten: KlokTijd[] = [];
   for (let uur = 1; uur <= 12; uur++) {
-    for (const minuut of KWARTIEREN) {
+    for (const minuut of alleenHeleUren ? KWARTIEREN.slice(0, 1) : KWARTIEREN) {
       if (niet12 && uur === 12 && minuut === 0) continue;
       if (!gebruikt.has(`${uur}:${minuut}`)) kandidaten.push({ uur, minuut });
     }
@@ -420,25 +420,35 @@ function klokAfleiders(tijd: KlokTijd): KlokTijd[] {
   return uit;
 }
 
+// Oefening 1 (alleen hele uren): de afleiders zijn ook hele uren, eerst een buuruur.
+function heleUrenAfleiders(tijd: KlokTijd): KlokTijd[] {
+  const h = klokUur(tijd.uur);
+  const buur = klokUur(h + (Math.random() < 0.5 ? -1 : 1));
+  const ander = kies(Array.from({ length: 12 }, (_, i) => i + 1).filter((u) => u !== h && u !== buur));
+  return [{ uur: buur, minuut: 0 }, { uur: ander, minuut: 0 }];
+}
+
 function genereerKlok(modus: RekenModus, oefeningNummer: 1 | 2 | 3): RekenOefeningDefinitie[] {
   const gebruikt = new Set<string>();
+  const heleUren = modus === 'oefenen' && oefeningNummer === 1;
   // Cijfers en woorden om en om, met een willekeurig begin.
   let woorden = Math.random() < 0.5;
   const volgendeVorm = (): KlokVorm => ((woorden = !woorden) ? 'woorden' : 'cijfers');
+  const afleiders = (tijd: KlokTijd): KlokTijd[] => (heleUren ? heleUrenAfleiders(tijd) : klokAfleiders(tijd));
 
   const maak = (type: 'klok-kies-klok' | 'klok-kies-tijd' | 'klok-zetten' | 'klok-typen'): RekenOefeningDefinitie => {
-    const tijd = kiesKlokTijd(gebruikt, type === 'klok-zetten');
+    const tijd = kiesKlokTijd(gebruikt, type === 'klok-zetten', heleUren);
     switch (type) {
       case 'klok-kies-klok': {
         const vorm = volgendeVorm();
-        return { type, tijd: metMiddag(tijd, vorm), vorm, afleiders: klokAfleiders(tijd) };
+        return { type, tijd: metMiddag(tijd, vorm), vorm, afleiders: afleiders(tijd) };
       }
       case 'klok-zetten': {
         const vorm = volgendeVorm();
         return { type, tijd: metMiddag(tijd, vorm), vorm };
       }
       case 'klok-kies-tijd':
-        return { type, tijd, afleiders: klokAfleiders(tijd) };
+        return { type, tijd, afleiders: afleiders(tijd) };
       case 'klok-typen':
         return { type, tijd };
     }
@@ -449,11 +459,12 @@ function genereerKlok(modus: RekenModus, oefeningNummer: 1 | 2 | 3): RekenOefeni
       (['klok-kies-klok', 'klok-kies-klok', 'klok-kies-tijd', 'klok-kies-tijd', 'klok-zetten', 'klok-zetten', 'klok-zetten', 'klok-typen', 'klok-typen', 'klok-typen'] as const).map(maak),
     );
   }
-  if (oefeningNummer === 1) {
-    return schud((['klok-kies-klok', 'klok-kies-klok', 'klok-kies-klok', 'klok-kies-tijd', 'klok-kies-tijd', 'klok-kies-tijd'] as const).map(maak));
+  // 1 meerkeuze met hele uren, 2 meerkeuze met halve uren en kwartieren erbij, 3 zelf
+  // wijzers zetten en tijd typen.
+  if (oefeningNummer === 3) {
+    return schud((['klok-zetten', 'klok-zetten', 'klok-zetten', 'klok-typen', 'klok-typen', 'klok-typen'] as const).map(maak));
   }
-  const type = oefeningNummer === 2 ? 'klok-zetten' : 'klok-typen';
-  return Array.from({ length: 6 }, () => maak(type));
+  return schud((['klok-kies-klok', 'klok-kies-klok', 'klok-kies-klok', 'klok-kies-tijd', 'klok-kies-tijd', 'klok-kies-tijd'] as const).map(maak));
 }
 
 // Dagen en maanden. Rijtjes bij invullen lopen gewoon door (zondag, maandag, dinsdag);

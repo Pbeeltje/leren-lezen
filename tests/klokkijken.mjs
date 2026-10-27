@@ -1,7 +1,8 @@
 import { chromium } from 'playwright';
 import { mkdirSync } from 'node:fs';
 
-// Klokkijken (reken-kern-13, onder Leren lezen > Tijd lezen): oefening 1 meerkeuze, 2 wijzers slepen, 3 tijd typen, toets.
+// Klokkijken (reken-kern-13, onder Leren lezen > Tijd lezen): oefening 1 meerkeuze met hele uren, 2 meerkeuze met
+// halve uren en kwartieren, 3 wijzers slepen en tijd typen, toets.
 // Speelt alles goed (plus één fout per oefening voor de herkansing) en maakt screenshots.
 // Gebruik: node tests/klokkijken.mjs <map>
 const OUT = process.argv[2].replace(/\\/g, '/').replace(/\/?$/, '/');
@@ -28,6 +29,8 @@ function leesTijd(tekst) {
 }
 const zelfde = (a, b) => a.uur % 12 === b.uur % 12 && a.minuut === b.minuut;
 const klokLabel = (label) => leesTijd(label.replace(/^Klok: /, ''));
+// Alle tijden van de vragen per sessie, om te zien of oefening 1 alleen hele uren heeft.
+let gezien = [];
 
 const browser = await chromium.launch();
 const fouten = [];
@@ -87,6 +90,7 @@ async function beantwoord(page, { fout = false } = {}) {
     const labels = await knoppen.evaluateAll((els) => els.map((e) => e.getAttribute('aria-label')));
     const tijden = labels.map(klokLabel);
     if (tijden.filter((t) => zelfde(t, doel)).length !== 1) throw new Error(`klok-kies-klok: niet precies één goede klok (${labels})`);
+    gezien.push(doel, ...tijden);
     if (fout) await knoppen.nth(tijden.findIndex((t) => !zelfde(t, doel))).click();
     await knoppen.nth(tijden.findIndex((t) => zelfde(t, doel))).click();
     return 'kies-klok';
@@ -96,6 +100,7 @@ async function beantwoord(page, { fout = false } = {}) {
     const knoppen = page.locator('.klok-tijd-knop');
     const tijden = (await knoppen.allInnerTexts()).map(leesTijd);
     if (tijden.filter((t) => zelfde(t, doel)).length !== 1) throw new Error('klok-kies-tijd: niet precies één goede tijd');
+    gezien.push(doel, ...tijden);
     if (fout) await knoppen.nth(tijden.findIndex((t) => !zelfde(t, doel))).click();
     await knoppen.nth(tijden.findIndex((t) => zelfde(t, doel))).click();
     return 'kies-tijd';
@@ -173,10 +178,12 @@ async function speel(page, label, { foutBijEerste = false, fotos = [] } = {}) {
   const page = await openApp(390, 844);
   const o1 = await speel(page, 'Oefening 1', { foutBijEerste: true, fotos: [{ i: 0, naam: 'tel-oef1-a' }, { i: 1, naam: 'tel-oef1-b' }] });
   if (o1.length !== 6 || !o1.includes('kies-klok') || !o1.includes('kies-tijd')) throw new Error(`oefening 1: ${o1}`);
+  if (gezien.some((t) => t.minuut !== 0)) throw new Error(`oefening 1 niet alleen hele uren: ${JSON.stringify(gezien)}`);
+  gezien = [];
   const o2 = await speel(page, 'Oefening 2', { foutBijEerste: true, fotos: [{ i: 0, naam: 'tel-oef2' }] });
-  if (o2.length !== 6 || o2.some((t) => t !== 'zetten')) throw new Error(`oefening 2: ${o2}`);
+  if (o2.length !== 6 || !o2.includes('kies-klok') || !o2.includes('kies-tijd')) throw new Error(`oefening 2: ${o2}`);
   const o3 = await speel(page, 'Oefening 3', { foutBijEerste: true, fotos: [{ i: 0, naam: 'tel-oef3' }] });
-  if (o3.length !== 6 || o3.some((t) => t !== 'typen')) throw new Error(`oefening 3: ${o3}`);
+  if (o3.length !== 6 || !o3.includes('zetten') || !o3.includes('typen')) throw new Error(`oefening 3: ${o3}`);
   const toets = await speel(page, 'Toets');
   await page.locator('.resultaat-cijfer').waitFor();
   const uitslag = await page.locator('.resultaat-cijfer').innerText();

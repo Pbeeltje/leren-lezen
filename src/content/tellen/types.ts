@@ -118,7 +118,7 @@ export interface RekenKern {
   geld?: 'munten' | 'briefjes';
   // Herhaling: elke sessie bevat plus, min en geld (behalve de koppel-oefening, die alleen sommen is).
   herhaling?: 'plus-min-geld';
-  // Klokkijken: oefening 1 meerkeuze (beide kanten op), 2 wijzers zetten, 3 tijd typen.
+  // Klokkijken: oefening 1 meerkeuze met hele uren, 2 meerkeuze met kwartieren, 3 wijzers zetten en tijd typen.
   klok?: true;
   // Dagen of maanden: oefening 1 invullen, 2 volgorde, 3 ervoor/erna; de toets mengt ze.
   kalender?: 'dagen' | 'maanden';

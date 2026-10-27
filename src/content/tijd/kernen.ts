@@ -6,7 +6,8 @@ import type { RekenKern } from '../tellen/types.ts';
 // hoofdstuk niet meer onder Tellen.
 
 // Hele uren, halve uren en kwartieren. Oefening 1 meerkeuze (tijd bij klok en klok bij
-// tijd), 2 zelf de wijzers zetten, 3 zelf de tijd typen; de toets mengt alle vier.
+// tijd) met alleen hele uren, 2 dezelfde meerkeuze met halve uren en kwartieren erbij,
+// 3 zelf de wijzers zetten en de tijd typen; de toets mengt alle vier.
 export const tijdKernKlokkijken: RekenKern = {
   id: 'reken-kern-13',
   volgnummer: 1,
