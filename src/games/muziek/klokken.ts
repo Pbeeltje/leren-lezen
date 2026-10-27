@@ -77,12 +77,11 @@ function rekSvg(stangen: number[], rij: number, hoog: number, breed: number): st
 
 // Eén klok aan een riempje, 100 breed. De stang ligt op y 0; het lusje eromheen steekt
 // erboven uit, daarom begint de viewBox op -10 (140 hoog). De klepel draait om (50, 40) en
-// komt onder de rand uit; de band om het middel heeft de kleur van de toon.
-const KLOK = `<svg viewBox="0 -10 100 140">
-  <g class="luiklok__klepel">
-    <rect x="47.5" y="38" width="5" height="70" rx="2.5" fill="#5e4515"/>
-    <circle cx="50" cy="114" r="7" fill="#7a5a1c" stroke="#3d2a08" stroke-width="2.5"/>
-  </g>
+// hangt vóór de donkere opening onder de rand uit; een clipPath (opening plus alles eronder)
+// houdt de steel uit het lijf van de klok. De band om het middel heeft de kleur van de toon.
+let klokNr = 0;
+const klok = (id: string): string => `<svg viewBox="0 -10 100 140">
+  <defs><clipPath id="${id}"><ellipse cx="50" cy="108.5" rx="38" ry="3.2"/><rect x="0" y="108.5" width="100" height="25"/></clipPath></defs>
   <rect x="44" y="0" width="12" height="27" fill="#8b4a22" stroke="#3d1c0b" stroke-width="2.5"/>
   <rect x="41" y="-8" width="18" height="15" rx="4" fill="#7a3e1a" stroke="#3d1c0b" stroke-width="2.5"/>
   <rect x="36" y="24" width="28" height="11" rx="4" fill="#b08534" stroke="#5e4515" stroke-width="2.5"/>
@@ -93,6 +92,10 @@ const KLOK = `<svg viewBox="0 -10 100 140">
   <path d="M10 94 L90 94" stroke="#a97f2e" stroke-width="2.5"/>
   <ellipse cx="50" cy="108" rx="45" ry="6" fill="#b8903a" stroke="#5e4515" stroke-width="2.5"/>
   <ellipse cx="50" cy="108.5" rx="38" ry="3.2" fill="#4a3410"/>
+  <g clip-path="url(#${id})"><g class="luiklok__klepel">
+    <rect x="47.5" y="38" width="5" height="80" rx="2.5" fill="#5e4515"/>
+    <circle cx="50" cy="120" r="7.5" fill="#7a5a1c" stroke="#3d2a08" stroke-width="2.5"/>
+  </g></g>
 </svg>`;
 
 // Klankringen links en rechts van de klok.
@@ -104,7 +107,7 @@ const GOLVEN = `<svg viewBox="0 0 180 80">
 </svg>`;
 
 function klokHtml(): string {
-  return `<span class="luiklok"><span class="luiklok__lijf">${KLOK}</span><span class="luiklok__golven">${GOLVEN}</span></span>`;
+  return `<span class="luiklok"><span class="luiklok__lijf">${klok(`klok-opening-${++klokNr}`)}</span><span class="luiklok__golven">${GOLVEN}</span></span>`;
 }
 
 // Drie vormen: vier klokken per stang (breed rek), twee per stang (hoog rek, voor een staand
