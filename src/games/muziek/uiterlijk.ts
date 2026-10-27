@@ -3,6 +3,7 @@ import { HARP } from './harp.ts';
 import { KIKKERKOOR } from './kikkerkoor.ts';
 import { KLOKKEN } from './klokken.ts';
 import { TROMPETTEN } from './trompet.ts';
+import { XYLOFOON } from './xylofoonUiterlijk.ts';
 
 // Wat een melodie-instrument toevoegt aan de gedeelde knoppen van maakXylofoon. Alleen het
 // gekozen instrument wordt gebouwd (bij wisselen opnieuw); de vorm zelf staat in muziek.css
@@ -27,7 +28,7 @@ const KEYBOARD: Uiterlijk = {
 };
 
 export const UITERLIJK: Record<Instrument, Uiterlijk> = {
-  xylofoon: {},
+  xylofoon: XYLOFOON,
   harp: HARP,
   fluit: {},
   keyboard: KEYBOARD,

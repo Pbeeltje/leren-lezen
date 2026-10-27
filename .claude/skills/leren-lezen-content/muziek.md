@@ -12,7 +12,8 @@
 - **Look:** `games/muziek/xylofoon.ts` (`maakXylofoon`) is the shared component. Each
   instrument's extras are an `Uiterlijk` in `games/muziek/uiterlijk.ts`: `achter`/`voor`
   (decor behind or in front of the buttons), `knop` (parts and CSS variables for one button)
-  and `leg` (box-size layout, rerun by the ResizeObserver). Kikkerkoor is in `kikkerkoor.ts`
+  and `leg` (box-size layout, rerun by the ResizeObserver). The xylophone's is in
+  `xylofoonUiterlijk.ts`, kikkerkoor in `kikkerkoor.ts`
   (using `kikker.ts` and `vijver.ts`), harp in `harp.ts`, trompetten in `trompet.ts`, klokken in `klokken.ts`.
   **Only the selected instrument is built**; `zetInstrument` rebuilds the buttons.
   (Previously every button carried every instrument: 1252 elements with 8 visible, and
@@ -56,6 +57,17 @@ instead of 2, the "ungodly noise" bug (Oct 2026). Highlight/bounce classes are r
 change can't look like a new hit; a played bar flashes clearly (white rim, glow,
 hop) so Speel na is easy to follow.
 
+Xylophone look (`xylofoonUiterlijk.ts`, `.xylofoon--xylofoon`): the bars lie on a lilac play
+mat (dots, stitched edge, a few bobbing pastel notes) on a wooden frame. `legRek` draws the two
+rails as an SVG in box pixels, through each bar's screws, and runs them a little past the end
+bars but inside the mat (rubber feet at the ends). The bar face is `::before` and the two screws
+are `::after` (10px backgrounds at 12% and 88%; `legRek` uses the same positions). A tap lights
+only `::before` (`staaf-fel`, a brightness filter), so the mallet and the note inside the button
+keep their colours; a filter on the button paled them. Each bar holds a mallet (`.xylo-hamer`,
+red ball on the bar centre, stick up-right, rebounds around its handle) and a note
+(`.xylo-noot`, in the bar colour, floats up). The button's `staaf-aan` (0.9 s, glow in the first
+half) is the longest animation, because its `animationend` clears `--aan`.
+
 ## Games
 
 - **Vrij spelen** (`XylofoonScreen`): switches between the instrument and all five
@@ -96,6 +108,24 @@ Replaying a set pays again.
 pitched), `crash` (orange, tilted, long). Free play uses all five (`.drumstel--5`:
 cymbals and tom on top, snare and bass below; one row on low landscape screens).
 Level 3 uses the same `--5` sizing as a 2×2 grid without an empty crash slot.
+
+Look: flat SVGs (`TEKENING` in `drumstel.ts`, built by `trom()` for snare and tom and
+`bekken()` for both cymbals) with chrome stands (dark tube with a light stripe, so they show on
+the dark stage). Behind them `maakPodium()`: night-blue with a red scalloped valance, a string of
+twinkling bulbs in the drum colours and two slowly sweeping spotlights. A round rug
+(`.drum-kleed`) lies under the drums. In Ritme the stage is the `.drumstel` box itself (it has
+`position: relative` and some padding). In Vrij spelen the `.drumstel` is `position: static`, so the
+stage fills the card (`inset: 16px`) and the rug sits in the grid under the bottom row. A hit
+(`drum-pad--bonk`, 0.8 s, the longest, so `animationend` only listens to the pad itself) does
+four things:
+- a stick (`.drum-stok`) taps the hit point `RAAK` and rebounds around its handle (on the crash
+  it is mirrored from the left with `--spiegel`);
+- a burst (`.drum-knal`) appears in `--drum`;
+- the shell springs (`.drum-trom`), a cymbal wobbles (`.drum-schijf`, `--zwaai`), and the bass
+  drum shows two shock rings (`.drum-golf`) instead of a stick;
+- cymbals twinkle.
+
+Sticks that would stick out of the card are clipped (`.muziek-kaart:has(> .drumstel)`).
 Check: `node tests/drumstel.mjs <map>`.
 
 ## Instruments (shop items): harp, fluit, keyboard, kikkerkoor, trompetten, klokken

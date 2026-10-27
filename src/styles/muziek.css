@@ -39,49 +39,121 @@
   background: transparent;
 }
 .xylofoon__staaf--aan { z-index: 1; }
-/* Xylofoon: gekleurde staven, lang (laag) naar kort (hoog). */
+/* Xylofoon (xylofoonUiterlijk.ts): gekleurde staven, lang (laag) naar kort (hoog), op een
+   houten frame (.xylo-rek, getekend door legRek langs de schroefjes) op een lila speelkleed
+   met stippen, een gestikte rand en zwevende nootjes. */
+.xylofoon.xylofoon--xylofoon {
+  position: relative;
+  padding: 10px clamp(12px, 3%, 30px);
+  border-radius: 26px;
+  background:
+    radial-gradient(circle, rgba(255, 255, 255, 0.6) 0 3px, transparent 3.5px) 0 0 / 36px 36px,
+    radial-gradient(circle, rgba(255, 255, 255, 0.6) 0 3px, transparent 3.5px) 18px 18px / 36px 36px,
+    radial-gradient(ellipse 60% 55% at 50% 45%, #f1ecfd, transparent),
+    #e2d9f8;
+  box-shadow: inset 0 -8px 0 rgba(90, 60, 150, 0.1);
+}
+.xylo-kleed { position: absolute; inset: 0; border-radius: inherit; pointer-events: none; }
+.xylo-kleed::before {
+  content: '';
+  position: absolute;
+  inset: 7px;
+  border: 2.5px dashed rgba(255, 255, 255, 0.85);
+  border-radius: 20px;
+}
+.xylo-rek { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
+.xylo-kleed__noot {
+  position: absolute;
+  display: block;
+  width: calc(var(--maat) * 1%);
+  max-width: 54px;
+  aspect-ratio: 40 / 50;
+  rotate: var(--draai);
+  animation: xylo-zweef 4.5s ease-in-out infinite alternate;
+}
+.xylo-kleed__noot svg { width: 100%; height: 100%; display: block; }
+@keyframes xylo-zweef { from { transform: translateY(-5px); } to { transform: translateY(5px); } }
 .xylofoon--xylofoon .xylofoon__staaf {
   max-width: 64px;
   height: var(--lengte);
   border-radius: 14px;
-  background: var(--kleur);
-  box-shadow: inset 0 -8px 0 rgba(0, 0, 0, 0.18), 0 4px 0 rgba(0, 0, 0, 0.15);
+  box-shadow: 0 5px 0 rgba(50, 25, 80, 0.22);
 }
-/* De twee spijkertjes waarmee een staaf op het frame ligt. */
-.xylofoon--xylofoon .xylofoon__staaf::before, .xylofoon--xylofoon .xylofoon__staaf::after {
+/* De staaf zelf is ::before: glans links, schaduw rechts, een lichte bovenrand en de dikte
+   onderaan. Een eigen laag, zodat het oplichten (filter) alleen de staaf raakt en niet het
+   stokje en het nootje erin. */
+.xylofoon--xylofoon .xylofoon__staaf::before {
   content: '';
   position: absolute;
-  left: 50%;
-  width: 10px;
-  height: 10px;
-  margin-left: -5px;
-  border-radius: 50%;
-  background: rgba(255, 255, 255, 0.75);
+  inset: 0;
+  border-radius: inherit;
+  background:
+    linear-gradient(90deg, transparent 12%, rgba(255, 255, 255, 0.34) 12% 24%, transparent 24% 80%, rgba(0, 0, 0, 0.1) 80%),
+    var(--kleur);
+  box-shadow: inset 0 -8px 0 rgba(0, 0, 0, 0.18), inset 0 3px 0 rgba(255, 255, 255, 0.35);
 }
-.xylofoon--xylofoon .xylofoon__staaf::before { top: 12%; }
-.xylofoon--xylofoon .xylofoon__staaf::after { bottom: 12%; }
-/* Een gespeelde staaf licht kort op (korter dan de tijd tot de volgende noot): hij springt
-   iets omhoog en gloeit in zijn eigen kleur met een witte rand, zodat je de melodie goed kunt
-   volgen. */
-.xylofoon--xylofoon .xylofoon__staaf--aan { animation: staaf-aan 0.45s ease-out; }
+/* ::after: de twee schroefjes waarmee de staaf op het frame ligt, 10px, op 12% van boven en
+   van onder (legRek tekent de latten erdoor). */
+.xylofoon--xylofoon .xylofoon__staaf::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  --schroef: radial-gradient(circle closest-side, #fff 0 30%, #d5dbe0 55%, #8a96a0 82%, #5f6b75 92%, transparent 100%);
+  --gleuf: linear-gradient(45deg, transparent 42%, rgba(70, 80, 90, 0.75) 42% 58%, transparent 58%);
+  background: var(--gleuf), var(--schroef), var(--gleuf), var(--schroef);
+  background-size: 6px 6px, 10px 10px, 6px 6px, 10px 10px;
+  background-position: 50% calc(12% + 1.5px), 50% 12%, 50% calc(88% - 1.5px), 50% 88%;
+  background-repeat: no-repeat;
+}
+/* Een gespeelde staaf licht kort op (in de eerste helft, korter dan de tijd tot de volgende
+   noot): hij springt iets omhoog, wordt fel en gloeit in zijn eigen kleur met een witte rand,
+   zodat je de melodie goed kunt volgen. Het stokje tikt en veert terug, een nootje zweeft
+   omhoog. De animatie van de staaf zelf duurt het langst, want zijn animationend haalt --aan
+   weg. */
+.xylofoon--xylofoon .xylofoon__staaf--aan { animation: staaf-aan 0.9s ease-out; }
+.xylofoon--xylofoon .xylofoon__staaf--aan::before { animation: staaf-fel 0.45s ease-out; }
 @keyframes staaf-aan {
-  0% {
-    transform: translateY(-8px) scale(1.06);
-    filter: brightness(1.55) saturate(1.2);
-    box-shadow: inset 0 -8px 0 rgba(0, 0, 0, 0.18), 0 0 0 4px #fff, 0 0 22px 8px var(--kleur);
-  }
-  60% {
-    transform: translateY(-2px) scale(1.02);
-    filter: brightness(1.2);
-    box-shadow: inset 0 -8px 0 rgba(0, 0, 0, 0.18), 0 0 0 3px rgba(255, 255, 255, 0.6), 0 0 12px 3px var(--kleur);
-  }
-  100% { transform: none; filter: none; }
+  0% { transform: translateY(-8px) scale(1.06); box-shadow: 0 0 0 4px #fff, 0 0 22px 8px var(--kleur); }
+  30% { transform: translateY(-2px) scale(1.02); box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.6), 0 0 12px 3px var(--kleur); }
+  50%, 100% { transform: none; }
+}
+@keyframes staaf-fel {
+  0% { filter: brightness(1.55) saturate(1.2); }
+  60% { filter: brightness(1.2); }
+  100% { filter: none; }
+}
+.xylo-hamer, .xylo-noot { position: absolute; display: block; pointer-events: none; opacity: 0; z-index: 2; }
+.xylo-hamer svg, .xylo-noot svg { width: 100%; height: 100%; display: block; overflow: visible; }
+/* Het bolletje (op 12% van het stokje) ligt midden op de staaf; het stokje wijst schuin
+   rechts omhoog en veert om het handvat terug. Maten in % van de breedte van de staaf. */
+.xylo-hamer {
+  left: 21.2%;
+  top: 50%;
+  width: 240%;
+  aspect-ratio: 100 / 26;
+  margin-top: -31.2%;
+  transform-origin: 12% 50%;
+}
+.xylofoon__staaf--aan .xylo-hamer { animation: xylo-hamer 0.45s ease-out; }
+@keyframes xylo-hamer {
+  0% { opacity: 1; transform: rotate(-40deg) translateX(88%) rotate(0deg) translateX(-88%); }
+  35% { opacity: 1; transform: rotate(-40deg) translateX(88%) rotate(16deg) translateX(-88%); }
+  100% { opacity: 0; transform: rotate(-40deg) translateX(88%) rotate(26deg) translateX(-88%); }
+}
+.xylo-noot { left: 50%; top: 0; width: min(80%, 46px); aspect-ratio: 40 / 50; translate: -50% -70%; }
+.xylo-noot__kleur { stroke: var(--kleur); }
+.xylo-noot__kop { fill: var(--kleur); }
+.xylofoon__staaf--aan .xylo-noot { animation: xylo-noot 0.85s ease-out; }
+@keyframes xylo-noot {
+  0% { opacity: 0; transform: translateY(12px) scale(0.5); }
+  15% { opacity: 1; transform: translateY(0) scale(1); }
+  100% { opacity: 0; transform: translateY(-56px) rotate(14deg) scale(0.9); }
 }
 .xylofoon--wacht { opacity: 0.85; }
 .muziek-kaart--vrij .xylofoon { height: min(56vh, 400px); }
 .muziek-kaart--vrij .xylofoon--xylofoon .xylofoon__staaf { max-width: 80px; }
 @media (prefers-reduced-motion: reduce) {
-  .xylofoon--xylofoon .xylofoon__staaf--aan { animation: none; }
+  .xylofoon--xylofoon .xylofoon__staaf--aan, .xylofoon--xylofoon .xylofoon__staaf--aan::before, .xylofoon--xylofoon .xylofoon__staaf--aan *, .xylo-kleed__noot { animation: none; }
 }
 @media (max-width: 560px) {
   .xylofoon { gap: 5px; height: 230px; }
@@ -112,19 +184,156 @@
 .drum-pad--bas { width: 170px; height: 170px; }
 .drum-pad--snare { width: 130px; height: 118px; }
 .drum-pad--bekken { width: 140px; height: 140px; align-self: flex-start; }
-.drum-pad--bonk { animation: drum-bonk 0.22s ease-out; }
-.drum-pad--bekken.drum-pad--bonk { animation: bekken-zwaai 0.5s ease-out; }
 .drum-pad--nieuw { animation: drum-nieuw 0.7s cubic-bezier(0.3, 1.6, 0.5, 1); }
-@keyframes drum-bonk { 40% { transform: scale(0.9); } }
-@keyframes bekken-zwaai { 25% { transform: rotate(-8deg); } 60% { transform: rotate(5deg); } }
 @keyframes drum-nieuw { from { transform: scale(0); opacity: 0; } }
+
+/* Het podium (drumstel.ts, maakPodium): donkerblauw met een rode gordijnrand, lampjes in de
+   kleuren van de trommen, twee zwaaiende spots en een rond kleed. Het ligt achter het
+   drumstel; bij Vrij spelen vult het de kaart (verderop bij .muziek-vrij-scherm). */
+.drumstel { position: relative; padding: 8px 10px; box-sizing: border-box; }
+.drum-pad { position: relative; z-index: 1; }
+.drum-podium {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  border-radius: 22px;
+  pointer-events: none;
+  background:
+    linear-gradient(#6e1424, #6e1424) top / 100% 9px no-repeat,
+    radial-gradient(circle at 50% 0, #a3202f 0 12px, #6e1424 12.5px 14px, transparent 14.5px) 0 5px / 28px 19px repeat-x,
+    radial-gradient(ellipse 70% 30% at 50% 100%, rgba(150, 120, 255, 0.35), transparent),
+    linear-gradient(#1c1440, #2c1e5e 60%, #3a2a77);
+  box-shadow: inset 0 -6px 0 rgba(0, 0, 0, 0.18);
+}
+.drum-podium > span { position: absolute; display: block; }
+.drum-podium__spot {
+  top: -6%;
+  width: 40%;
+  height: 112%;
+  transform-origin: 50% 0;
+  clip-path: polygon(42% 0, 58% 0, 100% 100%, 0 100%);
+  background: linear-gradient(rgba(255, 246, 205, 0.3), rgba(255, 246, 205, 0.05) 80%, transparent);
+  animation: drum-spot 7s ease-in-out infinite alternate;
+}
+.drum-podium__spot--l { left: 0; --van: -26deg; --tot: -8deg; }
+.drum-podium__spot--r { right: 0; --van: 26deg; --tot: 8deg; animation-delay: -3.5s; }
+@keyframes drum-spot { from { transform: rotate(var(--van)); } to { transform: rotate(var(--tot)); } }
+.drum-kleed {
+  position: absolute;
+  z-index: 0;
+  left: 10%;
+  right: 10%;
+  bottom: 2%;
+  height: 24%;
+  pointer-events: none;
+  border-radius: 50%;
+  background: radial-gradient(closest-side, #23707a 0 70%, #e0a63c 71% 76%, #174e56 77% 97%, transparent 98%);
+  opacity: 0.85;
+}
+.drum-podium > .drum-podium__lampjes {
+  top: 20px;
+  left: 5%;
+  right: 5%;
+  height: 10px;
+  display: flex;
+  justify-content: space-between;
+  background: linear-gradient(transparent 40%, #0e0a24 40% 60%, transparent 60%);
+}
+.drum-podium__lampjes span {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--lamp);
+  box-shadow: 0 0 8px 2px var(--lamp);
+  animation: drum-lampje 2.2s ease-in-out infinite;
+  animation-delay: var(--wacht);
+}
+@keyframes drum-lampje { 50% { opacity: 0.35; box-shadow: none; } }
+
+/* Een slag: de trom veert, het vel van de grote trom bolt, een bekken wiebelt (de kant waar
+   de stok raakt eerst omlaag), een stok tikt en veert terug, en er spat een knal in de kleur
+   van de trom. De animatie van de knop zelf is de langste: zijn animationend haalt --bonk weg. */
+.drum-pad--bonk { animation: drum-bonk 0.8s ease-out; }
+@keyframes drum-bonk {
+  0% { transform: scale(0.94); }
+  25% { transform: scale(1.03); }
+  45%, 100% { transform: none; }
+}
+.drum-trom, .drum-vel, .drum-schijf { transform-box: fill-box; transform-origin: 50% 50%; }
+.drum-trom { transform-origin: 50% 100%; }
+.drum-pad--bonk .drum-trom { animation: drum-veer 0.35s ease-out; }
+@keyframes drum-veer { 0% { transform: scaleY(0.94); } 50% { transform: scaleY(1.02); } }
+.drum-pad--bas.drum-pad--bonk .drum-vel { animation: drum-vel 0.4s ease-out; }
+@keyframes drum-vel { 0% { transform: scale(0.9); } 45% { transform: scale(1.04); } }
+.drum-pad--crash { --zwaai: -1; --spiegel: -1; }
+.drum-pad--bonk .drum-schijf { animation: drum-wiebel 0.7s ease-out; }
+@keyframes drum-wiebel {
+  0% { transform: rotate(calc(var(--zwaai, 1) * 8deg)); }
+  25% { transform: rotate(calc(var(--zwaai, 1) * -5deg)); }
+  50% { transform: rotate(calc(var(--zwaai, 1) * 3deg)); }
+  75% { transform: rotate(calc(var(--zwaai, 1) * -1.2deg)); }
+}
+.drum-knal, .drum-stok, .drum-golf, .drum-glinster { position: absolute; display: block; pointer-events: none; opacity: 0; }
+.drum-knal {
+  left: var(--hx);
+  top: var(--hy);
+  width: 50%;
+  aspect-ratio: 1;
+  translate: -50% -50%;
+}
+.drum-knal__straal { stroke: var(--drum); }
+.drum-pad--bonk .drum-knal { animation: drum-knal 0.4s ease-out; }
+@keyframes drum-knal { 0% { opacity: 1; transform: scale(0.35); } 100% { opacity: 0; transform: scale(1.2); } }
+/* De stok: puntje op de raakplek, handvat rechtsboven (bij de crash gespiegeld, linksboven).
+   Hij draait om het handvat omhoog, zodat het lijkt of hij van het vel terugveert. */
+.drum-stok {
+  left: var(--hx);
+  top: var(--hy);
+  width: 70%;
+  aspect-ratio: 100 / 9;
+  margin-top: -3.15%;
+  transform-origin: 0 50%;
+}
+.drum-pad--bonk .drum-stok { animation: drum-stok 0.45s ease-out; }
+@keyframes drum-stok {
+  0% { opacity: 1; transform: scaleX(var(--spiegel, 1)) rotate(-32deg) translateX(100%) rotate(0deg) translateX(-100%); }
+  35% { opacity: 1; transform: scaleX(var(--spiegel, 1)) rotate(-32deg) translateX(100%) rotate(18deg) translateX(-100%); }
+  100% { opacity: 0; transform: scaleX(var(--spiegel, 1)) rotate(-32deg) translateX(100%) rotate(28deg) translateX(-100%); }
+}
+/* Grote trom: twee schokgolven vanaf het vel. */
+.drum-golf {
+  left: 50%;
+  top: 48%;
+  width: 78%;
+  aspect-ratio: 1;
+  translate: -50% -50%;
+  border-radius: 50%;
+  border: 5px solid var(--drum);
+  box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.7);
+}
+.drum-pad--bonk .drum-golf { animation: drum-golf 0.55s ease-out; }
+.drum-pad--bonk .drum-golf--2 { animation-delay: 0.12s; animation-fill-mode: backwards; }
+@keyframes drum-golf { 0% { opacity: 0.9; transform: scale(0.85); } 100% { opacity: 0; transform: scale(1.4); } }
+/* Bekkens: drie twinkelsterretjes. */
+.drum-glinster { width: 15%; aspect-ratio: 1; }
+.drum-glinster--1 { left: 4%; top: 14%; }
+.drum-glinster--2 { left: 82%; top: 8%; }
+.drum-glinster--3 { left: 48%; top: -4%; }
+.drum-pad--bonk .drum-glinster { animation: drum-glinster 0.55s ease-out backwards; }
+.drum-pad--bonk .drum-glinster--2 { animation-delay: 0.08s; }
+.drum-pad--bonk .drum-glinster--3 { animation-delay: 0.16s; }
+@keyframes drum-glinster {
+  0% { opacity: 1; transform: scale(0) rotate(0); }
+  40% { opacity: 1; transform: scale(1.1) rotate(45deg); }
+  100% { opacity: 0; transform: scale(0.4) rotate(90deg); }
+}
 .drumstel--voor .drum-pad { opacity: 0.92; }
 .drumstel--1 .drum-pad--bas { width: 200px; height: 200px; }
 .muziek-kaart--drums .drumstel { min-height: min(56vh, 400px); align-items: center; }
 .muziek-kaart--drums .drum-pad--bas { width: 210px; height: 210px; }
 .muziek-kaart--drums .drum-pad--snare { width: 160px; height: 145px; }
 .muziek-kaart--drums .drum-pad--bekken { width: 170px; height: 170px; }
-.drum-pad--bekken.drum-pad--bonk, .drum-pad--crash.drum-pad--bonk { animation: bekken-zwaai 0.5s ease-out; }
 .drumstel--5 {
   display: grid;
   grid-template-columns: repeat(6, minmax(0, 1fr));
@@ -836,7 +1045,7 @@
   .kikker-riet__zwaai { animation: none; }
 }
 @media (prefers-reduced-motion: reduce) {
-  .drum-pad--bonk, .drum-pad--nieuw, .drum-pad--bekken.drum-pad--bonk { animation: none; }
+  .drum-pad--bonk, .drum-pad--nieuw, .drum-pad--bonk *, .drum-podium * { animation: none !important; }
 }
 @media (max-width: 560px) {
   .drumstel { gap: 6px; }
@@ -914,6 +1123,14 @@
   min-height: 0;
 }
 .muziek-vrij-scherm .drumstel.drumstel--5 .drum-pad { max-width: 100%; }
+/* Vrij spelen: het podium vult de hele kaart (binnen de rand van 16px), niet alleen het
+   raster. Het drumstel is daarom niet positioned: het podium hangt dan aan de kaart. */
+.muziek-vrij-scherm .drumstel { position: static; padding: 0; }
+.muziek-vrij-scherm .drum-podium { inset: 16px; }
+/* Het kleed ligt dan in het raster, onderin de onderste rij (dus onder de trommen). */
+.muziek-vrij-scherm .drumstel .drum-kleed { position: relative; inset: auto; grid-column: 1 / -1; grid-row: -2; align-self: end; justify-self: stretch; height: 40%; margin: 0 4% -4%; }
+/* Stokken die buiten de kaart zouden steken worden afgeknipt. */
+.muziek-kaart:has(> .drumstel) { overflow: hidden; }
 @media (orientation: landscape) and (max-height: 600px) {
   .scherm.muziek-vrij-scherm { padding-top: calc(8px + var(--veilig-boven)); gap: 8px; }
   .muziek-vrij-scherm .muziek-wissel { min-height: 60px; }
