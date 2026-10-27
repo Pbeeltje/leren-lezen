@@ -1,5 +1,6 @@
 import type { Decor } from './achtergrond.ts';
-import { el, kortAan, plaatje, svgUitTekst } from './hulp.ts';
+import { bewegingStil, el, kortAan, maakTimers, plaatje, svgUitTekst } from './hulp.ts';
+import { vasteToeval } from './tekenhulp.ts';
 
 // Herfstbos: je staat midden in het bos. Stammen die hoger zijn dan het scherm (ver weg
 // bleek, dichtbij groot en donker), een bladerdak in herfstkleuren dat van boven
@@ -41,11 +42,7 @@ const LAGEN: Record<'ver' | 'midden' | 'dichtbij', BoomLaag> = {
 };
 
 function tekenBomen(laag: BoomLaag, w: number, h: number): string {
-  let zaad = laag.zaad;
-  const rnd = () => {
-    zaad = (zaad * 16807) % 2147483647;
-    return zaad / 2147483647;
-  };
+  const rnd = vasteToeval(laag.zaad);
   const tussen = ([a, b]: [number, number]) => a + rnd() * (b - a);
   // Per boom eerst de takken en dan de stam, zodat de stam de voet van zijn takken bedekt.
   let bomen = '';
@@ -143,11 +140,7 @@ function bladerMassa(
   onderKleur = '#a83c22',
   begin = 7,
 ): string {
-  let zaad = begin;
-  const rnd = () => {
-    zaad = (zaad * 16807) % 2147483647;
-    return zaad / 2147483647;
-  };
+  const rnd = vasteToeval(begin);
   let onder = '';
   let blaadjes = '';
   for (const [cx, cy, r] of trossen) {
@@ -193,11 +186,7 @@ const DAK_HOEK = `
 
 // Bladertapijt op de bosgrond: een herhalende tegel vol blaadjes, onderaan het dichtst.
 function bladTapijt(): string {
-  let zaad = 53;
-  const rnd = () => {
-    zaad = (zaad * 16807) % 2147483647;
-    return zaad / 2147483647;
-  };
+  const rnd = vasteToeval(53);
   const kleuren = [...DAK_KLEUREN, '#b8733b', '#8f5a2c'];
   let blaadjes = '';
   for (let i = 0; i < 150; i++) {
@@ -383,18 +372,9 @@ export function maakHerfstDecor(): Decor {
   }
   const vlaag = el('div', 'herfst-vlaag', root);
 
-  const stil = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  let levend = true;
+  const stil = bewegingStil();
+  const timers = maakTimers();
   let bezig = false;
-  let timer: number | undefined;
-  const losseTimers = new Set<number>();
-  const later = (f: () => void, ms: number) => {
-    const t = window.setTimeout(() => {
-      losseTimers.delete(t);
-      if (levend) f();
-    }, ms);
-    losseTimers.add(t);
-  };
 
   // Een eekhoorn rent over de bosgrond, met kleine sprongetjes.
   const rentOverGrond = () => {
@@ -405,19 +385,18 @@ export function maakHerfstDecor(): Decor {
     const h = el('div', 'herfst-eekhoorn__hup', r);
     // De Fluent-eekhoorn kijkt naar links: naar rechts rennen = spiegelen.
     plaatje(EEKHOORN, `herfst-eekhoorn__lijf${naarRechts ? ' gespiegeld' : ''}`, h);
-    later(() => r.remove(), LOOP_MS + 200);
+    timers.later(() => r.remove(), LOOP_MS + 200);
   };
 
   function plan(): void {
-    window.clearTimeout(timer);
-    if (!levend || stil) return;
-    timer = window.setTimeout(() => {
+    if (stil) return;
+    timers.zet('plan', () => {
       if (bezig) return plan();
       bezig = true;
       const opGrond = Math.random() < 0.4;
       if (opGrond) rentOverGrond();
       else kortAan(takEekhoorn, 'rent', TAK_MS);
-      later(() => {
+      timers.later(() => {
         bezig = false;
         plan();
       }, (opGrond ? LOOP_MS : TAK_MS) + 2500);
@@ -435,7 +414,7 @@ export function maakHerfstDecor(): Decor {
       b.style.setProperty('--draai', `${-200 + Math.random() * 400}deg`);
       b.style.animationDelay = `${(Math.random() * 0.25).toFixed(2)}s`;
       svgUitTekst(blad(i), 'herfst-blad', b);
-      window.setTimeout(() => b.remove(), 1900);
+      timers.later(() => b.remove(), 1900);
     }
   };
 
@@ -449,7 +428,7 @@ export function maakHerfstDecor(): Decor {
     juich();
     if (stil) return;
     bezig = true;
-    window.clearTimeout(timer);
+    timers.wis('plan');
     kortAan(links, 'waait', VLAAG_MS - 1000);
     kortAan(rechts, 'waait', VLAAG_MS - 1000);
     // De wervel: blaadjes op een draaiende cirkel die samen over het scherm reist.
@@ -473,18 +452,12 @@ export function maakHerfstDecor(): Decor {
       w.style.animationDelay = `${-Math.random()}s`;
       svgUitTekst(blad(i + 1), 'herfst-blad', w);
     }
-    later(() => vlaag.replaceChildren(), VLAAG_MS + 2500);
-    later(() => {
+    timers.later(() => vlaag.replaceChildren(), VLAAG_MS + 2500);
+    timers.later(() => {
       bezig = false;
       plan();
     }, VLAAG_MS + 3000);
   };
 
-  const vernietig = () => {
-    levend = false;
-    window.clearTimeout(timer);
-    for (const t of losseTimers) window.clearTimeout(t);
-    losseTimers.clear();
-  };
-  return { element: root, juich, feest, plaats, vernietig };
+  return { element: root, juich, feest, plaats, vernietig: timers.stop };
 }

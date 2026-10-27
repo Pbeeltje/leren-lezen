@@ -2,7 +2,7 @@ import type { Decor } from './achtergrond.ts';
 import { bijZichtbaarheid, paginaZichtbaar } from '../engine/zichtbaarheid.ts';
 import { HEUVELS, paardenstaarten, STEEN, varenPol, VERTE } from './dino-landschap.ts';
 import { BRACHIO, NEST, PTERO, STEGO, TREX } from './dino-tekening.ts';
-import { el, kortAan, plaatje, svgUitTekst, zetOpPad } from './hulp.ts';
+import { bewegingStil, el, kortAan, maakTimers, plaatje, svgUitTekst, zetOpPad } from './hulp.ts';
 
 // Oerwei in warm goudachtig licht: in de verte wazige bergen en een oerwoudrand met
 // boomvarens en apenbomen, waar een brachiosaurus langzaam haar lange nek beweegt
@@ -76,17 +76,10 @@ export function maakDinoDecor(): Decor {
   const tri = el('div', 'dino dino--tri', root);
   plaatje('assets/achtergrond/triceratops.svg', 'dino__lijf', tri);
 
-  const stil = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const stil = bewegingStil();
+  const timers = maakTimers();
   let levend = true;
   let frame = 0;
-  const timers = new Set<number>();
-  const later = (f: () => void, ms: number) => {
-    const t = window.setTimeout(() => {
-      timers.delete(t);
-      f();
-    }, ms);
-    timers.add(t);
-  };
 
   // Bovenrand van de voorste heuvel in schermpixels: [x, hoogte boven de onderkant].
   let grond: [number, number][] = [];
@@ -184,10 +177,10 @@ export function maakDinoDecor(): Decor {
     roep('RAWR!', 'dino-roep', 1100, 1400);
   };
   const roep = (tekst: string, klasse: string, na: number, duur: number) =>
-    later(() => {
+    timers.later(() => {
       const wolkje = el('div', klasse, trex);
       wolkje.textContent = tekst;
-      later(() => wolkje.remove(), duur);
+      timers.later(() => wolkje.remove(), duur);
     }, na);
 
   const kijkNaarTrex = (nu: number) => {
@@ -261,8 +254,7 @@ export function maakDinoDecor(): Decor {
   let pteroNaarRechts = Math.random() < 0.5;
   const planPtero = (ms: number) => {
     if (stil) return;
-    later(() => {
-      if (!levend) return;
+    timers.later(() => {
       const b = root.clientWidth || window.innerWidth;
       // Rustig: ongeveer 50 px per seconde, maar niet korter dan 16 s of langer dan 34 s.
       const duur = Math.min(34, Math.max(16, (b * 1.3) / 50));
@@ -274,7 +266,7 @@ export function maakDinoDecor(): Decor {
       // De tekening kijkt naar rechts; naar links spiegelt .dino-ptero--links hem.
       svgUitTekst(PTERO, 'dino-ptero__lijf', el('div', 'dino-ptero__zweef', el('div', 'dino-ptero__spiegel', p)));
       pteroNaarRechts = !pteroNaarRechts;
-      later(() => {
+      timers.later(() => {
         p.remove();
         planPtero(45000 + Math.random() * 45000);
       }, duur * 1000 + 300);
@@ -293,10 +285,10 @@ export function maakDinoDecor(): Decor {
       brok.style.animationDelay = `${(Math.random() * 0.6).toFixed(2)}s`;
       const maat = 8 + Math.random() * 14;
       brok.style.width = brok.style.height = `${maat}px`;
-      later(() => brok.remove(), 2600);
+      timers.later(() => brok.remove(), 2600);
     }
     // Er kijkt een babydino uit het middelste ei (dop omhoog, even rondkijken, weer dicht).
-    later(() => kortAan(nest, 'komt-uit', 5200), 900);
+    timers.later(() => kortAan(nest, 'komt-uit', 5200), 900);
     juich();
   };
 
@@ -305,7 +297,7 @@ export function maakDinoDecor(): Decor {
       kortAan(d, 'juicht', 1200);
       const hoera = el('div', 'dino__hoera', d);
       hoera.textContent = ['★', '♥', '✦'][Math.floor(Math.random() * 3)];
-      later(() => hoera.remove(), 1200);
+      timers.later(() => hoera.remove(), 1200);
     }
     kortAan(steg, 'kwispelt', 1200);
     kortAan(nest, 'wiebelt', 1300);
@@ -315,8 +307,7 @@ export function maakDinoDecor(): Decor {
     levend = false;
     afmeldZicht();
     cancelAnimationFrame(frame);
-    for (const t of timers) window.clearTimeout(t);
-    timers.clear();
+    timers.stop();
   };
   return { element: root, juich, feest, plaats, vernietig };
 }

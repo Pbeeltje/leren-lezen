@@ -1,5 +1,5 @@
 import type { Decor } from './achtergrond.ts';
-import { el, kortAan, plaatje, svgUitTekst } from './hulp.ts';
+import { bewegingStil, el, kortAan, maakTimers, plaatje, svgUitTekst } from './hulp.ts';
 import { LUCHTBALLON, MAAN, VERTE, WOLK, grond, kopVanJut } from './kermis-tekening.ts';
 
 // Kermis in de schemering: een paarse avondlucht met sterretjes, een wassende maan, wolken
@@ -243,18 +243,9 @@ export function maakKermisDecor(): Decor {
 
   const ballonnen = el('div', 'kermis-ballonnen', root);
 
-  const stil = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  let levend = true;
+  const stil = bewegingStil();
+  const timers = maakTimers();
   let bezig = false;
-  let timer: number | undefined;
-  const losseTimers = new Set<number>();
-  const later = (f: () => void, ms: number) => {
-    const t = window.setTimeout(() => {
-      losseTimers.delete(t);
-      if (levend) f();
-    }, ms);
-    losseTimers.add(t);
-  };
 
   // Een ballon stijgt op vanaf het kraam (in procenten van het decor), wiebelend.
   const ballon = (vertraging: number, kleur: number) => {
@@ -271,15 +262,13 @@ export function maakKermisDecor(): Decor {
     wiebel.style.animationDelay = `${(-Math.random() * 3).toFixed(2)}s`;
     const [licht, donker] = BALLON_KLEUREN[kleur % BALLON_KLEUREN.length];
     svgUitTekst(ballonTekening(licht, donker), 'kermis-ballon__lijf', wiebel);
-    window.setTimeout(() => b.remove(), 7500 + vertraging);
+    timers.later(() => b.remove(), 7500 + vertraging);
   };
 
   // Af en toe laat iemand een ballon los (nooit tijdens het feest).
   function plan(): void {
-    window.clearTimeout(timer);
-    if (!levend || stil) return;
-    timer = window.setTimeout(() => {
-      if (!levend) return;
+    if (stil) return;
+    timers.zet('plan', () => {
       if (!bezig && ballonnen.childElementCount === 0) ballon(0, Math.floor(Math.random() * BALLON_KLEUREN.length));
       plan();
     }, 14000 + Math.random() * 14000);
@@ -295,7 +284,7 @@ export function maakKermisDecor(): Decor {
   };
   const planKop = () => {
     if (stil) return;
-    later(() => {
+    timers.later(() => {
       if (!bezig) slaKop('probeert');
       planKop();
     }, 18000 + Math.random() * 22000);
@@ -310,7 +299,7 @@ export function maakKermisDecor(): Decor {
   };
   const planTrein = () => {
     if (stil) return;
-    later(() => {
+    timers.later(() => {
       rijTrein();
       planTrein();
     }, 14000 + Math.random() * 16000);
@@ -321,7 +310,7 @@ export function maakKermisDecor(): Decor {
   let ballonNaarRechts = Math.random() < 0.5;
   const planLuchtballon = (ms: number) => {
     if (stil) return;
-    later(() => {
+    timers.later(() => {
       const b = root.clientWidth || window.innerWidth;
       // Heel rustig: ongeveer 30 px per seconde, tussen 24 en 50 s.
       const duur = Math.min(50, Math.max(24, (b * 1.2) / 30));
@@ -332,7 +321,7 @@ export function maakKermisDecor(): Decor {
       l.style.top = `${7 + Math.random() * 12}vh`;
       svgUitTekst(LUCHTBALLON, 'kermis-luchtballon__lijf', el('div', 'kermis-luchtballon__zweef', l));
       ballonNaarRechts = !ballonNaarRechts;
-      later(() => {
+      timers.later(() => {
         l.remove();
         planLuchtballon(50000 + Math.random() * 50000);
       }, duur * 1000 + 300);
@@ -354,8 +343,8 @@ export function maakKermisDecor(): Decor {
     pijl.style.left = `${links}%`;
     pijl.style.setProperty('--hoogte', `${100 - boven}vh`);
     pijl.style.top = `${boven}%`;
-    window.setTimeout(() => pijl.remove(), 800);
-    later(() => {
+    timers.later(() => pijl.remove(), 800);
+    timers.later(() => {
       const knal = el('div', 'kermis-knal', lucht);
       knal.style.left = `${links}%`;
       knal.style.top = `${boven}%`;
@@ -369,7 +358,7 @@ export function maakKermisDecor(): Decor {
           el('div', 'kermis-vonk__staart', v);
         }
       }
-      window.setTimeout(() => knal.remove(), 2000);
+      timers.later(() => knal.remove(), 2000);
     }, 700);
   };
 
@@ -377,7 +366,7 @@ export function maakKermisDecor(): Decor {
     juich();
     if (stil || bezig) return;
     bezig = true;
-    window.clearTimeout(timer);
+    timers.wis('plan');
     rijTrein();
     const plekken = [
       [26, 22], [70, 16], [46, 10], [82, 32], [18, 36], [58, 28], [36, 18],
@@ -387,19 +376,13 @@ export function maakKermisDecor(): Decor {
     plekken.forEach(([links, boven], i) => {
       const x = smal ? 25 + (links - 18) * 0.78 : links + (Math.random() - 0.5) * 6;
       const y = smal ? 7 + boven * 0.3 : boven;
-      later(() => vuurpijl(x, y, VUURWERK_KLEUREN[i % VUURWERK_KLEUREN.length]), i * 620);
+      timers.later(() => vuurpijl(x, y, VUURWERK_KLEUREN[i % VUURWERK_KLEUREN.length]), i * 620);
     });
-    later(() => {
+    timers.later(() => {
       bezig = false;
       plan();
     }, FEEST_MS);
   };
 
-  const vernietig = () => {
-    levend = false;
-    window.clearTimeout(timer);
-    for (const t of losseTimers) window.clearTimeout(t);
-    losseTimers.clear();
-  };
-  return { element: root, juich, feest, vernietig };
+  return { element: root, juich, feest, vernietig: timers.stop };
 }

@@ -13,6 +13,78 @@ export function plaatje(src: string, klasse: string, ouder: HTMLElement): HTMLIm
   return img;
 }
 
+/** Bij prefers-reduced-motion starten de decors geen eigen planners en lussen. */
+export const bewegingStil = (): boolean => window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+/**
+ * Alle timers van één decor, zodat vernietig ze in één keer stopt. `later` is een losse
+ * timer (iets weghalen, een stap van een animatie); `zet` is een benoemde timer die een
+ * lopende met dezelfde naam vervangt (een planner die zichzelf steeds opnieuw inplant), en
+ * `wis` stopt die. Na `stop` doen later en zet niets meer.
+ */
+export interface Timers {
+  later(fn: () => void, ms: number): void;
+  zet(naam: string, fn: () => void, ms: number): void;
+  wis(naam: string): void;
+  stop(): void;
+}
+
+export function maakTimers(): Timers {
+  const los = new Set<number>();
+  const benoemd = new Map<string, number>();
+  let gestopt = false;
+  return {
+    later(fn, ms) {
+      if (gestopt) return;
+      const id = window.setTimeout(() => {
+        los.delete(id);
+        fn();
+      }, ms);
+      los.add(id);
+    },
+    zet(naam, fn, ms) {
+      if (gestopt) return;
+      window.clearTimeout(benoemd.get(naam));
+      benoemd.set(naam, window.setTimeout(() => {
+        benoemd.delete(naam);
+        fn();
+      }, ms));
+    },
+    wis(naam) {
+      window.clearTimeout(benoemd.get(naam));
+      benoemd.delete(naam);
+    },
+    stop() {
+      gestopt = true;
+      for (const id of los) window.clearTimeout(id);
+      for (const id of benoemd.values()) window.clearTimeout(id);
+      los.clear();
+      benoemd.clear();
+    },
+  };
+}
+
+/**
+ * Een vaste kringloop van standen (dag en nacht, het weer): `opStap` krijgt elke stand en
+ * daarna wacht de kringloop de duur van die stand. Standaard komt de eerste stand meteen;
+ * met `eersteStaatAl` is die al gezet en begint de kringloop met wachten.
+ */
+export function kringloop<T>(
+  timers: Timers, stappen: readonly (readonly [T, number])[], opStap: (stand: T) => void, eersteStaatAl = false,
+): void {
+  let i = 0;
+  const volgende = () => {
+    const [stand, duur] = stappen[i];
+    i = (i + 1) % stappen.length;
+    opStap(stand);
+    timers.zet('kringloop', volgende, duur);
+  };
+  if (eersteStaatAl) {
+    i = 1 % stappen.length;
+    timers.zet('kringloop', volgende, stappen[0][1]);
+  } else volgende();
+}
+
 /** Zet een klasse even aan (voor een CSS-animatie) en haalt hem daarna weer weg. */
 export function kortAan(e: Element, klasse: string, ms: number): void {
   e.classList.remove(klasse);

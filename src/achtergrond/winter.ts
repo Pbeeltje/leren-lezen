@@ -1,5 +1,5 @@
 import type { Decor } from './achtergrond.ts';
-import { el, kortAan, plaatje, svgUitTekst, zetOpPad } from './hulp.ts';
+import { bewegingStil, el, kortAan, kringloop, maakTimers, plaatje, svgUitTekst, zetOpPad } from './hulp.ts';
 
 // Winter: zachte sneeuwval boven besneeuwde heuvels met sneeuwdennen, en een zelf getekende
 // sneeuwpop met een sjaal die af en toe met zijn ogen knippert en rustig zwaait. Af en toe
@@ -273,10 +273,10 @@ export function maakWinterDecor(): Decor {
     }
   };
 
+  const stil = bewegingStil();
+  const timers = maakTimers();
+  let levend = true;
   let weer: Weer = 'helder';
-  let weerStap = 0;
-  let weerTimer: number | undefined;
-  let vogelTimer: number | undefined;
   const zetWeer = (w: Weer) => {
     weer = w;
     root.classList.toggle('weer-licht', w === 'licht');
@@ -285,25 +285,16 @@ export function maakWinterDecor(): Decor {
       vluchtNaarBomen();
       // Nog een vogeltje of twee dat snel komt schuilen.
       const zichtbaar = bomen.filter((x) => x.offsetParent);
-      for (let i = 0; i < 2; i++) later(() => zichtbaar.length && vliegOver(true, zichtbaar[Math.floor(Math.random() * zichtbaar.length)]), 600 + i * 700);
+      for (let i = 0; i < 2; i++) timers.later(() => zichtbaar.length && vliegOver(true, zichtbaar[Math.floor(Math.random() * zichtbaar.length)]), 600 + i * 700);
     }
   };
-  function volgendWeer(): void {
-    window.clearTimeout(weerTimer);
-    if (!levend || stil) return;
-    const [w, duur] = WEERCYCLUS[weerStap % WEERCYCLUS.length];
-    zetWeer(w);
-    weerStap++;
-    weerTimer = window.setTimeout(volgendWeer, duur);
-  }
   // Vogeltjes over de lucht (meestal één, soms twee), niet tijdens de storm.
   function planVogels(eerste = false): void {
-    window.clearTimeout(vogelTimer);
-    if (!levend || stil) return;
-    vogelTimer = window.setTimeout(() => {
+    if (stil) return;
+    timers.zet('vogels', () => {
       if (weer !== 'storm') {
         const n = Math.random() < 0.75 ? 1 : 2;
-        for (let i = 0; i < n; i++) later(() => weer !== 'storm' && vliegOver(false), i * (300 + Math.random() * 500));
+        for (let i = 0; i < n; i++) timers.later(() => weer !== 'storm' && vliegOver(false), i * (300 + Math.random() * 500));
       }
       planVogels();
     }, eerste ? 2500 + Math.random() * 3000 : 9000 + Math.random() * 12000);
@@ -318,28 +309,15 @@ export function maakWinterDecor(): Decor {
     meetRand();
   };
 
-  const stil = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  let levend = true;
   let bezig = false;
-  let timer: number | undefined;
-  let knipTimer: number | undefined;
   let raf = 0;
-  const losseTimers = new Set<number>();
-  const later = (fn: () => void, ms: number) => {
-    const t = window.setTimeout(() => {
-      losseTimers.delete(t);
-      if (levend) fn();
-    }, ms);
-    losseTimers.add(t);
-  };
 
   // Knipperen, af en toe (soms twee keer snel na elkaar).
   function knipper(): void {
-    window.clearTimeout(knipTimer);
-    if (!levend || stil) return;
-    knipTimer = window.setTimeout(() => {
+    if (stil) return;
+    timers.zet('knipper', () => {
       kortAan(ogen, 'knipper', 240);
-      if (Math.random() < 0.3) later(() => kortAan(ogen, 'knipper', 240), 380);
+      if (Math.random() < 0.3) timers.later(() => kortAan(ogen, 'knipper', 240), 380);
       knipper();
     }, 2500 + Math.random() * 4500);
   }
@@ -380,7 +358,7 @@ export function maakWinterDecor(): Decor {
         const s = el('div', 'winter-stuif', sleebaan);
         s.style.left = `${schermX + breedte * 0.4}px`;
         s.style.top = `${schermY - 6}px`;
-        later(() => s.remove(), 900);
+        timers.later(() => s.remove(), 900);
       }
       if (u < 1) raf = requestAnimationFrame(stap);
       else rit.remove();
@@ -389,22 +367,21 @@ export function maakWinterDecor(): Decor {
   }
 
   function plan(): void {
-    window.clearTimeout(timer);
-    if (!levend || stil) return;
-    timer = window.setTimeout(() => {
+    if (stil) return;
+    timers.zet('plan', () => {
       if (bezig) return plan();
       bezig = true;
       glij();
-      later(() => {
+      timers.later(() => {
         bezig = false;
         plan();
       }, RIT_MS + 3000);
     }, 3000 + Math.random() * 9000);
   }
   plan();
-  volgendWeer();
-  planVogels(true);
   if (stil) root.classList.add('weer-licht');
+  else kringloop(timers, WEERCYCLUS, zetWeer);
+  planVogels(true);
 
   // Een wolkje sneeuw bij de hoed.
   const pluf = (aantal: number, hoogte: string) => {
@@ -417,7 +394,7 @@ export function maakWinterDecor(): Decor {
       p.style.setProperty('--dy', `${Math.sin(hoek) * afstand * 0.7 - 6}px`);
       const maat = 6 + Math.random() * 8;
       p.style.width = p.style.height = `${maat}px`;
-      window.setTimeout(() => p.remove(), 900);
+      timers.later(() => p.remove(), 900);
     }
   };
 
@@ -425,7 +402,7 @@ export function maakWinterDecor(): Decor {
     kortAan(hoed, 'springt', 1400);
     kortAan(pop, 'juicht', 1400);
     pluf(9, '10%');
-    later(() => pluf(6, '6%'), 1080);
+    timers.later(() => pluf(6, '6%'), 1080);
   };
 
   // Einde van een sessie: noorderlicht in een even donkerder lucht, met een regen van
@@ -434,7 +411,7 @@ export function maakWinterDecor(): Decor {
     juich();
     if (stil) return;
     bezig = true;
-    window.clearTimeout(timer);
+    timers.wis('plan');
     kortAan(nacht, 'aan', 8000);
     kortAan(noorderlicht, 'aan', 8000);
     for (let i = 0; i < 34; i++) {
@@ -448,9 +425,9 @@ export function maakWinterDecor(): Decor {
       d.style.setProperty('--zwaai', `${(Math.random() - 0.5) * 80}px`);
       d.style.animationDuration = `${3.2 + Math.random() * 2.4}s`;
       d.style.animationDelay = `${Math.random() * 2.2}s`;
-      later(() => d.remove(), 8000);
+      timers.later(() => d.remove(), 8000);
     }
-    later(() => {
+    timers.later(() => {
       bezig = false;
       plan();
     }, 10000);
@@ -458,13 +435,8 @@ export function maakWinterDecor(): Decor {
 
   const vernietig = () => {
     levend = false;
-    window.clearTimeout(timer);
-    window.clearTimeout(knipTimer);
-    window.clearTimeout(weerTimer);
-    window.clearTimeout(vogelTimer);
+    timers.stop();
     cancelAnimationFrame(raf);
-    for (const t of losseTimers) window.clearTimeout(t);
-    losseTimers.clear();
   };
   return { element: root, juich, feest, plaats, vernietig };
 }

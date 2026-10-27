@@ -1,5 +1,5 @@
 import type { Decor } from './achtergrond.ts';
-import { el, kortAan, plaatje, svgUitTekst } from './hulp.ts';
+import { bewegingStil, el, kortAan, maakTimers, plaatje, svgUitTekst } from './hulp.ts';
 import {
   ANKER, BREINKORAAL, BUISSPONS, KAUSTIEK, KWAL, MANTA, OCTOPUS, OPPERVLAK, RIF_MIDDEN, RIF_VER, ROTS,
   SCHATKIST, SCHILDPAD, SCHOOLVIS, WAAIERKORAAL, WALVIS, ZEESTER, kelp, takkoraal, verKoraal, verWaaier, verWier,
@@ -73,7 +73,7 @@ const SCHOOL = [
 
 export function maakOnderwaterDecor(): Decor {
   const root = el('div', 'decor decor-onderwater');
-  const stil = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const stil = bewegingStil();
   if (stil) root.classList.add('decor-onderwater--stil');
 
   // Achterste lagen: oppervlak, verre rifranden met nevel, verre dieren en een verre kwal.
@@ -172,18 +172,8 @@ export function maakOnderwaterDecor(): Decor {
   const octopus = el('div', 'onderwater-octopus', root);
   const octopusSvg = svgUitTekst(OCTOPUS, 'onderwater-octopus__lijf', octopus);
 
-  let levend = true;
+  const timers = maakTimers();
   let bezig = false;
-  let timer: number | undefined;
-  const timers = new Set<number>();
-  const wacht = (fn: () => void, ms: number): number => {
-    const id = window.setTimeout(() => {
-      timers.delete(id);
-      if (levend) fn();
-    }, ms);
-    timers.add(id);
-    return id;
-  };
 
   // Iets steekt het scherm over: de buitenste laag schuift, daarbinnen spiegelt (alles kijkt
   // naar links, dus naar rechts zwemmen = spiegelen) en golft het.
@@ -200,7 +190,7 @@ export function maakOnderwaterDecor(): Decor {
     if (naarRechts) spiegel.classList.add('gespiegeld');
     const golf = el('div', 'zwemmer__golf', spiegel);
     golf.style.animationDelay = `${(-Math.random() * 3).toFixed(2)}s`;
-    wacht(() => z.remove(), ms + vertraging + 300);
+    timers.later(() => z.remove(), ms + vertraging + 300);
     return golf;
   };
 
@@ -230,9 +220,8 @@ export function maakOnderwaterDecor(): Decor {
   // De gewone stroom: om de beurt een vis, een school of de schildpad, nooit twee tegelijk.
   let vorige = '';
   function plan(): void {
-    window.clearTimeout(timer);
-    if (!levend || stil) return;
-    timer = window.setTimeout(() => {
+    if (stil) return;
+    timers.zet('plan', () => {
       if (bezig) return plan();
       bezig = true;
       const naarRechts = Math.random() < 0.5;
@@ -253,7 +242,7 @@ export function maakOnderwaterDecor(): Decor {
         ms = 30000 + Math.random() * 8000;
         zwemSchildpad(14 + Math.random() * 30, naarRechts, ms);
       }
-      wacht(() => {
+      timers.later(() => {
         bezig = false;
         plan();
       }, ms + RUST_MS);
@@ -265,7 +254,7 @@ export function maakOnderwaterDecor(): Decor {
   // zit achter de stralen en is wazig, dus nooit druk).
   const planVerte = (ms: number) => {
     if (stil) return;
-    wacht(() => {
+    timers.later(() => {
       const walvis = Math.random() < 0.5;
       const duur = 60000 + Math.random() * 20000;
       const golf = oversteek(verte, `ow-ver ow-ver--${walvis ? 'walvis' : 'manta'}`, 12 + Math.random() * 18, Math.random() < 0.5, duur);
@@ -282,18 +271,18 @@ export function maakOnderwaterDecor(): Decor {
       const maat = 6 + Math.random() * 10;
       b.style.width = b.style.height = `${maat}px`;
       b.style.animationDelay = `${(Math.random() * 0.5).toFixed(2)}s`;
-      window.setTimeout(() => b.remove(), 2200);
+      timers.later(() => b.remove(), 2200);
     }
   };
 
   // De schatkist gaat af en toe op een kiertje open: glinstering en een paar belletjes.
   const openKist = () => {
     kortAan(kistSvg, 'kiert', 3600);
-    window.setTimeout(() => levend && bubbelWolk(kist, 4), 500);
+    timers.later(() => bubbelWolk(kist, 4), 500);
   };
   const planKist = () => {
     if (stil) return;
-    wacht(() => {
+    timers.later(() => {
       openKist();
       planKist();
     }, 16000 + Math.random() * 18000);
@@ -312,24 +301,18 @@ export function maakOnderwaterDecor(): Decor {
     juich();
     if (stil) return;
     bezig = true;
-    window.clearTimeout(timer);
+    timers.wis('plan');
     const naarRechts = Math.random() < 0.5;
     const ms = 14000;
     zwemSchildpad(18, naarRechts, ms);
     zwemSchool(30, naarRechts, ms, 1400);
     bubbelWolk(octopus, 8);
     openKist();
-    wacht(() => {
+    timers.later(() => {
       bezig = false;
       plan();
     }, ms + 4400);
   };
 
-  const vernietig = () => {
-    levend = false;
-    window.clearTimeout(timer);
-    for (const id of timers) window.clearTimeout(id);
-    timers.clear();
-  };
-  return { element: root, juich, feest, vernietig };
+  return { element: root, juich, feest, vernietig: timers.stop };
 }

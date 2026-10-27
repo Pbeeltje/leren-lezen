@@ -1,28 +1,9 @@
 // Landschap van de dino-wei, allemaal zelf getekend (inline SVG, als tekst): de verte (wazige
 // bergen met een uitgedoofde vulkaan en een oerwoudrand met boomvarens en apenbomen), de
 // heuvels met een meertje, en losse planten en stenen voor op de voorgrond (varens,
-// paardenstaarten). Zie maakDinoDecor in dino.ts en het dino-blok in styles/achtergrond.css.
+// paardenstaarten). Zie maakDinoDecor in dino.ts en styles/achtergrond-dino.css.
 
-type Punt = [number, number];
-const pt = ([x, y]: Punt) => `${x.toFixed(1)} ${y.toFixed(1)}`;
-
-/** Vloeiende lijn door de punten (Catmull-Rom als Bézier-bochten). */
-const gladPad = (p: Punt[]): string => {
-  let d = `M${pt(p[0])}`;
-  for (let i = 0; i < p.length - 1; i++) {
-    const [a, b, c, e] = [p[i - 1] ?? p[i], p[i], p[i + 1], p[i + 2] ?? p[i + 1]];
-    const c1: Punt = [b[0] + (c[0] - a[0]) / 6, b[1] + (c[1] - a[1]) / 6];
-    const c2: Punt = [c[0] - (e[0] - b[0]) / 6, c[1] - (e[1] - b[1]) / 6];
-    d += ` C${pt(c1)} ${pt(c2)} ${pt(c)}`;
-  }
-  return d;
-};
-
-/** Vaste 'toeval' (altijd hetzelfde landschap). */
-const toeval = (zaad: number) => () => {
-  zaad = (zaad * 16807) % 2147483647;
-  return (zaad - 1) / 2147483646;
-};
+import { gladPad, pt, vasteToeval as toeval, type Punt } from './tekenhulp.ts';
 
 // ---- De verte: viewBox 2000 x 300, xMidYMax slice (telefoon ziet het midden). ----
 const VERRE_BERGEN: Punt[] = [

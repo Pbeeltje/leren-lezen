@@ -1,5 +1,5 @@
 import type { Decor } from './achtergrond.ts';
-import { el, svgUitTekst } from './hulp.ts';
+import { el, maakTimers, svgUitTekst } from './hulp.ts';
 
 // Losse laag bij de ruimte-achtergrond (de sterren, nevels en planeet tekent three.js):
 // vallende sterretjes op willekeurige plekken en af en toe een raket die langzaam schuin
@@ -29,11 +29,10 @@ export function maakRuimteDecor(): Decor {
   const root = el('div', 'decor decor-ruimte');
   let bezig = false;
   let vrijVanaf = performance.now() + 4000; // even rust na het openen
-  let timer: number | undefined;
-  let levend = true;
+  const timers = maakTimers();
 
   const klaar = (ms: number) => {
-    window.setTimeout(() => {
+    timers.later(() => {
       bezig = false;
       vrijVanaf = performance.now() + RUST_MS;
       plan();
@@ -45,7 +44,7 @@ export function maakRuimteDecor(): Decor {
     const v = el('div', 'valster', root);
     v.style.left = `${8 + Math.random() * 80}%`;
     v.style.top = `${6 + Math.random() * 62}%`;
-    window.setTimeout(() => v.remove(), STER_MS);
+    timers.later(() => v.remove(), STER_MS);
     klaar(STER_MS);
   }
 
@@ -62,16 +61,14 @@ export function maakRuimteDecor(): Decor {
     r.style.setProperty('--naar-y', `${naarY}vh`);
     const hoek = (Math.atan2(((naarY - vanY) * window.innerHeight) / 100, (naarRechts ? 1.2 : -1.2) * window.innerWidth) * 180) / Math.PI + 90;
     r.style.setProperty('--hoek', `${hoek}deg`);
-    window.setTimeout(() => r.remove(), RAKET_MS);
+    timers.later(() => r.remove(), RAKET_MS);
     klaar(RAKET_MS);
   }
 
   // Volgende gebeurtenis: meestal een vallende ster, soms de raket.
   function plan(): void {
-    window.clearTimeout(timer);
-    if (!levend) return;
     const wacht = Math.max(0, vrijVanaf - performance.now()) + 3000 + Math.random() * 7000;
-    timer = window.setTimeout(() => {
+    timers.zet('plan', () => {
       if (bezig) return;
       if (Math.random() < 0.22) raket();
       else vallendeSter();
@@ -82,20 +79,20 @@ export function maakRuimteDecor(): Decor {
   // Een goed antwoord vraagt om een vallende ster, maar alleen als de lucht vrij is.
   const juich = () => {
     if (bezig || performance.now() < vrijVanaf) return;
-    window.clearTimeout(timer);
+    timers.wis('plan');
     vallendeSter();
   };
   // Einde van een sessie: drie sterretjes na elkaar (nooit tegelijk).
   const feest = () => {
-    window.clearTimeout(timer);
+    timers.wis('plan');
     let n = 0;
     const volgende = () => {
       if (n++ >= 3) return;
       const v = el('div', 'valster', root);
       v.style.left = `${15 + Math.random() * 70}%`;
       v.style.top = `${6 + Math.random() * 50}%`;
-      window.setTimeout(() => v.remove(), STER_MS);
-      window.setTimeout(volgende, STER_MS + 100);
+      timers.later(() => v.remove(), STER_MS);
+      timers.later(volgende, STER_MS + 100);
     };
     if (!bezig) {
       bezig = true;
@@ -103,9 +100,5 @@ export function maakRuimteDecor(): Decor {
       klaar(3 * (STER_MS + 100));
     }
   };
-  const vernietig = () => {
-    levend = false;
-    window.clearTimeout(timer);
-  };
-  return { element: root, juich, feest, vernietig };
+  return { element: root, juich, feest, vernietig: timers.stop };
 }

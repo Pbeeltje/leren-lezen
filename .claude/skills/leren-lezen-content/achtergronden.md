@@ -2,14 +2,26 @@
 
 ## General
 
-- Every theme is a DOM `Decor` (`{element, juich, feest?, vernietig?}`). Shared CSS
-  and keyframes (`zwem-over`, `straal-glans`) in `styles/achtergrond.css`; most
-  themes have their own `styles/achtergrond-<id>.css` (imported in main.ts) and
-  pictures prefixed `<id>-` in `public/assets/achtergrond/`.
+- Every theme is a DOM `Decor` (`{element, juich, feest?, vernietig?}`).
+  `styles/achtergrond.css` holds only what is shared: the layer, pausing, the
+  profile-menu picker, rainbow, shooting star (`.valster`), `zwem-over`,
+  `straal-glans` and keyframes used by several themes or screens (`wiebel`, `adem`,
+  `juich-sprong`, `golf`, `pluim`, ...; keyframe names are global and unique). Every
+  theme has its own `styles/achtergrond-<id>.css` (imported in main.ts; not ruimte's
+  three.js sky) and pictures prefixed `<id>-` in `public/assets/achtergrond/`.
+- **Shared helpers** (`hulp.ts`): `maakTimers()` holds all timers of a decor
+  (`later(fn, ms)` loose, `zet(naam, fn, ms)` named and replacing — a scheduler that
+  replans itself — `wis(naam)`, `stop()`; after `stop` nothing new starts), so
+  `vernietig` is `timers.stop()` plus any rAF/visibility cleanup. `kringloop(timers,
+  STAPPEN, opStap, eersteStaatAl?)` runs a fixed `[stand, ms][]` cycle (day/night in
+  kasteel, boerderij, savanne; weather in zee, winter). `bewegingStil()` is the
+  reduced-motion check. SVG text helpers in `tekenhulp.ts`: `pt`, `gladPad`
+  (Catmull-Rom), `vasteToeval(zaad)` (fixed "random" so a drawing never changes;
+  kermis-tekening keeps its own `zaad` generator, its drawing was made with it).
 - **Adding a theme:** id in `ThemaId`, entries in `THEMAS` and `MAKERS`. Shop and
   profile menu pick it up automatically (200 coins). Fluent animals face left:
-  mirror with `.gespiegeld`. With `prefers-reduced-motion` don't start JS
-  schedulers. Clear every timer/rAF in `vernietig`. Also add a Vangspel entry in
+  mirror with `.gespiegeld`. With `bewegingStil()` don't start JS schedulers. Run
+  every timer through `maakTimers()`; cancel rAF in `vernietig`. Also add a Vangspel entry in
   `THEMA_DINGEN`, an Oversteken entry in `OVERSTEEK_THEMAS` (required, with lane
   grounds in `oversteken.css`) and optionally `THEMA_DIEREN` (Dieren voeren) and a table colour
   (`.thema-<id> .pong-tafel`).
@@ -39,9 +51,9 @@
   reduced motion.
 - **kasteel:** own castle `kasteel-eigen.svg` from `bronbestanden/teken-kasteel.py`
   (pastel pink towers, coloured cone roofs with flags; also the shop picture). Day
-  25 s / night 20 s (`data-tijd`), `.valster` shooting stars at night. New parts in
-  `styles/achtergrond-kasteel.css` (older CSS still in `achtergrond.css`): a
-  full-width rainbow (`kasteel-boog`, 7 arcs with `pathLength=1`) that flows in via
+  25 s / night 20 s (`DAGCYCLUS`, `data-tijd`), `.valster` shooting stars at night.
+  `styles/achtergrond-kasteel.css` has the older parts first, then the newer ones
+  (the newer rules override some older ones, keep that order): a full-width rainbow (`kasteel-boog`, 7 arcs with `pathLength=1`) that flows in via
   `stroke-dashoffset` 1 → 0 and out (→ -1), sometimes mirrored
   (`kasteel-boog--andersom`); three white doves (`kasteel-duif`, `pikt`, flutter up
   on `juich`); a flower patch (`kasteel-perk`) with three butterflies (hidden at

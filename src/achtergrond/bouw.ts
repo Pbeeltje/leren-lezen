@@ -1,6 +1,7 @@
 import type { Decor } from './achtergrond.ts';
 import { bijZichtbaarheid, paginaZichtbaar } from '../engine/zichtbaarheid.ts';
-import { el, kortAan, plaatje, svgUitTekst } from './hulp.ts';
+import { bewegingStil, el, kortAan, maakTimers, plaatje, svgUitTekst } from './hulp.ts';
+import { vasteToeval } from './tekenhulp.ts';
 
 // Bouwplaats: zonnige lucht boven een zandvlakte. Rechts een torenkraan naast een half
 // gebouwd huis in de steigers; de giek zwenkt een beetje en het dak hangt aan de haak
@@ -15,11 +16,7 @@ import { el, kortAan, plaatje, svgUitTekst } from './hulp.ts';
 
 // De stad: gebouwen met een vaste "willekeur", zodat hij elke keer hetzelfde is.
 function skyline(rij: 'ver' | 'dichtbij'): string {
-  let zaad = rij === 'ver' ? 11 : 29;
-  const rnd = () => {
-    zaad = (zaad * 16807) % 2147483647;
-    return zaad / 2147483647;
-  };
+  const rnd = vasteToeval(rij === 'ver' ? 11 : 29);
   const ver = rij === 'ver';
   const kleuren = ver ? ['#b9d3e8', '#c4dbee', '#aecbe3'] : ['#8fb1cf', '#9dbbd6', '#83a7c8', '#a3bfd8'];
   const raam = ver ? '#d8e8f5' : '#cfe3f3';
@@ -361,12 +358,10 @@ export function maakBouwDecor(): Decor {
   svgUitTekst(AFZETTING, 'bouw-afzetting', root);
   for (let i = 1; i <= 4; i++) svgUitTekst(PION, `bouw-pion bouw-pion--${i}`, root);
 
-  const stil = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const stil = bewegingStil();
+  const timers = maakTimers();
   let levend = true;
-  let timer: number | undefined;
-  let resetTimer: number | undefined;
   let rafId = 0;
-  const gedragTimers: number[] = [];
 
   // 30% slapen, 40% slenteren, 30% dartelen. Dezelfde fase, ieder zijn eigen kant op.
   // Om de slenterbeurt loopt er één het scherm af en komt weer terug.
@@ -381,7 +376,6 @@ export function maakBouwDecor(): Decor {
   const startGedrag = (dier: HTMLElement, n: number, eigen: (typeof EIGEN)[number]): void => {
     if (stil) return;
     const loop = (i: number): void => {
-      if (!levend) return;
       const [naam, deel] = FASEN[i];
       const vol = deel * RONDE;
       dier.classList.remove('slaapt', 'slentert', 'dartelt', 'weg-links', 'weg-rechts');
@@ -396,8 +390,7 @@ export function maakBouwDecor(): Decor {
         dier.classList.add(Number.parseFloat(eigen.left) < 50 ? 'weg-links' : 'weg-rechts');
       }
       dier.classList.add(naam);
-      window.clearTimeout(gedragTimers[n]);
-      gedragTimers[n] = window.setTimeout(() => loop((i + 1) % FASEN.length), vol);
+      timers.zet(`gedrag-${n}`, () => loop((i + 1) % FASEN.length), vol);
     };
     loop(0);
   };
@@ -481,9 +474,8 @@ export function maakBouwDecor(): Decor {
   // ---- De kiepwagen rijdt af en toe heen of terug (nooit tijdens het feest). ----
   let naarRechts = Math.random() < 0.5;
   function plan(): void {
-    window.clearTimeout(timer);
-    if (!levend || stil) return;
-    timer = window.setTimeout(() => {
+    if (stil) return;
+    timers.zet('plan', () => {
       if (feestBezig) return plan();
       const k = el('div', 'bouw-kiep', kiepBaan);
       k.style.setProperty('--van-x', naarRechts ? '-16vw' : '104vw');
@@ -492,19 +484,17 @@ export function maakBouwDecor(): Decor {
       const svg = svgUitTekst(KIEPWAGEN, 'bouw-kiep__lijf', schok);
       if (!naarRechts) svg.classList.add('gespiegeld');
       naarRechts = !naarRechts;
-      window.setTimeout(() => k.remove(), KIEP_MS + 200);
-      window.setTimeout(plan, KIEP_MS);
+      timers.later(() => k.remove(), KIEP_MS + 200);
+      timers.later(plan, KIEP_MS);
     }, 6000 + Math.random() * 12000);
   }
   plan();
 
   // ---- Af en toe vliegt er rustig een helikopter over de stad. ----
-  let heliTimer: number | undefined;
   let heliNaarRechts = Math.random() < 0.5;
   function planHeli(eerste = false): void {
-    window.clearTimeout(heliTimer);
-    if (!levend || stil) return;
-    heliTimer = window.setTimeout(() => {
+    if (stil) return;
+    timers.zet('heli', () => {
       const h = el('div', 'bouw-heli', lucht);
       h.style.setProperty('--van-x', heliNaarRechts ? '-14vw' : '104vw');
       h.style.setProperty('--naar-x', heliNaarRechts ? '104vw' : '-14vw');
@@ -513,7 +503,7 @@ export function maakBouwDecor(): Decor {
       // De Fluent-helikopter kijkt naar links.
       if (heliNaarRechts) lijf.classList.add('gespiegeld');
       heliNaarRechts = !heliNaarRechts;
-      window.setTimeout(() => h.remove(), HELI_MS + 300);
+      timers.later(() => h.remove(), HELI_MS + 300);
       planHeli();
     }, eerste ? 3000 + Math.random() * 5000 : HELI_MS + 20000 + Math.random() * 20000);
   }
@@ -532,15 +522,15 @@ export function maakBouwDecor(): Decor {
       const maat = 4 + Math.random() * 5;
       c.style.width = c.style.height = `${maat}px`;
       c.style.animationDelay = `${(Math.random() * 0.15).toFixed(2)}s`;
-      window.setTimeout(() => c.remove(), 1400);
+      timers.later(() => c.remove(), 1400);
     }
   };
 
   const juich = () => {
     kortAan(graver, 'graaft', 2000);
     if (stil) return;
-    window.setTimeout(() => levend && korrels(6, 26), 300);
-    window.setTimeout(() => levend && korrels(14, 46), 1500);
+    timers.later(() => korrels(6, 26), 300);
+    timers.later(() => korrels(14, 46), 1500);
   };
 
   // Het dak is geland: steiger weg, ramen aan, vlag in de top, confetti.
@@ -558,12 +548,11 @@ export function maakBouwDecor(): Decor {
         c.style.setProperty('--op', `${-60 - Math.random() * 110}px`);
         c.style.setProperty('--draai', `${(Math.random() - 0.5) * 900}deg`);
         c.style.animationDelay = `${(Math.random() * 0.4).toFixed(2)}s`;
-        window.setTimeout(() => c.remove(), 3000);
+        timers.later(() => c.remove(), 3000);
       }
     }
     // Na een poosje wordt er een nieuw huis gebouwd: alles zacht terug.
-    window.clearTimeout(resetTimer);
-    resetTimer = window.setTimeout(() => {
+    timers.zet('nieuw-huis', () => {
       plaats.classList.remove('bouw-af');
       feestBezig = false;
     }, 11000);
@@ -584,10 +573,7 @@ export function maakBouwDecor(): Decor {
   const vernietig = () => {
     levend = false;
     afmeldZicht();
-    window.clearTimeout(timer);
-    window.clearTimeout(heliTimer);
-    window.clearTimeout(resetTimer);
-    gedragTimers.forEach((id) => window.clearTimeout(id));
+    timers.stop();
     cancelAnimationFrame(rafId);
   };
   return { element: root, juich, feest, vernietig };

@@ -1,5 +1,159 @@
-/* ---- Kasteel: regenboog, duifjes, bloemenperk en vlinders (src/achtergrond/kasteel.ts) ----
-   De rest van het kasteel-thema staat nog in achtergrond.css. */
+/* ---- Kasteel ---- */
+.decor-kasteel {
+  background: linear-gradient(#241a52 0%, #5b3f95 45%, #c47bb5 80%, #f3b6c9 100%);
+}
+
+.kasteel-ster {
+  position: absolute;
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: 0 0 6px 2px rgba(255, 255, 255, 0.6);
+  animation: twinkel 4s ease-in-out infinite;
+}
+
+.kasteel-heuvel {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  width: min(48vw, 560px);
+  height: min(46vh, 420px);
+}
+
+.kasteel-heuvel__svg {
+  position: absolute;
+  inset: auto 0 0 0;
+  width: 100%;
+  height: 55%;
+}
+
+.kasteel {
+  position: absolute;
+  /* Op het vlakke stuk bovenop de heuvel (x = 300-540 van 600), zodat hij nergens zweeft. */
+  left: 50%;
+  bottom: 38%;
+  width: 40%;
+}
+
+.kasteel__plaatje {
+  position: relative !important;
+  width: 100%;
+  display: block;
+  filter: drop-shadow(0 0 12px rgba(255, 214, 240, 0.55));
+}
+
+.kasteel.straalt .kasteel__plaatje {
+  animation: straal 1.6s ease-out;
+}
+
+.kasteel-lichtje {
+  position: absolute;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #fff6b0;
+  box-shadow: 0 0 10px 4px rgba(255, 236, 140, 0.7);
+  animation: zweef 7s ease-in-out infinite;
+}
+
+.kasteel-vonk {
+  position: absolute;
+  left: 50%;
+  top: 30%;
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  box-shadow: 0 0 8px 2px rgba(255, 255, 255, 0.8);
+  animation: vonk 1.3s ease-out forwards;
+}
+
+/* Kasteel: verre heuvels, roze gras en de eenhoorn. */
+.kasteel-verte {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  width: 100%;
+  height: 34vh;
+}
+
+.kasteel-gras {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  width: 100%;
+  height: 16vh;
+}
+
+.eenhoorn {
+  position: absolute;
+  left: 3%;
+  bottom: 3vh;
+  width: clamp(110px, 15vw, 210px);
+  transform-origin: bottom center;
+  animation: adem 3.2s ease-in-out infinite;
+}
+
+.eenhoorn__lijf {
+  position: relative !important;
+  width: 100%;
+  display: block;
+}
+
+.eenhoorn.juicht {
+  animation: juich-sprong 0.6s ease-out 2;
+}
+
+.eenhoorn__hartje {
+  position: absolute;
+  top: 0;
+  font-size: 1.8rem;
+  color: #ff7ac0;
+  text-shadow: 0 2px 0 #b8407e;
+  animation: hoera-op 1.3s ease-out forwards;
+}
+.kasteel-regenboog { --duur: 7s; left: 4%; bottom: 18vh; width: min(58vw, 640px); }
+
+/* ---- Kasteel: dag en nacht (data-tijd = dag | nacht), zacht overvloeiend ---- */
+.kasteel-lucht {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  transition: opacity 5s ease;
+}
+.kasteel-lucht--dag { background: linear-gradient(#86ccf5 0%, #b9e2fb 45%, #ffd7ea 85%, #ffe7f1 100%); }
+.decor-kasteel[data-tijd='dag'] .kasteel-lucht--dag { opacity: 1; }
+.kasteel-nachtlaag, .kasteel-lichtjes {
+  position: absolute;
+  inset: 0;
+  transition: opacity 5s ease;
+}
+.decor-kasteel[data-tijd='dag'] .kasteel-nachtlaag,
+.decor-kasteel[data-tijd='dag'] .kasteel-lichtjes { opacity: 0; }
+.kasteel-zon, .kasteel-maan {
+  position: absolute;
+  top: max(12%, 100px);
+  left: 16%;
+  width: clamp(64px, 9vw, 120px);
+  height: auto;
+  transition: opacity 5s ease, transform 5s ease;
+}
+.kasteel-zon { animation: draai-langzaam 60s linear infinite; }
+.kasteel-maan { opacity: 0; transform: translateY(30px); filter: drop-shadow(0 0 14px rgba(255, 244, 196, 0.6)); }
+.decor-kasteel[data-tijd='nacht'] .kasteel-maan { opacity: 1; transform: none; }
+.decor-kasteel[data-tijd='nacht'] .kasteel-zon { opacity: 0; }
+.decor-kasteel .kasteel-verte,
+.decor-kasteel .kasteel-heuvel,
+.decor-kasteel .kasteel-gras,
+.decor-kasteel .eenhoorn { transition: filter 5s ease; }
+.decor-kasteel[data-tijd='dag'] .kasteel-verte,
+.decor-kasteel[data-tijd='dag'] .kasteel-heuvel,
+.decor-kasteel[data-tijd='dag'] .kasteel-gras { filter: brightness(1.18) saturate(1.05); }
+.decor-kasteel[data-tijd='nacht'] .eenhoorn { filter: brightness(0.85); }
+
+/* ---- Kasteel: regenboog, duifjes, bloemenperk en vlinders ---- */
 
 /* Het nieuwe kasteel is breder dan het oude. */
 .decor-kasteel .kasteel { width: 50%; left: 46%; }

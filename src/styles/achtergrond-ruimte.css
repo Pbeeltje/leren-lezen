@@ -1,0 +1,22 @@
+/* ---- Ruimte: raket die langzaam schuin voorbijvliegt ---- */
+.decor-ruimte { pointer-events: none; overflow: hidden; }
+.raket {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: clamp(34px, 4vw, 54px);
+  height: auto;
+  animation: raket-vlucht 16s linear forwards;
+}
+.raket .raket__vlam { transform-origin: 30px 92px; animation: raket-vlam 0.18s ease-in-out infinite alternate; }
+@keyframes raket-vlucht {
+  from { transform: translate(var(--van-x), var(--van-y)) rotate(var(--hoek)); }
+  to { transform: translate(var(--naar-x), var(--naar-y)) rotate(var(--hoek)); }
+}
+@keyframes raket-vlam {
+  from { transform: scaleY(0.8); opacity: 0.85; }
+  to { transform: scaleY(1.15); opacity: 1; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .raket { display: none; }
+}

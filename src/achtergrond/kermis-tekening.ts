@@ -2,9 +2,12 @@
 // overzichtelijk blijft. Onderdelen die bewegen hebben een eigen klasse (kv-..., kj-...),
 // de animaties staan in styles/achtergrond-kermis.css.
 
+import { gladPad, type Punt } from './tekenhulp.ts';
+
 const LICHTJES = ['#ffe27a', '#ff9db0', '#8fd6ff', '#b8f08c', '#ffbf73'];
 
-/** Vaste "willekeur", zodat de tekening elke keer hetzelfde is. */
+/** Vaste "willekeur", zodat de tekening elke keer hetzelfde is. Een andere reeks dan
+ * vasteToeval in tekenhulp.ts: de kermis is hiermee getekend. */
 function zaad(n: number): () => number {
   let s = n;
   return () => {
@@ -13,27 +16,15 @@ function zaad(n: number): () => number {
   };
 }
 
-// Een vloeiende lijn (Catmull-Rom) door een rij punten, als SVG-pad.
-function vloeiend(p: number[][]): string {
-  let d = `M${p[0][0]} ${p[0][1]}`;
-  for (let i = 0; i < p.length - 1; i++) {
-    const [a, b, c, e] = [p[i - 1] ?? p[i], p[i], p[i + 1], p[i + 2] ?? p[i + 1]];
-    const k1 = [b[0] + (c[0] - a[0]) / 6, b[1] + (c[1] - a[1]) / 6];
-    const k2 = [c[0] - (e[0] - b[0]) / 6, c[1] - (e[1] - b[1]) / 6];
-    d += ` C${k1[0].toFixed(1)} ${k1[1].toFixed(1)} ${k2[0].toFixed(1)} ${k2[1].toFixed(1)} ${c[0]} ${c[1]}`;
-  }
-  return d;
-}
-
 // De achtbaan in de verte: van links onder de heuvel op, dan een paar bulten naar rechts.
-const BAAN = [
+const BAAN: Punt[] = [
   [1380, 300], [1412, 262], [1450, 150], [1482, 96], [1516, 92], [1552, 140], [1590, 228],
   [1630, 250], [1670, 202], [1710, 162], [1750, 172], [1790, 224], [1830, 246], [1870, 214],
   [1910, 196], [1950, 214], [2010, 244],
 ];
 
 function achtbaan(): string {
-  const pad = vloeiend(BAAN);
+  const pad = gladPad(BAAN);
   let palen = '';
   let lichtjes = '';
   BAAN.forEach(([x, y], i) => {

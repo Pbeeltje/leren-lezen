@@ -1,6 +1,7 @@
 import type { Decor } from './achtergrond.ts';
-import { el, kortAan, plaatje, svgUitTekst, zetOpPad } from './hulp.ts';
+import { bewegingStil, el, kortAan, maakTimers, plaatje, svgUitTekst, zetOpPad } from './hulp.ts';
 import { kies, schud } from '../engine/toeval.ts';
+import { pt, type Punt } from './tekenhulp.ts';
 
 // Treinreis: groene heuvels met een spoorlijn langs de onderkant, een stenen brug over een
 // riviertje, links een station (loopt een stukje buiten beeld) en rechts een sein. Af en toe
@@ -35,7 +36,6 @@ const LANDSCHAP = `
 // top, zodat het geen rij driehoekjes wordt. De hoeken worden een beetje afgerond. Sneeuw ligt
 // boven een kartelige sneeuwgrens (geknipt op de berg), dus hoge toppen krijgen veel sneeuw
 // en lage bijna niets. Elke top heeft een schaduwkant rechts.
-type Punt = [number, number];
 const VERRE_KAM: Punt[] = [
   [0, 160], [60, 128], [110, 118], [150, 92], [185, 80], [205, 84], [240, 70], [275, 96], [300, 92], [340, 120], [380, 132],
   [430, 112], [480, 82], [520, 64], [560, 58], [590, 62], [620, 74], [660, 70], [700, 96], [740, 118], [780, 130],
@@ -51,8 +51,6 @@ const NABIJE_KAM: Punt[] = [
   [1450, 170], [1500, 142], [1540, 128], [1580, 132], [1620, 118], [1650, 112], [1690, 130], [1740, 158], [1790, 176],
   [1840, 160], [1890, 146], [1940, 154], [2000, 170],
 ];
-
-const pt = ([x, y]: Punt) => `${x.toFixed(1)} ${y.toFixed(1)}`;
 
 // Kam als pad met licht afgeronde hoeken (r in viewBox-eenheden), dicht tot de onderrand.
 const kamPad = (kam: Punt[], r: number): string => {
@@ -394,20 +392,11 @@ export function maakTreinDecor(): Decor {
     for (const b of bomen) zetOpPad(b, achter, 6);
   };
 
-  const stil = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const stil = bewegingStil();
+  const timers = maakTimers();
   let levend = true;
   let trein: Trein | null = null;
   let gluurLoc: HTMLElement | null = null;
-  let planTimer: number | undefined;
-  const timers = new Set<number>();
-  const wacht = (fn: () => void, ms: number): number => {
-    const id = window.setTimeout(() => {
-      timers.delete(id);
-      if (levend) fn();
-    }, ms);
-    timers.add(id);
-    return id;
-  };
 
   const maakLoc = (ouder: HTMLElement): HTMLElement => {
     const loc = el('div', 'trein-loc', ouder);
@@ -481,7 +470,7 @@ export function maakTreinDecor(): Decor {
           staat = true;
           t.classList.add('trein-trein--staat');
           wachtTot = nu + (stop === 'station' ? 4500 + Math.random() * 2500 : 3000 + Math.random() * 2000);
-          if (stop === 'station') wacht(() => trein === nieuw && toet(loc, true), 900);
+          if (stop === 'station') timers.later(() => trein === nieuw && toet(loc, true), 900);
         } else {
           v = Math.min(snelheid, Math.sqrt(2 * versnel * rest), v + versnel * dt);
           x += Math.max(v, 6) * dt;
@@ -539,9 +528,8 @@ export function maakTreinDecor(): Decor {
   };
 
   function plan(ms = 9000 + Math.random() * 14000): void {
-    window.clearTimeout(planTimer);
-    if (!levend || stil) return;
-    planTimer = wacht(() => {
+    if (stil) return;
+    timers.zet('plan', () => {
       if (trein || gluurLoc) return plan(2500);
       const reizigers = Math.random() < 0.55;
       const lot = Math.random();
@@ -556,8 +544,8 @@ export function maakTreinDecor(): Decor {
   // tegelijk: de volgende wordt pas gepland als de vorige weg is.
   let arendNaarRechts = Math.random() < 0.5;
   function planArend(ms = 60000 + Math.random() * 60000): void {
-    if (!levend || stil) return;
-    wacht(() => {
+    if (stil) return;
+    timers.later(() => {
       const breedte = root.clientWidth || window.innerWidth;
       // Rustig zweven: ongeveer 45 px per seconde, maar niet korter dan 16 s of langer dan 36 s.
       const duur = Math.min(36, Math.max(16, (breedte * 1.25) / 45));
@@ -570,7 +558,7 @@ export function maakTreinDecor(): Decor {
       const zweef = el('div', 'trein-arend__zweef', el('div', 'trein-arend__spiegel', a));
       svgUitTekst(AREND, 'trein-arend__lijf', zweef);
       arendNaarRechts = !arendNaarRechts;
-      wacht(() => {
+      timers.later(() => {
         a.remove();
         planArend();
       }, duur * 1000 + 300);
@@ -589,7 +577,7 @@ export function maakTreinDecor(): Decor {
     const roep = el('div', 'trein-roep', doel);
     roep.textContent = 'tuut!';
     delen.push(roep);
-    wacht(() => delen.forEach((d) => d.remove()), 1600);
+    timers.later(() => delen.forEach((d) => d.remove()), 1600);
   };
 
   // Een locomotief die even uit het station piept, toetert en weer terugrijdt.
@@ -597,8 +585,8 @@ export function maakTreinDecor(): Decor {
     const loc = maakLoc(baan);
     loc.classList.add('trein-loc--gluur');
     gluurLoc = loc;
-    wacht(() => toet(loc, true), 250);
-    wacht(() => {
+    timers.later(() => toet(loc, true), 250);
+    timers.later(() => {
       loc.remove();
       if (gluurLoc === loc) gluurLoc = null;
     }, 2700);
@@ -624,7 +612,7 @@ export function maakTreinDecor(): Decor {
   const vervaag = (e: HTMLElement, stopTrein?: () => void) => {
     stopTrein?.();
     e.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 400, fill: 'forwards' });
-    wacht(() => e.remove(), 420);
+    timers.later(() => e.remove(), 420);
   };
 
   // Einde van een sessie: een lange trein met in elke open wagon een dier.
@@ -633,7 +621,7 @@ export function maakTreinDecor(): Decor {
       juich();
       return;
     }
-    window.clearTimeout(planTimer);
+    timers.wis('plan');
     let wachtMs = 0;
     if (trein) {
       vervaag(trein.element, trein.stop);
@@ -647,7 +635,7 @@ export function maakTreinDecor(): Decor {
     }
     kortAan(sein, 'knippert', 1400);
     toet(sein, false);
-    wacht(() => {
+    timers.later(() => {
       const dieren: HTMLElement[] = [];
       const lang = rijd((t) => {
         DIEREN.forEach((naam, i) => {
@@ -661,7 +649,7 @@ export function maakTreinDecor(): Decor {
           dieren.push(dier);
         });
       }, () => plan());
-      wacht(() => {
+      timers.later(() => {
         if (trein === lang) toet(lang.loc, true);
       }, 1500);
       // Sterretjes boven de dieren zolang de trein rijdt.
@@ -671,19 +659,17 @@ export function maakTreinDecor(): Decor {
         const dier = dieren[n % dieren.length];
         const s = el('div', 'trein-ster', dier);
         s.textContent = ['★', '♥', '✦'][n % 3];
-        wacht(() => s.remove(), 1200);
+        timers.later(() => s.remove(), 1200);
         n += 1;
-        wacht(ster, 380);
+        timers.later(ster, 380);
       };
-      wacht(ster, 900);
+      timers.later(ster, 900);
     }, wachtMs);
   };
 
   const vernietig = () => {
     levend = false;
-    window.clearTimeout(planTimer);
-    for (const id of timers) window.clearTimeout(id);
-    timers.clear();
+    timers.stop();
     trein?.stop();
     trein = null;
   };

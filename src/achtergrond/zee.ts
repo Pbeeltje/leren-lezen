@@ -1,6 +1,6 @@
 import type { Decor } from './achtergrond.ts';
 import { bijZichtbaarheid, paginaZichtbaar } from '../engine/zichtbaarheid.ts';
-import { el, kortAan, maakRegenboog, plaatje, svgUitTekst } from './hulp.ts';
+import { el, kortAan, kringloop, maakRegenboog, maakTimers, plaatje, svgUitTekst } from './hulp.ts';
 
 // Zee met wisselend weer: zon (20 s) -> regen (15 s) -> onweer (15 s) -> weer zon, en als
 // de zon na het onweer terugkomt verschijnt er zo'n 5 seconden een rustige regenboog. Golven,
@@ -36,8 +36,11 @@ const BLIKSEM = `
 </svg>`;
 
 type Weer = 'zon' | 'regen' | 'onweer';
-const DUUR: Record<Weer, number> = { zon: 20000, regen: 15000, onweer: 15000 };
-const VOLGENDE: Record<Weer, Weer> = { zon: 'regen', regen: 'onweer', onweer: 'zon' };
+const WEERCYCLUS: [Weer, number][] = [
+  ['zon', 20000],
+  ['regen', 15000],
+  ['onweer', 15000],
+];
 
 export function maakZeeDecor(): Decor {
   const root = el('div', 'decor decor-zee');
@@ -69,30 +72,26 @@ export function maakZeeDecor(): Decor {
   plaatje('assets/achtergrond/vuurtoren.svg', 'vuurtoren__plaatje', toren);
   svgUitTekst(golf('#244a68'), 'zee-golf zee-golf--voor', golven);
 
+  const timers = maakTimers();
   let weer: Weer = 'zon';
-  let weerTimer: number | undefined;
-  let bliksemTimer: number | undefined;
-  let regenboogTimer: number | undefined;
 
   const bliksemInslag = () => {
     if (weer !== 'onweer') return;
     const schicht = svgUitTekst(BLIKSEM, 'zee-schicht', bliksemHouder);
     schicht.style.left = `${10 + Math.random() * 80}%`;
     kortAan(flits, 'aan', 500);
-    window.setTimeout(() => schicht.remove(), 500);
-    bliksemTimer = window.setTimeout(bliksemInslag, 2500 + Math.random() * 3500);
+    timers.later(() => schicht.remove(), 500);
+    timers.zet('bliksem', bliksemInslag, 2500 + Math.random() * 3500);
   };
 
-  const zetWeer = (nieuw: Weer) => {
+  kringloop(timers, WEERCYCLUS, (nieuw) => {
     // Na het onweer: eerst de lucht laten opklaren, dan de regenboog.
-    if (weer === 'onweer' && nieuw === 'zon') regenboogTimer = window.setTimeout(() => kortAan(regenboog, 'verschijnt', 5000), 2200);
+    if (weer === 'onweer' && nieuw === 'zon') timers.later(() => kortAan(regenboog, 'verschijnt', 5000), 2200);
     weer = nieuw;
     root.dataset.weer = nieuw;
-    window.clearTimeout(bliksemTimer);
-    if (nieuw === 'onweer') bliksemTimer = window.setTimeout(bliksemInslag, 2500);
-    weerTimer = window.setTimeout(() => zetWeer(VOLGENDE[nieuw]), DUUR[nieuw]);
-  };
-  zetWeer('zon');
+    timers.wis('bliksem');
+    if (nieuw === 'onweer') timers.zet('bliksem', bliksemInslag, 2500);
+  });
 
   // De boot drijft óp het water: elk frame de hoogte van de achterste en de middelste golf
   // onder het midden van de boot opzoeken (de hoogste telt, anders zakt hij achter de
@@ -126,7 +125,6 @@ export function maakZeeDecor(): Decor {
   };
 
   let walvisGezien = false;
-  let walvisTimer: number | undefined;
   let frame = 0;
   let levend = true;
   const drijf = () => {
@@ -155,7 +153,7 @@ export function maakZeeDecor(): Decor {
     if (!walvisGezien && vak.left > window.innerWidth) {
       walvisGezien = true;
       walvis.style.left = `${18 + Math.random() * 22}%`;
-      walvisTimer = window.setTimeout(() => kortAan(walvis, 'duikt-op', 12000), 3500);
+      timers.later(() => kortAan(walvis, 'duikt-op', 12000), 3500);
     }
   };
   const afmeldZicht = bijZichtbaarheid((aan) => {
@@ -172,10 +170,7 @@ export function maakZeeDecor(): Decor {
   const vernietig = () => {
     levend = false;
     afmeldZicht();
-    window.clearTimeout(weerTimer);
-    window.clearTimeout(bliksemTimer);
-    window.clearTimeout(regenboogTimer);
-    window.clearTimeout(walvisTimer);
+    timers.stop();
     cancelAnimationFrame(frame);
   };
   return { element: root, juich, vernietig };

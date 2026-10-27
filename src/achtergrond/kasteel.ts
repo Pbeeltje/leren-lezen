@@ -1,5 +1,5 @@
 import type { Decor } from './achtergrond.ts';
-import { el, kortAan, plaatje, svgUitTekst, zetOpPad } from './hulp.ts';
+import { bewegingStil, el, kortAan, kringloop, maakTimers, plaatje, svgUitTekst, zetOpPad } from './hulp.ts';
 
 // Prinsessenkasteel op een heuvel rechtsonder (buiten het midden, waar de vragen staan),
 // heuvels in de verte en roze gras vooraan met een eenhoorn. Dag en nacht wisselen zacht
@@ -160,8 +160,12 @@ const MAAN = `
   <path d="M62 8 A44 44 0 1 0 92 70 A36 36 0 1 1 62 8 Z" fill="#fff4c4"/>
 </svg>`;
 
-const DAG_DUUR = 25000;
-const NACHT_DUUR = 20000;
+// Dag 25 s, nacht 20 s (data-tijd); de CSS laat alles in 5 s overvloeien.
+type Tijd = 'dag' | 'nacht';
+const DAGCYCLUS: [Tijd, number][] = [
+  ['dag', 25000],
+  ['nacht', 20000],
+];
 
 export function maakKasteelDecor(): Decor {
   const root = el('div', 'decor decor-kasteel');
@@ -215,6 +219,9 @@ export function maakKasteelDecor(): Decor {
   const eenhoorn = el('div', 'eenhoorn', root);
   plaatje('assets/achtergrond/eenhoorn.svg', 'eenhoorn__lijf', eenhoorn);
 
+  const stil = bewegingStil();
+  const timers = maakTimers();
+
   const juich = () => {
     kortAan(kasteel, 'straalt', 1600);
     kortAan(eenhoorn, 'juicht', 1200);
@@ -225,7 +232,7 @@ export function maakKasteelDecor(): Decor {
       v.style.setProperty('--dx', `${Math.cos(hoek) * afstand}px`);
       v.style.setProperty('--dy', `${Math.sin(hoek) * afstand}px`);
       v.style.background = ['#ffe36e', '#ff9ad5', '#b8f0ff', '#ffffff'][i % 4];
-      window.setTimeout(() => v.remove(), 1300);
+      timers.later(() => v.remove(), 1300);
     }
     // Een duifje fladdert even op en de vlinders gaan sneller.
     kortAan(duiven[Math.floor(Math.random() * duiven.length)], 'fladdert', 1100);
@@ -234,22 +241,17 @@ export function maakKasteelDecor(): Decor {
       const h = el('div', 'eenhoorn__hartje', eenhoorn);
       h.textContent = teken;
       h.style.left = `${30 + Math.random() * 40}%`;
-      window.setTimeout(() => h.remove(), 1300);
+      timers.later(() => h.remove(), 1300);
     }
   };
-  let tijdTimer: number | undefined;
-  let regenboogTimer: number | undefined;
-  let valTimer: number | undefined;
-  let pikTimer: number | undefined;
-  const stil = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   // Pikken: steeds een willekeurig duifje, één of twee keer kort na elkaar (niet 's nachts).
   const pik = () => {
     if (root.dataset.tijd !== 'nacht') {
       const d = duiven[Math.floor(Math.random() * duiven.length)];
       kortAan(d, 'pikt', 520);
-      if (Math.random() < 0.5) window.setTimeout(() => kortAan(d, 'pikt', 520), 600);
+      if (Math.random() < 0.5) timers.later(() => kortAan(d, 'pikt', 520), 600);
     }
-    pikTimer = window.setTimeout(pik, 700 + Math.random() * 1500);
+    timers.zet('pik', pik, 700 + Math.random() * 1500);
   };
   if (!stil) pik();
   // Klein vallend sterretje: een kort lichtstreepje schuin omlaag, elke paar seconden.
@@ -258,32 +260,24 @@ export function maakKasteelDecor(): Decor {
     const v = el('div', 'valster', nacht);
     v.style.left = `${10 + Math.random() * 70}%`;
     v.style.top = `${4 + Math.random() * 30}%`;
-    window.setTimeout(() => v.remove(), 1400);
-    valTimer = window.setTimeout(valsterren, 2500 + Math.random() * 3500);
+    timers.later(() => v.remove(), 1400);
+    timers.zet('valster', valsterren, 2500 + Math.random() * 3500);
   };
-  const zetTijd = (tijd: 'dag' | 'nacht') => {
+  kringloop(timers, DAGCYCLUS, (tijd) => {
     root.dataset.tijd = tijd;
-    window.clearTimeout(regenboogTimer);
-    window.clearTimeout(valTimer);
+    timers.wis('regenboog');
+    timers.wis('valster');
     // Pas als de nacht echt gevallen is (na de overgang van 5 s).
-    if (tijd === 'nacht') valTimer = window.setTimeout(valsterren, 4500);
+    if (tijd === 'nacht') timers.zet('valster', valsterren, 4500);
     // Elke dag stroomt de regenboog over de lucht, de ene keer van links, de andere keer van rechts.
     if (tijd === 'dag' && !stil) {
-      regenboogTimer = window.setTimeout(() => {
+      timers.zet('regenboog', () => {
         regenboog.classList.toggle('kasteel-boog--andersom', Math.random() < 0.5);
         kortAan(regenboog, 'stroomt', 19000);
       }, 3000 + Math.random() * 2000);
     }
-    tijdTimer = window.setTimeout(() => zetTijd(tijd === 'dag' ? 'nacht' : 'dag'), tijd === 'dag' ? DAG_DUUR : NACHT_DUUR);
-  };
-  zetTijd('dag');
+  });
 
-  const vernietig = () => {
-    window.clearTimeout(tijdTimer);
-    window.clearTimeout(regenboogTimer);
-    window.clearTimeout(valTimer);
-    window.clearTimeout(pikTimer);
-  };
   const top = heuvelSvg.querySelector('path')!;
-  return { element: root, juich, vernietig, plaats: () => zetOpPad(kasteel, top, 4, true) };
+  return { element: root, juich, vernietig: timers.stop, plaats: () => zetOpPad(kasteel, top, 4, true) };
 }

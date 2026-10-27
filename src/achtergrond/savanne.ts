@@ -1,5 +1,5 @@
 import type { Decor } from './achtergrond.ts';
-import { el, kortAan, plaatje, svgUitTekst } from './hulp.ts';
+import { bewegingStil, el, kortAan, kringloop, maakTimers, plaatje, svgUitTekst } from './hulp.ts';
 
 // Savanne: een grote acaciaboom rechts met leeuwen die eronder in de schaduw liggen te
 // luieren (staart zwiept, af en toe knipperen of gapen), links een waterpoel waar af en toe
@@ -336,32 +336,12 @@ export function maakSavanneDecor(): Decor {
     v.style.animationDuration = `${5 + Math.random() * 4}s, ${1.4 + Math.random() * 1.4}s`;
   }
 
-  const stil = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const stil = bewegingStil();
+  const timers = maakTimers();
   let levend = true;
-  const losseTimers = new Set<number>();
-  const later = (fn: () => void, ms: number) => {
-    const t = window.setTimeout(() => {
-      losseTimers.delete(t);
-      if (levend) fn();
-    }, ms);
-    losseTimers.add(t);
-  };
 
   // De eerste stand meteen tonen (zon al laag), daarna pas overgangen.
   requestAnimationFrame(() => requestAnimationFrame(() => root.classList.remove('savanne--begin')));
-
-  // ---- Dag en nacht ----
-  let tijdStap = 0;
-  let tijdTimer: number | undefined;
-  function volgendeTijd(): void {
-    window.clearTimeout(tijdTimer);
-    if (!levend || stil) return;
-    const [tijd, duur] = DAGCYCLUS[tijdStap % DAGCYCLUS.length];
-    root.dataset.tijd = tijd;
-    if (tijd === 'avond') later(vliegZwerm, 5000 + Math.random() * 6000);
-    tijdStap++;
-    tijdTimer = window.setTimeout(volgendeTijd, duur);
-  }
 
   // Een zwerm vogels in V-vorm vliegt langs de lucht.
   function vliegZwerm(): void {
@@ -393,11 +373,9 @@ export function maakSavanneDecor(): Decor {
   }
 
   // ---- Leeuwen ----
-  let knipTimer: number | undefined;
   function knipper(): void {
-    window.clearTimeout(knipTimer);
-    if (!levend || stil) return;
-    knipTimer = window.setTimeout(() => {
+    if (stil) return;
+    timers.zet('knipper', () => {
       const l = alleLeeuwen[Math.floor(Math.random() * alleLeeuwen.length)];
       const ogen = l.querySelector('.leeuw__ogen');
       if (ogen) kortAan(ogen, 'knipper', 260);
@@ -413,7 +391,6 @@ export function maakSavanneDecor(): Decor {
   // gazellen. Ze lopen van links naar de overkant van de poel, drinken een tijdje en lopen
   // dan weer links het beeld uit. Los daarvan komt af en toe een krokodil boven.
   type Soort = 'olifant' | 'gnoe' | 'gazelle';
-  let bezoekTimer: number | undefined;
   let bezoekBezig = false;
   let aanHetWater: HTMLElement[] = [];
   const maakDier = (soort: Soort, klein = false) => {
@@ -425,7 +402,7 @@ export function maakSavanneDecor(): Decor {
     return o;
   };
   function bezoek(gekozen?: Soort): void {
-    window.clearTimeout(bezoekTimer);
+    timers.wis('bezoek');
     if (!levend || stil || bezoekBezig) return;
     bezoekBezig = true;
     const r = root.getBoundingClientRect();
@@ -494,7 +471,7 @@ export function maakSavanneDecor(): Decor {
       };
     });
     const drinkDuur = 9000 + Math.random() * 6000;
-    later(() => {
+    timers.later(() => {
       aanHetWater = aanHetWater.filter((o) => !dieren.some((d) => d.o === o));
       let laatste = 0;
       dieren.forEach(({ o, x, b }, i) => {
@@ -509,19 +486,17 @@ export function maakSavanneDecor(): Decor {
         });
         terug.onfinish = () => o.remove();
       });
-      later(() => {
+      timers.later(() => {
         bezoekBezig = false;
-        bezoekTimer = window.setTimeout(() => bezoek(), 8000 + Math.random() * 12000);
+        timers.zet('bezoek', () => bezoek(), 8000 + Math.random() * 12000);
       }, laatste);
     }, langste + drinkDuur);
   }
-  bezoekTimer = window.setTimeout(() => bezoek(), 1500 + Math.random() * 1500);
+  timers.zet('bezoek', () => bezoek(), 1500 + Math.random() * 1500);
 
   // De krokodil: komt rustig boven tot zijn ogen, drijft even, knippert en zakt weer weg.
-  let krokTimer: number | undefined;
   function krokodil(): void {
-    window.clearTimeout(krokTimer);
-    if (!levend || stil) return;
+    if (stil) return;
     const lr = land.getBoundingClientRect();
     const p = poel.getBoundingClientRect();
     const breedte = p.width * 0.3;
@@ -557,15 +532,15 @@ export function maakSavanneDecor(): Decor {
       k.remove();
       rimpel.remove();
     };
-    later(() => kortAan(k, 'knipper', 400), 2600 + blijf * 0.45);
-    krokTimer = window.setTimeout(krokodil, totaal + 14000 + Math.random() * 22000);
+    timers.later(() => kortAan(k, 'knipper', 400), 2600 + blijf * 0.45);
+    timers.zet('krokodil', krokodil, totaal + 14000 + Math.random() * 22000);
   }
-  krokTimer = window.setTimeout(krokodil, 8000 + Math.random() * 12000);
+  timers.zet('krokodil', krokodil, 8000 + Math.random() * 12000);
 
   // Water uit de slurf: druppels in een boog omhoog en weer naar beneden.
   const spuit = (o: HTMLElement) => {
     kortAan(o, 'spuit', 2600);
-    later(() => {
+    timers.later(() => {
       const punt = o.querySelector('.olifant__slurfpunt');
       if (!punt) return;
       const lr = land.getBoundingClientRect();
@@ -589,7 +564,13 @@ export function maakSavanneDecor(): Decor {
     }, 650);
   };
 
-  volgendeTijd();
+  // ---- Dag en nacht ----
+  if (!stil) {
+    kringloop(timers, DAGCYCLUS, (tijd) => {
+      root.dataset.tijd = tijd;
+      if (tijd === 'avond') timers.later(vliegZwerm, 5000 + Math.random() * 6000);
+    });
+  }
 
   const juich = () => {
     kortAan(koning, 'brult', 1600);
@@ -598,23 +579,18 @@ export function maakSavanneDecor(): Decor {
 
   const feest = () => {
     juich();
-    later(() => kortAan(leeuwin, 'springt', 1300), 500);
+    timers.later(() => kortAan(leeuwin, 'springt', 1300), 500);
     if (stil) return;
     vliegZwerm();
     // Olifanten aan het water spuiten; is er niemand, dan komt er een olifantenfamilie.
     const olifanten = aanHetWater.filter((o) => o.classList.contains('savanne-olifant'));
-    if (olifanten.length) olifanten.forEach((o, i) => later(() => spuit(o), i * 500));
+    if (olifanten.length) olifanten.forEach((o, i) => timers.later(() => spuit(o), i * 500));
     else bezoek('olifant');
   };
 
   const vernietig = () => {
     levend = false;
-    window.clearTimeout(tijdTimer);
-    window.clearTimeout(knipTimer);
-    window.clearTimeout(bezoekTimer);
-    window.clearTimeout(krokTimer);
-    for (const t of losseTimers) window.clearTimeout(t);
-    losseTimers.clear();
+    timers.stop();
   };
   return { element: root, juich, feest, vernietig };
 }

@@ -1,0 +1,423 @@
+/* ---- Dino-wei ---- */
+/* Warme oerlucht: blauw boven, goudachtig aan de horizon. */
+.decor-dino {
+  background: linear-gradient(#3f9ce9 0%, #74bff2 34%, #b5def4 58%, #f6e7c2 80%, #fbe2b0 100%);
+}
+
+/* Zacht goudlicht rond de zon (de zon zelf staat op max(11%, 96px), rechts 5%). */
+.dino-zonlicht {
+  position: absolute;
+  top: calc(max(11%, 96px) + clamp(70px, 10vw, 130px) / 2);
+  right: calc(5% + clamp(70px, 10vw, 130px) / 2);
+  width: clamp(320px, 52vw, 760px);
+  aspect-ratio: 1;
+  transform: translate(50%, -50%);
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(255, 236, 170, 0.55) 0%, rgba(255, 224, 150, 0.22) 35%, rgba(255, 220, 140, 0) 70%);
+}
+
+/* De verte (dino-landschap.ts): wazige bergen en oerwoud; de voet zakt achter de heuvels. */
+.dino-verte {
+  position: absolute;
+  left: 0;
+  bottom: 13vh;
+  width: 100%;
+  height: max(25vh, 17vw);
+}
+
+/* Brachiosaurus in de verte, links achter de boomvarens; de nek kijkt langzaam rond en zakt soms om te eten. */
+.dino-brachio {
+  position: absolute;
+  left: 0.5%;
+  bottom: 19.5vh;
+  width: clamp(110px, 15vw, 220px);
+  height: auto;
+  overflow: visible;
+}
+.dino-brachio .br-nek {
+  transform-box: fill-box;
+  transform-origin: 30% 95%;
+  animation: br-nek 26s ease-in-out infinite;
+}
+@keyframes br-nek {
+  0%, 100% { transform: rotate(0); }
+  18%, 30% { transform: rotate(-7deg); }
+  48% { transform: rotate(2deg); }
+  58%, 74% { transform: rotate(24deg); }
+  66% { transform: rotate(21deg); }
+  86% { transform: rotate(3deg); }
+}
+
+.dino-zon {
+  top: max(11%, 96px);
+  right: 5%;
+  width: clamp(70px, 10vw, 130px);
+  animation: draai-langzaam 60s linear infinite;
+}
+
+.dino-heuvels {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  width: 100%;
+  height: 34vh;
+}
+
+.dino-heuvels .dn-glinster path { animation: dn-glinster 6s ease-in-out infinite; opacity: 0.2; }
+.dino-heuvels .dn-glinster path:nth-child(2) { animation-delay: -1.5s; }
+.dino-heuvels .dn-glinster path:nth-child(3) { animation-delay: -3s; }
+.dino-heuvels .dn-glinster path:nth-child(4) { animation-delay: -4.5s; }
+@keyframes dn-glinster {
+  0%, 100% { opacity: 0.15; }
+  50% { opacity: 0.85; }
+}
+
+/* Planten en stenen aan de randen (dino-landschap.ts); wiebelen heel zacht. */
+.dino-plant,
+.dino-steen,
+.dino-nest {
+  position: absolute;
+  height: auto;
+  overflow: visible;
+}
+.dino-plant {
+  transform-origin: bottom center;
+  animation: wiebel 7s ease-in-out infinite;
+}
+.dino-varen--1 { left: -4%; bottom: -0.5vh; width: clamp(120px, 17vw, 250px); }
+.dino-varen--2 { right: -4%; bottom: -0.5vh; width: clamp(110px, 15vw, 230px); animation-delay: -3s; }
+.dino-varen--3 { left: calc(4% + clamp(110px, 17vw, 230px)); bottom: -0.5vh; width: clamp(70px, 9vw, 130px); animation-delay: -5s; }
+/* Paardenstaarten aan de oevers van het meertje (dat ligt op 41-71% van de breedte). */
+.dino-paardenstaart--1 { left: 37%; bottom: 4.6vh; width: clamp(30px, 4vw, 56px); animation-delay: -2s; }
+.dino-paardenstaart--2 { left: 68.5%; bottom: 3.8vh; width: clamp(26px, 3.4vw, 48px); animation-delay: -4s; }
+.dino-steen--1 { left: 33%; bottom: 5.5vh; width: clamp(28px, 3.5vw, 50px); }
+.dino-steen--2 { right: calc(2% + clamp(110px, 17vw, 230px) * 1.45); bottom: 0.5vh; width: clamp(40px, 5vw, 72px); }
+.dino-nest { right: calc(2% + clamp(110px, 17vw, 230px) * 0.9); bottom: 0.5vh; width: clamp(56px, 7vw, 104px); }
+
+/* Eieren: af en toe wiebelt er eentje zacht, bij juichen allemaal. */
+.dino-nest .ei { transform-box: fill-box; transform-origin: 50% 100%; }
+.dino-nest .ei--1 { animation: ei-wiebel 11s ease-in-out infinite; }
+.dino-nest .ei--3 { animation: ei-wiebel 13s ease-in-out -6s infinite; }
+.dino-nest.wiebelt .ei { animation: ei-juich 0.3s ease-in-out 4 alternate; }
+@keyframes ei-wiebel {
+  0%, 88%, 100% { transform: rotate(0); }
+  91% { transform: rotate(-7deg); }
+  94% { transform: rotate(6deg); }
+  97% { transform: rotate(-3deg); }
+}
+@keyframes ei-juich {
+  from { transform: rotate(-9deg); }
+  to { transform: rotate(9deg); }
+}
+.dino-nest .ei__baby { transform: translateY(18px); }
+.dino-nest .ei__dop { transform-box: fill-box; transform-origin: 20% 100%; }
+.dino-nest.komt-uit .ei__dop { animation: ei-dop 5.2s ease-in-out; }
+.dino-nest.komt-uit .ei__baby { animation: ei-baby 5.2s ease-in-out; }
+@keyframes ei-dop {
+  0%, 100% { transform: none; }
+  12%, 84% { transform: translate(-6px, -16px) rotate(-28deg); }
+}
+@keyframes ei-baby {
+  0%, 100% { transform: translateY(18px); }
+  18%, 80% { transform: translateY(0); }
+  40% { transform: translateY(0) rotate(-6deg); }
+  60% { transform: translateY(0) rotate(6deg); }
+}
+
+/* Pteranodon die hoog overzweeft (dino.ts): langzaam opzij, zacht op en neer, en heel af en
+   toe twee trage vleugelslagen. */
+.dino-lucht { position: absolute; inset: 0; }
+.dino-ptero {
+  position: absolute;
+  left: 0;
+  width: clamp(80px, 10vw, 140px);
+  transform: translateX(var(--van-x));
+  animation: zwem-over 30s linear forwards;
+}
+.dino-ptero__spiegel,
+.dino-ptero__zweef { width: 100%; }
+.dino-ptero--links .dino-ptero__spiegel { transform: scaleX(-1); }
+.dino-ptero__zweef { animation: ptero-zweef 8s ease-in-out infinite; }
+.dino-ptero__lijf { display: block; width: 100%; height: auto; overflow: visible; }
+.dino-ptero .pt-vleugel {
+  transform-box: fill-box;
+  animation: ptero-slag 10s ease-in-out -6s infinite;
+}
+.dino-ptero .pt-vleugel--l { transform-origin: 100% 60%; }
+.dino-ptero .pt-vleugel--r { transform-origin: 0% 60%; }
+@keyframes ptero-zweef {
+  0%, 100% { transform: translateY(0) rotate(-2deg); }
+  35% { transform: translateY(-10px) rotate(2deg); }
+  70% { transform: translateY(8px) rotate(-3deg); }
+}
+@keyframes ptero-slag {
+  0%, 16%, 100% { transform: scaleY(1); }
+  4%, 12% { transform: scaleY(0.55); }
+  8% { transform: scaleY(1.1); }
+}
+
+.dino-boom {
+  bottom: 18vh;
+  width: clamp(60px, 9vw, 120px);
+  transform-origin: bottom center;
+  animation: wiebel 6s ease-in-out infinite;
+}
+/* Boomvarens; 'scale' spiegelt los van het wiebelen (dat transform gebruikt). */
+.dino-boom--1 { left: 3%; }
+.dino-boom--2 { left: 13%; width: clamp(70px, 11vw, 140px); animation-delay: -2s; scale: -1 1; }
+.dino-boom--3 { right: 12%; animation-delay: -4s; }
+.dino-boom--4 { right: 2%; width: clamp(50px, 7vw, 100px); animation-delay: -1s; scale: -1 1; }
+
+.dino {
+  position: absolute;
+  bottom: 2vh;
+  width: clamp(110px, 17vw, 230px);
+  transform-origin: bottom center;
+  animation: adem 3.5s ease-in-out infinite;
+}
+.dino--trex { left: 2%; }
+.dino--tri { right: 2%; animation-delay: -1.7s; }
+
+.dino__lijf {
+  position: relative !important;
+  width: 100%;
+  display: block;
+}
+
+.dino.juicht {
+  animation: juich-sprong 0.6s ease-out 2;
+}
+
+.dino__hoera {
+  position: absolute;
+  top: -10px;
+  left: 50%;
+  font-size: 2.2rem;
+  color: #ffd23f;
+  text-shadow: 0 2px 0 #c77d00;
+  animation: hoera-op 1.2s ease-out forwards;
+}
+
+/* Losse delen van de inline T-rex (dino-tekening.ts): knipperend oog, en bij juichen een
+   open bek. transform-box: fill-box laat elk deel om zijn eigen vak draaien. */
+svg.dino__lijf {
+  height: auto;
+  overflow: visible;
+}
+
+.dino--trex .tr-kop,
+.dino--trex .tr-oog,
+.dino--trex .tr-arm {
+  transform-box: fill-box;
+}
+.dino--trex .tr-kop { transform-origin: 20% 75%; }
+.dino--trex .tr-arm { transform-origin: 0% 30%; }
+.dino--trex .tr-oog {
+  transform-origin: center;
+  animation: tr-knipper 5.5s ease-in-out infinite;
+}
+.dino--trex .tr-brul { transition: opacity 0.15s; }
+
+@keyframes tr-knipper {
+  0%, 94%, 100% { transform: scaleY(1); }
+  96.5% { transform: scaleY(0.1); }
+}
+
+.dino--trex.juicht .tr-brul { opacity: 1; }
+.dino--trex.juicht .tr-lach { opacity: 0; }
+
+/* De stegosaurus komt langs: de T-rex schrikt even (sprongetje), kijkt omlaag naar hem en
+   brult vriendelijk (bek open rond de "RAWR!"-wolk). Duur = VERRAST_MS in dino.ts. */
+.dino--trex.verrast .dino__lijf { animation: tr-schrik 0.5s ease-out; }
+.dino--trex.verrast .tr-kop { animation: tr-kijk-omlaag 2.8s ease-in-out; }
+.dino--trex.verrast .tr-arm { animation: tr-zwaai 0.4s ease-in-out 0.3s 5 alternate; }
+.dino--trex.verrast .tr-brul { animation: tr-brul-open 2.8s linear; }
+.dino--trex.verrast .tr-lach { animation: tr-brul-dicht 2.8s linear; }
+
+@keyframes tr-schrik {
+  0%, 100% { transform: translateY(0); }
+  40% { transform: translateY(-14px); }
+}
+@keyframes tr-kijk-omlaag {
+  0%, 100% { transform: rotate(0); }
+  20%, 80% { transform: rotate(16deg); }
+  45% { transform: rotate(10deg); }
+}
+@keyframes tr-zwaai {
+  from { transform: rotate(0); }
+  to { transform: rotate(-30deg); }
+}
+@keyframes tr-brul-open {
+  0%, 38%, 72%, 100% { opacity: 0; }
+  42%, 68% { opacity: 1; }
+}
+@keyframes tr-brul-dicht {
+  0%, 38%, 72%, 100% { opacity: 1; }
+  42%, 68% { opacity: 0; }
+}
+
+.dino-roep {
+  position: absolute;
+  top: -14%;
+  left: 74%;
+  padding: 3px 11px;
+  border-radius: 16px;
+  background: #fff;
+  color: #1d4c80;
+  font-weight: 800;
+  font-size: clamp(0.95rem, 1.8vw, 1.4rem);
+  white-space: nowrap;
+  box-shadow: 0 2px 0 rgba(0, 0, 0, 0.2);
+  animation: roep-op 1.4s ease-out forwards;
+}
+.dino-roep--uitroep {
+  left: 84%;
+  padding: 0 10px;
+  color: #e8553a;
+  font-size: clamp(1.2rem, 2.4vw, 1.9rem);
+  animation-duration: 0.9s;
+}
+
+/* Stegosaurus die heen en weer loopt (dino.ts zet translate op .dino-steg). */
+.dino-steg {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: clamp(72px, 10vw, 140px);
+  will-change: transform;
+}
+.dino-steg:not(.geplaatst) { visibility: hidden; }
+.dino-steg--rechts .dino-steg__draai { transform: scaleX(-1); }
+
+.dino-steg__lijf {
+  display: block;
+  width: 100%;
+  height: auto;
+  overflow: visible;
+}
+
+.dino-steg .st-poot,
+.dino-steg .st-staart,
+.dino-steg .st-kop {
+  transform-box: fill-box;
+}
+.dino-steg .st-poot { transform-origin: 50% 15%; }
+.dino-steg .st-staart { transform-origin: 0% 60%; }
+.dino-steg .st-kop { transform-origin: 90% 50%; }
+
+/* Lopen: kruislingse pas (paar a en b om de beurt) en een beetje wippen. */
+.dino-steg.loopt .st-poot--a { animation: steg-stap 1.2s ease-in-out infinite; }
+.dino-steg.loopt .st-poot--b { animation: steg-stap 1.2s ease-in-out -0.6s infinite; }
+.dino-steg.loopt .st-romp,
+.dino-steg.loopt .st-kop { animation: steg-wip 0.6s ease-in-out infinite alternate; }
+
+@keyframes steg-stap {
+  0%, 100% { transform: rotate(14deg); }
+  50% { transform: rotate(-14deg); }
+}
+@keyframes steg-wip {
+  from { translate: 0 0; }
+  to { translate: 0 -1.6px; }
+}
+
+/* Even stilstaan: snuffelen aan het gras en rondkijken. */
+.dino-steg.snuffelt .st-kop { animation: steg-snuffel 2.4s ease-in-out infinite; }
+
+@keyframes steg-snuffel {
+  0%, 100% { transform: rotate(0); }
+  20%, 35% { transform: rotate(-14deg); }
+  28% { transform: rotate(-10deg); }
+  60%, 80% { transform: rotate(8deg); }
+}
+
+.dino-steg.kwispelt .st-staart { animation: steg-kwispel 0.3s ease-in-out 8 alternate; }
+
+@keyframes steg-kwispel {
+  from { transform: rotate(-12deg); }
+  to { transform: rotate(14deg); }
+}
+
+/* Vulkaan in de dino-wei (op de achterste heuvel, rechts van het midden). */
+.vulkaan {
+  position: absolute;
+  left: 70%;
+  width: clamp(110px, 15vw, 230px);
+  aspect-ratio: 240 / 170;
+  transform-origin: bottom center;
+}
+
+.vulkaan__berg {
+  position: absolute !important;
+  inset: 0;
+  width: 100%;
+}
+
+/* Krater op 50% / 16% van de berg (zie vulkaan.svg). */
+.vulkaan__gloed {
+  position: absolute;
+  left: 50%;
+  top: 16%;
+  width: 45%;
+  aspect-ratio: 2;
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  background: radial-gradient(ellipse, rgba(255, 170, 60, 0.8), rgba(255, 120, 40, 0) 70%);
+  animation: gloei 5s ease-in-out infinite;
+}
+
+.vulkaan__rook {
+  position: absolute;
+  left: 50%;
+  top: 12%;
+  width: 0;
+  height: 0;
+}
+
+.vulkaan__pluim {
+  position: absolute;
+  left: -16px;
+  top: -16px;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(240, 236, 232, 0.8) 40%, rgba(240, 236, 232, 0) 72%);
+  opacity: 0;
+  animation: pluim 7.6s ease-out infinite;
+}
+
+.vulkaan.barst-uit {
+  animation: beef 0.12s linear 8;
+}
+
+@keyframes beef {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-3px) rotate(-0.6deg); }
+  75% { transform: translateX(3px) rotate(0.6deg); }
+}
+
+.vulkaan.barst-uit .vulkaan__gloed {
+  animation: none;
+  opacity: 1;
+  width: 120%;
+}
+
+.vulkaan.barst-uit .vulkaan__pluim {
+  animation-duration: 1.4s;
+  background: rgba(120, 110, 110, 0.8);
+  width: 60px;
+  height: 60px;
+  left: -30px;
+  top: -30px;
+}
+
+.vulkaan__lava {
+  position: absolute;
+  left: 50%;
+  top: 14%;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 35%, #ffe082, #ff7a2f 55%, #d84315);
+  box-shadow: 0 0 10px 3px rgba(255, 120, 40, 0.7);
+  opacity: 0;
+  animation: lava 1.8s cubic-bezier(0.2, 0.7, 0.4, 1) forwards;
+}
