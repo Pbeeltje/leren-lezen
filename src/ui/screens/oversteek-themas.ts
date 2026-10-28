@@ -45,7 +45,8 @@ export interface Soort {
 // Extra uitdagingen: vanaf level 10 komt er één bij (willekeurig uit de lijst van de
 // achtergrond), vanaf level 15 nog één. `icoon` staat in de levelbanner als hij erbij komt.
 // icoon: pad naar een plaatje, of de naam van een eigen tekening (`Tekening`).
-export type Uitdaging = { icoon: string } & (
+// `eerst`: deze komt altijd op level 10 (de rest wordt gehusseld).
+export type Uitdaging = { icoon: string; eerst?: boolean } & (
   // Een hele baan gaat af en toe 'aan' (stroom op de rails, drakenvuur, laser), met lamp vooraf.
   | { wat: 'baan-aan'; stijl: 'stroom' | 'vuur' | 'laser'; bron?: string }
   // Valt uit de lucht op een vakje; een groeiende schaduw laat zien waar.
@@ -54,10 +55,14 @@ export type Uitdaging = { icoon: string } & (
   | { wat: 'overstekers'; src: string; kleur?: string }
   // Iets reusachtigs dat meerdere banen breed is.
   | { wat: 'kolos'; ding: Soort }
-  // Alle banen zijn lava met stenen (één op de drie levels). Op de stenen staan dan dieren
-  // (`passagiers`, plaatje of Tekening-naam, naar links kijkend) die heen en weer lopen en
-  // van steen naar steen springen.
-  | { wat: 'lavaland'; passagiers?: string[] }
+  // Alle banen zijn lava met stenen (standaard level 10, 13, 16, ...; `vanaf`/`elke` anders).
+  // Op de stenen staan dan dieren (`passagiers`, plaatje of Tekening-naam, naar links
+  // kijkend) die heen en weer lopen en van steen naar steen springen. Of, met `spoken`
+  // (plaatje), geen dieren maar spookjes die over de lava rondzwerven (de jager rust dan).
+  | { wat: 'lavaland'; passagiers?: string[]; spoken?: string; vanaf?: number; elke?: number }
+  // Een spookje zweeft dwars door alles langzaam op je af, maar niet op het gras (start,
+  // middenberm, overkant). Even later lost het weer op en komt het ergens anders terug.
+  | { wat: 'jager'; src: string }
   | { wat: 'lawine' } // sneeuw schuift van onderen omhoog en bedekt baan na baan
   | { wat: 'storm' } // windvlagen blazen je opzij
   | { wat: 'donker'; mist?: boolean } // je ziet alleen een kring om je heen
@@ -369,8 +374,12 @@ export const OVERSTEEK_THEMAS: Record<ThemaId, OversteekThema> = {
     rivier: { water: 'lava', drijvers: [{ src: o('steen'), maat: 1, aantal: [2, 3], kijkt: 'geen' }] },
     overkant: [i('avatar-pompoen'), w('spook'), a('spookhuis-schedel'), w('spook'), i('avatar-pompoen')],
     uitdagingen: [
+      // Level 10: een spookje dat je achternazit. Blijf bewegen, of wacht op het gras tot het oplost.
+      { wat: 'jager', src: w('spook'), icoon: w('spook'), eerst: true },
       { wat: 'donker', mist: true, icoon: o('mist') },
-      { wat: 'lavaland', icoon: w('spook'), passagiers: [w('spook'), v('skelet'), i('avatar-pompoen'), 'raptor'] },
+      // Af en toe een lavaland, later en minder vaak dan bij de dino's: lege stenen, en
+      // spookjes die over de lava zwerven.
+      { wat: 'lavaland', icoon: o('vulkaan'), spoken: w('spook'), vanaf: 12, elke: 4 },
       // Pompoenen vallen uit de lucht.
       { wat: 'inslag', src: i('avatar-pompoen'), gloed: true, icoon: i('avatar-pompoen') },
     ],

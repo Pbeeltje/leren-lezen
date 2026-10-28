@@ -165,14 +165,24 @@ edge, theme decorations) through lanes seen from above. Tile icon: Fluent traffi
     the `Soort` has `banen`. It is a sporadic thing in the lowest of N adjacent road lanes. The
     lanes above get `deelVan` (collision via `dingenVan`) and the same direction, and
     blink along (`mede`). A herd (`aantal`) is built as one row per lane (`maakKudde`).
-  - `lavaland` (dino): all hazard lanes are lava with stones on a fixed rhythm, levels 10, 13,
-    16, ... (`isLavaland`, `LAVA_VANAF`/`LAVA_ELKE`). It is kept out of the shuffled
+  - `lavaland` (dino, spookhuis): all hazard lanes are lava with stones on a fixed rhythm, levels 10, 13,
+    16, ... (`isLavaland`, `LAVA_VANAF`/`LAVA_ELKE`; per theme `vanaf`/`elke`: spookhuis 12, 16,
+    20, ...). Spookhuis has `spoken` instead of `passagiers`: empty rocks, and 2 (kleuter 1)
+    ghosts roam over the lava (`werkSpookjes`, `zwerft`; the `jager` rests on those levels).
+    It is kept out of the shuffled
     `uitdagingVolgorde`, so the dino's other challenge (`inslag`) always comes at 10; the level
     banner shows the volcano before every lava level. Its `passagiers` (small animals: own drawings `raptor` and
     `pachy` from `oversteek-tekeningen.ts`, inline so legs/tail move, plus Fluent hagedis and
     schildpad; a picture path or a `Tekening` name) stand on half the rocks, walk back and forth to the rock's edges
     (`werkLopers`, `dier.v`, facing where they walk) and hop between rocks from the start
     (`Baan.dierLoopt`).
+  - `jager` (spookhuis, `eerst: true` = always the level-10 challenge; `eerst` sorts it to
+    the front of the shuffle): a see-through ghost (`.ov-jager`, z 4, above the mist) fades in
+    at the far edge on a hazard row ≥ 2 rows away (0.8 s, harmless), then floats straight
+    at you through everything at 0.7 cell/s (+0.02/level, max 1; kleuter 0.5) for 7–10 s,
+    then fades out and returns 2.5–4.5 s later. It stays inside its block of hazard rows
+    (grass stops it) and waits while you stand on grass. Within 0.6 cell (`JAGER`) = heart
+    lost + "Boe!". Roaming lava ghosts use the same code with random targets.
   - `lawine` (winter): after 5 s snow climbs from the bottom at 0.21 rows/s (kleuter 0.15).
     It kills when it passes the figure's centre, and you cannot hop back into it. After a
     death it pulls back below the respawn strip and waits 2.5 s.
@@ -241,6 +251,13 @@ edge, theme decorations) through lanes seen from above. Tile icon: Fluent traffi
   (`.ov-hartje`, red glow; on another row than the star if possible) that gives back one
   life, or +5 when all three hearts are still there.
   Forward hops play a rising xylophone note toward the finish.
+- **Performance (Oct 2026, level 10 spookhuis was 10 fps at 4× CPU throttle):** the screen
+  calls `bevriesDecor(true)` (achtergrond.ts) on mount, which pauses the background's CSS
+  animations (`beweging-uit`); the running spookhuis decor alone halved the frame rate.
+  Never animate `filter` or `background-position` on a lane: it repaints the lane with all
+  its rocks and animals every frame. Lava's bubbles and glow live in `.ov-grond--lava::before`
+  (transform + opacity only). Measure with `tests/_tmp`-style rAF timing under
+  `Emulation.setCPUThrottlingRate` 4 and repeat runs: single runs vary ±40%.
 - Traffic keeps running behind the start and end windows. Portrait only on phones (same
   `.vang-draai` as Vangspel). Reuses `.vang-balk` (wraps to two rows on narrow phones,
   the field starts below it), `.vang-venster*`, `.vang-plop`. CSS: `styles/oversteken.css`,

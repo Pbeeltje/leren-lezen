@@ -77,6 +77,16 @@ const MAKERS: Record<ThemaId, () => Decor> = {
 
 let laag: HTMLElement | null = null;
 let huidig: { id: ThemaId; decor: Decor | null } | null = null;
+// Een spel dat het scherm vult (Oversteken) bevriest het decor: je ziet het hooguit aan
+// de zijkanten, en het spookhuis alleen al kostte de helft van de frames.
+let bevroren = false;
+let zichtbaar = true;
+const zetBeweging = () => laag?.classList.toggle('beweging-uit', bevroren || !zichtbaar);
+
+export function bevriesDecor(aan: boolean): void {
+  bevroren = aan;
+  zetBeweging();
+}
 
 const sleutel = (profielId: string) => `leren-lezen:achtergrond:${profielId}`;
 
@@ -95,9 +105,12 @@ export function initAchtergrond(app: HTMLElement): void {
   laag = document.createElement('div');
   laag.id = 'decor-laag';
   app.prepend(laag);
-  const zetBeweging = (aan: boolean) => laag?.classList.toggle('beweging-uit', !aan);
-  zetBeweging(paginaZichtbaar());
-  bijZichtbaarheid(zetBeweging);
+  zichtbaar = paginaZichtbaar();
+  zetBeweging();
+  bijZichtbaarheid((aan) => {
+    zichtbaar = aan;
+    zetBeweging();
+  });
   maakRuimte();
   window.addEventListener('resize', () => huidig?.decor?.plaats?.());
   events.on('sessie-klaar', () => {

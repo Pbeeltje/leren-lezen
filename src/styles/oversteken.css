@@ -399,17 +399,33 @@
       calc(var(--c) * 0.4) calc(var(--c) * 0.2) / calc(var(--c) * 0.97) calc(var(--c) * 0.69),
     linear-gradient(#69b04a, #5a9f3e);
 }
+/* Lava: de gloeiende belletjes en het oplichten zitten in een eigen laag (::before) die
+   alleen verschuift en van doorzichtigheid verandert. Eerst schoof de achtergrond en
+   pulseerde een filter op de hele baan: dan werd elke lavabaan met alle stenen en dieren
+   elk frame opnieuw getekend (lavaland op level 10: 16 fps op een tablet). */
 .ov-grond--lava {
+  background: linear-gradient(#ff7a1a, #e2440c);
+  overflow: hidden;
+}
+.ov-grond--lava::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: -58px;
+  right: 0;
   background:
     radial-gradient(ellipse 16px 5px at 50% 50%, rgba(255, 240, 120, 0.7) 0 50%, transparent 70%) 0 0 / 58px 100%,
-    linear-gradient(#ff7a1a, #e2440c);
+    rgba(255, 220, 90, 0.12);
   animation: ov-lava 3s linear infinite;
+  will-change: transform, opacity;
 }
 /* Stenen in de lava: donker basalt, met een gloeiende onderkant. */
 .ov-grond--lava .ov-stuk__beeld { filter: brightness(0.5) sepia(0.5) drop-shadow(0 3px 3px rgba(255, 90, 0, 0.9)); }
 @keyframes ov-lava {
-  50% { filter: brightness(1.12); }
-  to { background-position: 58px 0, 0 0; }
+  from { transform: translateX(0); opacity: 0.75; }
+  50% { opacity: 1; }
+  to { transform: translateX(58px); opacity: 0.75; }
 }
 /* Zee: varen tussen boten door, zandbank als berm. */
 .ov-grond--zee { background-image: radial-gradient(ellipse 14px 3px at 50% 40%, rgba(255, 255, 255, 0.5) 0 60%, transparent 70%), linear-gradient(#3aa0dc, #2a8cc8); --ov-streep: rgba(255, 255, 255, 0.35); }
@@ -516,7 +532,7 @@
 
 @media (prefers-reduced-motion: reduce) {
   .ov-grond--sloot, .ov-grond--rivier, .ov-grond--beek, .ov-grond--gracht, .ov-grond--wak,
-  .ov-grond--eendjes, .ov-grond--zee, .ov-grond--diep, .ov-grond--lava { animation: none; }
+  .ov-grond--eendjes, .ov-grond--zee, .ov-grond--diep, .ov-grond--lava::before { animation: none; }
 }
 
 /* Een gele ster op gele stenen: donker randje en witte gloed, zodat hij blijft opvallen. */
@@ -851,6 +867,43 @@
 .ov-npc--au img { animation: ov-au 0.9s ease-out forwards; }
 .ov-npc--plons img { animation: ov-zink 0.8s ease-in forwards; }
 .ov-npc--klaar { transition: opacity 0.8s; opacity: 0; }
+
+/* Jager (spookhuis): een doorschijnend spookje met een paarse gloed dat op je af zweeft,
+   boven de mist (z 4), zodat je het ook in het donker ziet aankomen. */
+.ov-jager {
+  position: absolute;
+  left: 0;
+  top: 0;
+  z-index: 4;
+  width: var(--c);
+  height: var(--c);
+  pointer-events: none;
+  opacity: 0.85;
+  will-change: translate;
+}
+.ov-jager[hidden] { display: none; }
+.ov-jager img {
+  position: absolute;
+  inset: 6%;
+  width: 88%;
+  height: 88%;
+  filter: drop-shadow(0 0 calc(var(--c) * 0.1) rgba(190, 150, 255, 0.95));
+  animation: ov-jager-zweef 1.4s ease-in-out infinite alternate;
+}
+.ov-jager--om img { scale: -1 1; }
+.ov-jager--komt { animation: ov-jager-komt 0.8s ease-out; }
+.ov-jager--gaat { transition: opacity 0.6s, scale 0.6s; opacity: 0; scale: 1.5; }
+@keyframes ov-jager-zweef {
+  from { transform: translateY(-6%) rotate(-5deg); }
+  to { transform: translateY(6%) rotate(5deg); }
+}
+@keyframes ov-jager-komt {
+  from { opacity: 0; scale: 0.3; }
+  60% { opacity: 0.4; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .ov-jager img { animation: none; }
+}
 
 /* Lawine: sneeuw schuift van onderen omhoog, met een bobbelige rand. */
 .ov-lawine[hidden] { display: none; }

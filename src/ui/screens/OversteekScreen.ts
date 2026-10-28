@@ -6,7 +6,7 @@ import { haalGroep } from '../../engine/progressStore.ts';
 import { maakDraaiMelding, maakHartjes, maakTeller, maakVenster, recordRegel, startKnop, toetsenHint, toonPlop as plopIn } from '../components/spelScherm.ts';
 import { TONEN, speelDrum, speelNoot } from '../../engine/muziek.ts';
 import { confetti } from '../../three/particles.ts';
-import { huidigThema } from '../../achtergrond/achtergrond.ts';
+import { bevriesDecor, huidigThema } from '../../achtergrond/achtergrond.ts';
 import { GNOE } from '../../achtergrond/savanne.ts';
 import { TREIN_LOC, treinWagons } from '../../achtergrond/trein.ts';
 import { OVERSTEEK_THEMAS, type Rivier, type Soort, type Tekening, type Uitdaging, type Vlot } from './oversteek-themas.ts';
@@ -55,8 +55,9 @@ const KOLOMMEN_MIN = 7; // het veld is altijd minstens zo breed (in vakjes)
 const KOLOMMEN_MAX = 15;
 const HOOG_MAX = 1.15; // vakjes: hoger mag een plaatje niet, anders loopt het over de buurbanen
 const UITDAGING_VANAF = [10, 15]; // op deze levels komt er een uitdaging van de achtergrond bij
-const LAVA_VANAF = 10; // lavaland (dino) op level 10, 13, 16, ...
+const LAVA_VANAF = 10; // lavaland (dino) op level 10, 13, 16, ... (een thema kan dat anders zetten)
 const LAVA_ELKE = 3;
+const JAGER = 0.6; // vakjes: zo dichtbij raakt het spookje je
 const HARTJE_VANAF = 10; // vanaf hier om het level een hartje om op te rapen
 const VAL = 1.4; // s dat iets uit de lucht valt (inslag), met een schaduw die groeit
 const NPC_HOP = 0.24; // s per sprongetje van een overstekertje
@@ -181,6 +182,9 @@ interface Baan {
 }
 
 interface Inslag { el: HTMLElement; x: number; r: number; t: number; geland: boolean }
+// Een spookje: x in vakjes, y in rijen (0 = start); t telt af in de huidige fase. `zwerft`:
+// zweeft naar steeds een ander `doel` in plaats van op je af.
+interface Spookje { el: HTMLElement; x: number; y: number; fase: 'weg' | 'komt' | 'jaagt' | 'gaat'; t: number; zwerft: boolean; doel: [number, number] | null }
 interface Overstekertje { el: HTMLElement; r: number; vanR: number; x: number; hopT: number; wacht: number; weg: number }
 
 const willekeurig = (a: number, b: number): number => a + Math.random() * (b - a);
@@ -370,14 +374,18 @@ export function OversteekScreen(manager: ScreenManager): Screen {
   let lawine: { el: HTMLElement; h: number; wacht: number } | null = null; // h: zoveel rijen bedekt
   let storm: { el: HTMLElement; richting: 1 | -1; t: number; aan: boolean } | null = null;
   let donker: HTMLElement | null = null;
+  let spookjes: Spookje[] = []; // jager, of zwervers in een lavaland (werkSpookjes)
 
   function uitdaging<W extends Uitdaging['wat']>(wat: W): Extract<Uitdaging, { wat: W }> | undefined {
     return uitdagingen.find((u) => u.wat === wat) as Extract<Uitdaging, { wat: W }> | undefined;
   }
-  // Lavaland (dino) is geen uitdaging uit de husselvolgorde maar een vast ritme: level 10, 13,
-  // 16, ... alles lava met stenen. Zo is het nooit lava achter elkaar en blijft hij terugkomen.
+  // Lavaland (dino, spookhuis) is geen uitdaging uit de husselvolgorde maar een vast ritme:
+  // level 10, 13, 16, ... alles lava met stenen. Zo is het nooit lava achter elkaar en blijft
+  // hij terugkomen. Het spookhuis begint later en minder vaak (12, 16, 20, ...).
   const lavalandUitdaging = thema.uitdagingen.find((u) => u.wat === 'lavaland') as Extract<Uitdaging, { wat: 'lavaland' }> | undefined;
-  const isLavaland = (l: number): boolean => !!thema.rivier && !!lavalandUitdaging && l >= LAVA_VANAF && (l - LAVA_VANAF) % LAVA_ELKE === 0;
+  const lavaVanaf = lavalandUitdaging?.vanaf ?? LAVA_VANAF;
+  const isLavaland = (l: number): boolean =>
+    !!thema.rivier && !!lavalandUitdaging && l >= lavaVanaf && (l - lavaVanaf) % (lavalandUitdaging.elke ?? LAVA_ELKE) === 0;
   const icoonSrc = (icoon: string): string => (isTekening(icoon as Soort['teken']) ? tekeningSrc(icoon as Tekening) : icoon);
   const binnenVeld = (x: number): number => Math.min(Wc - 0.5, Math.max(0.5, x));
   // Waar het figuurtje te zien is: tijdens een sprong eerst nog de oude rij, daarna de nieuwe.
@@ -989,6 +997,113 @@ export function OversteekScreen(manager: ScreenManager): Screen {
     vanX = binnenVeld(vanX + dx);
   }
 
+  // Spookjes (spookhuis). De jager verschijnt aan de rand en zweeft dwars door alles
+  // langzaam op je af. Op het gras (start, middenberm, overkant) komt hij niet; sta je daar,
+  // dan wacht hij. Na 7-10 s lost hij op en komt hij even later ergens anders terug. Een
+  // sprong is veel sneller dan een spookje, dus wegkomen kan altijd. In een lavaland zwerven
+  // er in plaats daarvan spookjes rond over de lava (geen dieren op de stenen).
+  function werkSpookjes(dt: number): void {
+    if (fase !== 'spel') return;
+    if (!spookjes.length) {
+      const zwerver = isLavaland(level) ? lavalandUitdaging?.spoken : undefined;
+      const jagerSrc = uitdaging('jager')?.src;
+      const maak = (src: string, zwerft: boolean, wacht: number): void => {
+        const el = document.createElement('div');
+        el.className = 'ov-jager';
+        el.innerHTML = `<img src="${src}" alt="">`;
+        el.hidden = true;
+        veld.appendChild(el);
+        spookjes.push({ el, x: 0, y: 0, fase: 'weg', t: wacht, zwerft, doel: null });
+      };
+      if (zwerver) for (let k = 0; k < (kleuter ? 1 : 2); k++) maak(zwerver, true, 1.5 + k * 2.5);
+      else if (jagerSrc) maak(jagerSrc, false, 2.5);
+      if (!spookjes.length) return;
+    }
+    for (const j of spookjes) werkSpookje(j, dt);
+  }
+
+  function werkSpookje(j: Spookje, dt: number): void {
+    const gevaarlijk = (r: number): boolean => banen[r]?.soort === 'weg' || banen[r]?.soort === 'water';
+    const verdwijn = (): void => {
+      j.fase = 'gaat';
+      j.t = 0.6;
+      j.el.classList.remove('ov-jager--komt');
+      j.el.classList.add('ov-jager--gaat');
+    };
+    // Het stuk gevaarlijke rijen waar het spookje is: het gras houdt het tegen.
+    const strook = (): [number, number] => {
+      let laag = Math.round(j.y);
+      let hoog = laag;
+      while (gevaarlijk(laag - 1)) laag--;
+      while (gevaarlijk(hoog + 1)) hoog++;
+      return [laag, hoog];
+    };
+    const zweefNaar = (x: number, y: number, v: number): number => {
+      const dx = x - j.x;
+      const dy = y - j.y;
+      const afstand = Math.hypot(dx, dy);
+      const zet = Math.min(afstand, v * dt);
+      if (afstand > 0.01) {
+        j.x += (dx / afstand) * zet;
+        j.y += (dy / afstand) * zet;
+      }
+      const [laag, hoog] = strook();
+      j.y = Math.min(hoog, Math.max(laag, j.y));
+      if (Math.abs(dx) > 0.05) j.el.classList.toggle('ov-jager--om', dx > 0);
+      return afstand;
+    };
+    j.t -= dt;
+    if (j.fase === 'weg') {
+      if (j.t > 0) return;
+      // Op een gevaarlijke rij die niet vlak bij je is, aan de kant van het veld waar je niet bent.
+      const rijen = banen.flatMap((_, r) => (gevaarlijk(r) ? [r] : []));
+      const ver = rijen.filter((r) => Math.abs(r - rij) >= 2);
+      const lijst = ver.length ? ver : rijen;
+      j.y = lijst[Math.floor(Math.random() * lijst.length)];
+      j.x = px < Wc / 2 ? Wc - 0.5 : 0.5;
+      j.doel = null;
+      j.fase = 'komt';
+      j.t = 0.8;
+      j.el.hidden = false;
+      j.el.classList.remove('ov-jager--gaat');
+      void j.el.offsetWidth;
+      j.el.classList.add('ov-jager--komt');
+      speelNoot(TONEN[4] / 2);
+      speelNoot(TONEN[2] / 2, 0.18);
+    } else if (j.fase === 'komt') {
+      // Tijdens het verschijnen raakt het je nog niet.
+      if (j.t <= 0) {
+        j.fase = 'jaagt';
+        j.t = j.zwerft ? willekeurig(9, 13) : kleuter ? willekeurig(6, 8) : willekeurig(7, 10);
+      }
+    } else if (j.fase === 'jaagt') {
+      if (j.t <= 0) verdwijn();
+      else if (!dood) {
+        const sx = zichtX();
+        const sy = vanRij + (rij - vanRij) * Math.min(1, hopT / HOP);
+        if (j.zwerft) {
+          // Zwerven: naar een willekeurig plekje in de eigen strook, en dan weer een ander.
+          if (!j.doel) {
+            const [laag, hoog] = strook();
+            j.doel = [willekeurig(0.5, Wc - 0.5), willekeurig(laag, hoog)];
+          }
+          if (zweefNaar(j.doel[0], j.doel[1], kleuter ? 0.4 : 0.55) < 0.05) j.doel = null;
+        } else if (gevaarlijk(zichtRij())) {
+          zweefNaar(sx, sy, kleuter ? 0.5 : Math.min(1, 0.7 + 0.02 * (level - 10)));
+        }
+        if (tijd >= onkwetsbaar && Math.hypot(sx - j.x, sy - j.y) < JAGER) {
+          sterf('au');
+          toonPlop(j.x, Math.round(j.y), 'Boe!');
+          verdwijn();
+        }
+      }
+    } else if (j.t <= 0) {
+      j.fase = 'weg';
+      j.t = j.zwerft ? willekeurig(1.5, 3) : willekeurig(2.5, 4.5);
+      j.el.hidden = true;
+    }
+    j.el.style.translate = `${((j.x - 0.5) * c).toFixed(1)}px ${((N - 1 - j.y) * c).toFixed(1)}px`;
+  }
   // ---------- level opbouwen ----------
 
   function bouwLevel(): void {
@@ -997,6 +1112,8 @@ export function OversteekScreen(manager: ScreenManager): Screen {
     lawine?.el.remove();
     storm?.el.remove();
     donker?.remove();
+    for (const j of spookjes) j.el.remove();
+    spookjes = [];
     inslagen = [];
     npcs = [];
     lawine = storm = donker = null;
@@ -1475,6 +1592,7 @@ export function OversteekScreen(manager: ScreenManager): Screen {
     werkOverstekers(dt);
     werkStorm(dt);
     werkLawine(dt);
+    werkSpookjes(dt);
 
     if (dood) {
       if (tijd >= doodTot) naDood();
@@ -1575,7 +1693,7 @@ export function OversteekScreen(manager: ScreenManager): Screen {
         ? verder.uitdagingVolgorde
         : kies
           ? kies.flatMap((w) => thema.uitdagingen.filter((u) => u.wat === w && u.wat !== 'lavaland'))
-          : schud(thema.uitdagingen.filter((u) => u.wat !== 'lavaland'));
+          : schud(thema.uitdagingen.filter((u) => u.wat !== 'lavaland')).sort((a, b) => Number(!!b.eerst) - Number(!!a.eerst));
     zetScore(verder?.score ?? 0);
     levens = verder?.levens ?? LEVENS;
     tekenHartjes();
@@ -1725,6 +1843,7 @@ export function OversteekScreen(manager: ScreenManager): Screen {
       veld.appendChild(speler);
       tekenSpeler();
       opGrootte.observe(el);
+      bevriesDecor(true);
       window.addEventListener('keydown', toetsNeer);
       toonVenster(false);
       actief = true;
@@ -1746,6 +1865,7 @@ export function OversteekScreen(manager: ScreenManager): Screen {
       actief = false;
       cancelAnimationFrame(frame);
       opGrootte.disconnect();
+      bevriesDecor(false);
       window.removeEventListener('keydown', toetsNeer);
       el.remove();
       terug.remove();
