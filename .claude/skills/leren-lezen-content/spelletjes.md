@@ -311,7 +311,10 @@ the app goes to the background); "Nieuw record!" compares with `recordBijStart`.
   so a mouse is small and an elephant big; a group that doesn't fit shrinks evenly
   (`maten`). `mond` sets where thrown food lands. `THEMA_DIEREN` favours animals
   that fit the background (75%). `water` animals (dolphin, shark, sea turtle,
-  tropical fish) only come on zee/onderwater. `draai` rotates the body (the
+  tropical fish) only come on zee/onderwater. `thema` animals only come on that background: on
+  spookhuis the ghost wants candy (`snoep`, Fluent candy), the skeleton (own drawing
+  `voeren/skelet.svg`) a bone and the jack-o'-lantern a candle (`kaars`); the goat never
+  gets candy or a candle. `draai` rotates the body (the
   crocodile is drawn from above, turned 90°).
 - The goat (`allesEter`) eats everything except live animals (`ALLES`): it always
   comes alone, its tray is 3 random foods, all right, and it says "Mjam!".

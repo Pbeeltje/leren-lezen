@@ -53,6 +53,8 @@ const THEMA_DINGEN: Partial<Record<ThemaId, VangThema>> = {
   // Bliksem, niet de onweerswolk. Niet rood kleuren: de schicht is al bliksem.
   trein: { goed: [w('tas'), w('pet'), w('appel'), w('boek'), w('fles')], gevaar: w('bliksem'), rood: false },
   savanne: { goed: [w('giraf'), w('zebra'), w('olifant'), w('banaan'), w('leeuw')], gevaar: w('krokodil'), rood: true },
+  // Snoep, snoep en nog eens snoep; de rode pompoen moet je ontwijken.
+  spookhuis: { goed: [a('spookhuis-snoepje'), a('spookhuis-lolly'), a('spookhuis-chocola'), a('spookhuis-snoepje'), a('spookhuis-lolly'), w('koek')], gevaar: i('avatar-pompoen'), rood: true },
 };
 const STER = w('ster');
 const HART = 'assets/icons/bewaar.svg';

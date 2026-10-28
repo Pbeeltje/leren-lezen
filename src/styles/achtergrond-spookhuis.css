@@ -1,0 +1,520 @@
+/* ---- Spookhuis (src/achtergrond/spookhuis.ts, tekeningen in spookhuis-tekening.ts) ---- */
+.decor-spookhuis {
+  background: linear-gradient(#0a0f27 0%, #15214a 42%, #263f5f 78%, #31516a 100%);
+}
+.decor-spookhuis img.gespiegeld { transform: scaleX(-1); }
+
+.sh-sterren { position: absolute; inset: 0 0 50% 0; }
+.sh-ster {
+  position: absolute;
+  width: 2px;
+  height: 2px;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: 0 0 4px 1px rgba(255, 255, 255, 0.5);
+  animation: sh-twinkel 5s ease-in-out infinite;
+}
+.sh-ster--groot { width: 3px; height: 3px; }
+@keyframes sh-twinkel {
+  0%, 100% { opacity: 0.9; }
+  50% { opacity: 0.25; }
+}
+
+/* Volle maan rechtsboven, half achter het huis, met een zacht ademende gloed. */
+.sh-maan {
+  position: absolute;
+  right: 7vw;
+  top: 3vh;
+  width: clamp(130px, 26vh, 300px);
+  aspect-ratio: 1;
+  border-radius: 50%;
+  animation: sh-maangloed 9s ease-in-out infinite alternate;
+}
+.sh-maan__svg { display: block; width: 100%; height: 100%; }
+@keyframes sh-maangloed {
+  from { box-shadow: 0 0 50px 14px rgba(225, 240, 215, 0.22), 0 0 140px 50px rgba(150, 195, 200, 0.12); }
+  to { box-shadow: 0 0 70px 22px rgba(225, 240, 215, 0.3), 0 0 180px 70px rgba(150, 195, 200, 0.16); }
+}
+
+/* Dunne sliertwolken die heel langzaam van links naar rechts drijven (ook voor de maan langs). */
+.sh-wolk {
+  position: absolute;
+  left: 0;
+  width: 34vw;
+  height: 4.5vh;
+  animation: sh-wolk 180s linear infinite;
+}
+.sh-wolk__sliert {
+  position: absolute;
+  border-radius: 50%;
+  background: linear-gradient(90deg, transparent, rgba(195, 210, 230, 0.42) 30%, rgba(210, 222, 238, 0.5) 55%, transparent);
+  filter: blur(1.5px);
+}
+.sh-wolk__sliert:nth-child(1) { top: 0; left: 12%; width: 66%; height: 6px; }
+.sh-wolk__sliert:nth-child(2) { top: 42%; left: 0; width: 92%; height: 4px; opacity: 0.85; }
+.sh-wolk__sliert:nth-child(3) { top: 82%; left: 28%; width: 58%; height: 3px; opacity: 0.7; }
+.sh-wolk--1 { top: 9vh; animation-duration: 170s; animation-delay: -30s; }
+.sh-wolk--2 { top: 19vh; animation-duration: 210s; animation-delay: -150s; width: 28vw; }
+.sh-wolk--3 { top: 27vh; animation-duration: 190s; animation-delay: -80s; width: 40vw; opacity: 0.8; }
+.sh-wolk--4 { top: 5vh; animation-duration: 240s; animation-delay: -200s; width: 46vw; opacity: 0.7; }
+.sh-wolk--5 { top: 35vh; animation-duration: 230s; animation-delay: -110s; width: 30vw; opacity: 0.6; }
+@keyframes sh-wolk {
+  from { transform: translateX(-50vw); }
+  to { transform: translateX(110vw); }
+}
+
+.sh-lucht { position: absolute; inset: 0; }
+.sh-verte { position: absolute; left: 0; bottom: 0; width: 100%; height: 38vh; }
+.sh-heuvel { position: absolute; left: 0; bottom: 0; width: 100%; height: 24vh; }
+.sh-voorgrond { position: absolute; left: 0; bottom: 0; width: 100%; height: 9vh; }
+
+/* Mist: zachte vlekken die heel langzaam schuiven (de laag is twee keer zo breed). */
+.sh-mist {
+  position: absolute;
+  left: 0;
+  width: 200%;
+  height: 20vh;
+  background:
+    radial-gradient(ellipse 18% 32% at 25% 60%, rgba(205, 222, 238, 0.24), transparent 70%),
+    radial-gradient(ellipse 22% 26% at 70% 45%, rgba(205, 222, 238, 0.2), transparent 70%),
+    radial-gradient(ellipse 14% 22% at 48% 75%, rgba(205, 222, 238, 0.18), transparent 70%);
+  background-size: 50% 100%;
+  animation: sh-mist 90s linear infinite;
+}
+.sh-mist--achter { bottom: 13vh; opacity: 0.8; }
+.sh-mist--voor { bottom: -4vh; animation-duration: 130s; animation-direction: reverse; opacity: 0.75; }
+@keyframes sh-mist {
+  to { transform: translateX(-50%); }
+}
+
+/* ---- Het huis ---- */
+.sh-huis {
+  position: absolute;
+  right: 1.5vw;
+  bottom: 12.2vh;
+  width: min(38vw, 52vh, 520px);
+  aspect-ratio: 400 / 512;
+}
+.sh-huis__svg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  filter: drop-shadow(0 0 16px rgba(255, 190, 100, 0.12));
+}
+.sh-raamlicht { animation: sh-flakker 6s ease-in-out infinite; }
+.sh-raamlicht--knippert { animation-name: sh-knipperlicht; }
+@keyframes sh-flakker {
+  0%, 100% { opacity: 1; }
+  38% { opacity: 0.86; }
+  44% { opacity: 0.97; }
+  70% { opacity: 0.9; }
+}
+@keyframes sh-knipperlicht {
+  0%, 100% { opacity: 1; }
+  60% { opacity: 1; }
+  62% { opacity: 0.55; }
+  64% { opacity: 0.95; }
+  66% { opacity: 0.6; }
+  70% { opacity: 1; }
+}
+.sh-huis.juicht .sh-raamlicht { animation: sh-oplicht 1.6s ease-out; }
+@keyframes sh-oplicht {
+  20% { opacity: 1; filter: brightness(1.45) saturate(1.3); }
+}
+.sh-lampgloed { animation: sh-lamp 4s ease-in-out infinite alternate; }
+@keyframes sh-lamp {
+  from { opacity: 0.7; }
+  to { opacity: 1; }
+}
+
+.sh-dakogen, .sh-knoestogen {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: sh-knipper 5.5s ease-in-out infinite;
+}
+.sh-knoestogen { animation-duration: 7s; animation-delay: -3s; }
+@keyframes sh-knipper {
+  0%, 90%, 100% { transform: scaleY(1); }
+  94% { transform: scaleY(0.1); }
+  97% { transform: scaleY(1); }
+}
+
+.sh-raamspook { animation: sh-langs 15s ease-in-out infinite; }
+@keyframes sh-langs {
+  0%, 35% { transform: translate(0, 0); }
+  52% { transform: translate(40px, -4px); }
+  70%, 100% { transform: translate(84px, 0); }
+}
+.sh-stoel {
+  transform-box: fill-box;
+  transform-origin: 50% 100%;
+  animation: sh-schommelstoel 3.4s ease-in-out infinite alternate;
+}
+@keyframes sh-schommelstoel {
+  from { transform: rotate(-7deg); }
+  to { transform: rotate(7deg); }
+}
+.sh-schilderij-ogen { animation: sh-kijk 7s ease-in-out infinite; }
+@keyframes sh-kijk {
+  0%, 30% { transform: translateX(0); }
+  36%, 55% { transform: translateX(-1.6px); }
+  62%, 85% { transform: translateX(1.6px); }
+  92%, 100% { transform: translateX(0); }
+}
+.sh-kroonluchter {
+  transform-box: fill-box;
+  transform-origin: 50% 0;
+  animation: sh-luchter 5s ease-in-out infinite alternate;
+}
+@keyframes sh-luchter {
+  from { transform: rotate(-4deg); }
+  to { transform: rotate(4deg); }
+}
+
+/* De voordeur gaat op een kier en een spookje gluurt om de hoek (klasse .gluurt, 5,2 s). */
+.sh-deurblad--r { transform-box: fill-box; transform-origin: 100% 50%; }
+.sh-gluurder { transform: translateX(10px); }
+.sh-huis.gluurt .sh-deurblad--r { animation: sh-deur 5.2s ease-in-out; }
+.sh-huis.gluurt .sh-gluurder { animation: sh-gluur 5.2s ease-in-out; }
+.sh-huis.gluurt .sh-gluurder__ogen { animation: sh-kijk 5.2s ease-in-out; }
+@keyframes sh-deur {
+  0% { transform: scaleX(1); }
+  8% { transform: scaleX(0.94); }
+  12% { transform: scaleX(0.97); }
+  28%, 74% { transform: scaleX(0.3); }
+  90% { transform: scaleX(1); }
+  94% { transform: scaleX(0.96); }
+  100% { transform: scaleX(1); }
+}
+@keyframes sh-gluur {
+  0%, 26% { transform: translateX(10px); }
+  38% { transform: translateX(-7px) rotate(-6deg); }
+  50% { transform: translateX(-6px) rotate(2deg); }
+  62% { transform: translateX(-7px) rotate(-4deg); }
+  74%, 100% { transform: translateX(10px); }
+}
+
+/* Boe! Een spook komt achter het dak omhoog bij een goed antwoord. */
+.sh-boe {
+  position: absolute;
+  left: 18%;
+  top: 13%;
+  width: 17%;
+  opacity: 0;
+  transform: translateY(70%);
+}
+.sh-boe__spook { position: relative !important; display: block; width: 100%; }
+.sh-boe.boe { animation: sh-boe 1.7s ease-out; }
+.sh-boe__tekst { left: -40%; top: -30%; }
+.sh-boe.boe .sh-boe__tekst { animation: sh-ballon 1.7s ease-out; }
+@keyframes sh-boe {
+  0% { opacity: 0; transform: translateY(70%); }
+  18% { opacity: 1; transform: translateY(-38%) rotate(-8deg); }
+  30% { transform: translateY(-30%) rotate(6deg); }
+  70% { opacity: 1; transform: translateY(-34%) rotate(-4deg); }
+  100% { opacity: 0; transform: translateY(70%); }
+}
+
+.sh-ballon {
+  position: absolute;
+  padding: 0.15em 0.55em;
+  border-radius: 1em;
+  background: #fff;
+  color: #3a2d5c;
+  font-weight: 900;
+  font-size: clamp(0.8rem, 1.4vw, 1.2rem);
+  white-space: nowrap;
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.35);
+  opacity: 0;
+}
+@keyframes sh-ballon {
+  0%, 15% { opacity: 0; transform: scale(0.4); }
+  25% { opacity: 1; transform: scale(1.1); }
+  32%, 80% { opacity: 1; transform: scale(1); }
+  100% { opacity: 0; transform: scale(0.9); }
+}
+
+/* Spookje dat uit de schoorsteen kringelt. */
+.sh-schoorsteenspook {
+  position: absolute;
+  left: 63.5%;
+  top: 9%;
+  width: 11%;
+  opacity: 0;
+}
+.sh-schoorsteenspook__img { position: relative !important; display: block; width: 100%; }
+.sh-schoorsteenspook.stijgt { animation: sh-stijg 7.2s ease-in-out forwards; }
+@keyframes sh-stijg {
+  0% { opacity: 0; transform: translate(0, 40%) scale(0.3); }
+  15% { opacity: 1; transform: translate(-10%, -40%) scale(0.6) rotate(-6deg); }
+  45% { transform: translate(30%, -160%) scale(0.9) rotate(8deg); }
+  75% { opacity: 0.9; transform: translate(-30%, -300%) scale(1) rotate(-6deg); }
+  100% { opacity: 0; transform: translate(10%, -420%) scale(1.05); }
+}
+
+.sh-huisvoet {
+  position: absolute;
+  left: -8%;
+  right: -8%;
+  bottom: -5%;
+  height: 6.5%;
+  border-radius: 50% 50% 0 0 / 100% 100% 0 0;
+  background: linear-gradient(#335750, #2c4a46 45%);
+}
+.sh-hek { position: absolute; left: -62%; bottom: -2%; width: 64%; }
+.sh-hek--voor { left: 22vw; bottom: 3.5vh; width: min(24vw, 34vh); }
+.sh-deurlicht {
+  position: absolute;
+  left: 30%;
+  width: 40%;
+  bottom: -7%;
+  height: 9%;
+  border-radius: 50%;
+  background: radial-gradient(closest-side, rgba(255, 196, 100, 0.35), transparent);
+  animation: sh-lamp 4s ease-in-out infinite alternate;
+}
+.sh-dakkat__staart {
+  transform-box: fill-box;
+  transform-origin: 0% 100%;
+  animation: sh-staart 2.6s ease-in-out infinite alternate;
+}
+@keyframes sh-staart {
+  from { transform: rotate(-12deg); }
+  to { transform: rotate(14deg); }
+}
+.sh-dakkat__ogen { transform-box: fill-box; transform-origin: center; animation: sh-knipper 6.5s ease-in-out infinite; animation-delay: -1.5s; }
+.sh-rook {
+  position: absolute;
+  left: 67%;
+  top: 11%;
+  width: 4%;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background: rgba(200, 210, 230, 0.35);
+  filter: blur(3px);
+  opacity: 0;
+  animation: sh-rook 7.5s ease-out infinite;
+}
+.sh-rook--2 { animation-delay: -2.5s; }
+.sh-rook--3 { animation-delay: -5s; }
+@keyframes sh-rook {
+  0% { opacity: 0; transform: translate(0, 0) scale(0.6); }
+  15% { opacity: 0.8; }
+  100% { opacity: 0; transform: translate(60%, -500%) scale(2.4); }
+}
+
+.sh-pompoen { position: absolute; width: 11%; }
+.sh-pompoen__img {
+  position: relative !important;
+  display: block;
+  width: 100%;
+  animation: sh-pompoengloed 3s ease-in-out infinite alternate;
+}
+.sh-pompoen--1 { left: 20%; bottom: -5%; }
+.sh-pompoen--2 { left: 72%; bottom: -6%; width: 13%; }
+.sh-pompoen--2 .sh-pompoen__img { animation-delay: -1.4s; }
+.sh-pompoen--3 { left: -14%; bottom: -6%; width: 9%; }
+.sh-pompoen--3 .sh-pompoen__img { animation-delay: -0.7s; }
+.sh-pompoen.springt { animation: juich-sprong 0.7s ease-out; }
+@keyframes sh-pompoengloed {
+  from { filter: drop-shadow(0 0 6px rgba(255, 140, 30, 0.45)); }
+  to { filter: drop-shadow(0 0 14px rgba(255, 150, 40, 0.8)); }
+}
+
+/* ---- De boom ---- */
+.sh-boomvak {
+  position: absolute;
+  left: -2vw;
+  bottom: 5vh;
+  height: min(66vh, 600px);
+  aspect-ratio: 320 / 430;
+}
+.sh-boom__svg { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
+.sh-boom {
+  transform-box: fill-box;
+  transform-origin: 40% 100%;
+  animation: sh-boomzwaai 7s ease-in-out infinite alternate;
+}
+@keyframes sh-boomzwaai {
+  from { transform: rotate(-0.7deg); }
+  to { transform: rotate(0.9deg); }
+}
+.sh-tak { transform-box: fill-box; animation: sh-tak 5s ease-in-out infinite alternate; }
+.sh-tak--links { transform-origin: 100% 100%; animation-duration: 5.6s; }
+.sh-tak--boven { transform-origin: 0% 100%; animation-duration: 4.4s; animation-delay: -2s; }
+.sh-tak--rechts { transform-origin: 0% 40%; animation-duration: 6.2s; animation-delay: -1s; }
+.sh-tak--uil { transform-origin: 0% 100%; animation-duration: 5s; animation-delay: -3s; }
+@keyframes sh-tak {
+  from { transform: rotate(-1.6deg); }
+  to { transform: rotate(1.6deg); }
+}
+.sh-mos {
+  transform-box: fill-box;
+  transform-origin: 50% 0;
+  animation: sh-mos 3.2s ease-in-out infinite alternate;
+  animation-delay: calc(var(--i) * -0.8s);
+}
+@keyframes sh-mos {
+  from { transform: skewX(-7deg); }
+  to { transform: skewX(7deg); }
+}
+.sh-schommel {
+  transform-box: fill-box;
+  transform-origin: 50% 0;
+  animation: sh-schommel 3.8s ease-in-out infinite alternate;
+}
+@keyframes sh-schommel {
+  from { transform: rotate(-6deg); }
+  to { transform: rotate(6deg); }
+}
+/* Windvlaag: alles waait even harder mee. */
+.sh-boomvak.windvlaag .sh-boom { animation: sh-vlaag 4.2s ease-in-out; }
+.sh-boomvak.windvlaag .sh-mos { animation-duration: 0.8s; }
+.sh-boomvak.windvlaag .sh-schommel { animation: sh-schommelvlaag 4.2s ease-in-out; }
+@keyframes sh-vlaag {
+  0% { transform: rotate(-0.7deg); }
+  25% { transform: rotate(2.6deg); }
+  40% { transform: rotate(1.4deg); }
+  60% { transform: rotate(2.8deg); }
+  100% { transform: rotate(-0.7deg); }
+}
+@keyframes sh-schommelvlaag {
+  0% { transform: rotate(-6deg); }
+  25% { transform: rotate(18deg); }
+  50% { transform: rotate(4deg); }
+  70% { transform: rotate(14deg); }
+  100% { transform: rotate(-6deg); }
+}
+.sh-blad {
+  position: absolute;
+  left: 0;
+  width: 13px;
+  height: 8px;
+  border-radius: 0 100% 0 100%;
+  background: #a8763c;
+  opacity: 0;
+  animation: sh-blaas 5s linear forwards;
+}
+.sh-blad:nth-child(odd) { background: #7d5a34; }
+@keyframes sh-blaas {
+  0% { opacity: 0; transform: translate(-4vw, 0) rotate(0); }
+  8% { opacity: 1; }
+  50% { transform: translate(50vw, -6vh) rotate(calc(var(--draai) / 2)); }
+  90% { opacity: 1; }
+  100% { opacity: 0; transform: translate(104vw, 8vh) rotate(var(--draai)); }
+}
+
+.sh-uil { transform-box: fill-box; transform-origin: 50% 100%; }
+.sh-uil.roept { animation: sh-roep 0.5s ease-in-out 3; }
+@keyframes sh-roep {
+  50% { transform: scale(1.08, 0.92) rotate(-4deg); }
+}
+.sh-oehoe { left: 52%; top: 9%; }
+.sh-oehoe.zegt { animation: sh-ballon 2.2s ease-out; }
+.sh-pompoen--boom { left: 60%; bottom: -3%; width: 16%; }
+
+/* Dwaallichtjes laag boven de grond. */
+.sh-dwaallicht {
+  position: absolute;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #eaffa8;
+  box-shadow: 0 0 10px 4px rgba(200, 255, 140, 0.55);
+  animation: sh-dwaal 9s ease-in-out infinite;
+}
+@keyframes sh-dwaal {
+  0%, 100% { opacity: 0; transform: translate(0, 0); }
+  20% { opacity: 0.9; }
+  50% { opacity: 0.4; transform: translate(3vw, -3vh); }
+  75% { opacity: 0.9; transform: translate(-1vw, -6vh); }
+}
+
+/* Spinnetje dat aan een draad zakt en weer omhoog klimt. */
+.sh-spin {
+  position: absolute;
+  top: 0;
+  width: clamp(26px, 3vw, 40px);
+  transform: translateY(-130%);
+}
+.sh-spin__draad {
+  position: absolute;
+  left: 50%;
+  bottom: 60%;
+  width: 1px;
+  height: 100vh;
+  background: rgba(235, 235, 255, 0.55);
+}
+.sh-spin__img { position: relative !important; display: block; width: 100%; }
+.sh-spin.zakt { animation: sh-spinzak 11s ease-in-out forwards; }
+@keyframes sh-spinzak {
+  0% { transform: translateY(-130%); }
+  28% { transform: translateY(22vh); }
+  36% { transform: translateY(20vh) rotate(6deg); }
+  48% { transform: translateY(23vh) rotate(-6deg); }
+  60% { transform: translateY(22vh); }
+  100% { transform: translateY(-130%); }
+}
+
+/* ---- In de lucht ---- */
+.sh-spook, .sh-vleermuis {
+  position: absolute;
+  left: 0;
+  animation: sh-over linear both;
+}
+@keyframes sh-over {
+  from { transform: translateX(var(--van)); }
+  to { transform: translateX(var(--naar)); }
+}
+.sh-spook { width: clamp(48px, 5.5vw, 80px); }
+.sh-spook__zweef { animation: sh-zweef 3.4s ease-in-out infinite; opacity: 0.9; }
+.sh-spook__img {
+  position: relative !important;
+  display: block;
+  width: 100%;
+  filter: drop-shadow(0 0 12px rgba(220, 235, 255, 0.6));
+}
+@keyframes sh-zweef {
+  0%, 100% { transform: translateY(0) rotate(-5deg); }
+  50% { transform: translateY(-16px) rotate(5deg); }
+}
+.sh-vleermuis { width: clamp(30px, 3.2vw, 48px); }
+.sh-vleermuis__golf { animation: sh-golf 1.5s ease-in-out infinite alternate; }
+.sh-vleermuis__svg { display: block; width: 100%; height: auto; overflow: visible; }
+@keyframes sh-golf {
+  from { transform: translateY(-10px); }
+  to { transform: translateY(10px); }
+}
+.sh-vleugel { transform-box: fill-box; animation: sh-flap 0.26s ease-in-out infinite alternate; }
+.sh-vleugel--l { transform-origin: 100% 40%; }
+.sh-vleugel--r { transform-origin: 0% 40%; animation-name: sh-flap-r; }
+@keyframes sh-flap { to { transform: rotate(30deg) scaleY(0.8); } }
+@keyframes sh-flap-r { to { transform: rotate(-30deg) scaleY(0.8); } }
+
+/* Feest: spookjes vliegen uit alle ramen de lucht in. */
+.sh-feestspook {
+  position: absolute;
+  width: clamp(36px, 4.2vw, 62px);
+  margin: -2% 0 0 -2%;
+  opacity: 0;
+  animation: sh-feestvlucht 5.6s ease-out forwards;
+}
+.sh-feestspook__zweef { animation: sh-zweef 1.6s ease-in-out infinite; }
+.sh-feestspook__img { position: relative !important; display: block; width: 100%; }
+@keyframes sh-feestvlucht {
+  0% { opacity: 0; transform: translate(0, 0) scale(0.2); }
+  12% { opacity: 1; transform: translate(-1vw, -3vh) scale(0.8); }
+  80% { opacity: 1; }
+  100% { opacity: 0; transform: translate(var(--dx), var(--dy)) scale(1.15); }
+}
+
+/* Telefoon rechtop: de kaarten nemen het midden, dus alles iets kleiner aan de randen. */
+@media (max-width: 560px) {
+  .sh-huis { width: 52vw; bottom: 12vh; right: -4vw; }
+  .sh-boomvak { height: 42vh; left: -10vw; }
+  .sh-hek, .sh-pompoen--3 { display: none; }
+  .sh-hek--voor { display: block; left: 30vw; width: 30vw; bottom: 2vh; }
+  .sh-maan { width: 30vw; right: 4vw; top: 9vh; }
+  .sh-ballon { font-size: 0.75rem; }
+}

@@ -2364,6 +2364,7 @@
 .thema-bouw .pong-tafel, .thema-bouw .vang-scherm { --pong-tafel: #4b5563; --pong-rand: #fbc02d; }
 .thema-trein .pong-tafel, .thema-trein .vang-scherm { --pong-tafel: #2e6b4f; --pong-rand: #fff; }
 .thema-savanne .pong-tafel, .thema-savanne .vang-scherm { --pong-tafel: #a8742c; --pong-rand: #fff3d6; }
+.thema-spookhuis .pong-tafel, .thema-spookhuis .vang-scherm { --pong-tafel: #3b3f6e; --pong-rand: #ffb74d; }
 .pong-tafel__lijn {
   position: absolute;
   top: 0;

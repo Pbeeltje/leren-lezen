@@ -14,6 +14,7 @@ import { maakKermisDecor } from './kermis.ts';
 import { maakBouwDecor } from './bouw.ts';
 import { maakTreinDecor } from './trein.ts';
 import { maakSavanneDecor } from './savanne.ts';
+import { maakSpookhuisDecor } from './spookhuis.ts';
 
 // Kiesbare achtergronden (per profiel onthouden). Elk decor staat in een eigen laag
 // achter de three.js-laag en de schermen, blijft aan de randen (de vragen staan in het
@@ -26,7 +27,8 @@ export type ThemaId = 'ruimte' | 'dino' | 'kasteel' | 'zee' | 'onderwater'
   | 'kermis'
   | 'bouw'
   | 'trein'
-  | 'savanne';
+  | 'savanne'
+  | 'spookhuis';
 
 export interface Decor {
   element: HTMLElement;
@@ -52,6 +54,7 @@ export const THEMAS: { id: ThemaId; naam: string; voorbeeld: string }[] = [
   { id: 'bouw', naam: 'Bouwplaats', voorbeeld: 'assets/achtergrond/bouw.svg' },
   { id: 'trein', naam: 'Treinreis', voorbeeld: 'assets/achtergrond/locomotief.svg' },
   { id: 'savanne', naam: 'Savanne', voorbeeld: 'assets/achtergrond/savanne.svg' },
+  { id: 'spookhuis', naam: 'Spookhuis', voorbeeld: 'assets/images/woorden/spook.svg' },
 ];
 
 // De ruimte zelf tekent three.js; het decor erbij is alleen de laag met vallende sterren
@@ -69,6 +72,7 @@ const MAKERS: Record<ThemaId, () => Decor> = {
   bouw: maakBouwDecor,
   trein: maakTreinDecor,
   savanne: maakSavanneDecor,
+  spookhuis: maakSpookhuisDecor,
 };
 
 let laag: HTMLElement | null = null;

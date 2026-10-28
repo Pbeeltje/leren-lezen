@@ -15,6 +15,7 @@ import './styles/achtergrond-kermis.css';
 import './styles/achtergrond-bouw.css';
 import './styles/achtergrond-trein.css';
 import './styles/achtergrond-savanne.css';
+import './styles/achtergrond-spookhuis.css';
 import './styles/achtergrond-kasteel.css';
 import './styles/oversteken.css';
 

@@ -52,6 +52,8 @@ const ETEN = {
   kip: w('kip'),
   noot: w('noot'),
   bamboe: v('bamboe'),
+  snoep: a('spookhuis-snoepje'),
+  kaars: w('kaars'),
 } as const;
 type Eten = keyof typeof ETEN;
 
@@ -90,12 +92,15 @@ interface Dier {
   water?: boolean; // komt alleen bij de zee en onder water (dolfijn, haai)
   // De geit eet alles: komt altijd alleen, en alles in de bak is goed.
   allesEter?: boolean;
+  // Komt alleen bij deze achtergrond (de spoken bij het spookhuis).
+  thema?: ThemaId;
 }
 
 const PLANT_NEE: Eten[] = ['vis', 'kaas', 'bot', 'vlees', 'kluif', 'vlieg', 'worm', 'honing'];
 const VLEES_NEE: Eten[] = ['gras', 'sla', 'wortel', 'banaan', 'mais', 'appel', 'honing', 'zeewier', 'noot', 'bamboe'];
 // Geen levende dieren voor de geit.
-const ALLES: Eten[] = (Object.keys(ETEN) as Eten[]).filter((e) => !['muis', 'schaap', 'kip'].includes(e));
+// Ook geen kaars en geen snoep.
+const ALLES: Eten[] = (Object.keys(ETEN) as Eten[]).filter((e) => !['muis', 'schaap', 'kip', 'kaars', 'snoep'].includes(e));
 
 const DIEREN: Dier[] = [
   { id: 'koe', plaatje: w('koe'), geluid: 'Boe!', goed: ['gras'], fout: PLANT_NEE, kijkt: 'links', schaal: 1.15, komt: 'loopt', tempo: 0.85 },
@@ -154,6 +159,10 @@ const DIEREN: Dier[] = [
   { id: 'zeeschildpad', plaatje: v('zeeschildpad'), geluid: 'Blub blub!', goed: ['zeewier'], fout: ['kaas', 'bot', 'vlees', 'kluif', 'honing', 'melk', 'pinda', 'gras'], kijkt: 'links', schaal: 1, komt: 'zwemt', tempo: 0.8, water: true, mond: [0.1, 0.6] },
   { id: 'visje', plaatje: a('vis-tropisch'), geluid: 'Blub!', goed: ['zeewier'], fout: ['kaas', 'bot', 'vlees', 'kluif', 'honing', 'melk', 'gras', 'brood'], kijkt: 'links', schaal: 0.8, komt: 'zwemt', tempo: 1.4, water: true, mond: [0.05, 0.5] },
   { id: 'krab', plaatje: w('krab'), geluid: 'Knip knip!', goed: ['zeewier'], fout: ['kaas', 'honing', 'melk', 'gras', 'brood', 'bot'], kijkt: 'voor', schaal: 0.82, komt: 'loopt', tempo: 1.5, reactie: 'gooi' },
+  // Alleen bij het spookhuis: het spook wil snoep, het skeletje een bot, de pompoen een kaars (voor binnenin).
+  { id: 'spook', plaatje: w('spook'), geluid: 'Boe!', goed: ['snoep'], fout: ['gras', 'sla', 'vis', 'worm', 'vlieg', 'bot', 'kaars', 'vlees', 'zeewier', 'bamboe'], kijkt: 'voor', schaal: 0.95, komt: 'vliegt', tempo: 0.8, thema: 'spookhuis' },
+  { id: 'skelet', plaatje: v('skelet'), geluid: 'Klepper klepper!', goed: ['bot'], fout: ['gras', 'sla', 'vis', 'worm', 'vlieg', 'snoep', 'kaars', 'honing', 'melk', 'zeewier', 'bamboe'], kijkt: 'voor', schaal: 1, komt: 'loopt', tempo: 1.1, thema: 'spookhuis' },
+  { id: 'pompoen', plaatje: 'assets/icons/avatar-pompoen.svg', geluid: 'Hihihi!', goed: ['kaars'], fout: ['gras', 'vis', 'worm', 'vlieg', 'bot', 'snoep', 'vlees', 'melk', 'zeewier', 'bamboe'], kijkt: 'voor', schaal: 0.9, komt: 'hupt', tempo: 1, thema: 'spookhuis' },
 ];
 for (const id of ['tijger', 'leeuw', 'trex', 'ijsbeer', 'wolf', 'vos', 'krokodil', 'haai']) DIEREN.find((d) => d.id === id)!.jager = true;
 // Eten dat ook als dier langs kan komen: die staan nooit samen met wie ze opeet.
@@ -189,6 +198,7 @@ const THEMA_DIEREN: Record<ThemaId, string[]> = {
   kermis: ['olifant', 'aap', 'leeuw', 'tijger', 'paard', 'zeehond', 'papegaai', 'nijlpaard'],
   bouw: ['hond', 'poes', 'muis', 'egel', 'haan', 'ezel', 'slak', 'mol', 'spin', 'kip'],
   trein: ['koe', 'schaap', 'paard', 'varken', 'eend', 'hond', 'poes', 'kip', 'geit', 'lam'],
+  spookhuis: ['spook', 'skelet', 'pompoen', 'uil', 'spin', 'poes', 'muis', 'wolf'],
 };
 
 const STER = w('ster');
@@ -643,7 +653,7 @@ export function VoerScreen(manager: ScreenManager): Screen {
       if (r < 0.7) return Array<Dier>(Math.random() < SAMEN.aap.drie ? 3 : 2).fill(dier('aap'));
       return Array<Dier>(breedte() < 560 ? 3 : 4).fill(dier(Math.random() < 0.5 ? 'bij' : 'vlinder'));
     }
-    const vrij = DIEREN.filter((d) => !d.alleenFamilie && (!d.water || WATER.includes(thema)));
+    const vrij = DIEREN.filter((d) => !d.alleenFamilie && (!d.water || WATER.includes(thema)) && (!d.thema || d.thema === thema));
     const poel = Math.random() < 0.75 ? vrij.filter((d) => themaPoel.includes(d.id)) : vrij;
     const gekozen: Dier[] = [];
     for (let poging = 0; poging < 60 && gekozen.length < n; poging++) {

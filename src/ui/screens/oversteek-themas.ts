@@ -84,6 +84,7 @@ const o = (n: string): string => `assets/oversteken/${n}.svg`;
 const w = (n: string): string => `assets/images/woorden/${n}.svg`;
 const a = (n: string): string => `assets/achtergrond/${n}.svg`;
 const i = (n: string): string => `assets/icons/${n}.svg`;
+const v = (n: string): string => `assets/voeren/${n}.svg`;
 
 const BOOMSTAM: Soort = { teken: 'boomstam', maat: 1 };
 const ZINKEN = (icoon: string): Uitdaging => ({ wat: 'zinken', icoon });
@@ -349,6 +350,29 @@ export const OVERSTEEK_THEMAS: Record<ThemaId, OversteekThema> = {
       // Stroom op de rails: een hele baan, met een blauw lampje vooraf.
       { wat: 'baan-aan', stijl: 'stroom', icoon: w('bliksem') },
       // (Rangeren met 'keren' is eraf: een trein die achteruit reed, flitste weg en terug.)
+    ],
+  },
+  spookhuis: {
+    // Een zwarte versie van de gele stenen weg van het kasteel, met lava in plaats van water.
+    weg: 'zwarte-stenen',
+    veilig: 'spookgras',
+    vijanden: [
+      { src: w('spook'), maat: 1.1, dobber: true, snel: 0.8, aantal: [3, 5] },
+      { src: a('spookhuis-schedel'), maat: 0.9, kijkt: 'geen', spin: true, snel: 1.2, aantal: [1, 2] },
+      { src: v('skelet'), maat: 1.1, kijkt: 'geen', dobber: true, aantal: [1, 3] },
+      { teken: 'stegosaurus', maat: 1.15, snel: 0.75, dobber: true },
+      { teken: 'triceratops', maat: 1.4, dobber: true },
+      { src: o('trex'), maat: 1.5, kijkt: 'r', snel: 1.3, dobber: true },
+    ],
+    // Een hele kudde spoken die voorbij raast.
+    zeldzaam: [{ src: w('spook'), maat: 1.1, dobber: true, snel: 2.4, aantal: [6, 9] }],
+    rivier: { water: 'lava', drijvers: [{ src: o('steen'), maat: 1, aantal: [2, 3], kijkt: 'geen' }] },
+    overkant: [i('avatar-pompoen'), w('spook'), a('spookhuis-schedel'), w('spook'), i('avatar-pompoen')],
+    uitdagingen: [
+      { wat: 'donker', mist: true, icoon: o('mist') },
+      { wat: 'lavaland', icoon: w('spook'), passagiers: [w('spook'), v('skelet'), i('avatar-pompoen'), 'raptor'] },
+      // Pompoenen vallen uit de lucht.
+      { wat: 'inslag', src: i('avatar-pompoen'), gloed: true, icoon: i('avatar-pompoen') },
     ],
   },
 };

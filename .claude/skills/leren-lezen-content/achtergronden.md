@@ -133,3 +133,21 @@
   `.dier__kop`. Crocodile every ~20–45 s. `DAGCYCLUS`: avond 20 s, nacht 15 s (lions
   sleep with zzz, eyes closed), dag 25 s; `.savanne-f` filters ground parts;
   `savanne--begin` starts mid-sunset. Check: `node tests/savanne.mjs <map>` (~65 s).
+- **spookhuis** (`spookhuis.ts`, drawings `spookhuis-tekening.ts`, CSS
+  `achtergrond-spookhuis.css`, prefix `sh-`): own house `HUIS` (viewBox 0 -62 400 512:
+  mansard roof, three dormers, the middle one dark with blinking eyes, a black cat on the
+  roof ridge, flickering `.sh-raamlicht`, a window ghost, rocking chair, portrait with
+  moving eyes, chandelier) on the flat right part of `HEUVEL`; `.sh-huisvoet` keeps its
+  base in the ground. Front door: `.gluurt` (5.2 s, every 16–32 s) opens the right leaf
+  and a mirrored Fluent picture from `GLUURDERS` peeks out (`.sh-gluurder__beeld`, href
+  changes each time). Tree `BOOM` on the left: branches `.sh-tak--*` and moss sway on
+  their own, a swing and the Fluent owl (`<image>` in `.sh-tak--uil`, "Oehoe!"), and
+  `windvlaag` every 24–44 s with blowing leaves. Sky: big moon, five thin cloud wisps
+  (`.sh-wolk`, 170–240 s), one event at a time (`lucht`): a ghost crossing 50%, bats
+  (`VLEERMUIS`, flapping wings) 30%, a ghost rising from the chimney 20%; shooting stars, a
+  spider on a thread, will-o'-wisps, two fog layers, grass blades and mushrooms (`gras()`
+  with non-scaling strokes), fences `hek(n, zaad)`, Fluent jack-o'-lanterns.
+  `juich`: windows light up, a "Boe!" ghost rises behind the roof, the pumpkins jump.
+  `feest`: ghosts fly out of every window (`RAMEN`). Games: Vangspel candy/red pumpkin,
+  Oversteken `zwarte-stenen` (the black kasteel road) with lava, dinos, skulls, skeletons
+  and herds of ghosts.
