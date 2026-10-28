@@ -89,7 +89,7 @@ Every game builds these from here instead of its own copy (a new game too):
 ## Oversteken (`ui/screens/OversteekScreen.ts`, themes in `oversteek-themas.ts`)
 
 Frogger: the profile figure hops from the bottom strip to the finish row (checkered
-edge, theme decorations) through lanes seen from above. Tile icon: Fluent traffic light
+edge, theme decorations: always something friendly, never a picture that is also a vijand or hazard) through lanes seen from above. Tile icon: Fluent traffic light
 (`icons/oversteken.svg`).
 - **Units:** everything is in cells (`c` px, CSS var `--c` on `.ov-veld`): positions,
   speeds (cells/s), gaps. `maatVeld()` sizes cells from the height under the bar and at
@@ -169,6 +169,8 @@ edge, theme decorations) through lanes seen from above. Tile icon: Fluent traffi
     16, ... (`isLavaland`, `LAVA_VANAF`/`LAVA_ELKE`; per theme `vanaf`/`elke`: spookhuis 12, 16,
     20, ...). Spookhuis has `spoken` instead of `passagiers`: empty rocks, and 2 (kleuter 1)
     ghosts roam over the lava (`werkSpookjes`, `zwerft`; the `jager` rests on those levels).
+    From level 20 a lava level has no road and no middle strip, so the star goes over the
+    lava (with no star row `bouwLevel` used to throw before `rij = 0`: instant win).
     It is kept out of the shuffled
     `uitdagingVolgorde`, so the dino's other challenge (`inslag`) always comes at 10; the level
     banner shows the volcano before every lava level. Its `passagiers` (small animals: own drawings `raptor` and
@@ -178,7 +180,9 @@ edge, theme decorations) through lanes seen from above. Tile icon: Fluent traffi
     (`Baan.dierLoopt`).
   - `jager` (spookhuis, `eerst: true` = always the level-10 challenge; `eerst` sorts it to
     the front of the shuffle): a see-through ghost (`.ov-jager`, z 4, above the mist) fades in
-    at the far edge on a hazard row ≥ 2 rows away (0.8 s, harmless), then floats straight
+    on a hazard row ≥ 2 rows away, mostly mid-field (75%), sometimes 1–2 rows behind you
+    (20%), rarely at the far edge (5%; roaming lava ghosts always at the edge) (0.8 s,
+    harmless), then floats straight
     at you through everything at 0.7 cell/s (+0.02/level, max 1; kleuter 0.5) for 7–10 s,
     then fades out and returns 2.5–4.5 s later. It stays inside its block of hazard rows
     (grass stops it) and waits while you stand on grass. Within 0.6 cell (`JAGER`) = heart

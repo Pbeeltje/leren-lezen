@@ -81,7 +81,9 @@ export interface OversteekThema {
   // Water vanaf level 4: alleen staan op wat drijft. Geen dieren als vlot: kinderen zien
   // een dier als gevaar (zoals op de weg) en durfden er niet op.
   rivier?: Rivier;
-  overkant: string[]; // versiering op de finish
+  // Versiering op de finish: iets fijns om naar toe te gaan, nooit iets dat ook een vijand
+  // of gevaar is (dan lijkt de overkant ook gevaarlijk).
+  overkant: string[];
   uitdagingen: Uitdaging[];
 }
 
@@ -138,7 +140,7 @@ export const OVERSTEEK_THEMAS: Record<ThemaId, OversteekThema> = {
     zeldzaam: [{ teken: 'gnoe', maat: 1.3, kijkt: 'r', aantal: [6, 9], dobber: true, snel: 2.4 }],
     rivier: { water: 'rivier', drijvers: [BOOMSTAM, { teken: 'vlot', maat: 1 }] },
     // Afrikaanse bomen (eigen tekeningen), niet de Europese boom uit de woordplaatjes.
-    overkant: [o('acacia'), w('giraf'), o('baobab'), w('olifant'), o('acacia')],
+    overkant: [o('acacia'), w('flamingo'), o('baobab'), w('kameel'), o('acacia')],
     uitdagingen: [
       // De grote trek: een kudde gnoes die drie banen vult.
       { wat: 'kolos', ding: { teken: 'gnoe', maat: 1.3, kijkt: 'r', aantal: [6, 8], dobber: true, banen: 3, snel: 1.3 }, icoon: 'gnoe' },
@@ -159,7 +161,7 @@ export const OVERSTEEK_THEMAS: Record<ThemaId, OversteekThema> = {
     ],
     zeldzaam: [{ src: w('tractor'), maat: 1.5, snel: 2.4 }],
     rivier: { water: 'sloot', drijvers: [BOOMSTAM, { src: o('lotus'), maat: 1, aantal: [2, 3], kijkt: 'geen' }] },
-    overkant: [w('molen'), a('haan'), w('tractor'), w('kip'), w('molen')],
+    overkant: [w('molen'), w('tulp'), w('hond'), w('eend'), w('molen')],
     uitdagingen: [
       // Waarom stak de kip over? Kippen lopen van de overkant naar beneden.
       { wat: 'overstekers', src: w('kip'), icoon: w('kip') },
@@ -182,7 +184,7 @@ export const OVERSTEEK_THEMAS: Record<ThemaId, OversteekThema> = {
     ],
     // De lege ruimte: van planetoïde naar zonnepaneel.
     rivier: { water: 'leegte', val: 'ster', drijvers: [{ src: o('steen'), maat: 1, aantal: [2, 3], kijkt: 'geen' }, { teken: 'paneel', maat: 1 }] },
-    overkant: [o('planeet'), w('maan'), w('raket'), w('maan'), o('planeet')],
+    overkant: [o('planeet'), w('maan'), i('avatar-astronaut'), w('maan'), o('planeet')],
     uitdagingen: [
       { wat: 'inslag', src: i('meteoor'), gloed: true, icoon: i('meteoor') },
       { wat: 'baan-aan', stijl: 'laser', bron: w('ufo'), icoon: w('ufo') },
@@ -201,7 +203,7 @@ export const OVERSTEEK_THEMAS: Record<ThemaId, OversteekThema> = {
     zeldzaam: [{ src: o('trex'), maat: 1.6, kijkt: 'r', snel: 2.6, dobber: true }],
     // Een lavarivier: springen over stenen.
     rivier: { water: 'lava', drijvers: [{ src: o('steen'), maat: 1, aantal: [2, 3], kijkt: 'geen' }] },
-    overkant: [o('vulkaan'), w('ei'), a('boomvaren'), w('ei'), o('vulkaan')],
+    overkant: [a('boomvaren'), w('ei'), w('vlinder'), w('ei'), a('boomvaren')],
     uitdagingen: [
       { wat: 'lavaland', icoon: o('vulkaan'), passagiers: ['raptor', 'pachy', 'raptor', w('hagedis'), a('schildpad')] },
       // Lavabommen uit de vulkaan.
@@ -222,7 +224,7 @@ export const OVERSTEEK_THEMAS: Record<ThemaId, OversteekThema> = {
     zeldzaam: [{ src: o('speedboot'), maat: 1.5, snel: 2.8, dobber: true }],
     // De diepe zee: luchtbedden en zwembanden.
     rivier: { water: 'diepzee', drijvers: [{ teken: 'luchtbed', maat: 1 }, { src: o('zwemband'), maat: 1, aantal: [2, 3], kijkt: 'geen', kleuren: true, dobber: true }] },
-    overkant: [a('vuurtoren'), w('parasol'), a('krab'), w('emmer'), a('vuurtoren')],
+    overkant: [a('vuurtoren'), w('parasol'), w('schelp'), w('emmer'), a('vuurtoren')],
     uitdagingen: [
       // Een cruiseschip, twee banen breed.
       { wat: 'kolos', ding: { src: w('schip'), maat: 2.2, banen: 2, dobber: true, snel: 0.9 }, icoon: w('schip') },
@@ -243,7 +245,7 @@ export const OVERSTEEK_THEMAS: Record<ThemaId, OversteekThema> = {
     zeldzaam: [{ src: w('haai'), maat: 1.6, snel: 2.6, dobber: true }],
     // De onderwatertrog: op luchtbelletjes en wrakhout.
     rivier: { water: 'trog', val: 'ster', drijvers: [{ teken: 'bellen', maat: 1 }, { teken: 'vlot', maat: 1 }] },
-    overkant: [a('schelp'), a('octopus'), a('schildpad'), a('krab'), a('schelp')],
+    overkant: [a('schelp'), v('zeewier'), a('schildpad'), a('krab'), a('schelp')],
     uitdagingen: [
       // Roze kwallen zwemmen de andere kant op.
       { wat: 'overstekers', src: w('kwal'), kleur: 'hue-rotate(70deg) saturate(1.4)', icoon: w('kwal') },
@@ -263,7 +265,7 @@ export const OVERSTEEK_THEMAS: Record<ThemaId, OversteekThema> = {
     ],
     zeldzaam: [{ src: o('everzwijn'), maat: 1.3, kijkt: 'r', snel: 2.4, aantal: [3, 4], dobber: true }],
     rivier: { water: 'beek', drijvers: [BOOMSTAM, { src: o('herfstblad'), maat: 1, aantal: [2, 3], kijkt: 'geen' }] },
-    overkant: [a('herfst-paddenstoel'), a('herfst-eekhoorn'), a('esdoornblad'), a('herfst-egel'), a('herfst-paddenstoel')],
+    overkant: [a('herfst-paddenstoel'), a('herfst-eekhoorn'), a('esdoornblad'), w('uil'), a('herfst-paddenstoel')],
     uitdagingen: [
       // Kastanjes vallen uit de bomen.
       { wat: 'inslag', src: a('herfst-kastanje'), icoon: a('herfst-kastanje') },
@@ -283,7 +285,7 @@ export const OVERSTEEK_THEMAS: Record<ThemaId, OversteekThema> = {
     ],
     zeldzaam: [{ src: o('skier'), maat: 1.2, kijkt: 'r', snel: 3 }],
     rivier: { water: 'wak', drijvers: [{ teken: 'schots', maat: 1 }] },
-    overkant: [a('sneeuwpop'), a('den'), a('winter-pinguin'), a('den'), a('sneeuwpop')],
+    overkant: [a('winter-sneeuwvlok'), a('den'), w('ijsbeer'), a('den'), a('winter-sneeuwvlok')],
     uitdagingen: [
       { wat: 'lawine', icoon: w('sneeuw') },
       { wat: 'storm', icoon: o('wind') },
@@ -350,7 +352,7 @@ export const OVERSTEEK_THEMAS: Record<ThemaId, OversteekThema> = {
       drijvers: [{ teken: 'wagon', maat: 1 }],
       passagiers: [a('koe'), a('schaap'), a('varken'), w('geit'), w('kip'), w('ezel'), w('hond')],
     },
-    overkant: [a('locomotief'), w('klok'), o('verkeerslicht'), w('tas'), a('locomotief')],
+    overkant: [w('fiets'), w('klok'), o('verkeerslicht'), w('tas'), w('fiets')],
     uitdagingen: [
       // Stroom op de rails: een hele baan, met een blauw lampje vooraf.
       { wat: 'baan-aan', stijl: 'stroom', icoon: w('bliksem') },
@@ -372,7 +374,7 @@ export const OVERSTEEK_THEMAS: Record<ThemaId, OversteekThema> = {
     // Een hele kudde spoken die voorbij raast.
     zeldzaam: [{ src: w('spook'), maat: 1.1, dobber: true, snel: 2.4, aantal: [6, 9] }],
     rivier: { water: 'lava', drijvers: [{ src: o('steen'), maat: 1, aantal: [2, 3], kijkt: 'geen' }] },
-    overkant: [i('avatar-pompoen'), w('spook'), a('spookhuis-schedel'), w('spook'), i('avatar-pompoen')],
+    overkant: [a('spookhuis-lolly'), a('spookhuis-snoepje'), w('kat'), a('spookhuis-chocola'), a('spookhuis-lolly')],
     uitdagingen: [
       // Level 10: een spookje dat je achternazit. Blijf bewegen, of wacht op het gras tot het oplost.
       { wat: 'jager', src: w('spook'), icoon: w('spook'), eerst: true },

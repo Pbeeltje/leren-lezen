@@ -997,7 +997,7 @@ export function OversteekScreen(manager: ScreenManager): Screen {
     vanX = binnenVeld(vanX + dx);
   }
 
-  // Spookjes (spookhuis). De jager verschijnt aan de rand en zweeft dwars door alles
+  // Spookjes (spookhuis). De jager verschijnt meestal midden in het veld en zweeft dwars door alles
   // langzaam op je af. Op het gras (start, middenberm, overkant) komt hij niet; sta je daar,
   // dan wacht hij. Na 7-10 s lost hij op en komt hij even later ergens anders terug. Een
   // sprong is veel sneller dan een spookje, dus wegkomen kan altijd. In een lavaland zwerven
@@ -1055,12 +1055,22 @@ export function OversteekScreen(manager: ScreenManager): Screen {
     j.t -= dt;
     if (j.fase === 'weg') {
       if (j.t > 0) return;
-      // Op een gevaarlijke rij die niet vlak bij je is, aan de kant van het veld waar je niet bent.
+      // Op een gevaarlijke rij die niet vlak bij je is. De jager meestal midden in het veld,
+      // soms (20%) een rij of twee achter je en heel af en toe (5%) aan de rand waar je niet
+      // bent. Zwervers altijd aan de rand.
       const rijen = banen.flatMap((_, r) => (gevaarlijk(r) ? [r] : []));
       const ver = rijen.filter((r) => Math.abs(r - rij) >= 2);
       const lijst = ver.length ? ver : rijen;
-      j.y = lijst[Math.floor(Math.random() * lijst.length)];
-      j.x = px < Wc / 2 ? Wc - 0.5 : 0.5;
+      const achter = [rij - 2, rij - 1].filter((r) => r > 0 && gevaarlijk(r));
+      const kans = Math.random();
+      if (!j.zwerft && kans < 0.2 && achter.length) {
+        j.y = achter[0];
+        j.x = binnenVeld(px + willekeurig(-0.5, 0.5));
+      } else {
+        j.y = lijst[Math.floor(Math.random() * lijst.length)];
+        const rand = j.zwerft || (kans >= 0.2 && kans < 0.25);
+        j.x = rand ? (px < Wc / 2 ? Wc - 0.5 : 0.5) : binnenVeld(Wc / 2 + willekeurig(-1, 1));
+      }
       j.doel = null;
       j.fase = 'komt';
       j.t = 0.8;
@@ -1375,8 +1385,11 @@ export function OversteekScreen(manager: ScreenManager): Screen {
       veld.appendChild(donker);
     }
 
-    // Eén ster per level, op een baan met verkeer of op de middenberm.
+    // Eén ster per level, op een baan met verkeer of op de middenberm. Een lavaland vanaf
+    // level 20 heeft geen van beide (alles lava): dan boven de lava. Zonder rij liep
+    // bouwLevel hier vast vóór `rij = 0`, en stond je meteen aan de overkant.
     const sterRijen = plan.flatMap((s, r) => (s === 'weg' || s === 'veilig' ? [r] : []));
+    if (!sterRijen.length) sterRijen.push(...plan.flatMap((s, r) => (s === 'water' ? [r] : [])));
     const sr = sterRijen[Math.floor(Math.random() * sterRijen.length)];
     const sx = Math.floor(willekeurig(1, Math.max(2, Wc - 1))) + 0.5;
     const sEl = document.createElement('img');
