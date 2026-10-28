@@ -13,7 +13,7 @@ import { speelSchermOvergang } from '../../three/transitions.ts';
 import { isGedempt, zetGedempt } from '../../engine/audioManager.ts';
 import { huidigSchrift, kiesSchrift } from '../../engine/schrift.ts';
 import { THEMAS, huidigThema, kiesAchtergrond } from '../../achtergrond/achtergrond.ts';
-import { eigenAchtergronden, eigenFiguren } from '../../engine/winkel.ts';
+import { eigenAchtergronden, eigenFiguren, type WinkelSoort } from '../../engine/winkel.ts';
 import { maakBladeraar } from './Bladeraar.ts';
 import { WinkelScreen } from '../screens/WinkelScreen.ts';
 import { GROEPEN, groepIcoon } from '../screens/GroepKiesScreen.ts';
@@ -147,14 +147,14 @@ export function maakProfielMenu(manager: ScreenManager): { element: HTMLElement;
   }
 
   // Onderaan de figuren en achtergronden: naar de winkel voor meer.
-  function winkelKnop(ouder: HTMLElement): void {
+  function winkelKnop(ouder: HTMLElement, soort: WinkelSoort): void {
     const k = maak('button', 'profiel-menu__winkel', ouder);
     plaatje('assets/icons/munt.svg', '', k);
     k.append('Meer in de winkel');
     k.addEventListener('click', () => {
       sluitPaneel();
       speelSchermOvergang();
-      manager.push((m) => WinkelScreen(m));
+      manager.push((m) => WinkelScreen(m, { soort }));
     });
   }
 
@@ -204,7 +204,7 @@ export function maakProfielMenu(manager: ScreenManager): { element: HTMLElement;
     kleurKnoppen.push(optie);
   }
 
-  winkelKnop(figuur);
+  winkelKnop(figuur, 'figuur');
 
   const achtergrond = submenu('Achtergrond');
   const achtergrondRij = maak('div', 'achtergrond-rij', achtergrond);
@@ -222,7 +222,7 @@ export function maakProfielMenu(manager: ScreenManager): { element: HTMLElement;
     achtergrondKnoppen.push(optie);
   }
 
-  winkelKnop(achtergrond);
+  winkelKnop(achtergrond, 'achtergrond');
 
   // Wisselen: meteen de groepen (de huidige gemarkeerd); een tik gaat naar de onderwerpen
   // van die groep. Het submenu ertussen voorkomt dat je per ongeluk wisselt. Ander profiel

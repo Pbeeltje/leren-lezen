@@ -9,6 +9,11 @@ phones), up to 4 rows, so everything fits on one page; sideways paging. Tapping 
 coin counter opens the shop (see "Shop during an activity" in
 [navigatie-voortgang.md](navigatie-voortgang.md)). Check: `tests/winkel-rij.mjs`.
 
+Every link into the shop opens the matching tab via `WinkelScreen(m, { soort })`:
+"Meer in de winkel" under Mijn figuur → figuur, under Achtergrond → achtergrond;
+the instrument buttons and `.muziek-winkel-knop` → instrument (with `koop`). Only the
+coin counter has no context and opens the default figuur tab.
+
 ## Profile menu (`ui/components/ProfielMenu.ts`)
 
 Header (figure + name; tap the name to switch profile), 5 tiles: Mijn figuur
