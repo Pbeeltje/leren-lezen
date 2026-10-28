@@ -32,11 +32,18 @@ function bezit(): string[] {
   return start;
 }
 
-export function prijsVan(soort: WinkelSoort, id: string): number {
-  if (soort === 'figuur') return GRATIS_FIGUREN.includes(id) ? 0 : FIGUUR_PRIJS;
-  if (soort === 'instrument') return id === GRATIS_INSTRUMENT ? 0 : INSTRUMENT_PRIJS;
-  return id === GRATIS_ACHTERGROND ? 0 : ACHTERGROND_PRIJS;
-}
+const GRATIS: Record<WinkelSoort, readonly string[]> = {
+  figuur: GRATIS_FIGUREN,
+  achtergrond: [GRATIS_ACHTERGROND],
+  instrument: [GRATIS_INSTRUMENT],
+};
+const PRIJS: Record<WinkelSoort, number> = {
+  figuur: FIGUUR_PRIJS,
+  achtergrond: ACHTERGROND_PRIJS,
+  instrument: INSTRUMENT_PRIJS,
+};
+
+export const prijsVan = (soort: WinkelSoort, id: string): number => (GRATIS[soort].includes(id) ? 0 : PRIJS[soort]);
 
 export function heeft(soort: WinkelSoort, id: string): boolean {
   if (prijsVan(soort, id) === 0) return true;

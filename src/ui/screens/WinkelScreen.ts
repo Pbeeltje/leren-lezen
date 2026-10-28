@@ -2,18 +2,21 @@ import type { Screen, ScreenManager } from '../../engine/screenManager.ts';
 import { AVATAR_ICONEN, avatarFilter, avatarPad, haalActiefProfiel, wijzigProfielIcoon } from '../../engine/profielStore.ts';
 import { haalVoortgang } from '../../engine/progressStore.ts';
 import { events } from '../../engine/events.ts';
-import { THEMAS, huidigThema, kiesAchtergrond } from '../../achtergrond/achtergrond.ts';
+import { THEMAS, huidigThema, kiesAchtergrond, type ThemaId } from '../../achtergrond/achtergrond.ts';
 import { heeft, huidigInstrument, kiesInstrument, koop, prijsVan, type WinkelSoort } from '../../engine/winkel.ts';
 import { INSTRUMENTEN, speelInstrument, speelNoot, TONEN, type Instrument } from '../../engine/muziek.ts';
 import { confetti } from '../../three/particles.ts';
 import { maakTerugKnop } from '../components/TerugKnop.ts';
 import { maakBladeraar } from '../components/Bladeraar.ts';
 
-// Muntenwinkel: bovenaan je munten, dan drie tabbladen (Figuren / Achtergronden /
-// Instrumenten) met de spullen per bladzijde om zijwaarts door te bladeren. Op een slotje
+// Muntenwinkel: je munten rechtsboven, drie tabbladen (Figuren / Achtergronden /
+// Instrumenten) en de spullen per bladzijde om zijwaarts door te bladeren. Op een slotje
 // staat de prijs; tik erop om te kopen. Wat je al hebt kies je hier ook meteen.
 // start: met welk tabblad de winkel opent, en eventueel meteen het koopvenster van iets
 // (vanuit Speel na / Vrij spelen: de munt of een instrument met een slotje).
+//
+// Hoeveel kaarten er per bladzijde passen wordt gemeten (breedte van het vak, hoogte die
+// overblijft onder de tabbladen), niet gegokt per schermmaat: er komen steeds spullen bij.
 
 interface Artikel {
   soort: WinkelSoort;
@@ -28,44 +31,71 @@ const ARTIKELEN: Record<WinkelSoort, Artikel[]> = {
   instrument: INSTRUMENTEN.map((i) => ({ soort: 'instrument', id: i.id, naam: i.naam, plaatje: i.icoon })),
 };
 
+// Kaartbreedte minimaal (px) en hoogstens zoveel kolommen, zodat kaarten niet te klein
+// of te breed worden. Achtergrond- en instrumentkaarten hebben een naam, dus breder.
+const RASTER: Record<WinkelSoort, { minBreedte: number; maxKolommen: number }> = {
+  figuur: { minBreedte: 72, maxKolommen: 8 },
+  achtergrond: { minBreedte: 76, maxKolommen: 7 },
+  instrument: { minBreedte: 92, maxKolommen: 7 },
+};
+const GAT = 8; // gap tussen de kaarten, gelijk aan .winkel__blader .bladeraar__blad
+const STIPPEN = 30; // hoogte van de bladzijde-stipjes (gap + 24px tikvlak)
+
+const ARPEGGIO = [0, 2, 4, 7];
+
 export function WinkelScreen(manager: ScreenManager, start?: { soort: WinkelSoort; koop?: string }): Screen {
   const profiel = haalActiefProfiel();
   const el = document.createElement('div');
   el.className = 'scherm winkel';
 
-  const kop = document.createElement('div');
-  kop.className = 'winkel__kop';
   const titel = document.createElement('h1');
-  titel.className = 'scherm-titel';
+  titel.className = 'scherm-titel winkel__titel';
   titel.textContent = 'Winkel';
   const beurs = document.createElement('div');
   beurs.className = 'winkel__beurs';
+  beurs.setAttribute('aria-label', 'Munten');
   beurs.innerHTML = '<img src="assets/icons/munt.svg" alt=""><span></span>';
   const beursAantal = beurs.querySelector('span')!;
-  kop.append(titel, beurs);
-  el.appendChild(kop);
-
   const tabs = document.createElement('div');
   tabs.className = 'winkel__tabs';
-  el.appendChild(tabs);
   const vak = document.createElement('div');
   vak.className = 'winkel__vak';
-  el.appendChild(vak);
+  el.append(titel, tabs, vak);
+
+  const SOORTEN: Record<WinkelSoort, { naam: string; tabIcoon: string; gekozen: () => string | undefined; kies: (id: string) => void }> = {
+    figuur: {
+      naam: 'Figuren',
+      tabIcoon: avatarPad(profiel?.icoonId ?? 'kat'),
+      gekozen: () => profiel?.icoonId,
+      kies: (id) => {
+        if (!profiel) return;
+        wijzigProfielIcoon(profiel.id, id);
+        profiel.icoonId = id;
+      },
+    },
+    achtergrond: {
+      naam: 'Achtergronden',
+      tabIcoon: 'assets/icons/ster.svg',
+      gekozen: huidigThema,
+      kies: (id) => kiesAchtergrond(id as ThemaId),
+    },
+    instrument: {
+      naam: 'Instrumenten',
+      tabIcoon: 'assets/icons/harp.svg',
+      gekozen: huidigInstrument,
+      kies: (id) => kiesInstrument(id as Instrument),
+    },
+  };
 
   let soort: WinkelSoort = start?.soort ?? 'figuur';
-  const tabKnoppen = (
-    [
-      ['figuur', 'Figuren', avatarPad(profiel?.icoonId ?? 'kat')],
-      ['achtergrond', 'Achtergronden', 'assets/icons/ster.svg'],
-      ['instrument', 'Instrumenten', 'assets/icons/harp.svg'],
-    ] as const
-  ).map(([id, naam, src]) => {
+  const tabKnoppen = (Object.keys(SOORTEN) as WinkelSoort[]).map((id) => {
     const k = document.createElement('button');
     k.type = 'button';
     k.className = 'winkel__tab';
-    k.setAttribute('aria-label', naam);
-    k.innerHTML = `<img src="${src}" alt=""><span>${naam}</span>`;
+    k.setAttribute('aria-label', SOORTEN[id].naam);
+    k.innerHTML = `<img src="${SOORTEN[id].tabIcoon}" alt=""><span>${SOORTEN[id].naam}</span>`;
     k.addEventListener('click', () => {
+      if (soort === id) return;
       soort = id;
       teken();
     });
@@ -74,31 +104,26 @@ export function WinkelScreen(manager: ScreenManager, start?: { soort: WinkelSoor
   });
 
   const munten = () => haalVoortgang().munten;
-  const gekozen = (a: Artikel) =>
-    a.soort === 'figuur' ? profiel?.icoonId === a.id : a.soort === 'instrument' ? huidigInstrument() === a.id : huidigThema() === a.id;
 
   function kies(a: Artikel): void {
-    if (a.soort === 'figuur') {
-      if (!profiel) return;
-      wijzigProfielIcoon(profiel.id, a.id);
-      profiel.icoonId = a.id;
-    } else if (a.soort === 'instrument') {
-      kiesInstrument(a.id as Instrument);
-    } else {
-      kiesAchtergrond(a.id as (typeof THEMAS)[number]['id']);
-    }
+    SOORTEN[a.soort].kies(a.id);
     teken();
   }
 
-  function kaart(a: Artikel): HTMLElement {
-    const k = document.createElement('button');
-    k.type = 'button';
-    k.className = `winkel-kaart winkel-kaart--${a.soort}`;
+  function plaatje(a: Artikel, klasse?: string): HTMLImageElement {
     const img = document.createElement('img');
     img.src = a.plaatje;
     img.alt = '';
+    if (klasse) img.className = klasse;
     if (a.soort === 'figuur') img.style.filter = avatarFilter(profiel?.kleur);
-    k.appendChild(img);
+    return img;
+  }
+
+  function kaart(a: Artikel, eigen: boolean, gekozen: boolean, saldo: number): HTMLElement {
+    const k = document.createElement('button');
+    k.type = 'button';
+    k.className = `winkel-kaart winkel-kaart--${a.soort}`;
+    k.appendChild(plaatje(a));
     if (a.naam) {
       const n = document.createElement('span');
       n.className = 'winkel-kaart__naam';
@@ -107,11 +132,12 @@ export function WinkelScreen(manager: ScreenManager, start?: { soort: WinkelSoor
     }
     const label = document.createElement('span');
     label.className = 'winkel-kaart__label';
-    if (gekozen(a)) {
+    const prijs = prijsVan(a.soort, a.id);
+    if (gekozen) {
       k.classList.add('winkel-kaart--gekozen');
       label.textContent = '✓';
       k.setAttribute('aria-label', `${a.naam || a.id}: gekozen`);
-    } else if (heeft(a.soort, a.id)) {
+    } else if (eigen) {
       label.textContent = 'Kies';
       k.setAttribute('aria-label', `${a.naam || a.id} kiezen`);
     } else {
@@ -121,50 +147,79 @@ export function WinkelScreen(manager: ScreenManager, start?: { soort: WinkelSoor
       slot.src = 'assets/icons/slot.svg';
       slot.alt = '';
       k.appendChild(slot);
-      if (munten() < prijsVan(a.soort, a.id)) k.classList.add('winkel-kaart--te-duur');
-      label.innerHTML = `<img src="assets/icons/munt.svg" alt="">${prijsVan(a.soort, a.id)}`;
-      k.setAttribute('aria-label', `${a.naam || a.id} kopen voor ${prijsVan(a.soort, a.id)} munten`);
+      if (saldo < prijs) k.classList.add('winkel-kaart--te-duur');
+      label.innerHTML = `<img src="assets/icons/munt.svg" alt="">${prijs}`;
+      k.setAttribute('aria-label', `${a.naam || a.id} kopen voor ${prijs} munten`);
     }
     k.appendChild(label);
-    k.addEventListener('click', () => {
-      if (heeft(a.soort, a.id)) kies(a);
-      else vraagKoop(a);
-    });
+    k.addEventListener('click', () => (eigen ? kies(a) : vraagKoop(a)));
     return k;
   }
+
+  // Hoeveel rijen van `hoogte` passen er in `ruimte`.
+  const rijenIn = (ruimte: number, hoogte: number) => Math.max(1, Math.floor((ruimte + GAT) / (hoogte + GAT)));
 
   function teken(): void {
     beursAantal.textContent = String(munten());
     for (const t of tabKnoppen) t.k.classList.toggle('winkel__tab--aan', t.id === soort);
+    el.dataset.soort = soort;
+
     // Wat je al hebt staat vooraan, dan hoef je niet te zoeken; verder de vaste volgorde.
     const alle = ARTIKELEN[soort];
-    const artikelen = [...alle.filter((a) => heeft(a.soort, a.id)), ...alle.filter((a) => !heeft(a.soort, a.id))];
-    const smal = window.innerWidth < 560;
-    const hoog = window.innerHeight;
-    const opties =
-      soort === 'figuur'
-        ? { kolommen: smal ? 3 : 5, rijen: hoog > 700 ? 3 : 2 }
-        : soort === 'instrument'
-          ? { kolommen: smal ? 3 : 5, rijen: smal ? 2 : 1 }
-          : // Kleine kaartjes, zodat alle achtergronden (en een paar nieuwe) op één bladzijde passen.
-            { kolommen: smal ? 3 : 6, rijen: smal ? (hoog >= 700 ? 4 : 3) : hoog >= 620 ? 2 : 1 };
-    const blader = maakBladeraar(artikelen.map(kaart), { ...opties, klasse: `winkel__blader winkel__blader--${soort}` });
+    const eigen = new Set(alle.filter((a) => heeft(a.soort, a.id)).map((a) => a.id));
+    const artikelen = [...alle.filter((a) => eigen.has(a.id)), ...alle.filter((a) => !eigen.has(a.id))];
+    const gekozenId = SOORTEN[soort].gekozen();
+    const saldo = munten();
+    const kaarten = artikelen.map((a) => kaart(a, eigen.has(a.id), a.id === gekozenId, saldo));
+
+    // Kolommen uit de breedte van het vak; daarna alles op één bladzijde zetten om de
+    // hoogste kaart te meten, en zoveel rijen nemen als er in de overgebleven hoogte passen.
+    const { minBreedte, maxKolommen } = RASTER[soort];
+    const vakStijl = getComputedStyle(vak);
+    const binnen = (kant: 'Left' | 'Top') =>
+      parseFloat(vakStijl[`padding${kant}`]) + parseFloat(vakStijl[`padding${kant === 'Left' ? 'Right' : 'Bottom'}`]);
+    const breedte = vak.clientWidth - binnen('Left');
+    const kolommen = Math.max(2, Math.min(maxKolommen, Math.floor((breedte + GAT) / (minBreedte + GAT))));
+    const klasse = `winkel__blader winkel__blader--${soort}`;
+    vak.replaceChildren(maakBladeraar(kaarten, { kolommen, rijen: kaarten.length, klasse }).element);
+    const kaartHoogte = Math.max(...kaarten.map((k) => k.offsetHeight));
+
+    // Staan de tabbladen niet bovenin de balk (position: fixed), dan gaan ze van de hoogte af.
+    const schermStijl = getComputedStyle(el);
+    const tabsInVak = getComputedStyle(tabs).position === 'fixed' ? 0 : tabs.offsetHeight + parseFloat(schermStijl.rowGap);
+    const ruimte =
+      el.clientHeight -
+      parseFloat(schermStijl.paddingTop) -
+      parseFloat(schermStijl.paddingBottom) -
+      tabsInVak -
+      binnen('Top') -
+      8; // de schaduw onder het vak
+    let rijen = rijenIn(ruimte, kaartHoogte);
+    // Past alles niet op één bladzijde, dan komen er stipjes onder: die ruimte eraf.
+    if (kolommen * rijen < kaarten.length) rijen = rijenIn(ruimte - STIPPEN, kaartHoogte);
+    rijen = Math.min(rijen, Math.ceil(kaarten.length / kolommen));
+
+    const blader = maakBladeraar(kaarten, { kolommen, rijen, klasse });
     vak.replaceChildren(blader.element);
-    const i = artikelen.findIndex(gekozen);
+    const i = artikelen.findIndex((a) => a.id === gekozenId);
     if (i >= 0) blader.naarItem(i);
   }
 
-  // Kopen: een groot venstertje met het plaatje en de prijs. Te weinig munten? Dan zie je
-  // hoeveel je nog moet sparen in plaats van een koopknop.
+  // Kopen: een groot venstertje met het plaatje, de naam en de prijs. Een instrument laat
+  // zich meteen horen (en nog eens met de luidspreker). Te weinig munten? Dan zie je met
+  // een spaarbalk hoe ver je bent, in plaats van een koopknop.
   let venster: HTMLElement | null = null;
   function sluitVenster(): void {
     venster?.remove();
     venster = null;
   }
+  const speelVoor = (a: Artikel) => ARPEGGIO.forEach((t, i) => speelInstrument(a.id as Instrument, TONEN[t], i * 0.16));
+
   function vraagKoop(a: Artikel): void {
     sluitVenster();
     const prijs = prijsVan(a.soort, a.id);
-    const tekort = prijs - munten();
+    const saldo = munten();
+    const tekort = prijs - saldo;
     venster = document.createElement('div');
     venster.className = 'winkel-venster';
     venster.addEventListener('click', (e) => {
@@ -172,14 +227,28 @@ export function WinkelScreen(manager: ScreenManager, start?: { soort: WinkelSoor
     });
     const doos = document.createElement('div');
     doos.className = 'winkel-venster__doos';
-    const img = document.createElement('img');
-    img.src = a.plaatje;
-    img.alt = '';
-    img.className = 'winkel-venster__plaatje';
-    if (a.soort === 'figuur') img.style.filter = avatarFilter(profiel?.kleur);
+    doos.appendChild(plaatje(a, 'winkel-venster__plaatje'));
+    if (a.naam) {
+      const naam = document.createElement('p');
+      naam.className = 'winkel-venster__naam';
+      naam.textContent = a.naam;
+      doos.appendChild(naam);
+    }
+    if (a.soort === 'instrument') {
+      const luister = document.createElement('button');
+      luister.type = 'button';
+      luister.className = 'winkel-venster__luister';
+      luister.setAttribute('aria-label', 'Luisteren');
+      luister.innerHTML = '<img src="assets/icons/luidspreker.svg" alt="">';
+      luister.addEventListener('click', () => speelVoor(a));
+      doos.appendChild(luister);
+      speelVoor(a);
+    }
     const prijsEl = document.createElement('p');
     prijsEl.className = 'winkel-venster__prijs';
     prijsEl.innerHTML = `<img src="assets/icons/munt.svg" alt="">${prijs}`;
+    doos.appendChild(prijsEl);
+
     const knoppen = document.createElement('div');
     knoppen.className = 'winkel-venster__knoppen';
     const nee = document.createElement('button');
@@ -187,12 +256,16 @@ export function WinkelScreen(manager: ScreenManager, start?: { soort: WinkelSoor
     nee.className = 'winkel-venster__knop winkel-venster__knop--nee';
     nee.textContent = tekort > 0 ? 'Oké' : 'Nee';
     nee.addEventListener('click', sluitVenster);
+    knoppen.append(nee);
     if (tekort > 0) {
+      const balk = document.createElement('div');
+      balk.className = 'winkel-venster__balk';
+      balk.innerHTML = '<span></span>';
+      balk.querySelector('span')!.style.width = `${Math.round((100 * Math.max(0, saldo)) / prijs)}%`;
       const sparen = document.createElement('p');
       sparen.className = 'winkel-venster__sparen';
       sparen.innerHTML = `Nog <b>${tekort}</b> <img src="assets/icons/munt.svg" alt=""> sparen!`;
-      knoppen.append(nee);
-      doos.append(img, prijsEl, sparen, knoppen);
+      doos.append(balk, sparen);
     } else {
       const ja = document.createElement('button');
       ja.type = 'button';
@@ -201,14 +274,14 @@ export function WinkelScreen(manager: ScreenManager, start?: { soort: WinkelSoor
       ja.addEventListener('click', () => {
         if (!koop(a.soort, a.id)) return;
         sluitVenster();
-        if (a.soort === 'instrument') [0, 2, 4, 7].forEach((t, i) => speelInstrument(a.id as Instrument, TONEN[t], i * 0.16));
-        else [0, 2, 4, 7].forEach((t, i) => speelNoot(TONEN[t], i * 0.09));
+        if (a.soort === 'instrument') speelVoor(a);
+        else ARPEGGIO.forEach((t, i) => speelNoot(TONEN[t], i * 0.09));
         confetti.vuurwerk('klein');
         kies(a);
       });
-      knoppen.append(nee, ja);
-      doos.append(img, prijsEl, knoppen);
+      knoppen.append(ja);
     }
+    doos.appendChild(knoppen);
     venster.appendChild(doos);
     el.appendChild(venster);
   }
@@ -216,23 +289,30 @@ export function WinkelScreen(manager: ScreenManager, start?: { soort: WinkelSoor
   const afmelden = events.on('munten-veranderd', () => {
     beursAantal.textContent = String(munten());
   });
-  const opResize = () => teken();
-  teken();
-  const meteenKopen = start?.koop && ARTIKELEN[soort].find((a) => a.id === start.koop);
-  if (meteenKopen && !heeft(meteenKopen.soort, meteenKopen.id)) vraagKoop(meteenKopen);
+  let resizeFrame = 0;
+  const opResize = () => {
+    cancelAnimationFrame(resizeFrame);
+    resizeFrame = requestAnimationFrame(teken);
+  };
 
   const terug = maakTerugKnop(() => manager.pop());
+  let meteenKopen = start?.koop ? ARTIKELEN[soort].find((a) => a.id === start.koop) : undefined;
   return {
     mount(root) {
-      root.appendChild(el);
-      root.appendChild(terug);
+      root.append(el, terug, beurs);
+      // Pas in de pagina valt er iets te meten.
+      teken();
+      if (meteenKopen && !heeft(meteenKopen.soort, meteenKopen.id)) vraagKoop(meteenKopen);
+      meteenKopen = undefined;
       window.addEventListener('resize', opResize);
     },
     unmount() {
       afmelden();
+      cancelAnimationFrame(resizeFrame);
       window.removeEventListener('resize', opResize);
       el.remove();
       terug.remove();
+      beurs.remove();
     },
   };
 }

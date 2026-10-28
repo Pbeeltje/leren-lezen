@@ -664,22 +664,35 @@
 .profiel-menu__winkel img { width: 24px; height: 24px; }
 .profiel-menu__winkel:active { transform: translateY(2px); box-shadow: 0 1px 0 #f0d98a; }
 
-/* ---- Winkel ---- */
+/* ---- Winkel ----
+   Terugknop linksboven, munten rechtsboven (zoals de muntenteller elders). De tabbladen
+   staan in die bovenste balk als er ruimte is, anders eronder. Hoeveel kaarten er per
+   bladzijde passen rekent WinkelScreen uit; --plaatje schaalt mee met de schermhoogte. */
 .winkel {
-  gap: 14px;
+  gap: 12px;
+  --plaatje: clamp(36px, 8vh, 72px);
 }
+/* Ook op een liggende telefoon onder de bovenste balk blijven (screens.css haalt die
+   ruimte daar weg voor schermen met inhoud naast de hoekknoppen). */
+.scherm.winkel { padding-top: calc(112px + var(--veilig-boven)); }
+/* Bovenaan, zodat het vak niet op en neer springt tussen een vol en een half tabblad. */
+.winkel { justify-content: flex-start; }
 
-.winkel__kop {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 16px;
-  flex-wrap: wrap;
+/* Alleen voor schermlezers: de munt en de tabbladen zeggen genoeg. */
+.winkel__titel {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
 }
-
-.winkel__kop .scherm-titel { margin: 0; }
 
 .winkel__beurs {
+  position: fixed;
+  top: calc(34px + var(--veilig-boven));
+  right: calc(16px + var(--veilig-rechts));
+  z-index: 5;
   display: flex;
   align-items: center;
   gap: 8px;
@@ -700,6 +713,19 @@
   gap: 10px;
 }
 
+/* In de bovenste balk, tussen terugknop en munten. */
+@media (min-width: 860px), (max-height: 559px) and (min-width: 560px) {
+  .winkel__tabs {
+    position: fixed;
+    top: calc(16px + var(--veilig-boven));
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 5;
+    height: var(--touch-target-min);
+    align-items: center;
+  }
+}
+
 .winkel__tab {
   display: flex;
   align-items: center;
@@ -715,21 +741,27 @@
 
 .winkel__tab img { width: 36px; height: 36px; }
 .winkel__tab--aan { background: #fff; box-shadow: 0 4px 0 rgba(0, 0, 0, 0.15); }
-/* Drie tabbladen passen op een telefoon alleen als plaatje. */
-@media (max-width: 600px) {
+/* Op een telefoon (en in de balk van een liggende telefoon) alleen het plaatje. */
+@media (max-width: 859px) {
   .winkel__tab { padding: 6px 14px; }
   .winkel__tab span { display: none; }
 }
 
 .winkel__vak {
-  width: min(760px, 100%);
+  width: min(960px, 100%);
   padding: 14px;
   border-radius: var(--radius-groot);
   background: rgba(255, 255, 255, 0.95);
   box-shadow: 0 8px 0 rgba(0, 0, 0, 0.12);
 }
 
-.winkel__blader .bladeraar__blad { gap: 12px; }
+@media (max-width: 599px) {
+  .winkel { padding-left: calc(12px + var(--veilig-links)); padding-right: calc(12px + var(--veilig-rechts)); }
+  .winkel__vak { padding: 10px; }
+}
+
+/* minmax(0, …): een lange naam of prijs mag een kolom niet breder duwen dan zijn deel. */
+.winkel__blader .bladeraar__blad { gap: 8px; grid-template-columns: repeat(var(--kolommen), minmax(0, 1fr)); }
 
 .winkel-kaart {
   position: relative;
@@ -738,11 +770,11 @@
   flex-direction: column;
   align-items: center;
   gap: 4px;
-  padding: 12px 6px 10px;
-  border-radius: 20px;
+  padding: 8px 3px 6px;
+  border-radius: 18px;
   background: #f1f2f6;
   box-shadow: 0 4px 0 #dcdfe8;
-  border: 4px solid transparent;
+  border: 3px solid transparent;
   color: var(--kleur-tekst);
   font-weight: 800;
 }
@@ -750,38 +782,37 @@
 .winkel-kaart:active { transform: translateY(2px); box-shadow: 0 2px 0 #dcdfe8; }
 
 .winkel-kaart > img:first-child {
-  width: 72px;
-  height: 72px;
+  width: var(--plaatje);
+  height: var(--plaatje);
   object-fit: contain;
 }
 
-/* Achtergronden: kleinere kaartjes (6 naast elkaar, op een telefoon 3). */
-.winkel__blader--achtergrond .bladeraar__blad { gap: 8px; }
-.winkel-kaart--achtergrond { padding: 8px 4px 8px; gap: 2px; border-radius: 16px; }
-.winkel-kaart--achtergrond > img:first-child { width: 60px; height: 60px; }
-.winkel-kaart--achtergrond .winkel-kaart__naam { font-size: 0.85rem; line-height: 1.1; }
-.winkel-kaart--achtergrond .winkel-kaart__label { min-height: 26px; font-size: 0.9rem; }
-.winkel-kaart--achtergrond .winkel-kaart__slot { top: 4px; right: 4px; width: 20px; height: 20px; }
-@media (max-width: 559px) {
-  .winkel-kaart--achtergrond { padding: 6px 4px; }
-  .winkel-kaart--achtergrond > img:first-child { width: 42px; height: 42px; }
-  .winkel-kaart--achtergrond .winkel-kaart__label { min-height: 24px; }
-}
+/* Achtergronden: kleiner plaatje en de naam op één regel, zodat ze allemaal op één
+   bladzijde passen (ook op een telefoon: 4 × 4). */
+.winkel-kaart--achtergrond > img:first-child { width: calc(var(--plaatje) * 0.8); height: calc(var(--plaatje) * 0.8); }
+.winkel-kaart--achtergrond .winkel-kaart__naam { white-space: nowrap; font-size: 0.78rem; letter-spacing: -0.01em; }
 
-.winkel-kaart__naam { font-size: 1rem; }
+.winkel-kaart__naam {
+  max-width: 100%;
+  font-size: 0.85rem;
+  line-height: 1.1;
+  text-align: center;
+  hyphens: auto;
+  overflow-wrap: break-word;
+}
 
 .winkel-kaart__label {
   display: flex;
   align-items: center;
   gap: 4px;
-  min-height: 30px;
-  padding: 0 12px;
+  min-height: 28px;
+  padding: 0 8px;
   border-radius: 999px;
   background: #fff;
-  font-size: 1rem;
+  font-size: 0.95rem;
 }
 
-.winkel-kaart__label img { width: 22px; height: 22px; }
+.winkel-kaart__label img { width: 18px; height: 18px; }
 
 .winkel-kaart--gekozen {
   border-color: var(--kleur-succes);
@@ -794,10 +825,10 @@
 .winkel-kaart--slot > img:first-child { filter: grayscale(0.55) opacity(0.75) !important; }
 .winkel-kaart__slot {
   position: absolute;
-  top: 6px;
-  right: 6px;
-  width: 26px;
-  height: 26px;
+  top: 4px;
+  right: 4px;
+  width: 22px;
+  height: 22px;
 }
 .winkel-kaart--slot .winkel-kaart__label { background: #fff4cc; }
 .winkel-kaart--te-duur .winkel-kaart__label { opacity: 0.7; }
@@ -815,18 +846,44 @@
 }
 
 .winkel-venster__doos {
+  position: relative;
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 10px;
   width: min(340px, 100%);
+  max-height: 100%;
+  overflow-y: auto;
   padding: 22px;
   border-radius: var(--radius-groot);
   background: #fff;
   box-shadow: 0 10px 0 rgba(0, 0, 0, 0.15);
 }
 
-.winkel-venster__plaatje { width: 130px; height: 130px; object-fit: contain; }
+.winkel-venster__plaatje { width: min(130px, 22vh); height: min(130px, 22vh); object-fit: contain; }
+
+.winkel-venster__naam {
+  margin: 0;
+  font-weight: 800;
+  font-size: 1.4rem;
+  color: var(--kleur-tekst);
+}
+
+.winkel-venster__luister {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: #eaf4ff;
+  box-shadow: 0 3px 0 #c5dcf5;
+}
+.winkel-venster__luister img { width: 32px; height: 32px; }
+.winkel-venster__luister:active { transform: translateY(2px); box-shadow: none; }
 
 .winkel-venster__prijs,
 .winkel-venster__sparen {
@@ -842,6 +899,23 @@
 .winkel-venster__sparen { font-size: 1.15rem; }
 .winkel-venster__prijs img { width: 40px; height: 40px; }
 .winkel-venster__sparen img { width: 26px; height: 26px; }
+
+/* Spaarbalk: hoe ver je al bent, ook voor wie de getallen nog niet kan lezen. */
+.winkel-venster__balk {
+  width: 100%;
+  height: 22px;
+  border-radius: 999px;
+  background: #eceef4;
+  box-shadow: inset 0 2px 0 rgba(0, 0, 0, 0.08);
+  overflow: hidden;
+}
+.winkel-venster__balk span {
+  display: block;
+  height: 100%;
+  min-width: 22px;
+  border-radius: 999px;
+  background: linear-gradient(#ffd54a, #f5b400);
+}
 
 .winkel-venster__knoppen { display: flex; gap: 12px; width: 100%; }
 
