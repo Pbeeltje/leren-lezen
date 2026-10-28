@@ -2,12 +2,31 @@
 
 ## Shop (`ui/screens/WinkelScreen.ts`, `engine/winkel.ts`)
 
-Tabs: figures, backgrounds, instruments (on phones ≤600px icons only). 5 figures
-are free, the rest 30 coins; backgrounds 200; instruments 200. Owned items come
-first (fixed order), then the rest. Backgrounds use compact cards: 6 columns (3 on
-phones), up to 4 rows, so everything fits on one page; sideways paging. Tapping the
-coin counter opens the shop (see "Shop during an activity" in
-[navigatie-voortgang.md](navigatie-voortgang.md)). Check: `tests/winkel-rij.mjs`.
+Tabs: figures, backgrounds, instruments. 5 figures are free, the rest 30 coins;
+backgrounds 200; instruments 200 (one `GRATIS`/`PRIJS` table in `engine/winkel.ts`).
+Owned items come first (fixed order), then the rest. Per item type, `SOORTEN` in
+`WinkelScreen.ts` holds tab name/icon, `gekozen()` and `kies()`; `RASTER` holds the
+minimum card width and max columns.
+
+Layout (28 Oct): back button top left, coins (`.winkel__beurs`, fixed) top right, the
+`h1` only for screen readers. Tabs sit in that top bar (fixed, centred) at ≥860px wide or
+on a landscape phone (≤559px high, ≥560px wide); otherwise below it. Labels only at
+≥860px. **Cards per page are measured, not guessed**: `teken()` runs in `mount()`, takes
+columns from the box width / `RASTER.minBreedte`, lays all cards on one page to measure
+the tallest, then fits as many rows as the height below the tabs allows (minus the dots if
+it needs more than one page). Card picture size is `--plaatje: clamp(36px, 8vh, 72px)`,
+backgrounds 0.8× with the name on one line, so all backgrounds fit on one page from a
+390px phone up (a 360×640 phone needs 2). `.scherm.winkel` keeps its 112px top padding
+on short screens (screens.css removes it there) and is top-aligned. Grid columns are
+`minmax(0, 1fr)` so a long name can't push a column wider.
+
+Buy dialog (`.winkel-venster`): picture, name, price; an instrument plays an arpeggio
+on open plus a speaker button (`.winkel-venster__luister`); short of coins → savings bar
+(`.winkel-venster__balk`) + "Nog X sparen!" and only "Oké". Tapping the coin counter
+opens the shop (see "Shop during an activity" in
+[navigatie-voortgang.md](navigatie-voortgang.md)). Checks: `tests/winkel.mjs`,
+`tests/winkel-rij.mjs`, `tests/formaten.mjs`. Test against the dev server one browser
+context at a time (close each), or page loads time out.
 
 Every link into the shop opens the matching tab via `WinkelScreen(m, { soort })`:
 "Meer in de winkel" under Mijn figuur → figuur, under Achtergrond → achtergrond;
@@ -17,8 +36,8 @@ coin counter has no context and opens the default figuur tab.
 ## Profile menu (`ui/components/ProfielMenu.ts`)
 
 Header (figure + name; tap the name to switch profile), 5 tiles: Mijn figuur
-(animal + colour combined, panel widens to `min(760px, viewport)` with the same
-grid as the figure shop; animal and colour equally big so a phone doesn't scroll),
+(animal + colour combined, panel widens to `min(760px, viewport)` with its own
+fixed grid, 3 or 5 columns, not the shop's measured one; animal and colour equally big so a phone doesn't scroll),
 Achtergrond, Geluid (toggle, keeps the menu open), Schrift (toggle Los / Aan
 elkaar, shows "aap" in the chosen script instead of an icon; see lezen.md),
 Wisselen (full-width lower row). Its submenu shows the groups directly
