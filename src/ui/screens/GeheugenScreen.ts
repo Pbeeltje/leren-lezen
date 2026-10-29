@@ -1,24 +1,24 @@
 import type { Screen, ScreenManager } from '../../engine/screenManager.ts';
 import { maakTerugKnop } from '../components/TerugKnop.ts';
 import { maakTopRechtsBalk } from '../components/TopRechtsBalk.ts';
-import { voegMuntenToe } from '../../engine/progressStore.ts';
-import { MUNTEN_GEHEUGEN_BORD, MUNTEN_GEHEUGEN_PAAR, kleuterFactor } from '../../engine/rewards.ts';
 import { genereerGeheugenbord } from '../../engine/geheugenGenerator.ts';
 import { renderGeheugenSpel } from '../../games/geheugenSpel.ts';
 import { events } from '../../engine/events.ts';
 import { confetti } from '../../three/particles.ts';
 import { toonKlaarKaart } from '../components/KlaarKaart.ts';
+import { recordRegel } from '../components/spelScherm.ts';
 
-// Kleuters spelen drie kleine borden achter elkaar, groep 3 één groot bord.
-const AANTAL_BORDEN = 3;
+// Eén speler: je begint met 100 punten en elke misser kost er 2 (niet onder 0).
+const START_PUNTEN = 100;
+const PUNTEN_PER_MISSER = 2;
 
-// Klassiek geheugenspel met dezelfde plaatjes/geluiden als "Luisteren". Elk voltooid
-// bord eindigt met een vuurwerkje; na 3 borden volgt de klaar-kaart met groot feest.
-// Kleuters spelen met 4 paren, groep 3 met 8 (een groter bord, zie .geheugen-bord--groot)
-// en dan maar één bord: na de laatste kaart meteen de klaar-kaart.
-// Groep 3 (`spelersKeuze`) kiest eerst 1 of 2 spelers. Met twee speel je één bord om de
-// beurt: wie een paar vindt mag nog eens, bij een misser is de ander. Speler 1 is blauw,
-// speler 2 rood; het scorebord laat zien wie er aan de beurt is.
+// Klassiek geheugenspel met dezelfde plaatjes/geluiden als "Luisteren". Eén bord: kleuters
+// 4 paren, groep 3 8 (een groter bord, zie .geheugen-bord--groot). Met één speler (kleuters
+// altijd) tellen punten af vanaf START_PUNTEN; na de laatste kaart de klaar-kaart met de
+// punten en het record (Records-scherm). Groep 3 (`spelersKeuze`) kiest eerst 1 of 2
+// spelers. Met twee speel je om de beurt: wie een paar vindt mag nog eens, bij een misser is
+// de ander. Speler 1 is blauw, speler 2 rood; het scorebord laat zien wie er aan de beurt is.
+// Geen munten: het spel houdt alleen een score bij.
 export function GeheugenScreen(manager: ScreenManager, aantalParen = 4, spelersKeuze = false): Screen {
   const el = document.createElement('div');
   el.className = 'scherm';
@@ -43,14 +43,19 @@ export function GeheugenScreen(manager: ScreenManager, aantalParen = 4, spelersK
     return { vak, score: vak.querySelector<HTMLSpanElement>('.geheugen-speler__score')! };
   });
 
+  // Eén speler: de punten staan op de plek van de instructie.
+  const puntenTeller = document.createElement('div');
+  puntenTeller.className = 'geheugen-punten';
+  puntenTeller.innerHTML = '<img src="assets/icons/ster.svg" alt=""><span></span>';
+  const puntenGetal = puntenTeller.querySelector('span')!;
+  let punten = START_PUNTEN;
+
   const oefenContainer = document.createElement('div');
   el.appendChild(oefenContainer);
 
   let opruimen: (() => void) | null = null;
   let actief = true;
   let timer: number | undefined;
-  let bordenKlaar = 0;
-  let verdiend = 0;
   // Wat er nog moest gebeuren toen het scherm (bv. voor de winkel) werd weggehaald.
   let wacht: (() => void) | null = null;
   let onderbroken = false;
@@ -69,42 +74,43 @@ export function GeheugenScreen(manager: ScreenManager, aantalParen = 4, spelersK
     el.classList.toggle('geheugen--beurt2', beurt === 1);
   }
 
-  const betaal = (basis: number): void => {
-    const munten = kleuterFactor(basis);
-    voegMuntenToe(munten);
-    verdiend += munten;
-  };
-
   function nieuwBord(): void {
-    if (!actief) return;
-    opruimen?.();
     const kaarten = genereerGeheugenbord(aantalParen);
-    // Geen actief-check hier: een bord dat net klaar is terwijl het kind in de winkel zit,
-    // telt gewoon mee; de volgende stap wacht dan tot het terug is (zie `wacht`).
-    opruimen = renderGeheugenSpel(oefenContainer, kaarten, () => betaal(MUNTEN_GEHEUGEN_PAAR), () => {
-      betaal(MUNTEN_GEHEUGEN_BORD);
-      bordenKlaar++;
-      if (bordenKlaar >= (aantalParen > 4 ? 1 : AANTAL_BORDEN)) {
-        wacht = () => {
-          if (!actief) return;
-          wacht = null;
-          opruimen?.();
-          opruimen = null;
-          instructie.style.display = 'none';
-          toonKlaarKaart(oefenContainer, () => manager.pop(), verdiend);
-        };
-        timer = window.setTimeout(wacht, 1000);
-        return;
-      }
-      confetti.vuurwerk('klein');
+    // Een bord dat net klaar is terwijl het kind in de winkel zit, telt gewoon mee; de
+    // klaar-kaart wacht dan tot het terug is (zie `wacht`).
+    const misser = (): void => {
+      punten = Math.max(0, punten - PUNTEN_PER_MISSER);
+      puntenGetal.textContent = String(punten);
+      // Even schudden met "-2" erbij; opnieuw starten als de vorige nog loopt.
+      puntenTeller.classList.remove('geheugen-punten--min');
+      void puntenTeller.offsetWidth;
+      puntenTeller.classList.add('geheugen-punten--min');
+    };
+    opruimen = renderGeheugenSpel(oefenContainer, kaarten, () => {}, () => {
       wacht = () => {
         if (!actief) return;
         wacht = null;
-        nieuwBord();
+        opruimen?.();
+        opruimen = null;
+        puntenTeller.remove();
+        toonKlaarKaart(oefenContainer, () => manager.pop());
+        toonPuntenOpKlaarKaart();
       };
-      timer = window.setTimeout(wacht, 1400);
-    }).vernietig;
+      timer = window.setTimeout(wacht, 1000);
+    }, misser).vernietig;
     if (aantalParen > 4) oefenContainer.querySelector('.geheugen-bord')?.classList.add('geheugen-bord--groot');
+  }
+
+  // Punten en record in plaats van de sterren van de klaar-kaart (die zeggen hier niets, en
+  // zo past de kaart ook op een kleine of liggende telefoon).
+  function toonPuntenOpKlaarKaart(): void {
+    const sterren = oefenContainer.querySelector('.klaar-kaart__sterren');
+    if (!sterren) return;
+    sterren.closest('.klaar-kaart')?.classList.add('geheugen-uitslag');
+    const regel = document.createElement('div');
+    regel.className = 'geheugen-eindpunten';
+    regel.innerHTML = `<p class="geheugen-eindpunten__getal">${punten} punten</p>${recordRegel('geheugen', punten).html}`;
+    sterren.replaceWith(regel);
   }
 
   function tweeSpelersBord(): void {
@@ -112,7 +118,6 @@ export function GeheugenScreen(manager: ScreenManager, aantalParen = 4, spelersK
     opruimen?.();
     beurt = 0;
     paren[0] = paren[1] = 0;
-    verdiend = 0;
     toonScore();
     instructie.replaceWith(scorebord);
     scorebord.hidden = false;
@@ -124,10 +129,8 @@ export function GeheugenScreen(manager: ScreenManager, aantalParen = 4, spelersK
         paren[beurt]++;
         for (const k of knoppen) k.classList.add(`geheugen-kaart--speler${beurt + 1}`);
         toonScore();
-        betaal(MUNTEN_GEHEUGEN_PAAR);
       },
       () => {
-        betaal(MUNTEN_GEHEUGEN_BORD);
         wacht = () => {
           if (!actief) return;
           wacht = null;
@@ -161,7 +164,6 @@ export function GeheugenScreen(manager: ScreenManager, aantalParen = 4, spelersK
         <span>-</span>
         <span class="geheugen-uitslag__punt geheugen-uitslag__punt--2">${paren[1]}</span>
       </div>
-      <div class="resultaat-munten-rij"><img src="assets/icons/munt.svg" alt=""><span>+${verdiend} munten</span></div>
       <div class="geheugen-uitslag__knoppen">
         <button class="klaar-kaart__knop geheugen-uitslag__opnieuw" aria-label="Nog een keer"><img src="assets/icons/vangspel-start.svg" alt=""></button>
         <button class="klaar-kaart__knop" aria-label="Klaar, terug"><img src="assets/icons/huis.svg" alt=""></button>
@@ -172,6 +174,14 @@ export function GeheugenScreen(manager: ScreenManager, aantalParen = 4, spelersK
     oefenContainer.replaceChildren(kaart);
     confetti.vuurwerk('groot');
     events.emit('sessie-klaar', undefined);
+  }
+
+  // Eén speler (kleuters altijd): punten tellen af vanaf 100.
+  function eenSpeler(): void {
+    punten = START_PUNTEN;
+    puntenGetal.textContent = String(punten);
+    instructie.replaceWith(puntenTeller);
+    nieuwBord();
   }
 
   // Groep 3: eerst kiezen met hoeveel je speelt.
@@ -189,16 +199,13 @@ export function GeheugenScreen(manager: ScreenManager, aantalParen = 4, spelersK
         <span>2 spelers</span>
       </button>`;
     const [een, twee] = keuze.querySelectorAll('button');
-    een.addEventListener('click', () => {
-      instructie.textContent = 'Zoek de twee plaatjes die bij elkaar horen';
-      nieuwBord();
-    });
+    een.addEventListener('click', eenSpeler);
     twee.addEventListener('click', tweeSpelersBord);
     oefenContainer.replaceChildren(keuze);
   }
 
   if (spelersKeuze) toonSpelersKeuze();
-  else nieuwBord();
+  else eenSpeler();
 
   const terug = maakTerugKnop(() => {
     opruimen?.();
@@ -214,7 +221,7 @@ export function GeheugenScreen(manager: ScreenManager, aantalParen = 4, spelersK
       topRechts = maakTopRechtsBalk(manager);
       root.appendChild(topRechts.element);
       // Terug van een ander scherm (bv. de winkel): het bord is blijven staan, alleen een
-      // stap die nog moest komen (nieuw bord, klaar-kaart, uitslag) alsnog doen.
+      // stap die nog moest komen (klaar-kaart, uitslag) alsnog doen.
       if (onderbroken) {
         onderbroken = false;
         actief = true;

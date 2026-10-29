@@ -123,12 +123,10 @@ end). Toets: `herhaling` = `sterren === 3` before. Old saves without
 
 Other activities, no repeat discount, all through `kleuterFactor`:
 - Luisteren, Ontdekken, Schrijven: 2 per correct plus `MUNTEN_RONDE_SET` 5.
-- Geheugenspel: `MUNTEN_GEHEUGEN_PAAR` 2 per pair (in `paarGevonden`), plus
-  `MUNTEN_GEHEUGEN_BORD` 10 per board.
 - Speel na / Ritme: see [muziek.md](muziek.md).
 - Begrijpend lezen: `MUNTEN_BEGRIJPEND` 50 once per correct question.
 - Leesboekjes: flat `MUNTEN_OEFENING_GOED * 3` at the end.
-- Games (Vangspel, Tafeltennis, Dieren voeren): no coins.
+- Games (Vangspel, Tafeltennis, Dieren voeren, Geheugenspel): no coins.
 
 Wrong answers pay nothing. The coin counter pulses live.
 

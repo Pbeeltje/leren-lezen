@@ -18,11 +18,12 @@ const SPELLEN: RecordKaart[] = [
   { spel: 'oversteken', icoon: 'oversteken', label: 'Oversteken' },
   { spel: 'tafeltennis', icoon: 'tafeltennis', label: 'Tafeltennis' },
   { spel: 'voeren', icoon: 'voeren', label: 'Dieren voeren' },
+  { spel: 'geheugen', icoon: 'geheugenspel', label: 'Geheugenspel' },
 ];
 
 // Records: per spel het hoogste record van dit profiel, met een trofee ervoor. Een tik op
 // een kaart opent de ranglijst van alle profielen op dit apparaat (RanglijstScreen).
-// Tafeltennis telt tegenstanders op rij verslagen.
+// Tafeltennis telt tegenstanders op rij verslagen, Geheugenspel de punten (100 min 2 per misser).
 export function RecordsScreen(manager: ScreenManager): Screen {
   const el = document.createElement('div');
   el.className = 'scherm';

@@ -26,19 +26,24 @@ tap the matching picture from 3. Rounds of 5 (`RONDE_LENGTE`) with a
 
 **Geheugenspel** (`GeheugenScreen.ts`, `games/geheugenSpel.ts`, opened from
 Spelletjes): `genereerGeheugenbord()` picks words, 2 cards each. Flipping plays
-the word; a mismatch flips back after ~900 ms with no penalty. Kleuters 4 pairs,
-groep 3 `GeheugenScreen(m, 8)` (16 cards); boards >4 pairs get
+the word; a mismatch flips back after ~900 ms. One board: kleuters 4 pairs,
+groep 3 `GeheugenScreen(m, 8, true)` (16 cards); boards >4 pairs get
 `.geheugen-bord--groot` (4×4 portrait, 8×2 landscape, never scrolls).
-Groep 3 (`GeheugenScreen(m, 8, true)`) first picks **1 speler / 2 spelers**
-(`.geheugen-keuze`). 1 speler = one board, then the klaar-kaart (kleuters still play 3 boards of 4 pairs). 2 spelers = one board, taking turns:
+**1 speler** (kleuters always): `.geheugen-punten` replaces the instruction, starts at 100
+(`START_PUNTEN`), −2 per miss (`PUNTEN_PER_MISSER`, never below 0) with a shake and a red
+"-2". After the last pair the klaar-kaart shows the points and "Nieuw record!"/"Record: n"
+instead of the stars (`recordRegel('geheugen', …)`); Geheugenspel is on the Records screen
+and its ranking for every profile (kleuter and groep 3 share one record list).
+Groep 3 first picks **1 speler / 2 spelers** (`.geheugen-keuze`). 2 spelers: taking turns,
 a pair lets you go again, a miss passes the turn (`misser` callback of
 `renderGeheugenSpel`, after the cards flip back). Speler 1 blue, speler 2 red (`--speler1`,
 `--speler2` on `.scherm`); the `.geheugen-scorebord` replaces the instruction, the player
 whose turn it is is filled in and bigger, the closed card backs take that colour
 (`.geheugen--beurt1/2`) and found pairs keep the finder's border colour. At the end
-`toonUitslag()` shows the winner (or Gelijkspel) with the score, coins and Nog een keer / huis.
-Coins work as in 1 speler (per pair + board bonus, to the active profile).
-Checks: `node tests/geheugen-groep3.mjs <map>`, `node tests/geheugen-tweespelers.mjs <map>`.
+`toonUitslag()` shows the winner (or Gelijkspel) with the score and Nog een keer / huis.
+No coins in any mode: memory only keeps a score.
+Checks: `node tests/geheugen-groep3.mjs <map>`, `node tests/geheugen-tweespelers.mjs <map>`,
+`node tests/geheugen-punten.mjs <map>`.
 
 Touch targets for this age are bigger (`.luister-plaatje` 160px,
 `.geheugen-kaart` 100px vs. 96px `.keuze-knop--plaatje`) — match that for anything

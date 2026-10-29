@@ -624,6 +624,46 @@
 .geheugen-kaart--speler1.gevonden .geheugen-kaart__voorkant { border-color: var(--speler1); opacity: 0.85; }
 .geheugen-kaart--speler2.gevonden .geheugen-kaart__voorkant { border-color: var(--speler2); opacity: 0.85; }
 
+/* Eén speler: punten tellen af van 100 (GeheugenScreen). Een misser schudt de teller en laat
+   een rode "-2" opspringen. */
+.geheugen-punten {
+  position: relative;
+  align-self: center;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 18px 4px 8px;
+  border-radius: 999px;
+  background: var(--kleur-oppervlak);
+  color: var(--kleur-tekst);
+  font-size: 1.4rem;
+  font-weight: 800;
+  box-shadow: 0 4px 0 rgba(0, 0, 0, 0.18);
+}
+.geheugen-punten img { width: 34px; height: 34px; }
+.geheugen-punten--min { animation: geheugen-schud 0.4s ease-out; }
+.geheugen-punten--min::after {
+  content: '-2';
+  position: absolute;
+  right: -34px;
+  top: 0;
+  color: var(--kleur-fout);
+  text-shadow: 0 2px 0 rgba(0, 0, 0, 0.35);
+  animation: geheugen-min 0.9s ease-out forwards;
+}
+@keyframes geheugen-schud {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-6px); }
+  50% { transform: translateX(6px); }
+  75% { transform: translateX(-3px); }
+}
+@keyframes geheugen-min {
+  from { opacity: 1; transform: translateY(0); }
+  to { opacity: 0; transform: translateY(-26px); }
+}
+.geheugen-eindpunten { display: flex; flex-direction: column; align-items: center; gap: 2px; }
+.geheugen-eindpunten__getal { margin: 0; font-size: 1.8rem; font-weight: 800; color: var(--kleur-tekst); }
+
 .geheugen-scorebord[hidden] { display: none; }
 .geheugen-uitslag { gap: 10px; }
 .geheugen-uitslag .klaar-kaart__beker { width: 90px; height: 90px; }

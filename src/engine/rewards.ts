@@ -24,10 +24,6 @@ export const MUNTEN_TOETS_EERSTE_PERFECT = 50; // bovenop de 20, alleen de eerst
 // Luisteren, Ontdekken en Schrijven: aan het eind van een hele set (alle rondes). Geen herhaal-korting.
 export const MUNTEN_RONDE_SET = 5;
 
-// Geheugenspel: per gevonden paar en per voltooid bord. Geen herhaal-korting.
-export const MUNTEN_GEHEUGEN_PAAR = 2;
-export const MUNTEN_GEHEUGEN_BORD = 10;
-
 // Speel na en Ritme. Geen herhaal-korting: een set mag opnieuw, dezelfde bedragen.
 // Factor: x1 t/m 6 noten/slagen, x2 boven 6, x4 boven 8 (en niet hoger). Kleuters daarbovenop x1,5.
 export const MUNTEN_MUZIEK_GOED = 2;
