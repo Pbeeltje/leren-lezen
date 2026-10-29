@@ -11,13 +11,53 @@
   width: min(100%, 520px);
 }
 
+.vandaag-rij {
+  position: relative;
+  display: flex;
+}
+
+/* Schudknop rechts op de kaart (een knop mag niet ín de kaartknop). */
+.vandaag-schud {
+  position: absolute;
+  top: 50%;
+  right: 14px;
+  transform: translateY(-50%);
+  display: grid;
+  place-items: center;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: #f1f1f6;
+  box-shadow: 0 4px 0 rgba(0, 0, 0, 0.15);
+}
+
+.vandaag-schud:active {
+  transform: translateY(calc(-50% + 3px));
+  box-shadow: 0 1px 0 rgba(0, 0, 0, 0.15);
+}
+
+.vandaag-schud img {
+  width: 36px;
+  height: 36px;
+}
+
+.vandaag-kaart--gewisseld {
+  animation: vandaag-wissel 0.35s ease;
+}
+
+@keyframes vandaag-wissel {
+  0% { transform: rotateX(90deg); }
+  100% { transform: rotateX(0); }
+}
+
 .vandaag-kaart {
   position: relative;
+  flex: 1;
   display: flex;
   align-items: center;
   gap: 16px;
   min-height: 104px;
-  padding: 14px 20px 14px 14px;
+  padding: 14px 84px 14px 14px;
   background: var(--kleur-oppervlak);
   border: 4px solid transparent;
   border-radius: var(--radius-groot);
@@ -118,6 +158,40 @@
   height: 48px;
 }
 
+/* Smalle telefoon rechtop: alles iets kleiner, zodat "Hoofdstuk 1 · Oefening 1" op één regel past. */
+@media (max-width: 440px) and (orientation: portrait) {
+  .vandaag-kaart {
+    gap: 10px;
+    padding: 12px 64px 12px 10px;
+  }
+
+  .vandaag-kaart__nummer {
+    width: 32px;
+    height: 32px;
+    font-size: 1.05rem;
+  }
+
+  .vandaag-kaart__plaatje {
+    width: 52px;
+    height: 52px;
+  }
+
+  .vandaag-kaart__tekst span {
+    font-size: 0.9rem;
+  }
+
+  .vandaag-schud {
+    right: 10px;
+    width: 46px;
+    height: 46px;
+  }
+
+  .vandaag-schud img {
+    width: 30px;
+    height: 30px;
+  }
+}
+
 /* Liggende telefoon: weinig hoogte, dus de kaarten naast elkaar. */
 @media (orientation: landscape) and (max-height: 500px) {
   .vandaag-kaarten {
@@ -125,8 +199,28 @@
     width: min(100%, 900px);
   }
 
-  .vandaag-kaart {
+  .vandaag-rij {
     flex: 1 1 0;
+  }
+
+  .vandaag-schud {
+    top: 8px;
+    right: 8px;
+    transform: none;
+    width: 40px;
+    height: 40px;
+  }
+
+  .vandaag-schud:active {
+    transform: translateY(2px);
+  }
+
+  .vandaag-schud img {
+    width: 26px;
+    height: 26px;
+  }
+
+  .vandaag-kaart {
     flex-direction: column;
     justify-content: center;
     text-align: center;

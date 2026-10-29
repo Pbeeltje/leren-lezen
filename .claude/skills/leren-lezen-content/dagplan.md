@@ -23,6 +23,14 @@ Per subject, in this order:
 3. **Round games (Schrijven/Ontdekken):** the least-played id (`rondes` count), ties random.
 4. **Luisteren:** the first playable chapter without stars, else a random one.
 
+**Shuffle button** (Fluent "Shuffle tracks button", `icons/schudden.svg`) on every
+card that isn't done: `wisselTaak(index)` swaps that card for the next entry in
+`kandidatenVoor()`, so repeated taps cycle round. Card 0/1 (lezen/tellen): the
+unfinished one, the open Oefeningen and the toets of the current chapter, the next
+open Oefening of the next unpassed chapter, and a repeat from the previous chapter.
+Groep 3 card 2: Letters ↔ Woordjes. Kleuter card 2: Luisteren (first two new
+chapters), Ontdekken and Schrijven games interleaved, least played first.
+
 The plan is fixed per date and group; a new day (or group switch) makes a new
 one. Finishing a matching task anywhere in the app (not only via Vandaag) ticks
 the card. All three done: `MUNTEN_DAGPLAN` (20, `kleuterFactor`) once, paid in

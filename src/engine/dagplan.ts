@@ -172,6 +172,106 @@ export function neemDagBonus(): boolean {
   return true;
 }
 
+/**
+ * Schudknop: kaart `index` wordt een ander, ook passend volgend stapje in hetzelfde vak.
+ * Nog eens tikken loopt alle mogelijkheden rond. Geeft het (bijgewerkte) plan terug.
+ */
+export function wisselTaak(index: number): Dagplan | null {
+  const data = lees();
+  const plan = data.plan;
+  if (!plan || plan.datum !== vandaag() || plan.klaar[index] || !plan.taken[index]) return null;
+  const kandidaten = kandidatenVoor(data, plan.groep, index);
+  const huidig = taakSleutel(plan.taken[index]);
+  const plek = kandidaten.findIndex((t) => taakSleutel(t) === huidig);
+  const volgende = kandidaten[(plek + 1) % kandidaten.length];
+  if (!volgende || taakSleutel(volgende) === huidig) return plan;
+  plan.taken[index] = volgende;
+  schrijf(data);
+  return plan;
+}
+
+// Alle redelijke keuzes voor een kaart, de gewone keuze vooraan. Kaart 0 is lezen, 1 tellen,
+// 2 schrijven (groep 3) of luisteren/ontdekken/schrijven door elkaar (kleuter).
+function kandidatenVoor(data: DagplanData, groep: Groep, index: number): Taak[] {
+  if (index === 0) return kernKandidaten(data, 'lezen', leesKernen());
+  if (index === 1) return kernKandidaten(data, 'tellen', rekenKernen());
+  if (groep === 'groep3') return rondeKandidaten(data, 'schrijven', ['schrijven-letters', 'schrijven-woordjes']);
+  const rijen = [
+    luisterKandidaten(data),
+    rondeKandidaten(data, 'ontdekken', ONTDEKKEN_IDS),
+    rondeKandidaten(data, 'schrijven', ['schrijven-lijnen', 'schrijven-letters']),
+  ];
+  // Om en om uit elk vak, zodat de eerste tik meteen iets heel anders kan geven.
+  const gemengd: Taak[] = [];
+  for (let i = 0; i < Math.max(...rijen.map((r) => r.length)); i++) {
+    for (const rij of rijen) if (rij[i]) gemengd.push(rij[i]);
+  }
+  return gemengd;
+}
+
+function zonderDubbele(taken: Taak[]): Taak[] {
+  const gezien = new Set<string>();
+  return taken.filter((t) => {
+    const sleutel = taakSleutel(t);
+    if (gezien.has(sleutel)) return false;
+    gezien.add(sleutel);
+    return true;
+  });
+}
+
+// Voor lezen/tellen: wat half bleef, de open oefeningen en de toets van het huidige
+// hoofdstuk, het begin van het volgende en een herhaling van het vorige.
+function kernKandidaten(data: DagplanData, soort: 'lezen' | 'tellen', kernen: { id: string }[]): Taak[] {
+  const lijst: Taak[] = [];
+  const onaf = data.onaf[soort];
+  if (onaf && onaf.soort === soort && kernen.some((k) => k.id === onaf.kernId)) lijst.push(onaf);
+  const nummers: OefeningNummer[] = [1, 2, 3];
+  const gehaald = (id: string): boolean => {
+    const v = haalKernVoortgang(id);
+    return v.voltooid && v.sterren >= 2;
+  };
+  const open = (id: string): OefeningNummer[] => nummers.filter((n) => !haalKernVoortgang(id).oefeningenAf.includes(n));
+  const oefenen = (kernId: string, nummer: OefeningNummer): Taak => ({ soort, kernId, modus: 'oefenen', nummer });
+  const toets = (kernId: string): Taak => ({ soort, kernId, modus: 'toets', nummer: 1 });
+  const i = kernen.findIndex((k) => !gehaald(k.id));
+  if (i < 0) {
+    // Alles gehaald: een paar willekeurige herhalingen.
+    for (let n = 0; n < 4; n++) lijst.push(oefenen(kies(kernen).id, kies(nummers)));
+    return zonderDubbele(lijst);
+  }
+  const kern = kernen[i];
+  for (const n of open(kern.id)) lijst.push(oefenen(kern.id, n));
+  if (open(kern.id).length === 0) lijst.push(oefenen(kern.id, kies(nummers)));
+  lijst.push(toets(kern.id));
+  const volgende = kernen.slice(i + 1).find((k) => !gehaald(k.id));
+  if (volgende) lijst.push(oefenen(volgende.id, open(volgende.id)[0] ?? 1));
+  if (i > 0) lijst.push(oefenen(kernen[i - 1].id, kies(nummers)));
+  return zonderDubbele(lijst);
+}
+
+// Rondespellen: wat half bleef, dan van minst naar meest gespeeld.
+function rondeKandidaten(data: DagplanData, vak: Vak, ids: RondeId[]): Taak[] {
+  const lijst: Taak[] = [];
+  const onaf = data.onaf[vak];
+  if (onaf && onaf.soort === 'ronde' && ids.includes(onaf.id)) lijst.push(onaf);
+  const opVolgorde = [...ids].sort((a, b) => (data.rondes[a] ?? 0) - (data.rondes[b] ?? 0));
+  for (const id of opVolgorde) lijst.push({ soort: 'ronde', id });
+  return zonderDubbele(lijst);
+}
+
+// Luisteren: wat half bleef en de eerste twee hoofdstukken zonder sterren.
+function luisterKandidaten(data: DagplanData): Taak[] {
+  const speelbaar = LUISTER_HOOFDSTUKKEN.filter(
+    (h) => hoofdstukWoorden(h.woorden, h.plaatjes).length >= MIN_HOOFDSTUK_WOORDEN,
+  );
+  const lijst: Taak[] = [];
+  const onaf = data.onaf.luisteren;
+  if (onaf && onaf.soort === 'luisteren' && speelbaar.some((h) => h.id === onaf.hoofdstukId)) lijst.push(onaf);
+  const nieuw = speelbaar.filter((h) => haalKernVoortgang(`luister-${h.id}`).sterren === 0);
+  for (const h of (nieuw.length ? nieuw : speelbaar).slice(0, 2)) lijst.push({ soort: 'luisteren', hoofdstukId: h.id });
+  return zonderDubbele(lijst);
+}
+
 function groep3Taken(data: DagplanData): Taak[] {
   return [
     kernTaak(data, 'lezen', leesKernen()),

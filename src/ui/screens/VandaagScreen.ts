@@ -1,5 +1,5 @@
 import type { Screen, ScreenManager } from '../../engine/screenManager.ts';
-import { haalDagplan, isOnaf, neemDagBonus, MUNTEN_DAGPLAN, type Taak } from '../../engine/dagplan.ts';
+import { haalDagplan, isOnaf, neemDagBonus, wisselTaak, MUNTEN_DAGPLAN, type Taak } from '../../engine/dagplan.ts';
 import { haalGroep, voegMuntenToe, zetLaatsteKern } from '../../engine/progressStore.ts';
 import { leesKernen, rekenKernen } from '../../engine/leeftijdGrens.ts';
 import { kleuterFactor } from '../../engine/rewards.ts';
@@ -29,13 +29,13 @@ interface Kaart {
 function kaartVan(taak: Taak): Kaart {
   const naVandaag = (m: ScreenManager): Screen => VandaagScreen(m);
   const oefenTekst = (modus: 'oefenen' | 'toets', nummer: number): string =>
-    modus === 'toets' ? 'Toets' : `Oefening ${nummer}`;
+    modus === 'toets' ? 'Toets' : `Oefening ${nummer}`;
   if (taak.soort === 'lezen') {
     const kern = leesKernen().find((k) => k.id === taak.kernId);
     return {
       icoon: 'assets/icons/boek.svg',
       vak: haalGroep() === 'kleuter' ? 'Letters' : 'Lezen',
-      detail: kern ? `Hoofdstuk ${kern.volgnummer} · ${oefenTekst(taak.modus, taak.nummer)}` : '',
+      detail: kern ? `Hoofdstuk ${kern.volgnummer} · ${oefenTekst(taak.modus, taak.nummer)}` : '',
       open: kern
         ? (m) => {
             zetLaatsteKern('lezen', kern.id);
@@ -49,7 +49,7 @@ function kaartVan(taak: Taak): Kaart {
     return {
       icoon: 'assets/icons/tellen.svg',
       vak: 'Tellen',
-      detail: kern ? `Hoofdstuk ${kern.volgnummer} · ${oefenTekst(taak.modus, taak.nummer)}` : '',
+      detail: kern ? `Hoofdstuk ${kern.volgnummer} · ${oefenTekst(taak.modus, taak.nummer)}` : '',
       open: kern
         ? (m) => {
             zetLaatsteKern('tellen', kern.id);
@@ -104,15 +104,20 @@ export function VandaagScreen(manager: ScreenManager): Screen {
   klaarRij.appendChild(klaarTekst);
   el.appendChild(klaarRij);
 
-  function bouw(): void {
+  // gewisseld: welke kaart net geschud is (die draait even om).
+  function bouw(gewisseld?: number): void {
     kaarten.innerHTML = '';
     const groep = haalGroep() ?? 'groep3';
     const plan = haalDagplan(groep);
     plan.taken.forEach((taak, i) => {
+      const rij = document.createElement('div');
+      rij.className = 'vandaag-rij';
+      kaarten.appendChild(rij);
       const kaart = kaartVan(taak);
       const knop = document.createElement('button');
       knop.className = 'vandaag-kaart';
       if (plan.klaar[i]) knop.classList.add('vandaag-kaart--klaar');
+      if (i === gewisseld) knop.classList.add('vandaag-kaart--gewisseld');
       knop.disabled = !kaart.open;
 
       const nummer = document.createElement('span');
@@ -149,7 +154,23 @@ export function VandaagScreen(manager: ScreenManager): Screen {
         speelSchermOvergang();
         manager.push(kaart.open);
       });
-      kaarten.appendChild(knop);
+      rij.appendChild(knop);
+
+      // Geen zin in deze? Schudden geeft een ander passend stapje in hetzelfde vak.
+      if (!plan.klaar[i]) {
+        const schud = document.createElement('button');
+        schud.className = 'vandaag-schud';
+        schud.setAttribute('aria-label', 'Iets anders');
+        const icoon = document.createElement('img');
+        icoon.src = 'assets/icons/schudden.svg';
+        icoon.alt = '';
+        icoon.draggable = false;
+        schud.appendChild(icoon);
+        schud.addEventListener('click', () => {
+          if (wisselTaak(i)) bouw(i);
+        });
+        rij.appendChild(schud);
+      }
     });
     klaarRij.hidden = !plan.klaar.every(Boolean);
   }
