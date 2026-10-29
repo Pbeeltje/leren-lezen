@@ -22,8 +22,9 @@ import { haalActiefProfielId } from '../../engine/profielStore.ts';
 // doorzichtig, zodat je ziet dat je eronder zit.
 
 const KLEUREN = ['#1b1b2f', '#e53935', '#fb8c00', '#fdd835', '#43a047', '#1e88e5', '#8e24aa', '#ec407a', '#8d6e63'];
-// Elke stap 50% dikker (of terug): één maat dunner dan gewoon en drie dikker.
-const DIKTES = [4, 6, 9, 13.5, 20.25];
+// Eén maat dunner dan gewoon en drie dikker; de dikke maten groeien steeds sneller
+// (×1,7, ×1,8, ×1,8), zodat je het verschil goed ziet en een groot vlak snel inkleurt.
+const DIKTES = [4, 6, 10, 18, 32];
 const GEWONE_DIKTE = 1;
 const GUM = 'gum';
 

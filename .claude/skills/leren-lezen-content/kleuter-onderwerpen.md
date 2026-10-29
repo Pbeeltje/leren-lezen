@@ -130,7 +130,7 @@ by accident): the back button is the first tool (`.teken-terug`), the sheet fill
 the screen.
 
 - **Thickness:** the small-dot and big-dot buttons step through `DIKTES`
-  (4, 6, 9, 13.5, 20.25: ×1.5 per step, default 6 = one step from the thinnest,
+  (4, 6, 10, 18, 32: the thick steps grow faster, ×1.7 then ×1.8; default 6 = one step from the thinnest,
   three from the thickest); a button is disabled at its end. Each tap flashes a dot
   of the real size in the middle of the sheet (`.teken-maat`).
 - **Layers:** two stacked canvases (`.teken-onderlaag` under `.teken-canvas`, which
