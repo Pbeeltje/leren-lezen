@@ -30,7 +30,7 @@ the word; a mismatch flips back after ~900 ms with no penalty. Kleuters 4 pairs,
 groep 3 `GeheugenScreen(m, 8)` (16 cards); boards >4 pairs get
 `.geheugen-bord--groot` (4×4 portrait, 8×2 landscape, never scrolls).
 Groep 3 (`GeheugenScreen(m, 8, true)`) first picks **1 speler / 2 spelers**
-(`.geheugen-keuze`). 1 speler = the normal 3 boards. 2 spelers = one board, taking turns:
+(`.geheugen-keuze`). 1 speler = one board, then the klaar-kaart (kleuters still play 3 boards of 4 pairs). 2 spelers = one board, taking turns:
 a pair lets you go again, a miss passes the turn (`misser` callback of
 `renderGeheugenSpel`, after the cards flip back). Speler 1 blue, speler 2 red (`--speler1`,
 `--speler2` on `.scherm`); the `.geheugen-scorebord` replaces the instruction, the player

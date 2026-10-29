@@ -9,11 +9,13 @@ import { events } from '../../engine/events.ts';
 import { confetti } from '../../three/particles.ts';
 import { toonKlaarKaart } from '../components/KlaarKaart.ts';
 
+// Kleuters spelen drie kleine borden achter elkaar, groep 3 één groot bord.
 const AANTAL_BORDEN = 3;
 
 // Klassiek geheugenspel met dezelfde plaatjes/geluiden als "Luisteren". Elk voltooid
 // bord eindigt met een vuurwerkje; na 3 borden volgt de klaar-kaart met groot feest.
-// Kleuters spelen met 4 paren, groep 3 met 8 (een groter bord, zie .geheugen-bord--groot).
+// Kleuters spelen met 4 paren, groep 3 met 8 (een groter bord, zie .geheugen-bord--groot)
+// en dan maar één bord: na de laatste kaart meteen de klaar-kaart.
 // Groep 3 (`spelersKeuze`) kiest eerst 1 of 2 spelers. Met twee speel je één bord om de
 // beurt: wie een paar vindt mag nog eens, bij een misser is de ander. Speler 1 is blauw,
 // speler 2 rood; het scorebord laat zien wie er aan de beurt is.
@@ -82,7 +84,7 @@ export function GeheugenScreen(manager: ScreenManager, aantalParen = 4, spelersK
     opruimen = renderGeheugenSpel(oefenContainer, kaarten, () => betaal(MUNTEN_GEHEUGEN_PAAR), () => {
       betaal(MUNTEN_GEHEUGEN_BORD);
       bordenKlaar++;
-      if (bordenKlaar >= AANTAL_BORDEN) {
+      if (bordenKlaar >= (aantalParen > 4 ? 1 : AANTAL_BORDEN)) {
         wacht = () => {
           if (!actief) return;
           wacht = null;
