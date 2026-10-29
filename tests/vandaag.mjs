@@ -94,10 +94,9 @@ console.log('kleuter schud derde', derde);
 await page.screenshot({ path: OUT + '5-kleuter-rechtop.png' });
 await page.setViewportSize({ width: 844, height: 390 }); await wacht(500);
 await page.screenshot({ path: OUT + '6-kleuter-liggend.png' });
+// Na schudden staat er nooit twee keer hetzelfde op de kaarten.
+console.log('geen dubbele', new Set(await kaarten()).size === 3);
 // Derde kaart openen werkt.
 await page.locator('.vandaag-kaart').nth(2).click(); await wacht(900);
 console.log('derde kaart opent', await page.locator('.scherm-titel, .instructie-tekst').first().innerText().catch(() => '?'));
-// Na schudden staat er nooit twee keer hetzelfde op de kaarten.
-console.log('geen dubbele', new Set(await kaarten()).size === 3 || '(scherm gewisseld)');
-
 console.log('fouten', fouten); await b.close();
