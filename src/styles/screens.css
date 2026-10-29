@@ -1800,16 +1800,39 @@
   border-radius: var(--radius-groot);
   overflow: hidden;
   box-shadow: 0 6px 0 rgba(0, 0, 0, 0.15);
+  position: relative;
 }
-.teken-canvas { display: block; width: 100%; height: 100%; touch-action: none; }
+.teken-canvas { position: relative; display: block; width: 100%; height: 100%; touch-action: none; transition: opacity 0.2s; }
+.teken-onderlaag { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; }
+/* Op de onderste laag: de bovenste even doorzichtig, zodat je ziet dat je eronder tekent. */
+.teken-blad--onder .teken-canvas { opacity: 0.4; }
+/* Hoe dik de pen nu is: even een stip midden op het blad na dunner/dikker. */
+.teken-maat {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  border-radius: 50%;
+  box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.25);
+  transform: translate(-50%, -50%);
+  opacity: 0;
+  pointer-events: none;
+}
+.teken-maat--zichtbaar { animation: teken-maat 0.9s ease-out; }
+@keyframes teken-maat {
+  0%, 45% { opacity: 1; }
+  100% { opacity: 0; }
+}
 .teken-balk {
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
   align-items: center;
-  gap: 8px;
+  gap: 8px 24px;
   max-width: 960px;
 }
+.teken-groep { display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: 8px; }
+.teken-dikte:disabled { opacity: 0.35; }
+.teken-laag svg { width: 32px; height: 32px; }
 .teken-kleur, .teken-dikte, .teken-actie {
   width: 52px;
   height: 52px;
@@ -1926,7 +1949,15 @@
   .teken-scherm { padding-top: 104px; gap: 8px; }
   .teken-blad { height: max(240px, calc(100dvh - 290px)); }
   .teken-kleur, .teken-dikte, .teken-actie { width: 42px; height: 42px; border-width: 3px; }
-  .teken-balk { gap: 6px; }
+  .teken-balk, .teken-groep { gap: 6px; }
+  .teken-laag svg { width: 28px; height: 28px; }
+}
+/* Telefoon rechtop: 18 knoppen in een raster van 6 breed. Bovenaan de rij voor het blad,
+   daaronder kleuren, gum, dunner en dikker. */
+@media (orientation: portrait) and (max-width: 560px) {
+  .teken-scherm .teken-balk { display: grid; grid-template-columns: repeat(6, 42px); justify-content: center; gap: 6px 8px; }
+  .teken-groep { display: contents; }
+  .teken-terug { margin-right: 0; }
 }
 
 /* ---------- Leesboekjes ---------- */
@@ -2794,7 +2825,8 @@
 .teken-scherm .teken-balk { max-width: none; flex: 0 0 auto; }
 .teken-terug { margin-right: 14px; background: #eef3fb; }
 .teken-terug img { width: 30px; height: 30px; }
-/* Telefoon dwars: de knoppen in twee kolommen rechts naast het blad. */
+/* Telefoon dwars: de knoppen in drie kolommen rechts naast het blad (eerst de twee rijen
+   voor het blad, dan de kleuren en de pen). */
 @media (orientation: landscape) and (max-height: 520px) {
   .scherm.teken-scherm { flex-direction: row; align-items: stretch; }
   .teken-scherm .teken-blad { height: auto; }
@@ -2807,8 +2839,9 @@
     order: 2;
   }
   .teken-scherm .teken-kleur, .teken-scherm .teken-dikte, .teken-scherm .teken-actie { width: 40px; height: 40px; border-width: 3px; }
-  .teken-scherm .teken-kleur img, .teken-scherm .teken-actie img { width: 24px; height: 24px; }
-  .teken-terug { margin: 0 0 0 0; grid-column: 1 / -1; justify-self: center; }
+  .teken-scherm .teken-kleur img, .teken-scherm .teken-actie img, .teken-laag svg { width: 24px; height: 24px; }
+  .teken-groep { display: contents; }
+  .teken-terug { margin: 0; }
 }
 
 /* ---------- Telefoon liggend (weinig hoogte) ---------- */

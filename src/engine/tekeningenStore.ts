@@ -11,6 +11,7 @@ export interface Lijn {
   kleur: string; // kleurcode of 'gum'
   dikte: number;
   punten: [number, number][]; // genormaliseerd 0..1
+  onder?: boolean; // op de onderste laag (anders de bovenste; oude tekeningen hadden alleen die)
 }
 
 export interface Tekening {
@@ -46,7 +47,7 @@ function decodeer(tekst: string): [number, number][] {
   return punten;
 }
 
-type Opgeslagen = { v: number; l: { k: string; d: number; p: string }[] } | null;
+type Opgeslagen = { v: number; l: { k: string; d: number; p: string; o?: 1 }[] } | null;
 
 const sleutel = (): string => `leren-lezen:tekeningen:${haalActiefProfielId() ?? 'gast'}`;
 
@@ -83,7 +84,12 @@ function schrijfAlles(alles: Opgeslagen[]): boolean {
 
 export function haalTekeningen(): (Tekening | null)[] {
   return leesAlles().map((t) =>
-    t ? { verhouding: t.v, lijnen: t.l.map((l) => ({ kleur: l.k, dikte: l.d, punten: decodeer(l.p) })) } : null,
+    t
+      ? {
+          verhouding: t.v,
+          lijnen: t.l.map((l) => ({ kleur: l.k, dikte: l.d, punten: decodeer(l.p), ...(l.o === 1 ? { onder: true } : {}) })),
+        }
+      : null,
   );
 }
 
@@ -91,7 +97,7 @@ export function bewaarTekening(plek: number, tekening: Tekening): boolean {
   const alles = leesAlles();
   alles[plek] = {
     v: Math.round(tekening.verhouding * 1000) / 1000,
-    l: tekening.lijnen.filter((l) => l.punten.length > 0).map((l) => ({ k: l.kleur, d: l.dikte, p: codeer(l.punten) })),
+    l: tekening.lijnen.filter((l) => l.punten.length > 0).map((l) => ({ k: l.kleur, d: l.dikte, p: codeer(l.punten), ...(l.onder ? { o: 1 as const } : {}) })),
   };
   return schrijfAlles(alles);
 }

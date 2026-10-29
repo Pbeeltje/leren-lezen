@@ -107,11 +107,26 @@ own clip `schrijf-letter-<letter>`, the voice says the sound, not the name.
 
 ## Tekenen (under Spelletjes)
 
-`TekenScreen.ts`: canvas with 9 colours, 2 thicknesses, eraser
-(`destination-out`), undo and "nieuw blad"; lines are normalised points so undo
-and resize redraw everything. No profile menu or coin counter (kids tapped them
+`TekenScreen.ts`: canvas with 9 colours, eraser (`destination-out`),
+dunner/dikker, two layers, undo and "nieuw blad"; lines are normalised points so
+undo and resize redraw everything. No profile menu or coin counter (kids tapped them
 by accident): the back button is the first tool (`.teken-terug`), the sheet fills
-the screen; on low landscape screens the tools sit in 3 columns on the right.
+the screen.
+
+- **Thickness:** the small-dot and big-dot buttons step through `DIKTES`
+  (4, 6, 9, 13.5, 20.25: ×1.5 per step, default 6 = one step from the thinnest,
+  three from the thickest); a button is disabled at its end. Each tap flashes a dot
+  of the real size in the middle of the sheet (`.teken-maat`).
+- **Layers:** two stacked canvases (`.teken-onderlaag` under `.teken-canvas`, which
+  takes the pointer). Start on the top layer; the layer button (two-sheets icon,
+  yellow ring while underneath) switches. On the bottom layer the top canvas is at
+  40% opacity. Each `Lijn` has `onder?: true` (stored as `o: 1`; old drawings are all
+  top layer); the eraser only erases its own layer. Undo pops the last line of
+  either layer. New sheet and opening a drawing go back to the top layer.
+- **Toolbar:** two `.teken-groep` groups — sheet tools (terug, undo, nieuw, bewaar,
+  lijst, laag) and pen (colours, gum, dunner, dikker). Wide screens: one row each.
+  Portrait phone (≤560px): groups are `display: contents` in a 6-wide grid (3 rows).
+  Low landscape: same in a 3-wide grid right of the sheet (6 rows).
 
 Saved drawings: heart button (bewaar) and framed-picture button (mijn
 tekeningen). `engine/tekeningenStore.ts`: 10 slots per profile, key
@@ -122,6 +137,6 @@ wiggles). "Nieuw blad" asks first (big ✕ / ✓) when there are unsaved lines. 
 list window is appended to `document.body`. Check: `node tests/tekeningen.mjs <map>`.
 
 The sheet in progress survives leaving and re-entering Tekenen: on `unmount` the
-lines, slot, "gewijzigd" flag, colour and thickness go into a module-level
+lines, slot, "gewijzigd" flag, colour, thickness and layer go into a module-level
 `openBladen` map per profile (memory only, so the app starts with an empty sheet
 after it is closed or the page is reloaded).

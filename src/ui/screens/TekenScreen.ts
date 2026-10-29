@@ -11,15 +11,33 @@ import { haalActiefProfielId } from '../../engine/profielStore.ts';
 
 // Vrij tekenen met de vinger (onder Spelletjes). Zo groot mogelijk blad en alleen
 // tekenknoppen plus terug (in de balk): geen profielmenu of munten, want daar tikten de
-// kinderen per ongeluk op. Grote kleurvlakken, twee diktes, gum,
+// kinderen per ongeluk op. Grote kleurvlakken, gum, dunner/dikker, twee lagen,
 // "terug" (laatste lijn weg) en een nieuw blad. Het hartje bewaart de tekening in een van
 // de 10 plekjes van dit profiel (engine/tekeningenStore.ts); het lijstje opent ze weer.
 // De lijnen worden bewaard als punten, zodat terug en draaien/vergroten van het scherm de
 // tekening opnieuw kunnen tekenen.
+//
+// Twee lagen, elk een eigen canvas: je begint op de bovenste. Op de onderste kun je
+// inkleuren en gummen zonder de lijnen erboven te raken; de bovenste laag is dan even wat
+// doorzichtig, zodat je ziet dat je eronder zit.
 
 const KLEUREN = ['#1b1b2f', '#e53935', '#fb8c00', '#fdd835', '#43a047', '#1e88e5', '#8e24aa', '#ec407a', '#8d6e63'];
-const DIKTES = [{ naam: 'dun', px: 6 }, { naam: 'dik', px: 18 }];
+// Elke stap 50% dikker (of terug): één maat dunner dan gewoon en drie dikker.
+const DIKTES = [4, 6, 9, 13.5, 20.25];
+const GEWONE_DIKTE = 1;
 const GUM = 'gum';
+
+// Twee blaadjes over elkaar; het gekozen blaadje is gekleurd.
+function laagIcoon(onder: boolean): string {
+  const vol = 'fill="#fdd835" stroke="#1b1b2f"';
+  const leeg = 'fill="#fff" stroke="#9aa5b8"';
+  return (
+    '<svg viewBox="0 0 32 32" width="32" height="32" aria-hidden="true" stroke-width="2.4" stroke-linejoin="round">' +
+    `<rect x="10" y="3" width="19" height="19" rx="3" ${onder ? vol : leeg}/>` +
+    `<rect x="3" y="10" width="19" height="19" rx="3" ${onder ? leeg : vol}${onder ? ' fill-opacity="0.75"' : ''}/>` +
+    '</svg>'
+  );
+}
 
 // Het blad waar je mee bezig was blijft (per profiel) staan als je het tekenen verlaat en
 // terugkomt, zolang de app open is. Alleen in het geheugen: na het sluiten van de app een
@@ -30,6 +48,7 @@ interface Blad {
   gewijzigd: boolean;
   kleur: string;
   dikte: number;
+  onder: boolean;
 }
 const openBladen = new Map<string, Blad>();
 
@@ -39,13 +58,25 @@ export function TekenScreen(manager: ScreenManager): Screen {
 
   const blad = document.createElement('div');
   blad.className = 'teken-blad';
+  const canvasOnder = document.createElement('canvas');
+  canvasOnder.className = 'teken-onderlaag';
   const canvas = document.createElement('canvas');
   canvas.className = 'teken-canvas';
-  blad.appendChild(canvas);
+  const maatVoorbeeld = document.createElement('div');
+  maatVoorbeeld.className = 'teken-maat';
+  blad.append(canvasOnder, canvas, maatVoorbeeld);
   el.appendChild(blad);
 
+  // Twee groepjes: de knoppen voor het blad (terug, ongedaan, nieuw, bewaren, lagen) en
+  // alles om mee te tekenen (kleuren, gum, dikte). Op een breed scherm elk een rij; op een
+  // telefoon vallen ze samen in een raster (zie screens.css).
   const balk = document.createElement('div');
   balk.className = 'teken-balk';
+  const groepBlad = document.createElement('div');
+  groepBlad.className = 'teken-groep';
+  const groepPen = document.createElement('div');
+  groepPen.className = 'teken-groep';
+  balk.append(groepBlad, groepPen);
   el.appendChild(balk);
 
   // Terug als eerste knop in de balk, met wat ruimte erna.
@@ -55,26 +86,54 @@ export function TekenScreen(manager: ScreenManager): Screen {
   terug.innerHTML = '<img src="assets/icons/terug.svg" alt="">';
   terug.setAttribute('aria-label', 'Terug');
   terug.addEventListener('click', () => manager.pop());
-  balk.appendChild(terug);
+  groepBlad.appendChild(terug);
 
   const profiel = haalActiefProfielId() ?? 'gast';
   const vorig = openBladen.get(profiel);
   const lijnen: Lijn[] = vorig?.lijnen ?? [];
   let kleur = vorig?.kleur ?? KLEUREN[1];
-  let dikte = vorig?.dikte ?? DIKTES[0].px;
+  let dikteStap = GEWONE_DIKTE;
+  if (vorig) {
+    // Dichtstbijzijnde maat (ook voor een blad van voor de nieuwe maten).
+    dikteStap = DIKTES.reduce((best, d, i) => (Math.abs(d - vorig.dikte) < Math.abs(DIKTES[best] - vorig.dikte) ? i : best), 0);
+  }
+  let onder = vorig?.onder ?? false;
   let huidige: Lijn | null = null;
-  const hoofdCtx = canvas.getContext('2d')!;
-  const ctx = hoofdCtx;
+  const ctxBoven = canvas.getContext('2d')!;
+  const ctxOnder = canvasOnder.getContext('2d')!;
 
-  function knop(klasse: string, inhoud: string, label: string, actie: () => void): HTMLButtonElement {
+  function knop(groep: HTMLElement, klasse: string, inhoud: string, label: string, actie: () => void): HTMLButtonElement {
     const b = document.createElement('button');
     b.type = 'button';
     b.className = klasse;
     b.innerHTML = inhoud;
     b.setAttribute('aria-label', label);
     b.addEventListener('click', actie);
-    balk.appendChild(b);
+    groep.appendChild(b);
     return b;
+  }
+
+  knop(groepBlad, 'teken-actie', '↶', 'terug', () => {
+    lijnen.pop();
+    gewijzigd = true;
+    tekenAlles();
+  });
+  knop(groepBlad, 'teken-actie', '<img src="assets/icons/nieuw-blad.svg" alt="">', 'nieuw blad', () => {
+    // Niet per ongeluk een tekening kwijtraken: eerst vragen, tenzij het blad leeg is of
+    // alles al bewaard is. Met plaatjes en een groot vinkje/kruis, zodat je niet hoeft te lezen.
+    if (lijnen.length > 0 && gewijzigd) vraagNieuwBlad();
+    else nieuwBlad();
+  });
+  const bewaarKnop = knop(groepBlad, 'teken-actie', '<img src="assets/icons/bewaar.svg" alt="">', 'bewaar', bewaar);
+  knop(groepBlad, 'teken-actie', '<img src="assets/icons/tekeningen.svg" alt="">', 'mijn tekeningen', () => toonLijst(false));
+  const laagKnop = knop(groepBlad, 'teken-actie teken-laag', '', 'laag', () => kiesLaag(!onder));
+
+  function kiesLaag(o: boolean): void {
+    onder = o;
+    laagKnop.innerHTML = laagIcoon(o);
+    laagKnop.setAttribute('aria-label', o ? 'onderste laag' : 'bovenste laag');
+    laagKnop.classList.toggle('teken-knop--actief', o);
+    blad.classList.toggle('teken-blad--onder', o);
   }
 
   const kleurKnoppen: HTMLButtonElement[] = [];
@@ -83,36 +142,35 @@ export function TekenScreen(manager: ScreenManager): Screen {
     for (const b of kleurKnoppen) b.classList.toggle('teken-knop--actief', b.dataset.kleur === k);
   }
   for (const k of KLEUREN) {
-    const b = knop('teken-kleur', '', 'kleur', () => kiesKleur(k));
+    const b = knop(groepPen, 'teken-kleur', '', 'kleur', () => kiesKleur(k));
     b.style.background = k;
     b.dataset.kleur = k;
     kleurKnoppen.push(b);
   }
-  const gumKnop = knop('teken-kleur teken-gum', '<img src="assets/icons/gum.svg" alt="">', 'gum', () => kiesKleur(GUM));
+  const gumKnop = knop(groepPen, 'teken-kleur teken-gum', '<img src="assets/icons/gum.svg" alt="">', 'gum', () => kiesKleur(GUM));
   gumKnop.dataset.kleur = GUM;
   kleurKnoppen.push(gumKnop);
 
-  const dikteKnoppen = DIKTES.map((d) => {
-    const b = knop('teken-dikte', `<span style="width:${d.px + 4}px;height:${d.px + 4}px"></span>`, d.naam, () => {
-      dikte = d.px;
-      for (const x of dikteKnoppen) x.classList.toggle('teken-knop--actief', x === b);
-    });
-    return b;
-  });
-  dikteKnoppen[Math.max(0, DIKTES.findIndex((d) => d.px === dikte))].classList.add('teken-knop--actief');
-  knop('teken-actie', '↶', 'terug', () => {
-    lijnen.pop();
-    gewijzigd = true;
-    tekenAlles();
-  });
-  knop('teken-actie', '<img src="assets/icons/nieuw-blad.svg" alt="">', 'nieuw blad', () => {
-    // Niet per ongeluk een tekening kwijtraken: eerst vragen, tenzij het blad leeg is of
-    // alles al bewaard is. Met plaatjes en een groot vinkje/kruis, zodat je niet hoeft te lezen.
-    if (lijnen.length > 0 && gewijzigd) vraagNieuwBlad();
-    else nieuwBlad();
-  });
-  const bewaarKnop = knop('teken-actie', '<img src="assets/icons/bewaar.svg" alt="">', 'bewaar', bewaar);
-  knop('teken-actie', '<img src="assets/icons/tekeningen.svg" alt="">', 'mijn tekeningen', () => toonLijst(false));
+  // Dunner en dikker: dezelfde twee knoppen als vroeger (kleine en grote stip), maar nu een
+  // stap terug of verder. Bij elke tik zie je even hoe dik de pen nu is, midden op het blad.
+  const dunner = knop(groepPen, 'teken-dikte', '<span style="width:8px;height:8px"></span>', 'dunner', () => zetDikte(dikteStap - 1));
+  const dikker = knop(groepPen, 'teken-dikte', '<span style="width:20px;height:20px"></span>', 'dikker', () => zetDikte(dikteStap + 1));
+  function toonDikteKnoppen(): void {
+    dunner.disabled = dikteStap === 0;
+    dikker.disabled = dikteStap === DIKTES.length - 1;
+  }
+  function zetDikte(stap: number): void {
+    dikteStap = Math.min(DIKTES.length - 1, Math.max(0, stap));
+    toonDikteKnoppen();
+    const { b, h } = maat();
+    const px = lijnDikte(kleur === GUM ? GUM : '', DIKTES[dikteStap], b, h);
+    maatVoorbeeld.style.width = maatVoorbeeld.style.height = `${px}px`;
+    maatVoorbeeld.style.background = kleur === GUM ? '#fff' : kleur;
+    maatVoorbeeld.classList.remove('teken-maat--zichtbaar');
+    void maatVoorbeeld.offsetWidth; // animatie opnieuw starten
+    maatVoorbeeld.classList.add('teken-maat--zichtbaar');
+  }
+  toonDikteKnoppen();
 
   // In welk plekje deze tekening staat (null: nog niet bewaard), en of er sinds het
   // bewaren (of openen) nog iets is getekend.
@@ -123,6 +181,7 @@ export function TekenScreen(manager: ScreenManager): Screen {
     lijnen.length = 0;
     plek = null;
     gewijzigd = false;
+    kiesLaag(false);
     tekenAlles();
   }
 
@@ -241,6 +300,7 @@ export function TekenScreen(manager: ScreenManager): Screen {
           lijnen.push(...t.lijnen);
           plek = i;
           gewijzigd = false;
+          kiesLaag(false);
           tekenAlles();
         }
         sluitLijst();
@@ -276,24 +336,37 @@ export function TekenScreen(manager: ScreenManager): Screen {
     const h = Math.round(b / Math.min(3, Math.max(0.33, verhouding)));
     c.width = b * 2;
     c.height = h * 2;
+    // Elke laag apart (de gum van de bovenste laag mag de onderste niet raken), dan op elkaar.
+    const lagen = [true, false].map((o) => {
+      const laag = document.createElement('canvas');
+      laag.width = c.width;
+      laag.height = c.height;
+      const g = laag.getContext('2d')!;
+      g.setTransform(2, 0, 0, 2, 0, 0);
+      for (const l of lijnenVan) if (!!l.onder === o) tekenLijn(l, g, b, h);
+      return laag;
+    });
     const g = c.getContext('2d')!;
-    g.setTransform(2, 0, 0, 2, 0, 0);
-    for (const l of lijnenVan) tekenLijn(l, g, b, h);
-    g.globalCompositeOperation = 'source-over';
+    for (const laag of lagen) g.drawImage(laag, 0, 0);
     return c;
   }
   kiesKleur(kleur);
+  kiesLaag(onder);
 
   function maat(): { b: number; h: number } {
     return { b: canvas.clientWidth, h: canvas.clientHeight };
   }
 
-  function tekenLijn(l: Lijn, ctx = hoofdCtx, b = maat().b, h = maat().h): void {
+  function lijnDikte(k: string, dikte: number, b: number, h: number): number {
     const schaal = Math.min(b, h) / 400; // dikte meeschalen met het blad
+    return (k === GUM ? dikte * 2 : dikte) * Math.max(0.8, schaal);
+  }
+
+  function tekenLijn(l: Lijn, ctx: CanvasRenderingContext2D, b = maat().b, h = maat().h): void {
     ctx.globalCompositeOperation = l.kleur === GUM ? 'destination-out' : 'source-over';
     ctx.strokeStyle = l.kleur === GUM ? '#000' : l.kleur;
     ctx.fillStyle = ctx.strokeStyle;
-    ctx.lineWidth = (l.kleur === GUM ? l.dikte * 2 : l.dikte) * Math.max(0.8, schaal);
+    ctx.lineWidth = lijnDikte(l.kleur, l.dikte, b, h);
     ctx.lineCap = 'round';
     ctx.lineJoin = 'round';
     const p = l.punten.map(([x, y]) => [x * b, y * h] as const);
@@ -313,19 +386,28 @@ export function TekenScreen(manager: ScreenManager): Screen {
     ctx.stroke();
   }
 
-  function tekenAlles(): void {
+  function tekenLaag(o: boolean): void {
+    const ctx = o ? ctxOnder : ctxBoven;
     const { b, h } = maat();
-    ctx.clearRect(0, 0, b, h);
-    for (const l of lijnen) tekenLijn(l);
     ctx.globalCompositeOperation = 'source-over';
+    ctx.clearRect(0, 0, b, h);
+    for (const l of lijnen) if (!!l.onder === o) tekenLijn(l, ctx);
+    ctx.globalCompositeOperation = 'source-over';
+  }
+
+  function tekenAlles(): void {
+    tekenLaag(true);
+    tekenLaag(false);
   }
 
   function pasGrootteAan(): void {
     const r = window.devicePixelRatio || 1;
     const { b, h } = maat();
-    canvas.width = Math.round(b * r);
-    canvas.height = Math.round(h * r);
-    ctx.setTransform(r, 0, 0, r, 0, 0);
+    for (const [c, ctx] of [[canvas, ctxBoven], [canvasOnder, ctxOnder]] as const) {
+      c.width = Math.round(b * r);
+      c.height = Math.round(h * r);
+      ctx.setTransform(r, 0, 0, r, 0, 0);
+    }
     tekenAlles();
   }
 
@@ -337,15 +419,15 @@ export function TekenScreen(manager: ScreenManager): Screen {
   canvas.addEventListener('pointerdown', (e) => {
     e.preventDefault();
     canvas.setPointerCapture(e.pointerId);
-    huidige = { kleur, dikte, punten: [punt(e)] };
+    huidige = { kleur, dikte: DIKTES[dikteStap], punten: [punt(e)], ...(onder ? { onder: true } : {}) };
     lijnen.push(huidige);
     gewijzigd = true;
-    tekenLijn(huidige);
+    tekenLijn(huidige, onder ? ctxOnder : ctxBoven);
   });
   canvas.addEventListener('pointermove', (e) => {
     if (!huidige) return;
     huidige.punten.push(punt(e));
-    tekenAlles();
+    tekenLaag(!!huidige.onder);
   });
   const stop = (): void => {
     huidige = null;
@@ -363,7 +445,7 @@ export function TekenScreen(manager: ScreenManager): Screen {
     },
     unmount() {
       huidige = null;
-      openBladen.set(profiel, { lijnen, plek, gewijzigd, kleur, dikte });
+      openBladen.set(profiel, { lijnen, plek, gewijzigd, kleur, dikte: DIKTES[dikteStap], onder });
       opGrootte.disconnect();
       sluitLijst();
       el.remove();
