@@ -1,0 +1,158 @@
+/* "Vandaag": drie grote kaarten onder elkaar (VandaagScreen.ts). */
+
+.icoon-tegel--vandaag {
+  box-shadow: 0 8px 0 rgba(0, 0, 0, 0.15), 0 0 0 4px var(--kleur-secundair);
+}
+
+.vandaag-kaarten {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  width: min(100%, 520px);
+}
+
+.vandaag-kaart {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  min-height: 104px;
+  padding: 14px 20px 14px 14px;
+  background: var(--kleur-oppervlak);
+  border: 4px solid transparent;
+  border-radius: var(--radius-groot);
+  box-shadow: 0 8px 0 rgba(0, 0, 0, 0.15);
+  text-align: left;
+  color: var(--kleur-tekst);
+  transition: transform 0.12s ease, box-shadow 0.12s ease;
+}
+
+.vandaag-kaart:active {
+  transform: translateY(6px);
+  box-shadow: 0 2px 0 rgba(0, 0, 0, 0.15);
+}
+
+.vandaag-kaart:disabled {
+  opacity: 0.5;
+}
+
+.vandaag-kaart--klaar {
+  background: #e6f8ec;
+  border-color: var(--kleur-succes);
+}
+
+.vandaag-kaart__nummer {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: var(--kleur-primair);
+  color: #fff;
+  font-size: 1.3rem;
+  font-weight: 800;
+}
+
+.vandaag-kaart--klaar .vandaag-kaart__nummer {
+  background: var(--kleur-succes);
+}
+
+.vandaag-kaart__plaatje {
+  flex: none;
+  width: 72px;
+  height: 72px;
+  object-fit: contain;
+}
+
+.vandaag-kaart__tekst {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.vandaag-kaart__tekst strong {
+  font-size: 1.4rem;
+  font-weight: 800;
+}
+
+.vandaag-kaart__tekst span {
+  font-size: 1rem;
+  font-weight: 700;
+  color: #6b6b78;
+}
+
+.vandaag-kaart__verder {
+  position: absolute;
+  top: -10px;
+  right: 14px;
+  padding: 3px 12px;
+  border-radius: 999px;
+  background: var(--kleur-secundair);
+  color: #fff;
+  font-size: 0.8rem;
+  font-weight: 800;
+}
+
+.vandaag-klaar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 20px;
+  padding: 10px 22px 10px 12px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.95);
+  box-shadow: 0 4px 0 rgba(0, 0, 0, 0.15);
+  font-size: 1.2rem;
+  font-weight: 800;
+  color: var(--kleur-tekst);
+}
+
+.vandaag-klaar[hidden] {
+  display: none;
+}
+
+.vandaag-klaar img {
+  width: 48px;
+  height: 48px;
+}
+
+/* Liggende telefoon: weinig hoogte, dus de kaarten naast elkaar. */
+@media (orientation: landscape) and (max-height: 500px) {
+  .vandaag-kaarten {
+    flex-direction: row;
+    width: min(100%, 900px);
+  }
+
+  .vandaag-kaart {
+    flex: 1 1 0;
+    flex-direction: column;
+    justify-content: center;
+    text-align: center;
+    gap: 6px;
+    padding: 12px 8px;
+  }
+
+  .vandaag-kaart__tekst {
+    align-items: center;
+  }
+
+  .vandaag-kaart__nummer {
+    position: absolute;
+    top: 8px;
+    left: 8px;
+    width: 32px;
+    height: 32px;
+    font-size: 1.05rem;
+  }
+
+  .vandaag-kaart__plaatje {
+    width: 56px;
+    height: 56px;
+  }
+
+  .vandaag-klaar {
+    margin-top: 12px;
+  }
+}

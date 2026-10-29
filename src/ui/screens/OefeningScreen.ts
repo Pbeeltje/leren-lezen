@@ -33,6 +33,7 @@ import { renderDrieKoppelen } from '../../games/drieKoppelen.ts';
 import { speelSchermOvergang } from '../../three/transitions.ts';
 import { TestResultScreen } from './TestResultScreen.ts';
 import { ChapterScreen } from './ChapterScreen.ts';
+import { rondTaakAf, startTaak, type Taak } from '../../engine/dagplan.ts';
 import { maakVoortgangsbalk } from '../components/Voortgangsbalk.ts';
 import { maakAudioKnop } from '../components/AudioKnop.ts';
 import { naHuidigeAudio, speelAf, instructieAudioPad } from '../../engine/audioManager.ts';
@@ -88,7 +89,11 @@ export function OefeningScreen(
   modus: OefenModus,
   onAfgerond: () => void,
   oefeningNummer: OefeningNummer = 1,
+  // Waar "verder" na de toetsuitslag heen gaat; zonder: het hoofdstuk (vanuit Vandaag: Vandaag).
+  naToets?: (m: ScreenManager) => Screen,
 ): Screen {
+  const taak: Taak = { soort: 'lezen', kernId: kern.id, modus, nummer: oefeningNummer };
+  startTaak(taak);
   // In 'oefenen'-modus behandelt elke Oefening 1/2/3 zijn eigen, vaste derde van de
   // woordenbank (zie woordenVoorOefening() in oefeningGenerator.ts) -- zo is elke
   // oefening grotendeels nieuwe woorden i.p.v. drie keer een willekeurige greep uit
@@ -194,6 +199,7 @@ export function OefeningScreen(
     if (isAfgerond) return;
     isAfgerond = true;
     events.emit('sessie-klaar', undefined);
+    rondTaakAf(taak);
     if (modus === 'toets') {
       const fractie = aantalGoed / oefeningen.length;
       const sterren: 0 | 1 | 2 | 3 = fractie === 1 ? 3 : fractie >= 0.7 ? 2 : fractie >= 0.4 ? 1 : 0;
@@ -209,7 +215,7 @@ export function OefeningScreen(
         TestResultScreen(
           m,
           { aantalGoed, totaal: oefeningen.length, muntenVerdiend: muntenDitKeer, sterren },
-          (mgr) => mgr.replace((m2) => ChapterScreen(m2, kernIndex)),
+          (mgr) => mgr.replace(naToets ?? ((m2) => ChapterScreen(m2, kernIndex))),
         ),
       );
       return;

@@ -11,6 +11,7 @@ import type { LuisterHoofdstuk } from '../../content/luisteren/hoofdstukken.ts';
 import { toonKlaarKaart } from '../components/KlaarKaart.ts';
 import { renderLuisterKiezen } from '../../games/luisterKiezen.ts';
 import { confetti } from '../../three/particles.ts';
+import { rondTaakAf, startTaak, type Taak } from '../../engine/dagplan.ts';
 
 const RONDE_LENGTE = 5;
 const AANTAL_RONDES = 2;
@@ -20,6 +21,8 @@ const AANTAL_RONDES = 2;
 // vuurwerkje na elke ronde en aan het eind een "klaar"-kaart met groot feest. Fout is
 // gewoon opnieuw proberen; er is geen "gefaald"-moment.
 export function LuisterenScreen(manager: ScreenManager, hoofdstuk: LuisterHoofdstuk): Screen {
+  const taak: Taak = { soort: 'luisteren', hoofdstukId: hoofdstuk.id };
+  startTaak(taak);
   const woorden = hoofdstukWoorden(hoofdstuk.woorden, hoofdstuk.plaatjes);
   const el = document.createElement('div');
   el.className = 'scherm';
@@ -72,6 +75,7 @@ export function LuisterenScreen(manager: ScreenManager, hoofdstuk: LuisterHoofds
       rondesKlaar++;
       if (rondesKlaar >= AANTAL_RONDES) {
         markeerKernVoltooid(`luister-${hoofdstuk.id}`, 3);
+        rondTaakAf(taak);
         betaal(MUNTEN_RONDE_SET);
         instructieRij.style.display = 'none';
         voortgangsbalk.element.style.display = 'none';

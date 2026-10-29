@@ -38,6 +38,7 @@ import { renderKalenderInvullen, renderKalenderVolgorde, renderKalenderVoorNa } 
 import { speelSchermOvergang } from '../../three/transitions.ts';
 import { TestResultScreen } from './TestResultScreen.ts';
 import { RekenChapterScreen } from './RekenChapterScreen.ts';
+import { rondTaakAf, startTaak, type Taak } from '../../engine/dagplan.ts';
 import { maakVoortgangsbalk } from '../components/Voortgangsbalk.ts';
 import { maakAudioKnop } from '../components/AudioKnop.ts';
 import { naHuidigeAudio, speelAf, instructieAudioPad } from '../../engine/audioManager.ts';
@@ -132,7 +133,13 @@ export function RekenOefeningScreen(
   modus: RekenModus,
   onAfgerond: () => void,
   oefeningNummer: OefeningNummer = 1,
+  // Waar "verder" na de toetsuitslag heen gaat; zonder: het hoofdstuk (vanuit Vandaag: Vandaag).
+  naToets?: (m: ScreenManager) => Screen,
 ): Screen {
+  // Tijd lezen hoort niet bij het dagplan, alleen Tellen.
+  const taak: Taak | null =
+    reeksVanKern(kern) === 'tellen' ? { soort: 'tellen', kernId: kern.id, modus, nummer: oefeningNummer } : null;
+  if (taak) startTaak(taak);
   const oefeningen = genereerRekenSessie(kern, modus, oefeningNummer);
   // Vastgelegd bij het starten van déze poging: "eerste keer" of "herhaling" (zie rewards.ts).
   const voortgangBijStart = haalKernVoortgang(kern.id);
@@ -226,6 +233,7 @@ export function RekenOefeningScreen(
     if (isAfgerond) return;
     isAfgerond = true;
     events.emit('sessie-klaar', undefined);
+    if (taak) rondTaakAf(taak);
     if (modus === 'toets') {
       const fractie = aantalGoed / oefeningen.length;
       const sterren: 0 | 1 | 2 | 3 = fractie === 1 ? 3 : fractie >= 0.7 ? 2 : fractie >= 0.4 ? 1 : 0;
@@ -242,7 +250,7 @@ export function RekenOefeningScreen(
         TestResultScreen(
           m,
           { aantalGoed, totaal: oefeningen.length, muntenVerdiend: muntenDitKeer, sterren },
-          (mgr) => mgr.replace((m2) => RekenChapterScreen(m2, kernIndex, reeks)),
+          (mgr) => mgr.replace(naToets ?? ((m2) => RekenChapterScreen(m2, kernIndex, reeks))),
         ),
       );
       return;

@@ -42,6 +42,7 @@ commit (describe the current state; don't append dated "latest round" notes).
 | File | Read before touching |
 |---|---|
 | [navigatie-voortgang.md](navigatie-voortgang.md) | screen manager, chapters/tiles, session generation, coins (`rewards.ts`), profiles storage, groups, shop-during-activity |
+| [dagplan.md](dagplan.md) | "Vandaag": the daily three-exercise plan, unfinished-session tracking, hooks in activity screens |
 | [lezen.md](lezen.md) | reading word bank, adding words, exercise types, kleuter letters, Andika font, on-screen keyboard, begrijpend lezen, leesboekjes |
 | [tellen.md](tellen.md) | math chapters and exercise types, sums, money, kleuter counting |
 | [audio.md](audio.md) | playing clips, replay buttons, feedback timing (`naHuidigeAudio`), mute |

@@ -87,6 +87,9 @@ export function genereerLuisterVraag(aantalOpties = 3, vorigDoel?: string, woord
   return { doel, opties: schud([doel, ...afleiders]) };
 }
 
+// Minstens zoveel woorden met opname nodig om een luisterhoofdstuk te kunnen spelen.
+export const MIN_HOOFDSTUK_WOORDEN = 4;
+
 /** Alle bruikbare woorden (plaatje + opname) van een luisterhoofdstuk. */
 export function hoofdstukWoorden(namen: string[], plaatjes: Record<string, string> = {}): Woord[] {
   const gewenst = new Set(namen);

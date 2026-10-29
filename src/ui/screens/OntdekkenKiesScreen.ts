@@ -3,23 +3,13 @@ import { maakIconTile } from '../components/IconTile.ts';
 import { maakTerugKnop } from '../components/TerugKnop.ts';
 import { maakTopRechtsBalk } from '../components/TopRechtsBalk.ts';
 import { speelSchermOvergang } from '../../three/transitions.ts';
-import { RondeScreen, type RondeVraag } from './RondeScreen.ts';
-import { maakVergelijkVraag } from '../../games/kleuter/vergelijken.ts';
-import { maakMeerMinderVraag } from '../../games/kleuter/meerMinder.ts';
-import { maakKleurVormVraag } from '../../games/kleuter/kleurenVormen.ts';
-import { maakWelkeVormVraag } from '../../games/kleuter/welkeVorm.ts';
-import { maakVolgordeVraag } from '../../games/kleuter/volgorde.ts';
+import { RondeScreen } from './RondeScreen.ts';
+import { ONTDEKKEN_IDS, RONDE_ACTIVITEITEN } from '../../games/rondeActiviteiten.ts';
 
 // "Ontdekken": kleuterbegrippen zonder lezen (groep 1-2), geïnspireerd op de onderwerpen
 // die Squla voor peuters/kleuters noemt (zie onderzoek/squla.md). Elk spel is een
-// RondeScreen: rondes van 5 met vuurwerk, fout is gewoon opnieuw proberen.
-const SPELLEN: { icoon: string; label: string; titel: string; maakVraag: () => RondeVraag }[] = [
-  { icoon: 'vergelijken', label: 'Groot of klein?', titel: 'Groot of klein?', maakVraag: maakVergelijkVraag },
-  { icoon: 'meer-minder', label: 'Meer of minder?', titel: 'Meer of minder?', maakVraag: maakMeerMinderVraag },
-  { icoon: 'vormen', label: 'Kleuren & vormen', titel: 'Kleuren & vormen', maakVraag: maakKleurVormVraag },
-  { icoon: 'welke-vorm', label: 'Welke vorm?', titel: 'Welke vorm?', maakVraag: maakWelkeVormVraag },
-  { icoon: 'volgorde', label: 'Op volgorde', titel: 'Op volgorde', maakVraag: maakVolgordeVraag },
-];
+// RondeScreen: rondes van 5 met vuurwerk, fout is gewoon opnieuw proberen. De spellen
+// zelf staan in games/rondeActiviteiten.ts.
 
 export function OntdekkenKiesScreen(manager: ScreenManager): Screen {
   const el = document.createElement('div');
@@ -34,14 +24,15 @@ export function OntdekkenKiesScreen(manager: ScreenManager): Screen {
   grid.className = 'tegel-grid';
   el.appendChild(grid);
 
-  for (const spel of SPELLEN) {
+  for (const id of ONTDEKKEN_IDS) {
+    const spel = RONDE_ACTIVITEITEN[id];
     grid.appendChild(
       maakIconTile({
         icoonPad: `assets/icons/${spel.icoon}.svg`,
-        label: spel.label,
+        label: spel.titel,
         onClick: () => {
           speelSchermOvergang();
-          manager.push((m) => RondeScreen(m, spel.titel, spel.maakVraag));
+          manager.push((m) => RondeScreen(m, spel.titel, spel.maakVraag, undefined, id));
         },
       }),
     );

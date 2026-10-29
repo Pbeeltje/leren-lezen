@@ -6,11 +6,8 @@ import { speelSchermOvergang } from '../../three/transitions.ts';
 import { haalKernVoortgang, haalLaatsteKern, zetLaatsteKern } from '../../engine/progressStore.ts';
 import { maakBladzijden } from '../components/Bladzijden.ts';
 import { LUISTER_HOOFDSTUKKEN } from '../../content/luisteren/hoofdstukken.ts';
-import { hoofdstukWoorden, plaatjeVan } from '../../engine/luisterenGenerator.ts';
+import { MIN_HOOFDSTUK_WOORDEN, hoofdstukWoorden, plaatjeVan } from '../../engine/luisterenGenerator.ts';
 import { LuisterenScreen } from './LuisterenScreen.ts';
-
-// Minstens zoveel woorden met opname nodig om een hoofdstuk te kunnen spelen.
-const MIN_WOORDEN = 4;
 
 export function LuisterHoofdstukkenScreen(manager: ScreenManager): Screen {
   const el = document.createElement('div');
@@ -27,7 +24,7 @@ export function LuisterHoofdstukkenScreen(manager: ScreenManager): Screen {
     bladzijden?.vernietig();
     const laatste = haalLaatsteKern('luisteren');
     const tegels = LUISTER_HOOFDSTUKKEN.map((hoofdstuk) => {
-      const speelbaar = hoofdstukWoorden(hoofdstuk.woorden).length >= MIN_WOORDEN;
+      const speelbaar = hoofdstukWoorden(hoofdstuk.woorden).length >= MIN_HOOFDSTUK_WOORDEN;
       const sterren = haalKernVoortgang(`luister-${hoofdstuk.id}`).sterren;
       const tegel = maakIconTile({
         icoonPad: hoofdstuk.plaatjes?.[hoofdstuk.icoonWoord] ?? plaatjeVan(hoofdstuk.icoonWoord) ?? 'assets/icons/luisteren.svg',

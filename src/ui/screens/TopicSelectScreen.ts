@@ -16,6 +16,8 @@ import { BoekenkastScreen } from './BoekenkastScreen.ts';
 import { MuziekKiesScreen } from './MuziekKiesScreen.ts';
 import { SpellenKiesScreen } from './SpellenKiesScreen.ts';
 import { LerenLezenKiesScreen } from './LerenLezenKiesScreen.ts';
+import { VandaagScreen } from './VandaagScreen.ts';
+import { haalDagplan } from '../../engine/dagplan.ts';
 
 export function TopicSelectScreen(manager: ScreenManager, groep: Groep): Screen {
   const el = document.createElement('div');
@@ -29,6 +31,24 @@ export function TopicSelectScreen(manager: ScreenManager, groep: Groep): Screen 
   const grid = document.createElement('div');
   grid.className = 'tegel-grid';
   el.appendChild(grid);
+
+  // Eerste tegel: de drie oefeningen die de app voor vandaag koos (engine/dagplan.ts).
+  const vandaagTegel = (): HTMLButtonElement => {
+    const plan = haalDagplan(groep);
+    const aantalKlaar = plan.klaar.filter(Boolean).length;
+    return maakIconTile({
+      icoonPad: 'assets/icons/ster.svg',
+      label: 'Vandaag',
+      badge: aantalKlaar === plan.taken.length ? '✓' : `${aantalKlaar} / ${plan.taken.length}`,
+      onClick: () => {
+        speelSchermOvergang();
+        manager.push((m) => VandaagScreen(m));
+      },
+    });
+  };
+  let vandaag = vandaagTegel();
+  vandaag.classList.add('icoon-tegel--vandaag');
+  grid.appendChild(vandaag);
 
   for (const topic of topicsVoorGroep(groep)) {
     const tegel = maakIconTile({
@@ -72,6 +92,11 @@ export function TopicSelectScreen(manager: ScreenManager, groep: Groep): Screen 
 
   return {
     mount(root) {
+      // Teller bijwerken na terugkomen (of de volgende dag een nieuw plan).
+      const nieuw = vandaagTegel();
+      nieuw.classList.add('icoon-tegel--vandaag');
+      vandaag.replaceWith(nieuw);
+      vandaag = nieuw;
       root.appendChild(el);
       root.appendChild(terug);
       topRechts = maakTopRechtsBalk(manager);

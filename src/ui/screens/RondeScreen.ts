@@ -8,6 +8,8 @@ import { voegMuntenToe } from '../../engine/progressStore.ts';
 import { MUNTEN_OEFENING_GOED, MUNTEN_RONDE_SET, kleuterFactor } from '../../engine/rewards.ts';
 import { confetti } from '../../three/particles.ts';
 import { toonKlaarKaart } from '../components/KlaarKaart.ts';
+import { rondTaakAf, startTaak } from '../../engine/dagplan.ts';
+import type { RondeId } from '../../games/rondeActiviteiten.ts';
 
 const RONDE_LENGTE = 5;
 const AANTAL_RONDES = 2;
@@ -38,7 +40,10 @@ export function RondeScreen(
   titelTekst: string,
   maakVraag: () => RondeVraag,
   beloning: RondeBeloning = { perGoed: kleuterFactor(MUNTEN_OEFENING_GOED), perSet: kleuterFactor(MUNTEN_RONDE_SET) },
+  // Schrijven en Ontdekken: welk spel dit is, voor het dagplan (half gespeeld / hoe vaak af).
+  rondeId?: RondeId,
 ): Screen {
+  if (rondeId) startTaak({ soort: 'ronde', id: rondeId });
   const el = document.createElement('div');
   el.className = 'scherm';
 
@@ -86,6 +91,7 @@ export function RondeScreen(
       rondesKlaar++;
       if (rondesKlaar >= AANTAL_RONDES) {
         setKlaar = true;
+        if (rondeId) rondTaakAf({ soort: 'ronde', id: rondeId });
         voegMuntenToe(beloning.perSet);
         verdiend += beloning.perSet;
         instructieRij.style.display = 'none';

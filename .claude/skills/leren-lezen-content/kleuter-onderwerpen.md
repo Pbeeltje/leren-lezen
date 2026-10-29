@@ -84,13 +84,15 @@ Topic `ontdekken`, `OntdekkenKiesScreen` (inspired by Squla, `onderzoek/squla.md
 
 Each game is one `maakVraag(): RondeVraag`; `ui/screens/RondeScreen.ts` is the
 shell (rounds of 5, progress bar, fireworks, coins, replay button). A new game =
-one `maakVraag` plus a tile in `SPELLEN`. Instruction audio:
+one `maakVraag` plus an entry in `RONDE_ACTIVITEITEN` and `ONTDEKKEN_IDS`
+(`games/rondeActiviteiten.ts`, also used by the Vandaag plan, see
+[dagplan.md](dagplan.md)). Instruction audio:
 `instructies/vergelijk-*`, `meer-minder-*`, `zoek-kleur-*`, `zoek-vorm-*`, `volgorde`, `volgorde-groot-klein`, `volgorde-klein-groot` (list 12).
 
 ## Schrijven (tracing)
 
 `SchrijvenKiesScreen` uses the generic `SpelKiesScreen`. Games: Lijnen (kleuter),
-Letters, Woordjes.
+Letters, Woordjes, defined in `games/rondeActiviteiten.ts` (`schrijven-*` ids).
 
 Letter shapes, `content/schrijven/letters.ts`: each letter is strokes in writing
 order from `lijn()`/`boog()`, sampled every ~2 units, in school direction (o

@@ -1,13 +1,17 @@
 import type { Screen, ScreenManager } from '../../engine/screenManager.ts';
 import { SpelKiesScreen } from './SpelKiesScreen.ts';
 import { RondeScreen } from './RondeScreen.ts';
-import { maakLetterVraag, maakLijnVraag, maakWoordVraag } from '../../games/schrijven/schrijfVragen.ts';
+import { RONDE_ACTIVITEITEN, type RondeId } from '../../games/rondeActiviteiten.ts';
 
 // "Schrijven": overtrekken met de vinger, in rondes van 5 (RondeScreen).
 export function SchrijvenKiesScreen(manager: ScreenManager): Screen {
+  const keuze = (id: RondeId, groepen: ('kleuter' | 'groep3')[]) => {
+    const spel = RONDE_ACTIVITEITEN[id];
+    return { icoon: spel.icoon, label: spel.titel, groepen, open: (m: ScreenManager) => RondeScreen(m, spel.titel, spel.maakVraag, undefined, id) };
+  };
   return SpelKiesScreen(manager, [
-    { icoon: 'lijnen', label: 'Lijnen', groepen: ['kleuter'], open: (m) => RondeScreen(m, 'Lijnen', maakLijnVraag) },
-    { icoon: 'letters', label: 'Letters', groepen: ['kleuter', 'groep3'], open: (m) => RondeScreen(m, 'Letters', maakLetterVraag) },
-    { icoon: 'woordjes', label: 'Woordjes', groepen: ['groep3'], open: (m) => RondeScreen(m, 'Woordjes', maakWoordVraag) },
+    keuze('schrijven-lijnen', ['kleuter']),
+    keuze('schrijven-letters', ['kleuter', 'groep3']),
+    keuze('schrijven-woordjes', ['groep3']),
   ]);
 }
