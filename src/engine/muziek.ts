@@ -17,6 +17,8 @@ export { speelDrum, type DrumSoort } from './muziek/drums.ts';
 // (do re mi sol la): dan klinkt elk willekeurig melodietje vrolijk.
 export const TONEN = [523.25, 587.33, 659.25, 698.46, 783.99, 880, 987.77, 1046.5];
 export const VIJFTONIG = [0, 1, 2, 4, 5];
+// Notennamen bij de knoppen en de stippen van Speel na; beide do's heten C (zelfde noot, hoger).
+export const NOOT_NAMEN = ['C', 'D', 'E', 'F', 'G', 'A', 'B', 'C'];
 
 // Melodie-instrumenten: de xylofoon is gratis, de rest koop je in de winkel. Ze spelen
 // dezelfde acht tonen (en dus dezelfde liedjes bij Speel na) met hun eigen klank.

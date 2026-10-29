@@ -1,3 +1,4 @@
+import { NOOT_NAMEN } from '../../engine/muziek.ts';
 import type { Uiterlijk } from './uiterlijk.ts';
 
 // Klokken: een houten klokkenrek (twee palen met bolletjes, een gesneden kroonlijst met een
@@ -78,9 +79,10 @@ function rekSvg(stangen: number[], rij: number, hoog: number, breed: number): st
 // Eén klok aan een riempje, 100 breed. De stang ligt op y 0; het lusje eromheen steekt
 // erboven uit, daarom begint de viewBox op -10 (140 hoog). De klepel draait om (50, 40) en
 // hangt vóór de donkere opening onder de rand uit; een clipPath (opening plus alles eronder)
-// houdt de steel uit het lijf van de klok. De band om het middel heeft de kleur van de toon.
+// houdt de steel uit het lijf van de klok. De band om het middel heeft de kleur van de toon;
+// daaronder is de notennaam in de klok gegoten.
 let klokNr = 0;
-const klok = (id: string): string => `<svg viewBox="0 -10 100 140">
+const klok = (id: string, naam: string): string => `<svg viewBox="0 -10 100 140">
   <defs><clipPath id="${id}"><ellipse cx="50" cy="108.5" rx="38" ry="3.2"/><rect x="0" y="108.5" width="100" height="25"/></clipPath></defs>
   <rect x="44" y="0" width="12" height="27" fill="#8b4a22" stroke="#3d1c0b" stroke-width="2.5"/>
   <rect x="41" y="-8" width="18" height="15" rx="4" fill="#7a3e1a" stroke="#3d1c0b" stroke-width="2.5"/>
@@ -90,6 +92,7 @@ const klok = (id: string): string => `<svg viewBox="0 -10 100 140">
   <path d="M65 40 C69 48 69 62 70 74 C71 86 77 94 85 101 L91 102 C83 94 77 84 76 72 C75 58 74 46 70 40 Z" fill="#a97f2e"/>
   <path class="luiklok__band" d="M24.6 52 L76.4 52 L77 61 L24 61 Z" stroke="#5e4515" stroke-width="2"/>
   <path d="M10 94 L90 94" stroke="#a97f2e" stroke-width="2.5"/>
+  <text class="luiklok__naam" x="50" y="82" dy="0.35em" text-anchor="middle">${naam}</text>
   <ellipse cx="50" cy="108" rx="45" ry="6" fill="#b8903a" stroke="#5e4515" stroke-width="2.5"/>
   <ellipse cx="50" cy="108.5" rx="38" ry="3.2" fill="#4a3410"/>
   <g clip-path="url(#${id})"><g class="luiklok__klepel">
@@ -106,8 +109,8 @@ const GOLVEN = `<svg viewBox="0 0 180 80">
   </g>
 </svg>`;
 
-function klokHtml(): string {
-  return `<span class="luiklok"><span class="luiklok__lijf">${klok(`klok-opening-${++klokNr}`)}</span><span class="luiklok__golven">${GOLVEN}</span></span>`;
+function klokHtml(naam: string): string {
+  return `<span class="luiklok"><span class="luiklok__lijf">${klok(`klok-opening-${++klokNr}`, naam)}</span><span class="luiklok__golven">${GOLVEN}</span></span>`;
 }
 
 // Drie vormen: vier klokken per stang (breed rek), twee per stang (hoog rek, voor een staand
@@ -178,7 +181,7 @@ export const KLOKKEN: Uiterlijk = {
   },
   knop(staaf, toon) {
     staaf.style.setProperty('--klok', (1 - toon * 0.035).toFixed(3));
-    staaf.insertAdjacentHTML('beforeend', klokHtml());
+    staaf.insertAdjacentHTML('beforeend', klokHtml(NOOT_NAMEN[toon]));
   },
   leg: legKlokken,
 };

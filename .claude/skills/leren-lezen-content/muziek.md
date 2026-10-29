@@ -68,6 +68,19 @@ red ball on the bar centre, stick up-right, rebounds around its handle) and a no
 (`.xylo-noot`, in the bar colour, floats up). The button's `staaf-aan` (0.9 s, glow in the first
 half) is the longest animation, because its `animationend` clears `--aan`.
 
+## Note names
+
+`NOOT_NAMEN` (C D E F G A B C, both do's are C) in `engine/muziek.ts`. `maakStaaf()` adds a
+`.noot-naam` span to every button unless the instrument's `Uiterlijk` has `naam: false`, and
+sets the `aria-label` to the name. The span has `pointer-events: none`. Its size comes from
+`--knop-b`/`--knop-h` (button size), which `leg` in `maakXylofoon` sets on resize. The yellow E gets
+`noot-naam--geel` (dark letter). Shown on the xylophone (above the lower screw), keyboard (in
+the coloured patch) and flute (white, in the hole). The bells draw it themselves as `<text
+class="luiklok__naam">` under the band in `klok()`. Harp, trompetten and kikkerkoor have
+`naam: false`: no room (thin strings, a 20px emblem on a stretched flag SVG, and a frog belly
+that the throat sac covers). Speel na dots (`muziek-stippen--noten`) are 32px with the letter
+inside. Mockups and the verdict per instrument: `C:\claude\leren-lezen-notennamen-plan.md`.
+
 ## Games
 
 - **Vrij spelen** (`XylofoonScreen`): switches between the instrument and all five

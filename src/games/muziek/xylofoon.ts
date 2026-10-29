@@ -1,4 +1,4 @@
-import { STAAF_KLEUREN, TONEN, speelInstrument, type Instrument } from '../../engine/muziek.ts';
+import { NOOT_NAMEN, STAAF_KLEUREN, TONEN, speelInstrument, type Instrument } from '../../engine/muziek.ts';
 import { UITERLIJK } from './uiterlijk.ts';
 
 // Een xylofoon van gekleurde staven, lang (laag) naar kort (hoog). Tikken speelt een toon;
@@ -34,11 +34,18 @@ export function maakXylofoon(
     staaf.style.setProperty('--kleur', STAAF_KLEUREN[toon]);
     staaf.style.setProperty('--lengte', `${100 - (toon / 7) * 42}%`);
     staaf.dataset.positie = String(positie);
-    staaf.setAttribute('aria-label', `toon ${positie + 1}`);
+    staaf.setAttribute('aria-label', NOOT_NAMEN[toon]);
     staaf.addEventListener('animationend', (e) => {
       if (e.target === staaf) staaf.classList.remove('xylofoon__staaf--aan');
     });
     UITERLIJK[huidig].knop?.(staaf, toon, positie, tonen);
+    if (UITERLIJK[huidig].naam !== false) {
+      const naam = document.createElement('span');
+      naam.className = 'noot-naam';
+      if (toon === 2) naam.classList.add('noot-naam--geel'); // witte letter leest niet op geel
+      naam.textContent = NOOT_NAMEN[toon];
+      staaf.appendChild(naam);
+    }
     return staaf;
   }
 
@@ -57,8 +64,14 @@ export function maakXylofoon(
     el.classList.toggle('xylofoon--wacht', !actief);
   }
 
-  // Trompetten (schuin) en klokken (het rek) hangen af van de maat van het vak.
-  const leg = (): void => UITERLIJK[huidig].leg?.(el, staven);
+  // Trompetten (schuin) en klokken (het rek) hangen af van de maat van het vak. De notennaam
+  // schaalt mee met de knop (--knop-b/--knop-h, alle knoppen zijn even breed).
+  const leg = (): void => {
+    UITERLIJK[huidig].leg?.(el, staven);
+    if (UITERLIJK[huidig].naam === false || !staven[0]) return;
+    el.style.setProperty('--knop-b', `${staven[0].offsetWidth}px`);
+    el.style.setProperty('--knop-h', `${staven[0].offsetHeight}px`);
+  };
   const kijker = new ResizeObserver(leg);
   kijker.observe(el);
 

@@ -1,7 +1,7 @@
 import type { RondeVraag } from '../../ui/screens/RondeScreen.ts';
 import { instructieAudioPad } from '../../engine/audioManager.ts';
 import { haalGroep } from '../../engine/progressStore.ts';
-import { STAAF_KLEUREN, VIJFTONIG, speelDrum, type DrumSoort, type Instrument } from '../../engine/muziek.ts';
+import { NOOT_NAMEN, STAAF_KLEUREN, VIJFTONIG, speelDrum, type DrumSoort, type Instrument } from '../../engine/muziek.ts';
 import { DRUM_KLEUR, maakDrumstel } from './drumstel.ts';
 import { toonFoutFeedback, toonGoedFeedback } from '../../ui/components/FeedbackOverlay.ts';
 import { maakInstrumentKnoppen } from '../../ui/components/InstrumentKnoppen.ts';
@@ -118,14 +118,17 @@ export function maakSpeelNaVragen(niveau: number, naarWinkel: (koop?: Instrument
         const kaart = document.createElement('div');
         kaart.className = 'oefen-kaart muziek-kaart';
         // Zelfde stippen als bij ritme: witte vulling, rand in de kleur van de staaf,
-        // vulling als de noot klinkt of goed is. Zo zie je welke noot er komt.
+        // vulling als de noot klinkt of goed is. Zo zie je welke noot er komt; de notennaam
+        // staat erin, zodat je de melodie leert lezen (E D C D E E E).
         const stippen = document.createElement('div');
-        stippen.className = 'muziek-stippen muziek-stippen--ritme';
+        stippen.className = 'muziek-stippen muziek-stippen--ritme muziek-stippen--noten';
         // Een lange noot krijgt meer ruimte achter zijn stip, een korte minder, zodat je
         // ook het ritme van het liedje ziet (jin-gle bells, jin-gle bells).
         noten.forEach(([p, tellen], i) => {
           const stip = document.createElement('span');
           stip.style.setProperty('--drum', STAAF_KLEUREN[staven[p]]);
+          stip.textContent = NOOT_NAMEN[staven[p]];
+          if (staven[p] === 2) stip.classList.add('noot-naam--geel');
           if (i < noten.length - 1 && tellen !== 1) stip.style.marginRight = `${Math.round((tellen - 1) * 18)}px`;
           stippen.appendChild(stip);
         });

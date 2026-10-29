@@ -17,6 +17,8 @@ export interface Uiterlijk {
   knop?: (staaf: HTMLButtonElement, toon: number, positie: number, tonen: number[]) => void;
   // Indeling die van de maat van het vak afhangt; opnieuw bij elke maatverandering.
   leg?: (vak: HTMLElement, staven: HTMLElement[]) => void;
+  // false: geen gedeelde notennaam op de knop (past niet, of het instrument tekent hem zelf).
+  naam?: false;
 }
 
 // Keyboard: een zwarte toets (alleen versiering) rechts van do, re, fa, sol en la, als de
@@ -27,12 +29,14 @@ const KEYBOARD: Uiterlijk = {
   },
 };
 
+// Notennamen staan op xylofoon, fluit en keyboard (gedeeld, .noot-naam) en in de klokken
+// gegoten (klokken.ts). Op harp, trompetten en kikkers is er geen plek voor.
 export const UITERLIJK: Record<Instrument, Uiterlijk> = {
   xylofoon: XYLOFOON,
-  harp: HARP,
+  harp: { ...HARP, naam: false },
   fluit: {},
   keyboard: KEYBOARD,
-  kikkerkoor: KIKKERKOOR,
-  trompet: TROMPETTEN,
-  klokken: KLOKKEN,
+  kikkerkoor: { ...KIKKERKOOR, naam: false },
+  trompet: { ...TROMPETTEN, naam: false },
+  klokken: { ...KLOKKEN, naam: false },
 };

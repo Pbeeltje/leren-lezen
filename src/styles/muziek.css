@@ -1182,3 +1182,64 @@
   .muziek-instrumenten .muziek-wissel__knop, .muziek-instrumenten .muziek-winkel-knop { width: 34px; height: 34px; }
   .muziek-instrumenten .muziek-wissel__knop > img:first-child { width: 24px; height: 24px; }
 }
+
+/* ---------- Notennamen (C D E F G A B C) ---------- */
+/* Op xylofoon, keyboard en fluit een .noot-naam in de knop (xylofoon.ts); --knop-b/--knop-h
+   zijn de maat van een knop. Klikt nooit (de knop eronder speelt). De klokken hebben de naam
+   in hun SVG (klokken.ts); harp, trompetten en kikkers hebben er geen plek voor. */
+.noot-naam {
+  position: absolute;
+  left: 0;
+  right: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Baloo 2', system-ui, sans-serif;
+  font-weight: 800;
+  line-height: 1;
+  color: #fff;
+  pointer-events: none;
+}
+.xylofoon--xylofoon .noot-naam {
+  bottom: 17%;
+  font-size: clamp(14px, calc(var(--knop-b, 64px) * 0.42), 44px);
+  text-shadow: 0 2px 0 rgba(0, 0, 0, 0.25);
+}
+.xylofoon--keyboard .noot-naam {
+  bottom: 18px;
+  height: 16%;
+  font-size: clamp(13px, calc(var(--knop-b, 60px) * 0.38), 30px);
+  text-shadow: 0 1px 0 rgba(0, 0, 0, 0.25);
+}
+.xylofoon--xylofoon .noot-naam--geel,
+.xylofoon--keyboard .noot-naam--geel { color: #7a6000; text-shadow: 0 1px 0 rgba(255, 255, 255, 0.5); }
+/* Fluit: wit in het donkere gat (het gat is min(46px, 72%) breed en min(46px, 52%) hoog). */
+.xylofoon--fluit .noot-naam {
+  top: 0;
+  bottom: 0;
+  font-size: clamp(11px, calc(min(46px, var(--knop-b, 46px) * 0.72, var(--knop-h, 46px) * 0.52) * 0.5), 24px);
+}
+.luiklok__naam {
+  font-family: 'Baloo 2', system-ui, sans-serif;
+  font-size: 24px;
+  font-weight: 800;
+  fill: #7a5a1c;
+}
+/* Speel na: de letter in de stip, donker op wit; wit als de stip gevuld is (geel: donker). */
+.muziek-stippen--noten span {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-width: 3px;
+  font-family: 'Baloo 2', system-ui, sans-serif;
+  font-size: 17px;
+  font-weight: 800;
+  line-height: 1;
+  color: #37474f;
+}
+.muziek-stippen--noten .muziek-stip--voor,
+.muziek-stippen--noten .muziek-stip--goed { color: #fff; }
+.muziek-stippen--noten .muziek-stip--voor.noot-naam--geel,
+.muziek-stippen--noten .muziek-stip--goed.noot-naam--geel { color: #7a6000; }
