@@ -326,6 +326,12 @@ the app goes to the background); "Nieuw record!" compares with `recordBijStart`.
   with the figure holding a cup (`figuurMetBeker`). `.voer-feest` has its own z-index and
   `.voer-scherm > .vang-venster` z-index 10, so the window sits on top. Dev hook
   `window.__voerDoel` sets a lower target.
+- **Heart bonus on winning:** +3 stars (`HART_BONUS`) per heart left. `gewonnen()` adds it
+  to `score` before the window (so the record counts the total) and passes `basis`; the
+  window shows `basis` with the three hearts below (`.voer-bonus`, lost ones grey without
+  +3), and `telHartjes()` pops each kept heart in turn (900 ms, then every 650 ms) with
+  "+3" and a two-note chime, counting the star number up to the total. Losing (no hearts
+  left) has no bonus. Test: `tests/_tmp/voer-hartbonus.mjs`.
 - `DIEREN`: per animal `goed` (what it eats) and an explicit `fout` list (only those
   are used as wrong options). `kijkt` (left/right/front) mirrors to the walking
   direction. `schaal` 0.8–1.2 is stretched by `spreid()` (×1.75 around 1, min 0.4)

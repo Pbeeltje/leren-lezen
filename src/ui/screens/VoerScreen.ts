@@ -209,6 +209,7 @@ const KEUZES = 3; // zoveel dingen liggen er minstens in de bak bij een nieuw gr
 const TWEE_VANAF = 6; // score
 const DRIE_VANAF = 10; // score, alleen groep 3
 const DOEL = 15; // sterren: dan is het spel gewonnen
+const HART_BONUS = 3; // sterren erbij per hartje dat je bij het winnen nog hebt
 
 const slaap = (ms: number): Promise<void> => new Promise((r) => window.setTimeout(r, ms));
 
@@ -1331,7 +1332,28 @@ export function VoerScreen(manager: ScreenManager): Screen {
     const duur = toonFeest();
     await slaap(duur + 3200);
     if (mijn !== spel) return;
-    toonVenster(true, true);
+    // De bonus telt meteen mee (ook voor het record); het venster telt hem zichtbaar op.
+    const basis = score;
+    zetScore(score + levens * HART_BONUS);
+    toonVenster(true, true, basis);
+  }
+
+  // Elk hartje dat je nog hebt springt om de beurt op met +3, en het getal telt mee.
+  function telHartjes(doos: HTMLElement, basis: number): void {
+    const getal = doos.querySelector<HTMLElement>('.vang-venster__score span')!;
+    const mijn = spel;
+    doos.querySelectorAll('.voer-bonus__hart:not(.voer-bonus__hart--weg)').forEach((h, k) => {
+      window.setTimeout(() => {
+        if (mijn !== spel) return;
+        h.classList.add('voer-bonus__hart--telt');
+        getal.textContent = String(basis + (k + 1) * HART_BONUS);
+        getal.classList.remove('voer-bonus__tel');
+        void getal.offsetWidth; // animatie opnieuw starten
+        getal.classList.add('voer-bonus__tel');
+        speelNoot(TONEN[(k * 2) % TONEN.length]);
+        speelNoot(TONEN[(k * 2 + 2) % TONEN.length], 0.1);
+      }, 900 + k * 650);
+    });
   }
 
   // Het groepje staat rechts van het figuurtje in rijen achter elkaar (de grootste achteraan),
@@ -1414,17 +1436,26 @@ export function VoerScreen(manager: ScreenManager): Screen {
     return bekerNa;
   }
 
-  function toonVenster(eind: boolean, gewonnen = false): void {
+  function toonVenster(eind: boolean, gewonnen = false, basis = score): void {
     overlay?.remove();
     const { venster, doos } = maakVenster();
     if (eind) {
       // Tegen het record bij de start: tussentijds bewaren (bewaarScore) kan het al hebben opgehoogd.
       const { html: recordHtml, nieuw } = recordRegel('voeren', score, recordBijStart);
       const figuur = `<img class="vang-venster__figuur" src="${speler.src}" alt="">`;
+      // Gewonnen: de drie hartjes onder de score, de verloren grijs en zonder +3.
+      const bonus = gewonnen
+        ? `<p class="vang-venster__bonus voer-bonus">${Array.from(
+            { length: LEVENS },
+            (_, k) => `<span class="voer-bonus__hart${k < levens ? '' : ' voer-bonus__hart--weg'}"><img src="${HART}" alt=""><b>+${HART_BONUS}</b></span>`,
+          ).join('')}</p>`
+        : '';
       doos.innerHTML = `
         ${gewonnen ? figuurMetBeker(figuur) : figuur}
-        <div class="vang-venster__score"><img src="${STER}" alt=""><span>${score}</span></div>
+        <div class="vang-venster__score"><img src="${STER}" alt=""><span>${basis}</span></div>
+        ${bonus}
         ${recordHtml}`;
+      if (gewonnen) telHartjes(doos, basis);
       if (nieuw && score > 0 && !gewonnen) confetti.vuurwerk('klein');
     } else {
       doos.innerHTML = `

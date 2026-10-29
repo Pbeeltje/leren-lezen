@@ -2639,6 +2639,20 @@
   from { rotate: -6deg; translate: 0 0; }
   to { rotate: 6deg; translate: 0 -6%; }
 }
+/* Eindvenster na winnen: elk hartje dat je nog hebt springt op met +3; verloren hartjes grijs. */
+.voer-bonus { gap: 14px; }
+.voer-bonus__hart { display: flex; flex-direction: column; align-items: center; gap: 2px; }
+.vang-venster__bonus .voer-bonus__hart img { width: 40px; height: 40px; transition: opacity 0.2s; }
+.voer-bonus__hart b { font-size: 1.4rem; color: var(--kleur-succes); opacity: 0; }
+.voer-bonus__hart:not(.voer-bonus__hart--telt) img { opacity: 0.55; }
+.voer-bonus__hart--telt img { animation: voer-bonus-pop 0.45s cubic-bezier(0.3, 1.6, 0.5, 1); }
+.voer-bonus__hart--telt b { animation: voer-feest-in 0.35s cubic-bezier(0.3, 1.6, 0.5, 1) both; opacity: 1; }
+.voer-bonus__hart--weg img { opacity: 0.2; filter: grayscale(1); transform: scale(0.8); }
+.voer-bonus__hart--weg b { visibility: hidden; }
+@keyframes voer-bonus-pop {
+  50% { transform: scale(1.45); }
+}
+.vang-venster__score span.voer-bonus__tel { animation: voer-bonus-pop 0.35s ease-out; }
 .voer-feest__stralen {
   position: absolute;
   z-index: 1;
