@@ -15,7 +15,8 @@ for (const [w, h, tag] of [[390, 760, 'tel'], [360, 640, 'kleintel'], [1100, 800
   await page.reload(); await page.waitForTimeout(700);
   await page.locator('.icoon-tegel', { hasText: 'Anna' }).click(); await page.waitForTimeout(700);
   await page.locator('.icoon-tegel', { hasText: 'Spelletjes' }).click(); await page.waitForTimeout(400);
-  await page.locator('.icoon-tegel', { hasText: 'Geheugenspel' }).click(); await page.waitForTimeout(900);
+  await page.locator('.icoon-tegel', { hasText: 'Geheugenspel' }).click(); await page.waitForTimeout(600);
+  await page.locator('.geheugen-keuze__knop', { hasText: '1 speler' }).click(); await page.waitForTimeout(500);
   const kaarten = await page.locator('.geheugen-kaart').count();
   // Twee kaarten omdraaien voor de foto.
   await page.locator('.geheugen-kaart').nth(0).click(); await page.locator('.geheugen-kaart').nth(1).click();

@@ -510,6 +510,160 @@
   }
 }
 
+/* Groep 3, twee spelers (GeheugenScreen): speler 1 blauw, speler 2 rood. Het scorebord
+   staat op de plek van de instructie; wie aan de beurt is staat vol gekleurd en groter,
+   en de dichte kaarten hebben dan ook die kleur. Gevonden paren houden de kleur van de vinder. */
+.scherm {
+  --speler1: #2f7cf6;
+  --speler1-donker: #1d5bc4;
+  --speler2: #f0464f;
+  --speler2-donker: #c22d36;
+}
+.geheugen-keuze {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 20px;
+}
+.geheugen-keuze__knop {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  width: 170px;
+  padding: 22px 12px 18px;
+  border-radius: var(--radius-groot);
+  background: var(--kleur-oppervlak);
+  box-shadow: 0 6px 0 rgba(0, 0, 0, 0.18);
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: var(--kleur-tekst);
+}
+.geheugen-keuze__knop:active { transform: translateY(3px); box-shadow: 0 3px 0 rgba(0, 0, 0, 0.18); }
+.geheugen-keuze__poppetjes {
+  display: flex;
+  align-items: flex-end;
+  gap: 8px;
+  height: 84px;
+}
+/* Een poppetje: rond hoofd (::before) op een bolle romp. */
+.geheugen-poppetje {
+  position: relative;
+  width: 46px;
+  height: 46px;
+  border-radius: 23px 23px 10px 10px;
+  background: var(--kleur-primair);
+}
+.geheugen-poppetje::before {
+  content: '';
+  position: absolute;
+  left: 9px;
+  bottom: 50px;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: inherit;
+}
+.geheugen-poppetje--1 { background: var(--speler1); }
+.geheugen-poppetje--2 { background: var(--speler2); }
+
+.geheugen-scorebord {
+  display: flex;
+  justify-content: center;
+  gap: 14px;
+}
+.geheugen-speler {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 4px 6px 4px 16px;
+  border-radius: 999px;
+  border: 4px solid var(--kleur-speler);
+  background: var(--kleur-oppervlak);
+  color: var(--kleur-speler);
+  font-weight: 800;
+  font-size: 1.1rem;
+  opacity: 0.7;
+  transition: transform 0.2s, opacity 0.2s;
+}
+.geheugen-speler--1 { --kleur-speler: var(--speler1); --kleur-speler-donker: var(--speler1-donker); }
+.geheugen-speler--2 { --kleur-speler: var(--speler2); --kleur-speler-donker: var(--speler2-donker); }
+.geheugen-speler__score {
+  min-width: 36px;
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: var(--kleur-speler);
+  color: #fff;
+  font-size: 1.3rem;
+  text-align: center;
+}
+.geheugen-speler--beurt {
+  background: var(--kleur-speler);
+  color: #fff;
+  opacity: 1;
+  transform: scale(1.12);
+  box-shadow: 0 0 0 4px #fff, 0 4px 14px rgba(0, 0, 0, 0.35);
+  animation: geheugen-beurt 0.45s ease-out;
+}
+.geheugen-speler--beurt .geheugen-speler__score {
+  background: #fff;
+  color: var(--kleur-speler);
+}
+@keyframes geheugen-beurt {
+  0% { transform: scale(0.9); }
+  60% { transform: scale(1.22); }
+  100% { transform: scale(1.12); }
+}
+
+.geheugen--beurt1 .geheugen-kaart { background: var(--speler1); box-shadow: 0 4px 0 var(--speler1-donker); }
+.geheugen--beurt2 .geheugen-kaart { background: var(--speler2); box-shadow: 0 4px 0 var(--speler2-donker); }
+.geheugen--beurt1 .geheugen-kaart.omgedraaid,
+.geheugen--beurt1 .geheugen-kaart.gevonden,
+.geheugen--beurt2 .geheugen-kaart.omgedraaid,
+.geheugen--beurt2 .geheugen-kaart.gevonden { background: transparent; box-shadow: none; }
+.geheugen-kaart--speler1.gevonden .geheugen-kaart__voorkant { border-color: var(--speler1); opacity: 0.85; }
+.geheugen-kaart--speler2.gevonden .geheugen-kaart__voorkant { border-color: var(--speler2); opacity: 0.85; }
+
+.geheugen-scorebord[hidden] { display: none; }
+.geheugen-uitslag { gap: 10px; }
+.geheugen-uitslag .klaar-kaart__beker { width: 90px; height: 90px; }
+.geheugen-uitslag .klaar-kaart__knop { width: 88px; height: 88px; border-width: 5px; }
+.geheugen-uitslag .klaar-kaart__knop img { width: 48px; height: 48px; }
+/* Liggende telefoon: te laag voor de beker. */
+@media (orientation: landscape) and (max-height: 500px) {
+  .geheugen-uitslag .klaar-kaart__beker { display: none; }
+}
+.geheugen-uitslag__tekst {
+  margin: 0;
+  font-size: 1.8rem;
+  font-weight: 800;
+  color: var(--kleur-tekst);
+}
+.geheugen-uitslag--1 .geheugen-uitslag__tekst { color: var(--speler1); }
+.geheugen-uitslag--2 .geheugen-uitslag__tekst { color: var(--speler2); }
+.geheugen-uitslag__stand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 1.6rem;
+  font-weight: 800;
+  color: var(--kleur-tekst);
+}
+.geheugen-uitslag__punt {
+  min-width: 60px;
+  padding: 4px 12px;
+  border-radius: 999px;
+  color: #fff;
+  text-align: center;
+}
+.geheugen-uitslag__punt--1 { background: var(--speler1); }
+.geheugen-uitslag__punt--2 { background: var(--speler2); }
+.geheugen-uitslag__knoppen {
+  display: flex;
+  gap: 24px;
+}
+.geheugen-uitslag .geheugen-uitslag__opnieuw { background: var(--kleur-secundair); box-shadow: 0 6px 0 #1f93cf; }
+
 .letter-rij {
   display: flex;
   gap: 12px;

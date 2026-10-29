@@ -5,12 +5,15 @@ import { toonGoedFeedback } from '../ui/components/FeedbackOverlay.ts';
 // Klassiek geheugenspel (kaarten omdraaien, paren zoeken) -- puur visueel te spelen,
 // met het woordgeluid als bonus-herhaling telkens als een kaart wordt omgedraaid. Geen
 // "fout"-straf op een mismatch: gewoon weer dichtdraaien en nog eens proberen, net als
-// overal elders in de app nooit een hard afgestrafte fout.
+// overal elders in de app nooit een hard afgestrafte fout. `paarGevonden` krijgt de twee
+// kaarten (twee spelers kleuren ze in hun eigen kleur); `misser` komt als een verkeerd paar
+// weer dicht is (dan is de ander aan de beurt).
 export function renderGeheugenSpel(
   container: HTMLElement,
   kaarten: GeheugenKaart[],
-  paarGevonden: () => void,
+  paarGevonden: (knoppen: HTMLButtonElement[]) => void,
   afgerond: () => void,
+  misser?: () => void,
 ): { vernietig: () => void } {
   container.innerHTML = '';
 
@@ -22,6 +25,7 @@ export function renderGeheugenSpel(
   let vergrendeld = false;
   let gevondenParen = 0;
   let stopWachten: (() => void) | null = null;
+  let weg = false;
   const totaalParen = kaarten.length / 2;
 
   for (const kaart of kaarten) {
@@ -57,7 +61,7 @@ export function renderGeheugenSpel(
         eerste.knop.classList.add('gevonden');
         tweede.knop.classList.add('gevonden');
         gevondenParen++;
-        paarGevonden();
+        paarGevonden([eerste.knop, tweede.knop]);
         const laatste = gevondenParen === totaalParen;
         // Bord dicht tot woord en "Goed zo!" uitgesproken zijn: de volgende kaart speelt
         // zijn woord af en zou de feedback anders meteen afkappen.
@@ -75,6 +79,7 @@ export function renderGeheugenSpel(
           eerste.knop.classList.remove('omgedraaid');
           tweede.knop.classList.remove('omgedraaid');
           vergrendeld = false;
+          if (!weg) misser?.();
         }, 900);
       }
     });
@@ -84,6 +89,7 @@ export function renderGeheugenSpel(
 
   return {
     vernietig: () => {
+      weg = true;
       stopWachten?.();
       container.replaceChildren();
     },
