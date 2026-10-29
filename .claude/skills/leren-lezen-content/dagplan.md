@@ -24,8 +24,12 @@ Per subject, in this order:
 4. **Luisteren:** the first playable chapter without stars, else a random one.
 
 **Shuffle button** (Fluent "Shuffle tracks button", `icons/schudden.svg`) on every
-card that isn't done: `wisselTaak(index)` swaps that card for the next entry in
-`kandidatenVoor()`, so repeated taps cycle round. Card 0/1 (lezen/tellen): the
+card that isn't done: `wisselTaak(index)` swaps that card for the next candidate,
+so repeated taps cycle round. Shuffling is **not** tied to the card's subject (the
+owner's wish): the candidate lists of all three cards are interleaved, own subject
+first (`mengRijen`), minus anything already on another card. So after shuffling
+there may be two lezen cards; only the fresh daily plan is one per subject.
+Per card (`kandidatenVoor()`): card 0/1 (lezen/tellen): the
 unfinished one, the open Oefeningen and the toets of the current chapter, the next
 open Oefening of the next unpassed chapter, and a repeat from the previous chapter.
 Groep 3 card 2: Letters ↔ Woordjes. Kleuter card 2: Luisteren (first two new

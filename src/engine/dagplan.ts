@@ -173,14 +173,18 @@ export function neemDagBonus(): boolean {
 }
 
 /**
- * Schudknop: kaart `index` wordt een ander, ook passend volgend stapje in hetzelfde vak.
+ * Schudknop: kaart `index` wordt een ander passend volgend stapje. Dat mag ook uit een ander
+ * vak komen (twee keer lezen is goed), alleen niet iets wat al op een andere kaart staat.
  * Nog eens tikken loopt alle mogelijkheden rond. Geeft het (bijgewerkte) plan terug.
  */
 export function wisselTaak(index: number): Dagplan | null {
   const data = lees();
   const plan = data.plan;
   if (!plan || plan.datum !== vandaag() || plan.klaar[index] || !plan.taken[index]) return null;
-  const kandidaten = kandidatenVoor(data, plan.groep, index);
+  const opAndereKaarten = new Set(plan.taken.filter((_, j) => j !== index).map(taakSleutel));
+  // Eigen vak vooraan, dan om en om met de andere vakken.
+  const rijen = [index, ...plan.taken.keys()].filter((j, k, lijst) => lijst.indexOf(j) === k).map((j) => kandidatenVoor(data, plan.groep, j));
+  const kandidaten = zonderDubbele(mengRijen(rijen)).filter((t) => !opAndereKaarten.has(taakSleutel(t)));
   const huidig = taakSleutel(plan.taken[index]);
   const plek = kandidaten.findIndex((t) => taakSleutel(t) === huidig);
   const volgende = kandidaten[(plek + 1) % kandidaten.length];
@@ -196,14 +200,17 @@ function kandidatenVoor(data: DagplanData, groep: Groep, index: number): Taak[] 
   if (index === 0) return kernKandidaten(data, 'lezen', leesKernen());
   if (index === 1) return kernKandidaten(data, 'tellen', rekenKernen());
   if (groep === 'groep3') return rondeKandidaten(data, 'schrijven', ['schrijven-letters', 'schrijven-woordjes']);
-  const rijen = [
+  return mengRijen([
     luisterKandidaten(data),
     rondeKandidaten(data, 'ontdekken', ONTDEKKEN_IDS),
     rondeKandidaten(data, 'schrijven', ['schrijven-lijnen', 'schrijven-letters']),
-  ];
-  // Om en om uit elk vak, zodat de eerste tik meteen iets heel anders kan geven.
+  ]);
+}
+
+// Om en om uit elke rij, zodat de eerste tik meteen iets heel anders kan geven.
+function mengRijen(rijen: Taak[][]): Taak[] {
   const gemengd: Taak[] = [];
-  for (let i = 0; i < Math.max(...rijen.map((r) => r.length)); i++) {
+  for (let i = 0; i < Math.max(0, ...rijen.map((r) => r.length)); i++) {
     for (const rij of rijen) if (rij[i]) gemengd.push(rij[i]);
   }
   return gemengd;
