@@ -6,6 +6,8 @@ import { maakIconTile } from '../components/IconTile.ts';
 import { maakTerugKnop } from '../components/TerugKnop.ts';
 import { maakTopRechtsBalk } from '../components/TopRechtsBalk.ts';
 import { speelSchermOvergang } from '../../three/transitions.ts';
+import { TopicSelectScreen } from './TopicSelectScreen.ts';
+import { GroepKiesScreen } from './GroepKiesScreen.ts';
 
 export interface SpelKeuze {
   icoon: string; // naam in assets/icons/
@@ -49,7 +51,14 @@ export function SpelKiesScreen(manager: ScreenManager, spellen: SpelKeuze[], tit
     grid.appendChild(tegel);
   }
 
-  const terug = maakTerugKnop(() => manager.pop());
+  // Normaal gepusht vanaf de onderwerpen; Schrijven komt soms via 'replace' terug (vanuit
+  // de schrijfhoofdstukken, stack dan 1 diep): dan terug naar de onderwerpen.
+  const terug = maakTerugKnop(() =>
+    manager.terugOfAnders((m) => {
+      const g = haalGroep();
+      return g ? TopicSelectScreen(m, g) : GroepKiesScreen(m);
+    }),
+  );
   let topRechts: ReturnType<typeof maakTopRechtsBalk> | null = null;
 
   return {

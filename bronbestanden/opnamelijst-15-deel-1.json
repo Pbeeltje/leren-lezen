@@ -1,0 +1,38 @@
+[
+  {
+    "n": 1,
+    "slug": "dictee-schrijf",
+    "text": "Schrijf het woord dat je hoort.",
+    "path": "public/assets/audio/instructies/dictee-schrijf.mp3"
+  },
+  {
+    "n": 2,
+    "slug": "dictee-nakijken",
+    "text": "Kijk je werk na. Is het goed?",
+    "path": "public/assets/audio/instructies/dictee-nakijken.mp3"
+  },
+  {
+    "n": 3,
+    "slug": "dictee-klaar",
+    "text": "Je dictee is klaar!",
+    "path": "public/assets/audio/instructies/dictee-klaar.mp3"
+  },
+  {
+    "n": 4,
+    "slug": "schrijf-over",
+    "text": "Schrijf het woord over.",
+    "path": "public/assets/audio/instructies/schrijf-over.mp3"
+  },
+  {
+    "n": 5,
+    "slug": "vos",
+    "text": "vos",
+    "path": "public/assets/audio/woorden/vos.mp3"
+  },
+  {
+    "n": 6,
+    "slug": "sok",
+    "text": "sok",
+    "path": "public/assets/audio/woorden/sok.mp3"
+  }
+]

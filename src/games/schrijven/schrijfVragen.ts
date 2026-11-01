@@ -162,6 +162,12 @@ export function maakLetterVraag(): RondeVraag {
 const vorigWoord: { waarde?: string } = {};
 export function maakWoordVraag(): RondeVraag {
   const woord = kiesAnders(WOORDJES, vorigWoord);
+  return woordOvertrekVraag(woord, W(woord));
+}
+
+// Ook gebruikt door de schrijfhoofdstukken (Oefening 1: overtrekken), met het plaatje
+// uit het leeshoofdstuk.
+export function woordOvertrekVraag(woord: string, plaatje: string): RondeVraag {
   const figuur = huidigSchrift() === 'aan-elkaar' ? woordFiguurAanElkaar(woord) : woordFiguur(woord);
   return {
     instructie: 'Schrijf het woord na',
@@ -174,7 +180,7 @@ export function maakWoordVraag(): RondeVraag {
           afgerond();
         },
       );
-      const k = kaart(container, hint(W(woord), woord), t.element);
+      const k = kaart(container, hint(plaatje, woord), t.element);
       return () => {
         t.opruimen();
         k.remove();

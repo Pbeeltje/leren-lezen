@@ -85,7 +85,7 @@ explicitly whether to generalize `OefeningScreen` rather than copying again.
 Shared: `TestResultScreen.ts` (takes an `onVerder(manager)` callback),
 `engine/rewards.ts`, `engine/progressStore.ts` (`markeerKernGestart`/
 `markeerKernVoltooid`/`haalKernVoortgang`, keyed by kern id — keep the prefix
-convention, math ids start with `reken-`), and the UI bits (`TopRechtsBalk`,
+convention, math ids start with `reken-`, writing chapters with `schrijven-`), and the UI bits (`TopRechtsBalk`,
 `TerugKnop`, `FeedbackOverlay`, `ProgressStars`).
 
 ## Session generation (both subjects)

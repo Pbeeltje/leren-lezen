@@ -142,7 +142,7 @@ export function zetInstrument(instrument: Instrument): void {
   schrijfRuw(data);
 }
 
-export type KernMenu = 'lezen' | 'tellen' | 'tijd' | 'luisteren';
+export type KernMenu = 'lezen' | 'tellen' | 'tijd' | 'luisteren' | 'schrijven';
 
 function laatsteKernSleutel(menu: KernMenu): string | undefined {
   const groep = haalGroep();

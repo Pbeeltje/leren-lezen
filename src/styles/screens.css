@@ -1915,6 +1915,132 @@
 @media (prefers-reduced-motion: reduce) {
   .overtrek__start, .overtrek--klaar .overtrek__vlak { animation: none; }
 }
+/* ---------- Dictee (DicteeScreen.ts): vrij schrijven, zelf nakijken, overzicht ---------- */
+.dictee-vak { width: 100%; display: flex; justify-content: center; }
+.dictee-kaart { gap: 14px; padding: 20px; width: min(94vw, 640px); }
+.dictee-plaatje { width: 120px; height: 120px; }
+.dictee-schrijfvak, .dictee-nakijk {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+}
+.dictee-blok {
+  width: 100%;
+  height: auto;
+  aspect-ratio: 280 / 116;
+  max-height: 38vh;
+  background: #fff;
+  border: 3px solid #d8e2f3;
+  border-radius: var(--radius-klein);
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
+}
+.dictee-inkt { fill: none; stroke: var(--kleur-secundair); stroke-width: 3.6; stroke-linecap: round; stroke-linejoin: round; }
+.dictee-inkt-stip { fill: var(--kleur-secundair); }
+.dictee-knoppen { display: flex; gap: 16px; justify-content: center; align-items: center; }
+.dictee-gum {
+  min-height: var(--touch-target-min);
+  padding: 8px 20px;
+  border-radius: 999px;
+  background: #fff;
+  border: 3px solid #d8e2f3;
+  color: var(--kleur-tekst);
+  font-size: 1.1rem;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.dictee-gum img { width: 32px; height: 32px; }
+.dictee-gum:disabled, .dictee-klaar:disabled { opacity: 0.4; }
+.dictee-schrift { width: 100%; max-width: 420px; height: auto; aspect-ratio: 280 / 116; background: #fff; border-radius: var(--radius-klein); }
+.dictee-label { font-size: 1.05rem; font-weight: 700; color: #6b7280; align-self: flex-start; }
+.dictee-woord { font-size: 2.6rem; }
+/* Twee even brede knoppen; de hoogte groeit mee met de inhoud en het label breekt nooit af
+   ("Nog een keer"), zodat niets buiten de knop steekt. */
+.dictee-oordeel { display: grid; grid-template-columns: repeat(2, minmax(0, 156px)); gap: 16px; justify-content: center; width: 100%; margin-top: 4px; }
+.dictee-oordeel__knop {
+  min-height: 96px;
+  padding: 12px 10px 14px;
+  border-radius: var(--radius-groot);
+  color: #fff;
+  font-size: 1.15rem;
+  font-weight: 800;
+  line-height: 1.1;
+  white-space: nowrap;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+.dictee-oordeel__teken { width: 40px; height: 40px; flex: none; }
+.dictee-oordeel__teken path { fill: none; stroke: #fff; stroke-width: 4.5; stroke-linecap: round; stroke-linejoin: round; }
+.dictee-oordeel__knop--goed { background: var(--kleur-succes); box-shadow: 0 6px 0 #2a9a52; }
+.dictee-oordeel__knop--fout { background: var(--kleur-fout); box-shadow: 0 6px 0 #c23a48; }
+.dictee-overzicht { gap: 14px; padding: 20px; width: min(94vw, 640px); }
+.dictee-score { font-size: 1.8rem; font-weight: 800; color: var(--kleur-tekst); }
+.dictee-lijst { list-style: none; width: 100%; display: flex; flex-direction: column; gap: 6px; padding: 0; margin: 0; }
+.dictee-rij {
+  display: grid;
+  grid-template-columns: 44px minmax(0, 1fr) minmax(70px, auto) 36px;
+  align-items: center;
+  gap: 10px;
+  padding: 4px 8px;
+  border-radius: var(--radius-klein);
+  background: rgba(62, 207, 110, 0.12);
+}
+.dictee-rij--fout { background: rgba(255, 93, 108, 0.12); }
+.dictee-rij__plaatje { width: 44px; height: 44px; object-fit: contain; }
+.dictee-rij__schrift { max-width: none; height: 56px; width: auto; justify-self: start; }
+.dictee-rij__woord { font-size: 1.5rem; }
+.dictee-rij__teken { font-size: 1.8rem; font-weight: 800; text-align: center; color: var(--kleur-succes); }
+.dictee-rij--fout .dictee-rij__teken { color: var(--kleur-fout); }
+.dictee-eind-knoppen { display: flex; gap: 20px; align-items: center; justify-content: center; flex-wrap: wrap; }
+@media (max-width: 560px) {
+  /* Staand op een telefoon moeten Klaar en Goed/Fout zonder scrollen in beeld: de titel
+     weg (de instructie zegt het al), plaatje en schrift kleiner bij nakijken. Ook in de
+     oefeningen van de schrijfhoofdstukken (RondeScreen met een dictee-kaart). */
+  .dictee .scherm-titel, .scherm:has(.dictee-kaart) .scherm-titel { display: none; }
+  .dictee-plaatje { width: 88px; height: 88px; }
+  .dictee-schrijfvak { gap: 8px; }
+  .dictee-schrijfvak .dictee-woord { font-size: 2rem; }
+  .dictee-kaart:has(.dictee-nakijk) { gap: 8px; }
+  .dictee-kaart:has(.dictee-nakijk) .dictee-plaatje { width: 64px; height: 64px; }
+  .dictee-nakijk { gap: 6px; }
+  .dictee-nakijk .dictee-schrift { max-width: 260px; }
+  .dictee-oordeel__knop { min-height: 84px; font-size: 1.05rem; }
+  .dictee-oordeel__teken { width: 34px; height: 34px; }
+  .dictee-rij { grid-template-columns: 36px minmax(0, 1fr) auto 28px; gap: 6px; }
+  .dictee-rij__plaatje { width: 36px; height: 36px; }
+  .dictee-rij__schrift { height: 44px; }
+  .dictee-rij__woord { font-size: 1.2rem; }
+  .dictee-woord { font-size: 2.1rem; }
+}
+/* Kleine telefoon (360×640): nakijken nog wat compacter, anders vallen de knoppen eraf. */
+@media (max-width: 560px) and (max-height: 700px) {
+  .dictee-kaart:has(.dictee-nakijk) .dictee-plaatje { width: 52px; height: 52px; }
+  .dictee-nakijk .dictee-schrift { max-width: 210px; }
+  .dictee-nakijk .dictee-woord { font-size: 1.8rem; line-height: 1.1; }
+  .dictee-nakijk .dictee-label { font-size: 0.9rem; }
+  .dictee-oordeel__knop { min-height: 72px; padding: 8px; gap: 4px; }
+}
+/* Liggende telefoon: de nakijkkolom rechts moet in 390px hoogte passen. Schrift lager,
+   knoppen met het teken naast het woord. */
+@media (orientation: landscape) and (max-height: 500px) {
+  .dictee-kaart:has(.dictee-nakijk) { padding-top: 10px; padding-bottom: 12px; }
+  .dictee-nakijk { gap: 2px; }
+  .dictee-nakijk .dictee-label { font-size: 0.85rem; }
+  .dictee-nakijk .dictee-schrift { width: auto; max-width: none; height: min(22vh, 84px); }
+  .dictee-nakijk .dictee-woord { font-size: 1.8rem; line-height: 1.1; }
+  .dictee-oordeel { margin-top: 6px; }
+  .dictee-oordeel__knop { min-height: 58px; padding: 8px 12px; flex-direction: row; gap: 8px; }
+  .dictee-oordeel__teken { width: 28px; height: 28px; }
+}
+
 @media (max-width: 560px) {
   .schrijf-hint img { width: 56px; height: 56px; }
   .schrijf-hint__woord { font-size: 1.6rem; }
@@ -3055,8 +3181,8 @@
   .tegel-grid .icoon-tegel__label { font-size: 0.85rem; line-height: 1.15; overflow-wrap: normal; }
 
   /* Vraagkaart in twee kolommen: de vraag (plaatje, letter, dobbelsteen, bus) links en
-     de antwoorden rechts. Kaarten met maar één kind (drie-koppelen) en muziek niet. */
-  .scherm:has(.voortgangsbalk) .oefen-kaart:has(> :nth-child(2)):not(.muziek-kaart) {
+     de antwoorden rechts. Kaarten met maar één kind (drie-koppelen), muziek en het dictee-overzicht niet. */
+  .scherm:has(.voortgangsbalk) .oefen-kaart:has(> :nth-child(2)):not(.muziek-kaart, .dictee-overzicht) {
     display: grid;
     grid-template-columns: auto auto;
     justify-content: center;
@@ -3067,8 +3193,8 @@
     align-content: center;
     width: min(94vw, 780px);
   }
-  .scherm:has(.voortgangsbalk) .oefen-kaart:has(> :nth-child(2)):not(.muziek-kaart) > * { grid-column: 2; margin: 5px 0; }
-  .scherm:has(.voortgangsbalk) .oefen-kaart:has(> :nth-child(2)):not(.muziek-kaart) > :first-child { grid-column: 1; grid-row: 1 / span 6; }
+  .scherm:has(.voortgangsbalk) .oefen-kaart:has(> :nth-child(2)):not(.muziek-kaart, .dictee-overzicht) > * { grid-column: 2; margin: 5px 0; }
+  .scherm:has(.voortgangsbalk) .oefen-kaart:has(> :nth-child(2)):not(.muziek-kaart, .dictee-overzicht) > :first-child { grid-column: 1; grid-row: 1 / span 6; }
   .oefen-kaart__plaatje { width: clamp(96px, calc(100dvh - 250px), 150px); height: clamp(96px, calc(100dvh - 250px), 150px); }
   /* Blokjes: sleuven en 3D-vlak wat lager, anders zakt de kaart onder de rand. De blokjes
      schalen mee met de hoogte van het vlak (letterBlocks.ts). */

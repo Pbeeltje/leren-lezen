@@ -8,7 +8,7 @@ in `engine/dagplan.ts`; storage `leren-lezen:dagplan:<profielId>` (validated on 
 
 Never music or games.
 - **Groep 3:** lezen (word chapters, `leesKernen()`), tellen (`rekenKernen()`),
-  schrijven (Letters or Woordjes). Begrijpend lezen and Tijd lezen are not included.
+  schrijven (Letters or Woordjes; the groep 3 writing chapters and their dictee are not in the plan yet). Begrijpend lezen and Tijd lezen are not included.
 - **Story reading only for very advanced readers** (owner's rule). Begrijpend lezen
   (`Taak` `{ soort: 'begrijpend', verhaalId }`, own `Vak`) only appears for groep 3 when
   `leestAlHeelGoed()`: every `leesKernen()` toets has 2+ stars. Then the reading card is a

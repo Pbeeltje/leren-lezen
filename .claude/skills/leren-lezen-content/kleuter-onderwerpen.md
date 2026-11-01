@@ -91,8 +91,50 @@ one `maakVraag` plus an entry in `RONDE_ACTIVITEITEN` and `ONTDEKKEN_IDS`
 
 ## Schrijven (tracing)
 
-`SchrijvenKiesScreen` uses the generic `SpelKiesScreen`. Games: Lijnen (kleuter),
-Letters, Woordjes, defined in `games/rondeActiviteiten.ts` (`schrijven-*` ids).
+`SchrijvenKiesScreen` uses the generic `SpelKiesScreen`. Tiles: Lijnen (kleuter),
+Letters (both), **Woorden schrijven** (groep 3, the chapters below). Lijnen, Letters and
+Woordjes are defined in `games/rondeActiviteiten.ts` (`schrijven-*` ids); Woordjes has no
+tile any more but stays in the Vandaag plan for groep 3 (see [dagplan.md](dagplan.md)).
+
+### Writing chapters with a dictee (groep 3)
+
+`content/schrijven/hoofdstukken.ts` `SCHRIJF_HOOFDSTUKKEN` follows the reading chapters
+in reading order (`SCHRIJF_KERNEN`: 19 chapters with short, phonetic words; the theme
+chapters (weer, dierentuin, vervoer, speelgoed, dino's, gereedschap, muziek), Lange
+woorden and Een of meer are left out). Words: the reading `woordenbank` minus
+`vereistTekst`, longer than `MAX_LETTERS` = 6 (doesn't fit a phone line) and
+`NIET_KLANKZUIVER` (douche, ski, mais, piano, radio); `dicteeWoorden` = those with a
+recording. Progress id `schrijven-<reading kern id>` in the normal `kernen` progress;
+last chapter under `KernMenu` `'schrijven'`.
+
+Screens, laid out like reading: `SchrijfHoofdstukkenScreen` (list, stars, "n/3
+geoefend" = `oefeningenAf`), `SchrijfChapterScreen` (‹/› with `replace`, 2×2 tiles):
+- **Oefening 1 Overtrekken**: `woordOvertrekVraag()` (the Woordjes tracing, with the
+  chapter's picture).
+- **Oefening 2 Overschrijven**: picture + word, write it on the free writing pad.
+- **Oefening 3 Luister en schrijf**: picture + word audio (auto-plays: no text shown).
+- 2 and 3 then show the child's writing next to the word: ✓ Goed / ✗ Nog een keer
+  (write again). All three run in `RondeScreen` (2×5, coins `lesMunten`, half on
+  repeat) with its `bijKlaar` hook calling `verhoogOefenSessies`.
+  `games/schrijven/hoofdstukVragen.ts`.
+- **Toets: Dictee** (`DicteeScreen`): up to 10 `dicteeWoorden` (`kiesWoorden`, distinct
+  pictures). Write all words first (word audio plays; speaker repeats it), then the
+  child marks each one themselves (`maakNakijkKaart`: writing, correct word, Goed/Fout),
+  then an overview list (picture, writing, word, ✓/✗), score and stars. **Self-graded,
+  no handwriting recognition.** Stars `sterrenVoor`: all correct 3, ≥90% 2, ≥80% 1
+  (so 8/10 passes). Coins don't depend on the marks (otherwise marking everything
+  correct pays): `MUNTEN_TOETS_GOED` per word written + `MUNTEN_TOETS_VOLDOENDE` at
+  the end, halved once the toets has ≥1 star. A shop visit keeps the sheet (like
+  Geheugen) and replays the word.
+
+Writing pad, `games/schrijven/dictee.ts` `maakSchrijfblok()`: SVG in viewBox 280×116 with
+the same three lines as tracing; one pointer at a time (a resting hand draws nothing);
+points mapped with `getScreenCTM()`; a tap is a dot. `toonSchrift()` redraws the
+strokes small for marking/overview. Instruction clips `dictee-schrijf`,
+`dictee-nakijken`, `dictee-klaar`, `schrijf-over` (list 15) are only played once
+recorded (`isOpgenomen`). Portrait phones hide the screen title when a writing card
+is shown so Klaar and Goed/Fout fit; the dictee overview is excluded from the
+landscape two-column card grid. Check: `node tests/dictee.mjs <map>`.
 
 Letter shapes, `content/schrijven/letters.ts`: each letter is strokes in writing
 order from `lijn()`/`boog()`, sampled every ~2 units, in school direction (o

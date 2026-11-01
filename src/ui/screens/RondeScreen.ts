@@ -42,6 +42,8 @@ export function RondeScreen(
   beloning: RondeBeloning = { perGoed: kleuterFactor(MUNTEN_OEFENING_GOED), perSet: kleuterFactor(MUNTEN_RONDE_SET) },
   // Schrijven en Ontdekken: welk spel dit is, voor het dagplan (half gespeeld / hoe vaak af).
   rondeId?: RondeId,
+  // Na de laatste vraag, vóór de klaar-kaart (schrijfhoofdstukken: oefening af).
+  bijKlaar?: () => void,
 ): Screen {
   if (rondeId) startTaak({ soort: 'ronde', id: rondeId });
   const el = document.createElement('div');
@@ -92,6 +94,7 @@ export function RondeScreen(
       if (rondesKlaar >= AANTAL_RONDES) {
         setKlaar = true;
         if (rondeId) rondTaakAf({ soort: 'ronde', id: rondeId });
+        bijKlaar?.();
         voegMuntenToe(beloning.perSet);
         verdiend += beloning.perSet;
         instructieRij.style.display = 'none';
