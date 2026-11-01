@@ -57,8 +57,8 @@ which once let kern-01 pick up optellen. `oefeningVolgorde` pins oefening 1/2/3
 
 ## Klokkijken (`games/klok.ts`, `content/tellen/klok.ts`, `styles/klok.css`, kern in `content/tijd/kernen.ts`)
 
-- The given time is shown as a digital clock (`13:15`, 40% of digital times are
-  afternoon) or in words (`kwart over één`, `half twee` = 1:30), alternating.
+- The given time is shown as a digital clock (always 1-12, e.g. `1:15`; 24-hour times
+  were too hard for groep 3 and were removed on 1 Nov) or in words (`kwart over één`, `half twee` = 1:30), alternating.
   Words are reading text: no audio for them.
 - On the clock face 1:15 and 13:15 are the same; `zelfdeKlokstand()` compares mod 12,
   and typing accepts either (`13` or `1`). Multiple-choice times are shown 1-12.

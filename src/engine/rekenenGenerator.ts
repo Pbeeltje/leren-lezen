@@ -389,12 +389,6 @@ function kiesKlokTijd(gebruikt: Set<string>, niet12: boolean, alleenHeleUren: bo
   return tijd;
 }
 
-// Bij een digitale tijd soms de middag (13:15): dat moet een kind ook leren lezen.
-function metMiddag(tijd: KlokTijd, vorm: KlokVorm): KlokTijd {
-  if (vorm === 'cijfers' && tijd.uur < 12 && Math.random() < 0.4) return { ...tijd, uur: tijd.uur + 12 };
-  return tijd;
-}
-
 // Eerst een typische vergissing (half twee als 2:30, kwart over en voor verwisseld, de
 // wijzers omgedraaid), dan buurtijden. Alles binnen hele, halve en kwartieren.
 function klokAfleiders(tijd: KlokTijd): KlokTijd[] {
@@ -441,11 +435,11 @@ function genereerKlok(modus: RekenModus, oefeningNummer: 1 | 2 | 3): RekenOefeni
     switch (type) {
       case 'klok-kies-klok': {
         const vorm = volgendeVorm();
-        return { type, tijd: metMiddag(tijd, vorm), vorm, afleiders: afleiders(tijd) };
+        return { type, tijd, vorm, afleiders: afleiders(tijd) };
       }
       case 'klok-zetten': {
         const vorm = volgendeVorm();
-        return { type, tijd: metMiddag(tijd, vorm), vorm };
+        return { type, tijd, vorm };
       }
       case 'klok-kies-tijd':
         return { type, tijd, afleiders: afleiders(tijd) };

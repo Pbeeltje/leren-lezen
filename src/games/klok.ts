@@ -75,7 +75,7 @@ function maakKlok(tijd: KlokTijd | null): Klok {
   return { svg, zetHoeken, kleineWijzer, groteWijzer };
 }
 
-/** De opgegeven tijd: een digitaal klokje (`13:15`) of in woorden (`kwart over één`). */
+/** De opgegeven tijd: een digitaal klokje (`1:15`) of in woorden (`kwart over één`). */
 function maakTijdOpgave(tijd: KlokTijd, vorm: KlokVorm): HTMLElement {
   const el = document.createElement('div');
   if (vorm === 'cijfers') {
