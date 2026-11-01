@@ -46,10 +46,14 @@ DAISY = '''  <path d="M54 118 C56 86 58 70 60 52" fill="none" stroke="#43a047" s
   <circle cx="60" cy="40" r="14" fill="#fdd835" stroke="#f9a825" stroke-width="2.5"/>
   <g fill="#f9a825"><circle cx="55" cy="36" r="2"/><circle cx="64" cy="37" r="2"/><circle cx="58" cy="44" r="2"/><circle cx="66" cy="43" r="1.6"/></g>'''
 
-MES = '''  <path d="M18 78 L92 22 C98 18 106 22 108 30 C96 48 70 70 48 86 Z" fill="#eceff1" stroke="#546e7a" stroke-width="3" stroke-linejoin="round"/>
-  <path d="M22 76 L88 26 C90 32 70 52 48 72 Z" fill="#cfd8dc"/>
-  <path d="M14 72 L40 96 C46 102 40 108 32 106 L8 88 C4 84 8 76 14 72 Z" fill="#6d4c41" stroke="#3e2723" stroke-width="3"/>
-  <path d="M20 80 L34 94" stroke="#a1887f" stroke-width="2"/>'''
+MES = '''  <g transform="rotate(-30 60 60)">
+    <path d="M50 44 L98 44 C106 44 112 46 116 50 C102 66 80 74 50 74 Z" fill="#eceff1" stroke="#546e7a" stroke-width="3" stroke-linejoin="round"/>
+    <path d="M54 66 L86 66 C96 66 104 62 110 56 C98 68 80 72 54 72 Z" fill="#b0bec5"/>
+    <path d="M56 50 L96 50" stroke="#ffffff" stroke-width="3" stroke-linecap="round"/>
+    <rect x="44" y="46" width="8" height="26" rx="2" fill="#90a4ae" stroke="#546e7a" stroke-width="3"/>
+    <rect x="6" y="50" width="40" height="18" rx="7" fill="#6d4c41" stroke="#3e2723" stroke-width="3"/>
+    <g fill="#d7ccc8" stroke="#3e2723" stroke-width="1.5"><circle cx="16" cy="59" r="2.6"/><circle cx="26" cy="59" r="2.6"/><circle cx="36" cy="59" r="2.6"/></g>
+  </g>'''
 
 KOK = '''  <circle cx="60" cy="72" r="22" fill="#f6c39a" stroke="#c98b5e" stroke-width="3"/>
   <circle cx="52" cy="68" r="3" fill="#3e2723"/><circle cx="68" cy="68" r="3" fill="#3e2723"/>
