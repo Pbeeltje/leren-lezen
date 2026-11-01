@@ -3465,3 +3465,32 @@
   .record-kaart__score { font-size: 1.4rem; }
   .record-kaart__score img { width: 26px; height: 26px; }
 }
+
+/* Liggende telefoon, schrijven (dictee, overschrijven, luister en schrijf): de extra
+   breedte gaat naar het schrijfvlak. Plaatje klein links, Gum en Klaar onder elkaar
+   rechts naast het vlak, het vlak zo groot als hoogte en breedte toelaten (zelfde
+   verhouding 280:116, zodat het schrift bij nakijken er hetzelfde uitziet). Staat
+   onderaan, na de algemene tweekolomskaart. */
+@media (orientation: landscape) and (max-height: 500px) {
+  .scherm:has(.voortgangsbalk) .oefen-kaart.dictee-kaart:has(> .dictee-schrijfvak) {
+    width: min(96vw, 980px);
+    column-gap: 18px;
+    padding: 10px 12px;
+  }
+  .dictee-kaart:has(> .dictee-schrijfvak) .dictee-plaatje { width: 96px; height: 96px; }
+  .dictee-schrijfvak {
+    --blok-h: min(calc(100dvh - 160px), calc((96vw - 290px) * 0.414));
+    display: grid;
+    grid-template-columns: auto auto;
+    align-items: center;
+    column-gap: 14px;
+    row-gap: 2px;
+  }
+  .dictee-schrijfvak:has(> .dictee-woord) { --blok-h: min(calc(100dvh - 205px), calc((96vw - 290px) * 0.414)); }
+  .dictee-schrijfvak > .dictee-woord { grid-column: 1; justify-self: center; font-size: 2rem; line-height: 1.15; }
+  .dictee-schrijfvak .dictee-blok { grid-column: 1; width: auto; height: var(--blok-h); max-height: none; }
+  .dictee-schrijfvak .dictee-knoppen { grid-column: 2; flex-direction: column; gap: 12px; }
+  .dictee-schrijfvak .dictee-gum, .dictee-schrijfvak .dictee-klaar { width: 124px; min-height: 60px; justify-content: center; padding: 6px 10px; }
+  .dictee-schrijfvak .dictee-klaar { min-height: 68px; }
+  .dictee-schrijfvak:has(> .dictee-woord) .dictee-knoppen { grid-row: 2; }
+}
