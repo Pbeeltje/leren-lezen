@@ -9,6 +9,10 @@ in `engine/dagplan.ts`; storage `leren-lezen:dagplan:<profielId>` (validated on 
 Never music or games.
 - **Groep 3:** lezen (word chapters, `leesKernen()`), tellen (`rekenKernen()`),
   schrijven (Letters or Woordjes). Begrijpend lezen and Tijd lezen are not included.
+- **No story reading** (Begrijpend lezen, Leesboekjes or any future text the child must
+  read as a story), neither in the plan nor among the shuffle candidates. The owner's
+  rule: only for a child who is very advanced in reading. If that is ever added, gate it
+  on reading progress (for example, all `leesKernen()` passed), never put it in by default.
 - **Kleuter:** letters (`leesKernen()`, kleuter set), tellen (kleuter set) and a
   third card that rotates by day between Luisteren, Ontdekken and Schrijven
   (Lijnen/Letters). An unfinished one of those three wins over the rotation.
