@@ -8,7 +8,6 @@
 - [ ] **Test the Android preview APK on a real phone** (`C:\claude\leren-lezen-preview\`).
   - Especially check whether a frozen strip appears under the status bar. On the emulator (old WebView, Chrome 133) it appears, but the WebView's own screenshot is clean.
   - If it appears on a real phone: switch SystemBars `insetsHandling` or the system-bars approach (see `capacitor.config.ts` and `MainActivity.java`).
-- [ ] **Recording list 15** (`bronbestanden/opnamelijst-15-deel-1.txt`): the four instructions of the writing chapters and the dictee ("Schrijf het woord dat je hoort", "Kijk je werk na", "Je dictee is klaar!", "Schrijf het woord over"). Until then those screens are silent apart from the word clips.
 - [ ] **Back up the upload key folder** `C:\claude\leren-lezen-sleutels\`.
 - [ ] **Google Play:**
   - developer account ($25) and payments profile;
