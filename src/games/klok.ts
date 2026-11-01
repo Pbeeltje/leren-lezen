@@ -1,15 +1,12 @@
 import '../styles/klok.css';
-import type { KlokTijd, KlokVorm, RekenOefeningDefinitie } from '../content/tellen/types.ts';
-import { klokUur, schrijfTijd, tijdInWoorden, zelfdeKlokstand } from '../content/tellen/klok.ts';
+import type { KlokTijd, RekenOefeningDefinitie } from '../content/tellen/types.ts';
+import { tijdInWoorden, zelfdeKlokstand } from '../content/tellen/klok.ts';
 import { toonFoutFeedback, toonGoedFeedback } from '../ui/components/FeedbackOverlay.ts';
-import { koppelSchermToetsenbord } from '../ui/components/SchermToetsenbord.ts';
-import { bewaakVeld } from './geld.ts';
 import { schud } from '../engine/toeval.ts';
 
 type KiesKlok = Extract<RekenOefeningDefinitie, { type: 'klok-kies-klok' }>;
 type KiesTijd = Extract<RekenOefeningDefinitie, { type: 'klok-kies-tijd' }>;
 type Zetten = Extract<RekenOefeningDefinitie, { type: 'klok-zetten' }>;
-type Typen = Extract<RekenOefeningDefinitie, { type: 'klok-typen' }>;
 type Opties = { herkansingToegestaan: boolean };
 type Resultaat = { vernietig: () => void };
 
@@ -75,16 +72,11 @@ function maakKlok(tijd: KlokTijd | null): Klok {
   return { svg, zetHoeken, kleineWijzer, groteWijzer };
 }
 
-/** De opgegeven tijd: een digitaal klokje (`1:15`) of in woorden (`kwart over één`). */
-function maakTijdOpgave(tijd: KlokTijd, vorm: KlokVorm): HTMLElement {
+/** De opgegeven tijd, altijd in woorden (`kwart over één`). Leestekst: geen geluid. */
+function maakTijdOpgave(tijd: KlokTijd): HTMLElement {
   const el = document.createElement('div');
-  if (vorm === 'cijfers') {
-    el.className = 'klok-digitaal';
-    el.textContent = schrijfTijd(tijd);
-  } else {
-    el.className = 'klok-woorden';
-    el.textContent = tijdInWoorden(tijd);
-  }
+  el.className = 'klok-woorden';
+  el.textContent = tijdInWoorden(tijd);
   return el;
 }
 
@@ -126,7 +118,7 @@ export function renderKlokKiesKlok(container: HTMLElement, oefening: KiesKlok, o
   container.innerHTML = '';
   const kaart = document.createElement('div');
   kaart.className = 'oefen-kaart klok-kaart';
-  kaart.appendChild(maakTijdOpgave(oefening.tijd, oefening.vorm));
+  kaart.appendChild(maakTijdOpgave(oefening.tijd));
 
   const keuzeRij = document.createElement('div');
   keuzeRij.className = 'keuze-rij klok-keuzes';
@@ -159,7 +151,7 @@ export function renderKlokKiesTijd(container: HTMLElement, oefening: KiesTijd, o
   kaart.appendChild(maakKlok(oefening.tijd).svg);
 
   const keuzeRij = document.createElement('div');
-  keuzeRij.className = 'keuze-rij';
+  keuzeRij.className = 'keuze-rij klok-tijd-keuzes';
   kaart.appendChild(keuzeRij);
 
   koppelKeuzes(
@@ -168,7 +160,7 @@ export function renderKlokKiesTijd(container: HTMLElement, oefening: KiesTijd, o
     (tijd) => {
       const knop = document.createElement('button');
       knop.className = 'keuze-knop klok-tijd-knop';
-      knop.textContent = schrijfTijd(tijd);
+      knop.textContent = tijdInWoorden(tijd);
       return knop;
     },
     (tijd) => zelfdeKlokstand(tijd, oefening.tijd),
@@ -207,7 +199,7 @@ export function renderKlokZetten(container: HTMLElement, oefening: Zetten, optie
   klok.svg.classList.add('klok--zetten');
   klok.svg.setAttribute('aria-label', 'Klok om zelf te zetten');
   kaart.appendChild(klok.svg);
-  kaart.appendChild(maakTijdOpgave(oefening.tijd, oefening.vorm));
+  kaart.appendChild(maakTijdOpgave(oefening.tijd));
 
   const knop = document.createElement('button');
   knop.className = 'typen-knop';
@@ -296,112 +288,5 @@ export function renderKlokZetten(container: HTMLElement, oefening: Zetten, optie
   });
 
   container.appendChild(kaart);
-  return { vernietig: () => container.replaceChildren() };
-}
-
-export function renderKlokTypen(container: HTMLElement, oefening: Typen, opties: Opties, afgerond: (juist: boolean) => void): Resultaat {
-  container.innerHTML = '';
-  const kaart = document.createElement('div');
-  kaart.className = 'oefen-kaart klok-kaart';
-  // Klok en velden in één rij: op een telefoon naast elkaar, anders past het toetsenbord
-  // er niet meer onder.
-  const rij = document.createElement('div');
-  rij.className = 'klok-typ-rij';
-  rij.appendChild(maakKlok(oefening.tijd).svg);
-  kaart.appendChild(rij);
-
-  const velden = document.createElement('div');
-  velden.className = 'klok-velden';
-  const maakInvoer = (label: string): HTMLInputElement => {
-    const invoer = document.createElement('input');
-    invoer.type = 'text';
-    invoer.inputMode = 'numeric';
-    invoer.autocomplete = 'off';
-    invoer.className = 'typen-invoer som-invoer klok-invoer';
-    invoer.setAttribute('aria-label', label);
-    return invoer;
-  };
-  const uurInvoer = maakInvoer('uur');
-  const minuutInvoer = maakInvoer('minuten');
-  const dubbelepunt = document.createElement('span');
-  dubbelepunt.className = 'klok-dubbelepunt';
-  dubbelepunt.textContent = ':';
-  velden.append(uurInvoer, dubbelepunt, minuutInvoer);
-  rij.appendChild(velden);
-
-  const uurVeld = bewaakVeld(uurInvoer, '', 2);
-  const minuutVeld = bewaakVeld(minuutInvoer, '00', 2);
-
-  const knop = document.createElement('button');
-  knop.className = 'typen-knop';
-  knop.textContent = 'Controleer';
-  kaart.appendChild(knop);
-
-  const uurBord = koppelSchermToetsenbord(uurInvoer, 'cijfers', rij);
-  const minuutBord = koppelSchermToetsenbord(minuutInvoer, 'cijfers', rij);
-  const toonBord = (welke: 'uur' | 'minuut'): void => {
-    uurBord?.toggleAttribute('hidden', welke !== 'uur');
-    minuutBord?.toggleAttribute('hidden', welke !== 'minuut');
-    uurInvoer.classList.toggle('klok-invoer--actief', welke === 'uur');
-    minuutInvoer.classList.toggle('klok-invoer--actief', welke === 'minuut');
-  };
-  uurInvoer.addEventListener('focus', () => toonBord('uur'));
-  minuutInvoer.addEventListener('focus', () => toonBord('minuut'));
-  // Na een uur dat niet meer langer kan worden (twee cijfers, of 3-9) door naar de minuten.
-  uurInvoer.addEventListener('input', () => {
-    const v = uurInvoer.value;
-    if (v.length === 2 || (v.length === 1 && Number(v) >= 3)) minuutInvoer.focus();
-  });
-  toonBord('uur');
-
-  let afgehandeld = false;
-
-  function controleer(): void {
-    if (afgehandeld) return;
-    if (uurVeld.onaangeroerd()) {
-      uurInvoer.focus();
-      return;
-    }
-    const uur = Number(uurInvoer.value);
-    const minuut = Number(minuutInvoer.value);
-    // 1:15 en 13:15 zijn allebei goed: op de klok zie je geen ochtend of middag.
-    const juist = uur >= 0 && uur <= 24 && klokUur(uur) === klokUur(oefening.tijd.uur) && minuut === oefening.tijd.minuut;
-
-    if (juist) {
-      afgehandeld = true;
-      uurInvoer.classList.add('goed-gekozen');
-      minuutInvoer.classList.add('goed-gekozen');
-      toonGoedFeedback();
-      afgerond(true);
-      return;
-    }
-
-    uurInvoer.classList.add('fout-gekozen');
-    minuutInvoer.classList.add('fout-gekozen');
-    toonFoutFeedback();
-    if (opties.herkansingToegestaan) {
-      setTimeout(() => {
-        uurInvoer.classList.remove('fout-gekozen');
-        minuutInvoer.classList.remove('fout-gekozen');
-        uurVeld.reset();
-        minuutVeld.reset();
-        uurInvoer.focus();
-        toonBord('uur');
-      }, 500);
-    } else {
-      afgehandeld = true;
-      afgerond(false);
-    }
-  }
-
-  knop.addEventListener('click', controleer);
-  for (const invoer of [uurInvoer, minuutInvoer]) {
-    invoer.addEventListener('keydown', (event) => {
-      if (event.key === 'Enter') controleer();
-    });
-  }
-
-  container.appendChild(kaart);
-  uurInvoer.focus();
   return { vernietig: () => container.replaceChildren() };
 }

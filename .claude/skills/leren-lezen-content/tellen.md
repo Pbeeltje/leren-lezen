@@ -49,19 +49,19 @@ which once let kern-01 pick up optellen. `oefeningVolgorde` pins oefening 1/2/3
   choice, 5 matching (sums only), 8 typing, toets of 12.
 - Klokkijken is no longer a math chapter: it moved to Leren lezen > Tijd lezen (see
   lezen.md), but still runs on the math engine and keeps id `reken-kern-13`.
-  Oefening 1 = 6 multiple choice mixing `klok-kies-klok` (time → pick one of 3 clocks)
-  and `klok-kies-tijd` (clock → pick one of 3 digital times), whole hours only (the
+  Oefening 1 = 6 multiple choice mixing `klok-kies-klok` (time in words → pick one of 3
+  clocks) and `klok-kies-tijd` (clock → pick one of 3 times in words), whole hours only (the
   distractors too: a neighbouring hour and a random one, `heleUrenAfleiders`); 2 = the same
   multiple choice with halves and quarters; 3 = 3× `klok-zetten` (drag the hands) and 3×
-  `klok-typen` (type `uur : minuten`), shuffled; toets of 10 mixes all four (2/2/3/3).
+  `klok-kies-klok`, shuffled; toets of 10 mixes all three (4 kies-klok/3 kies-tijd/3 zetten).
 
 ## Klokkijken (`games/klok.ts`, `content/tellen/klok.ts`, `styles/klok.css`, kern in `content/tijd/kernen.ts`)
 
-- The given time is shown as a digital clock (always 1-12, e.g. `1:15`; 24-hour times
-  were too hard for groep 3 and were removed on 1 Nov) or in words (`kwart over één`, `half twee` = 1:30), alternating.
-  Words are reading text: no audio for them.
-- On the clock face 1:15 and 13:15 are the same; `zelfdeKlokstand()` compares mod 12,
-  and typing accepts either (`13` or `1`). Multiple-choice times are shown 1-12.
+- Times are always in words (`kwart over één`, `half twee` = 1:30), never digital: digital
+  times and the 24-hour clock were too hard for groep 3 (removed 1 Nov 2026, together with
+  typing the time, `klok-typen`). Words are reading text: no audio for them. The word
+  answers of `klok-kies-tijd` stand in a column (`.klok-tijd-keuzes`) with a smaller clock.
+- `uur` is 1-12; `zelfdeKlokstand()` compares mod 12.
 - Distractors (`klokAfleiders`) start with a typical mistake: half twee as 2:30,
   kwart over/voor swapped, hour off by one, hands swapped on whole hours.
 - Setting the hands: the minute hand snaps per 5 minutes; the hour hand picks an
@@ -69,8 +69,7 @@ which once let kern-01 pick up optellen. `oefeningVolgorde` pins oefening 1/2/3
   "on the 2" for kwart voor twee still gives 1:45. A pointer near one hand grabs
   that hand; otherwise the distance to the centre decides (inside 52 = hour hand).
   Always starts at 12:00, so 12:00 is never asked there. A wrong check keeps the hands.
-- Layout: typing puts the clock and the fields side by side on screens up to 900px
-  tall. Landscape phones use the generic oefen-kaart grid (first child left), so
+- Layout: landscape phones use the generic oefen-kaart grid (first child left), so
   `klok-zetten` puts the clock first in the DOM and lifts the time above it with `order`.
 - Check: `node tests/klokkijken.mjs <map>` (plays every session correctly with one
   mistake each, toets 10/10, screenshots at 4 sizes). Another session editing files

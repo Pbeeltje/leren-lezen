@@ -1,6 +1,5 @@
 import type {
   KlokTijd,
-  KlokVorm,
   RekenKern,
   RekenOefeningDefinitie,
   RekenOefeningType,
@@ -425,38 +424,28 @@ function heleUrenAfleiders(tijd: KlokTijd): KlokTijd[] {
 function genereerKlok(modus: RekenModus, oefeningNummer: 1 | 2 | 3): RekenOefeningDefinitie[] {
   const gebruikt = new Set<string>();
   const heleUren = modus === 'oefenen' && oefeningNummer === 1;
-  // Cijfers en woorden om en om, met een willekeurig begin.
-  let woorden = Math.random() < 0.5;
-  const volgendeVorm = (): KlokVorm => ((woorden = !woorden) ? 'woorden' : 'cijfers');
   const afleiders = (tijd: KlokTijd): KlokTijd[] => (heleUren ? heleUrenAfleiders(tijd) : klokAfleiders(tijd));
 
-  const maak = (type: 'klok-kies-klok' | 'klok-kies-tijd' | 'klok-zetten' | 'klok-typen'): RekenOefeningDefinitie => {
+  const maak = (type: 'klok-kies-klok' | 'klok-kies-tijd' | 'klok-zetten'): RekenOefeningDefinitie => {
     const tijd = kiesKlokTijd(gebruikt, type === 'klok-zetten', heleUren);
     switch (type) {
-      case 'klok-kies-klok': {
-        const vorm = volgendeVorm();
-        return { type, tijd, vorm, afleiders: afleiders(tijd) };
-      }
-      case 'klok-zetten': {
-        const vorm = volgendeVorm();
-        return { type, tijd, vorm };
-      }
+      case 'klok-kies-klok':
       case 'klok-kies-tijd':
         return { type, tijd, afleiders: afleiders(tijd) };
-      case 'klok-typen':
+      case 'klok-zetten':
         return { type, tijd };
     }
   };
 
   if (modus === 'toets') {
     return schud(
-      (['klok-kies-klok', 'klok-kies-klok', 'klok-kies-tijd', 'klok-kies-tijd', 'klok-zetten', 'klok-zetten', 'klok-zetten', 'klok-typen', 'klok-typen', 'klok-typen'] as const).map(maak),
+      (['klok-kies-klok', 'klok-kies-klok', 'klok-kies-klok', 'klok-kies-klok', 'klok-kies-tijd', 'klok-kies-tijd', 'klok-kies-tijd', 'klok-zetten', 'klok-zetten', 'klok-zetten'] as const).map(maak),
     );
   }
   // 1 meerkeuze met hele uren, 2 meerkeuze met halve uren en kwartieren erbij, 3 zelf
-  // wijzers zetten en tijd typen.
+  // wijzers zetten en de goede klok bij een tijd in woorden.
   if (oefeningNummer === 3) {
-    return schud((['klok-zetten', 'klok-zetten', 'klok-zetten', 'klok-typen', 'klok-typen', 'klok-typen'] as const).map(maak));
+    return schud((['klok-zetten', 'klok-zetten', 'klok-zetten', 'klok-kies-klok', 'klok-kies-klok', 'klok-kies-klok'] as const).map(maak));
   }
   return schud((['klok-kies-klok', 'klok-kies-klok', 'klok-kies-klok', 'klok-kies-tijd', 'klok-kies-tijd', 'klok-kies-tijd'] as const).map(maak));
 }
@@ -651,7 +640,6 @@ function maakOefening(kern: RekenKern, type: RekenOefeningType, tracker: SessieT
     case 'klok-kies-klok':
     case 'klok-kies-tijd':
     case 'klok-zetten':
-    case 'klok-typen':
       throw new Error(`kloktypen alleen via genereerKlok: ${kern.id}`);
     case 'dag-invullen':
     case 'dag-volgorde':

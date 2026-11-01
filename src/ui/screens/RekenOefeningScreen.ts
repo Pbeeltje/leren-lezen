@@ -33,7 +33,7 @@ import { renderSomKeuze } from '../../games/somKeuze.ts';
 import { renderSomKoppelen } from '../../games/somKoppelen.ts';
 import { renderSomTypen } from '../../games/somTypen.ts';
 import { renderGeldKeuze, renderGeldTypen } from '../../games/geld.ts';
-import { renderKlokKiesKlok, renderKlokKiesTijd, renderKlokTypen, renderKlokZetten } from '../../games/klok.ts';
+import { renderKlokKiesKlok, renderKlokKiesTijd, renderKlokZetten } from '../../games/klok.ts';
 import { renderKalenderInvullen, renderKalenderVolgorde, renderKalenderVoorNa } from '../../games/kalender.ts';
 import { speelSchermOvergang } from '../../three/transitions.ts';
 import { TestResultScreen } from './TestResultScreen.ts';
@@ -63,7 +63,6 @@ const INSTRUCTIES: Record<RekenOefeningDefinitie['type'], string> = {
   'klok-kies-klok': 'Welke klok hoort bij deze tijd?',
   'klok-kies-tijd': 'Hoe laat is het? Kies de goede tijd',
   'klok-zetten': 'Zet de wijzers goed',
-  'klok-typen': 'Hoe laat is het? Typ de tijd',
   'dag-invullen': 'Welke dag ontbreekt?',
   'dag-volgorde': 'Zet de dagen op volgorde',
   'dag-voor-na': 'Lees de vraag. Welke dag is het?',
@@ -113,8 +112,6 @@ function renderOefening(
       return renderKlokKiesTijd(container, oefening, opties, afgerond);
     case 'klok-zetten':
       return renderKlokZetten(container, oefening, opties, afgerond);
-    case 'klok-typen':
-      return renderKlokTypen(container, oefening, opties, afgerond);
     case 'dag-invullen':
     case 'maand-invullen':
       return renderKalenderInvullen(container, oefening, opties, afgerond);

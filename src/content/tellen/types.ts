@@ -34,7 +34,6 @@ export type RekenOefeningType =
   | 'klok-kies-klok'
   | 'klok-kies-tijd'
   | 'klok-zetten'
-  | 'klok-typen'
   | 'dag-invullen'
   | 'dag-volgorde'
   | 'dag-voor-na'
@@ -42,15 +41,12 @@ export type RekenOefeningType =
   | 'maand-volgorde'
   | 'maand-voor-na';
 
-// Klokkijken: hele uren, halve uren en kwartieren. `uur` 0-23; bij een digitale tijd mag
-// het een middaguur zijn (13:15), de klok zelf toont alleen 1-12.
+// Klokkijken: hele uren, halve uren en kwartieren. `uur` 1-12. Tijden staan altijd in
+// woorden (`half tien`): digitale tijden en de 24-uursklok waren te moeilijk.
 export interface KlokTijd {
   uur: number;
   minuut: 0 | 15 | 30 | 45;
 }
-
-// Hoe de opgegeven tijd getoond wordt: `13:15` of `kwart over één`.
-export type KlokVorm = 'cijfers' | 'woorden';
 
 export type RekenOefeningDefinitie =
   // Getalbeeld/tellen: N plaatjes zien, het juiste cijfer kiezen.
@@ -85,12 +81,11 @@ export type RekenOefeningDefinitie =
   // Munten in centen: 5, 10, 20, 50, 100, 200.
   | { type: 'geld-keuze'; munten: number[]; antwoordCent: number; afleidersCent: number[]; briefjes?: number[] }
   | { type: 'geld-typen'; munten: number[]; antwoordCent: number; briefjes?: number[] }
-  // Tijd gegeven, de goede klok kiezen (meerkeuze) of zelf de wijzers zetten.
-  | { type: 'klok-kies-klok'; tijd: KlokTijd; vorm: KlokVorm; afleiders: KlokTijd[] }
-  | { type: 'klok-zetten'; tijd: KlokTijd; vorm: KlokVorm }
-  // Klok gegeven, de goede tijd kiezen of zelf typen.
+  // Tijd in woorden gegeven, de goede klok kiezen (meerkeuze) of zelf de wijzers zetten.
+  | { type: 'klok-kies-klok'; tijd: KlokTijd; afleiders: KlokTijd[] }
+  | { type: 'klok-zetten'; tijd: KlokTijd }
+  // Klok gegeven, de goede tijd in woorden kiezen.
   | { type: 'klok-kies-tijd'; tijd: KlokTijd; afleiders: KlokTijd[] }
-  | { type: 'klok-typen'; tijd: KlokTijd }
   // Dagen/maanden: een rijtje met een gat, het gat kiezen (meerkeuze).
   | { type: 'dag-invullen' | 'maand-invullen'; rij: string[]; gat: number; afleiders: string[] }
   // Een rijtje dat aansluit (zonder over zondag/december heen te lopen), door elkaar: op volgorde tikken.
@@ -118,7 +113,7 @@ export interface RekenKern {
   geld?: 'munten' | 'briefjes';
   // Herhaling: elke sessie bevat plus, min en geld (behalve de koppel-oefening, die alleen sommen is).
   herhaling?: 'plus-min-geld';
-  // Klokkijken: oefening 1 meerkeuze met hele uren, 2 meerkeuze met kwartieren, 3 wijzers zetten en tijd typen.
+  // Klokkijken: oefening 1 meerkeuze met hele uren, 2 meerkeuze met kwartieren, 3 wijzers zetten en de klok kiezen.
   klok?: true;
   // Dagen of maanden: oefening 1 invullen, 2 volgorde, 3 ervoor/erna; de toets mengt ze.
   kalender?: 'dagen' | 'maanden';

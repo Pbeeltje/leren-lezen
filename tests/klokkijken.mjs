@@ -2,7 +2,8 @@ import { chromium } from 'playwright';
 import { mkdirSync } from 'node:fs';
 
 // Klokkijken (reken-kern-13, onder Leren lezen > Tijd lezen): oefening 1 meerkeuze met hele uren, 2 meerkeuze met
-// halve uren en kwartieren, 3 wijzers slepen en tijd typen, toets.
+// halve uren en kwartieren, 3 wijzers slepen en klok kiezen, toets.
+// Tijden staan altijd in woorden; een digitale tijd (9:30) is een fout.
 // Speelt alles goed (plus één fout per oefening voor de herkansing) en maakt screenshots.
 // Gebruik: node tests/klokkijken.mjs <map>
 const OUT = process.argv[2].replace(/\\/g, '/').replace(/\/?$/, '/');
@@ -16,11 +17,10 @@ const uurVan = (w) => {
 };
 const vorig = (h) => (h === 1 ? 12 : h - 1);
 
-// 'kwart over één' / 'half twee' / '13:15' → { uur 1-12, minuut }
+// 'kwart over één' / 'half twee' → { uur 1-12, minuut }
 function leesTijd(tekst) {
   const t = tekst.trim();
   let m;
-  if ((m = t.match(/^(\d{1,2}):(\d{2})$/))) return { uur: ((Number(m[1]) + 11) % 12) + 1, minuut: Number(m[2]) };
   if ((m = t.match(/^(\S+) uur$/))) return { uur: uurVan(m[1]), minuut: 0 };
   if ((m = t.match(/^kwart over (\S+)$/))) return { uur: uurVan(m[1]), minuut: 15 };
   if ((m = t.match(/^half (\S+)$/))) return { uur: vorig(uurVan(m[1])), minuut: 30 };
@@ -61,13 +61,9 @@ async function start(page, label) {
 }
 
 const opgave = async (page) => {
-  const el = page.locator('.klok-kaart > .klok-digitaal, .klok-kaart > .klok-woorden');
+  const el = page.locator('.klok-kaart > .klok-woorden');
   return (await el.count()) ? leesTijd(await el.first().innerText()) : null;
 };
-
-async function klikKey(page, teken) {
-  await page.locator('.scherm-toetsenbord:not([hidden]) .scherm-toets', { hasText: new RegExp(`^${teken}$`) }).click();
-}
 
 // Sleep een wijzer van zijn huidige hoek naar een doelhoek.
 async function sleep(page, vanHoek, naarHoek, straal) {
@@ -96,7 +92,7 @@ async function beantwoord(page, { fout = false } = {}) {
     return 'kies-klok';
   }
   if (instr.startsWith('Hoe laat is het? Kies')) {
-    const doel = klokLabel(await page.locator('.klok-kaart > .klok, .klok-typ-rij > .klok').getAttribute('aria-label'));
+    const doel = klokLabel(await page.locator('.klok-kaart > .klok').getAttribute('aria-label'));
     const knoppen = page.locator('.klok-tijd-knop');
     const tijden = (await knoppen.allInnerTexts()).map(leesTijd);
     if (tijden.filter((t) => zelfde(t, doel)).length !== 1) throw new Error('klok-kies-tijd: niet precies één goede tijd');
@@ -124,24 +120,6 @@ async function beantwoord(page, { fout = false } = {}) {
     }
     await page.locator('.klok-kaart .typen-knop').click();
     return 'zetten';
-  }
-  if (instr.startsWith('Hoe laat is het? Typ')) {
-    const doel = klokLabel(await page.locator('.klok-kaart > .klok, .klok-typ-rij > .klok').getAttribute('aria-label'));
-    const typ = async (uur, minuut) => {
-      for (const c of String(uur)) await klikKey(page, c);
-      if (await page.locator('.klok-invoer[aria-label="uur"].klok-invoer--actief').count()) {
-        await page.locator('.klok-invoer[aria-label="minuten"]').click();
-      }
-      for (const c of String(minuut).padStart(2, '0')) await klikKey(page, c);
-      await page.locator('.klok-kaart .typen-knop').click();
-    };
-    if (fout) {
-      await typ(doel.uur, (doel.minuut + 30) % 60);
-      await page.waitForTimeout(700);
-    }
-    // Middaguur typen moet ook goed zijn (1:15 = 13:15); afwisselen.
-    await typ(doel.uur < 12 && Math.random() < 0.5 ? doel.uur + 12 : doel.uur, doel.minuut);
-    return 'typen';
   }
   throw new Error(`onbekende instructie: ${instr}`);
 }
@@ -183,7 +161,7 @@ async function speel(page, label, { foutBijEerste = false, fotos = [] } = {}) {
   const o2 = await speel(page, 'Oefening 2', { foutBijEerste: true, fotos: [{ i: 0, naam: 'tel-oef2' }] });
   if (o2.length !== 6 || !o2.includes('kies-klok') || !o2.includes('kies-tijd')) throw new Error(`oefening 2: ${o2}`);
   const o3 = await speel(page, 'Oefening 3', { foutBijEerste: true, fotos: [{ i: 0, naam: 'tel-oef3' }] });
-  if (o3.length !== 6 || !o3.includes('zetten') || !o3.includes('typen')) throw new Error(`oefening 3: ${o3}`);
+  if (o3.length !== 6 || !o3.includes('zetten') || !o3.includes('kies-klok')) throw new Error(`oefening 3: ${o3}`);
   const toets = await speel(page, 'Toets');
   await page.locator('.resultaat-cijfer').waitFor();
   const uitslag = await page.locator('.resultaat-cijfer').innerText();
