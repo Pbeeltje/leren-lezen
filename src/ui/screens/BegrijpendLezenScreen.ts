@@ -12,6 +12,7 @@ import { isOpgenomen } from '../../engine/opnames.ts';
 import { voegMuntenToe, volgendeBegrijpendVraag } from '../../engine/progressStore.ts';
 import { MUNTEN_BEGRIJPEND } from '../../engine/rewards.ts';
 import { schud } from '../../engine/toeval.ts';
+import { rondTaakAf, startTaak } from '../../engine/dagplan.ts';
 import { LerenLezenKiesScreen } from './LerenLezenKiesScreen.ts';
 
 const KAFT_KLEUREN = ['#ff7a3d', '#3dbdff', '#3ecf6e', '#b36bff', '#ff5d8f'];
@@ -79,6 +80,8 @@ export function BegrijpendKiesScreen(manager: ScreenManager): Screen {
 export function BegrijpendVerhaalScreen(manager: ScreenManager, verhaal: BegrijpendVerhaal): Screen {
   const vraag = verhaal.vragen[volgendeBegrijpendVraag(verhaal.id, verhaal.vragen.length)];
   if (!vraag) throw new Error(`geen vraag in verhaal ${verhaal.id}`);
+  // Voor "Vandaag": een verhaaltje is af als de vraag goed beantwoord is.
+  startTaak({ soort: 'begrijpend', verhaalId: verhaal.id });
   const el = document.createElement('div');
   el.className = 'scherm begrijpend-scherm';
 
@@ -142,6 +145,7 @@ export function BegrijpendVerhaalScreen(manager: ScreenManager, verhaal: Begrijp
         if (!betaald) {
           betaald = true;
           voegMuntenToe(MUNTEN_BEGRIJPEND);
+          rondTaakAf({ soort: 'begrijpend', verhaalId: verhaal.id });
         }
         toonGoedFeedback();
         stopWachten = naHuidigeAudio(() => manager.pop(), 300, 4000, 900);

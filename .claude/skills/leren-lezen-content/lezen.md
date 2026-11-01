@@ -137,7 +137,8 @@ keyboard is shown.
 
 Under Leren lezen (not a topic of its own any more). A short story, then one multiple-choice question whose
 answer is literally in the text. Stories in `content/lezen/begrijpend.ts`, four
-questions each. Opening a story shows the next question for that profile
+questions each (seven stories, incl. "de kabouter kookt" and "de dikke kikker"). Also in
+Vandaag, but only for very advanced readers (see [dagplan.md](dagplan.md)). Opening a story shows the next question for that profile
 (`volgendeBegrijpendVraag`, key `begrijpendVraag`); the index is picked in the
 screen factory so a shop visit keeps the same question. Correct pays
 `MUNTEN_BEGRIJPEND` (50) once; wrong can be retried; skip pays nothing. The

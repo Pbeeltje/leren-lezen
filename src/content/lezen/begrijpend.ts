@@ -191,4 +191,77 @@ export const BEGRIJPEND_VERHALEN: BegrijpendVerhaal[] = [
       },
     ],
   },
+  {
+    id: 'kabouter',
+    titel: 'de kabouter kookt',
+    plaatjes: [plaatje('paddenstoel'), plaatje('kaas'), plaatje('soep')],
+    zinnen: [
+      'kim is een kleine kabouter.',
+      'zij woont onder een paddenstoel.',
+      'op een dag vindt zij een stuk kaas.',
+      'de kaas is van de grote mensen.',
+      'het stuk is net zo groot als kim.',
+      'kim rolt de kaas naar huis.',
+      'zij kookt er soep van in een pan.',
+      'alle kabouters eten mee.',
+    ],
+    vragen: [
+      {
+        vraag: 'waar woont kim?',
+        goed: 'onder een paddenstoel',
+        afleiders: ['in een boom', 'onder een steen', 'in een schoen'],
+      },
+      {
+        vraag: 'wat vindt kim?',
+        goed: 'een stuk kaas',
+        afleiders: ['een stuk brood', 'een appel', 'een koek'],
+      },
+      {
+        vraag: 'van wie is de kaas?',
+        goed: 'van de grote mensen',
+        afleiders: ['van de muis', 'van de kat', 'van de kabouters'],
+      },
+      {
+        vraag: 'wat kookt kim van de kaas?',
+        goed: 'soep',
+        afleiders: ['pap', 'taart', 'thee'],
+      },
+    ],
+  },
+  {
+    id: 'kikker',
+    titel: 'de dikke kikker',
+    plaatjes: [plaatje('kikker'), plaatje('vlieg'), plaatje('blad')],
+    zinnen: [
+      'koos is een kikker.',
+      'hij eet de hele dag vliegen.',
+      'koos wordt heel dik.',
+      'hij springt op een lelieblad.',
+      'plons! het blad zakt onder water.',
+      'koos valt in de sloot.',
+      'nu eet hij wat minder vliegen.',
+    ],
+    vragen: [
+      {
+        vraag: 'wat eet koos de hele dag?',
+        goed: 'vliegen',
+        afleiders: ['wormen', 'kaas', 'brood'],
+      },
+      {
+        vraag: 'hoe wordt koos?',
+        goed: 'heel dik',
+        afleiders: ['heel klein', 'heel boos', 'heel moe'],
+      },
+      {
+        vraag: 'waar springt koos op?',
+        goed: 'op een lelieblad',
+        afleiders: ['op een steen', 'op een tak', 'op een boot'],
+      },
+      {
+        vraag: 'waar valt koos in?',
+        goed: 'in de sloot',
+        afleiders: ['in de pan', 'in het gras', 'in de zee'],
+      },
+    ],
+  },
 ];

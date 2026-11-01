@@ -9,10 +9,15 @@ in `engine/dagplan.ts`; storage `leren-lezen:dagplan:<profielId>` (validated on 
 Never music or games.
 - **Groep 3:** lezen (word chapters, `leesKernen()`), tellen (`rekenKernen()`),
   schrijven (Letters or Woordjes). Begrijpend lezen and Tijd lezen are not included.
-- **No story reading** (Begrijpend lezen, Leesboekjes or any future text the child must
-  read as a story), neither in the plan nor among the shuffle candidates. The owner's
-  rule: only for a child who is very advanced in reading. If that is ever added, gate it
-  on reading progress (for example, all `leesKernen()` passed), never put it in by default.
+- **Story reading only for very advanced readers** (owner's rule). Begrijpend lezen
+  (`Taak` `{ soort: 'begrijpend', verhaalId }`, own `Vak`) only appears for groep 3 when
+  `leestAlHeelGoed()`: every `leesKernen()` toets has 2+ stars. Then the reading card is a
+  story every other day (`groep3Taken`, or always while one is unfinished), the least-read
+  story first (`verhalen` counts), and card 0's shuffle candidates interleave stories with
+  the reading repeats. Never for kleuters, never for anyone else. Leesboekjes stay out.
+  `BegrijpendVerhaalScreen` calls `startTaak` on open and `rondTaakAf` on a correct answer.
+- When everything is passed, the reading/math repeats are fixed per day (not random per
+  call), otherwise shuffling can't cycle past them.
 - **Kleuter:** letters (`leesKernen()`, kleuter set), tellen (kleuter set) and a
   third card that rotates by day between Luisteren, Ontdekken and Schrijven
   (Lijnen/Letters). An unfinished one of those three wins over the rotation.

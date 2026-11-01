@@ -6,6 +6,7 @@ import { kleuterFactor } from '../../engine/rewards.ts';
 import { plaatjeVan } from '../../engine/luisterenGenerator.ts';
 import { LUISTER_HOOFDSTUKKEN } from '../../content/luisteren/hoofdstukken.ts';
 import { RONDE_ACTIVITEITEN } from '../../games/rondeActiviteiten.ts';
+import { BEGRIJPEND_VERHALEN } from '../../content/lezen/begrijpend.ts';
 import { maakTerugKnop } from '../components/TerugKnop.ts';
 import { maakTopRechtsBalk } from '../components/TopRechtsBalk.ts';
 import { speelSchermOvergang } from '../../three/transitions.ts';
@@ -14,6 +15,7 @@ import { OefeningScreen } from './OefeningScreen.ts';
 import { RekenOefeningScreen } from './RekenOefeningScreen.ts';
 import { RondeScreen } from './RondeScreen.ts';
 import { LuisterenScreen } from './LuisterenScreen.ts';
+import { BegrijpendVerhaalScreen } from './BegrijpendLezenScreen.ts';
 import { TopicSelectScreen } from './TopicSelectScreen.ts';
 import { GroepKiesScreen } from './GroepKiesScreen.ts';
 import '../../styles/vandaag.css';
@@ -65,6 +67,15 @@ function kaartVan(taak: Taak): Kaart {
       vak: taak.id.startsWith('schrijven-') ? 'Schrijven' : 'Ontdekken',
       detail: spel.titel,
       open: (m) => RondeScreen(m, spel.titel, spel.maakVraag, undefined, taak.id),
+    };
+  }
+  if (taak.soort === 'begrijpend') {
+    const verhaal = BEGRIJPEND_VERHALEN.find((v) => v.id === taak.verhaalId);
+    return {
+      icoon: 'assets/icons/begrijpend.svg',
+      vak: 'Verhaaltje',
+      detail: verhaal?.titel ?? '',
+      open: verhaal ? (m) => BegrijpendVerhaalScreen(m, verhaal) : null,
     };
   }
   const hoofdstukId = taak.soort === 'luisteren' ? taak.hoofdstukId : '';
