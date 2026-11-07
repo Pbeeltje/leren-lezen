@@ -4,6 +4,7 @@ import { speelHarp } from './muziek/harp.ts';
 import { speelKeyboard } from './muziek/keyboard.ts';
 import { speelKikker } from './muziek/kikker.ts';
 import { speelKlok } from './muziek/klokken.ts';
+import { speelMondharmonica } from './muziek/mondharmonica.ts';
 import { speelTrompet } from './muziek/trompet.ts';
 import { speelXylofoon } from './muziek/xylofoon.ts';
 
@@ -22,7 +23,7 @@ export const NOOT_NAMEN = ['C', 'D', 'E', 'F', 'G', 'A', 'B', 'C'];
 
 // Melodie-instrumenten: de xylofoon is gratis, de rest koop je in de winkel. Ze spelen
 // dezelfde acht tonen (en dus dezelfde liedjes bij Speel na) met hun eigen klank.
-export type Instrument = 'xylofoon' | 'harp' | 'fluit' | 'keyboard' | 'kikkerkoor' | 'trompet' | 'klokken';
+export type Instrument = 'xylofoon' | 'harp' | 'fluit' | 'keyboard' | 'kikkerkoor' | 'trompet' | 'klokken' | 'mondharmonica';
 export const INSTRUMENTEN: { id: Instrument; naam: string; icoon: string }[] = [
   { id: 'xylofoon', naam: 'Xylofoon', icoon: 'assets/icons/xylofoon.svg' },
   { id: 'harp', naam: 'Harp', icoon: 'assets/icons/harp.svg' },
@@ -31,6 +32,7 @@ export const INSTRUMENTEN: { id: Instrument; naam: string; icoon: string }[] = [
   { id: 'kikkerkoor', naam: 'Kikkerkoor', icoon: 'assets/icons/kikker.svg' },
   { id: 'trompet', naam: 'Trompetten', icoon: 'assets/icons/trompet.svg' },
   { id: 'klokken', naam: 'Klokken', icoon: 'assets/icons/klokken.svg' },
+  { id: 'mondharmonica', naam: 'Mondharmonica', icoon: 'assets/icons/mondharmonica.svg' },
 ];
 
 // Elk instrument: (context, toonhoogte, starttijd, nummer van de toon 0-7).
@@ -42,6 +44,7 @@ const KLANKEN: Record<Instrument, (c: AudioContext, toon: number, t: number, nr:
   kikkerkoor: speelKikker,
   trompet: speelTrompet,
   klokken: speelKlok,
+  mondharmonica: speelMondharmonica,
 };
 
 export function speelInstrument(instrument: Instrument, toon: number, wanneer = 0): void {

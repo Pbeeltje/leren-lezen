@@ -7,14 +7,14 @@
   holds shared data and the `KLANKEN` table. `engine/muziek/klank.ts` is the machine: the
   context, `uitgang`, `nieuweStem`, `begrensStemmen`, `maakGalm`, `naarUit`, `ruis`,
   `omhulling`. Each instrument has its own file in `engine/muziek/` (`xylofoon`, `harp`,
-  `fluit`, `keyboard`, `kikker`, `trompet`, `klokken`, `drums`), with the signature
+  `fluit`, `keyboard`, `kikker`, `trompet`, `klokken`, `mondharmonica`, `drums`), with the signature
   `(c, toon, t, nr)`, where `nr` is the note index 0–7.
 - **Look:** `games/muziek/xylofoon.ts` (`maakXylofoon`) is the shared component. Each
   instrument's extras are an `Uiterlijk` in `games/muziek/uiterlijk.ts`: `achter`/`voor`
   (decor behind or in front of the buttons), `knop` (parts and CSS variables for one button)
   and `leg` (box-size layout, rerun by the ResizeObserver). The xylophone's is in
   `xylofoonUiterlijk.ts`, kikkerkoor in `kikkerkoor.ts`
-  (using `kikker.ts` and `vijver.ts`), harp in `harp.ts`, trompetten in `trompet.ts`, klokken in `klokken.ts`.
+  (using `kikker.ts` and `vijver.ts`), harp in `harp.ts`, trompetten in `trompet.ts`, klokken in `klokken.ts`, mondharmonica in `mondharmonica.ts`.
   **Only the selected instrument is built**; `zetInstrument` rebuilds the buttons.
   (Previously every button carried every instrument: 1252 elements with 8 visible, and
   hidden parts leaked into other instruments.)
@@ -141,7 +141,7 @@ four things:
 Sticks that would stick out of the card are clipped (`.muziek-kaart:has(> .drumstel)`).
 Check: `node tests/drumstel.mjs <map>`.
 
-## Instruments (shop items): harp, fluit, keyboard, kikkerkoor, trompetten, klokken
+## Instruments (shop items): harp, fluit, keyboard, kikkerkoor, trompetten, klokken, mondharmonica
 
 - `Instrument` / `INSTRUMENTEN` in `engine/muziek.ts`;
   `speelInstrument(instrument, toon, wanneer)`. Xylofoon is free; the others cost
@@ -219,11 +219,28 @@ Check: `node tests/drumstel.mjs <map>`.
   needs `.xylofoon.xylofoon--harp`: the Speel na rule for low landscape screens comes
   later and otherwise wins (harp was 233px wide on an 844×390 phone, Oct 2026). The fluit
   stands upright in Vrij spelen on a portrait screen.
+- Mondharmonica (`speelMondharmonica`, at pitch; a C harmonica blows C5–C6): a free reed.
+  `rietGolf()` builds a cached PeriodicWave per pitch (harmonics falling as 1/k^1.05, even
+  ones at 0.75, a hand-cup bump around 1.3 kHz), a lowpass that opens on the attack
+  (900 → 4200 → 3000 Hz), a small scoop up from 0.975, a 5 Hz breath tremolo from 0.3 s and a
+  bandpassed breath of noise. At most 3 notes ring (`begrensStemmen`), so neighbouring holes
+  can still make a chord. Measured offline: peak 0.23, RMS ≈ 0.1 (between trompet and
+  keyboard). Look (`games/muziek/mondharmonica.ts`, `.xylofoon--mondharmonica`, at the very end
+  of `muziek.css` so the height rules for Vrij spelen and low screens don't win): a fixed 7:2
+  shape (3:1 under 560px), red comb `.mh-kam` between two chrome cover plates `.mh-plaat` with
+  an engraved rim and screws. Each button is a whole column: the hole is `::before` (rim in
+  the note colour), the note name is engraved in the top plate (shared `.noot-naam`), and a
+  blow shows a colour sheen on the plates (`::after`) and a floating note (`.xylo-noot`,
+  `NOOT` exported from `xylofoonUiterlijk.ts`). Vrij spelen: `min(100cqw, 350cqh, 1100px)`
+  wide; on a portrait screen it stands upright (low C at the bottom, like the fluit), plates
+  left and right, names in the left plate.
 - Picker: `ui/components/InstrumentKnoppen.ts` (`data-instrument`; not owned =
   grey + lock, tap opens `WinkelScreen(m, { soort: 'instrument', koop: id })`) plus
   the coin button `.muziek-winkel-knop`. Vrij spelen: top row next to Drumstel
-  (labels from 1440px wide). Speel na: `.muziek-instrumenten` in the card (top
-  right; a right column when ≤820px high, two columns on a landscape phone); `maakSpeelNaVragen(niveau, naarWinkel)`.
+  (labels from 1600px wide). Speel na: `.muziek-instrumenten` in the card (top
+  right, wrapping to a second row under 560px wide and kept right of the listen button;
+  a right column when ≤820px high, two columns on a landscape phone); `maakSpeelNaVragen(niveau, naarWinkel)`.
+  The shop shows up to 8 instrument cards per row.
 - Icons `harp.svg`, `fluit.svg`, `keyboard.svg`, `xylofoon.svg`,
-  `kikker.svg`, `trompet.svg`, `klokken.svg` are our own drawings.
+  `kikker.svg`, `trompet.svg`, `klokken.svg`, `mondharmonica.svg` are our own drawings.
 - Check: `node tests/instrumenten.mjs <map>` (picker, shop) and `node tests/instrument-vak.mjs <map>`.

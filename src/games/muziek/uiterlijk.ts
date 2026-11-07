@@ -2,6 +2,7 @@ import type { Instrument } from '../../engine/muziek.ts';
 import { HARP } from './harp.ts';
 import { KIKKERKOOR } from './kikkerkoor.ts';
 import { KLOKKEN } from './klokken.ts';
+import { MONDHARMONICA } from './mondharmonica.ts';
 import { TROMPETTEN } from './trompet.ts';
 import { XYLOFOON } from './xylofoonUiterlijk.ts';
 
@@ -29,7 +30,7 @@ const KEYBOARD: Uiterlijk = {
   },
 };
 
-// Notennamen staan op xylofoon, fluit en keyboard (gedeeld, .noot-naam) en in de klokken
+// Notennamen staan op xylofoon, fluit, keyboard en mondharmonica (gedeeld, .noot-naam) en in de klokken
 // gegoten (klokken.ts). Op harp, trompetten en kikkers is er geen plek voor.
 export const UITERLIJK: Record<Instrument, Uiterlijk> = {
   xylofoon: XYLOFOON,
@@ -39,4 +40,5 @@ export const UITERLIJK: Record<Instrument, Uiterlijk> = {
   kikkerkoor: { ...KIKKERKOOR, naam: false },
   trompet: { ...TROMPETTEN, naam: false },
   klokken: { ...KLOKKEN, naam: false },
+  mondharmonica: MONDHARMONICA,
 };

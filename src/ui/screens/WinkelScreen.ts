@@ -36,7 +36,7 @@ const ARTIKELEN: Record<WinkelSoort, Artikel[]> = {
 const RASTER: Record<WinkelSoort, { minBreedte: number; maxKolommen: number }> = {
   figuur: { minBreedte: 72, maxKolommen: 8 },
   achtergrond: { minBreedte: 76, maxKolommen: 7 },
-  instrument: { minBreedte: 92, maxKolommen: 7 },
+  instrument: { minBreedte: 92, maxKolommen: 8 },
 };
 const GAT = 8; // gap tussen de kaarten, gelijk aan .winkel__blader .bladeraar__blad
 const STIPPEN = 30; // hoogte van de bladzijde-stipjes (gap + 24px tikvlak)

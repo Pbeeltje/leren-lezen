@@ -15,7 +15,7 @@ const HAMER = `<svg viewBox="0 0 100 26" preserveAspectRatio="none">
 </svg>`;
 
 // Een nootje dat omhoog zweeft; de kop en de vlag krijgen de kleur van de staaf.
-const NOOT = `<svg viewBox="0 0 40 50">
+export const NOOT = `<svg viewBox="0 0 40 50">
   <path d="M27 6 V36 M27 6 C33 9 38 13 37 22" fill="none" stroke="#fff" stroke-width="9" stroke-linecap="round"/>
   <ellipse cx="18" cy="38" rx="11" ry="8.5" transform="rotate(-22 18 38)" fill="#fff"/>
   <path class="xylo-noot__kleur" d="M27 6 V36 M27 6 C33 9 38 13 37 22" fill="none" stroke-width="4" stroke-linecap="round"/>

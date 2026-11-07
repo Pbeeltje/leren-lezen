@@ -6,9 +6,9 @@ import { chromium } from 'playwright';
 // instrument gebouwd.
 // Gebruik: node tests/instrument-vak.mjs <map> [harp trompet klokken]
 const OUT = process.argv[2] + '/';
-const DEEL = { harp: '.harp__snaar', trompet: '.trompet__beker', klokken: '.luiklok__lijf' };
+const DEEL = { harp: '.harp__snaar', trompet: '.trompet__beker', klokken: '.luiklok__lijf', mondharmonica: '.xylofoon__staaf' };
 const KIES = process.argv.length > 3 ? process.argv.slice(3) : Object.keys(DEEL);
-const ALLE = ['xylofoon', 'harp', 'fluit', 'keyboard', 'kikkerkoor', 'trompet', 'klokken'];
+const ALLE = ['xylofoon', 'harp', 'fluit', 'keyboard', 'kikkerkoor', 'trompet', 'klokken', 'mondharmonica'];
 const b = await chromium.launch(); const fouten = [];
 
 async function openVrij(bw, bh, tag, instrument) {
@@ -19,7 +19,7 @@ async function openVrij(bw, bh, tag, instrument) {
   await page.evaluate((instrument) => {
     localStorage.clear();
     localStorage.setItem('leren-lezen:profielen', JSON.stringify([{ id: 'a', naam: 'Tim', icoonId: 'trex', kleur: 0, aangemaakt: 1 }]));
-    localStorage.setItem('leren-lezen:voortgang:a', JSON.stringify({ versie: 1, laatstGekozenGroep: 'groep3', kernen: {}, munten: 50, woordBlootstelling: {}, gekocht: ['harp', 'fluit', 'keyboard', 'kikkerkoor', 'trompet', 'klokken'].map((i) => 'instrument:' + i), instrument }));
+    localStorage.setItem('leren-lezen:voortgang:a', JSON.stringify({ versie: 1, laatstGekozenGroep: 'groep3', kernen: {}, munten: 50, woordBlootstelling: {}, gekocht: ['harp', 'fluit', 'keyboard', 'kikkerkoor', 'trompet', 'klokken', 'mondharmonica'].map((i) => 'instrument:' + i), instrument }));
   }, instrument);
   await page.reload(); await page.waitForTimeout(700);
   await page.locator('.icoon-tegel', { hasText: 'Tim' }).click(); await page.waitForTimeout(700);
