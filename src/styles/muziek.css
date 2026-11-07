@@ -1246,86 +1246,63 @@
 .muziek-stippen--noten .muziek-stip--voor.noot-naam--geel,
 .muziek-stippen--noten .muziek-stip--goed.noot-naam--geel { color: #7a6000; }
 
+
 /* ---------- Mondharmonica (games/muziek/mondharmonica.ts) ---------- */
-/* Een liggende mondharmonica in een vaste vorm (7:2): een rode kam (.mh-kam) tussen twee
-   glimmende dekplaten met een gegraveerde rand en schroefjes aan de uiteinden. Elke knop is
-   een hele kolom; het gaatje is ::before, de glans van de plaat bij blazen is ::after. Aan
-   het eind van het bestand, zodat de hoogteregels voor Vrij spelen en lage schermen niet
-   winnen. */
+/* Schuin van voren gezien, getekend in .mh-lijf (viewBox 1000x360; het vak heeft dezelfde
+   verhouding). De gaatjes liggen op de voorkant tussen x 100 en 820 (de padding), elke knop
+   is een kolom van 90 breed over de hele hoogte. Het gaatje is ::before (y 215-275), de glans
+   bij blazen ::after, en de notennaam ligt schuin op het verhoogde deel van de dekplaat
+   (skewX -36°: de richting naar achteren is 70 opzij per 95 omhoog, dus ook 19% van een
+   kolom naar rechts). Aan het eind van het bestand, zodat de hoogteregels voor Vrij spelen
+   en lage schermen niet winnen. */
 .xylofoon.xylofoon--mondharmonica {
   position: relative;
   gap: 0;
   align-items: stretch;
   align-self: center;
-  width: min(100%, 860px);
+  width: min(100%, 900px);
   height: auto;
   max-height: none;
-  aspect-ratio: 7 / 2;
-  padding: 0 7.5%;
+  aspect-ratio: 1000 / 360;
+  padding: 0 18% 0 10%;
   box-sizing: border-box;
-  filter: drop-shadow(0 8px 0 rgba(0, 0, 0, 0.16));
 }
 .mh-lijf { position: absolute; inset: 0; pointer-events: none; }
-.mh-kam {
-  position: absolute;
-  left: 3%;
-  right: 3%;
-  top: 30%;
-  bottom: 30%;
-  border-radius: 6px;
-  background: linear-gradient(180deg, #8e1414 0%, #d32f2f 18%, #e53935 50%, #b71c1c 85%, #7f1010 100%);
-}
-.mh-plaat {
-  position: absolute;
-  left: 0;
-  right: 0;
-  height: 34%;
-  border-radius: 18px;
-  --schroef: radial-gradient(circle closest-side, #fff 0 25%, #c9d1d8 50%, #7d8994 85%, transparent 100%);
-  background:
-    var(--schroef) 3.5% 50% / 4.5% 34% no-repeat,
-    var(--schroef) 96.5% 50% / 4.5% 34% no-repeat,
-    linear-gradient(180deg, #f4f7f9 0%, #c3ccd4 38%, #eef2f5 52%, #8f9aa4 100%);
-  box-shadow: inset 0 0 0 2px #6e7a85, inset 0 0 0 5px rgba(255, 255, 255, 0.55), inset 0 0 0 6.5px rgba(80, 92, 104, 0.45);
-}
-.mh-plaat--boven { top: 0; }
-.mh-plaat--onder {
-  bottom: 0;
-  background:
-    var(--schroef) 3.5% 50% / 4.5% 34% no-repeat,
-    var(--schroef) 96.5% 50% / 4.5% 34% no-repeat,
-    linear-gradient(180deg, #e3e9ee 0%, #aab4bd 55%, #7a858f 100%);
-}
+.mh-lijf svg { width: 100%; height: 100%; display: block; overflow: visible; }
 .xylofoon--mondharmonica .xylofoon__staaf { height: auto; min-height: 0; padding: 0; }
 .xylofoon--mondharmonica .xylofoon__staaf::before {
   content: '';
   position: absolute;
-  left: 18%;
-  right: 18%;
-  top: 37%;
-  bottom: 37%;
-  border-radius: 5px;
-  background: radial-gradient(ellipse at 50% 35%, #4a1a1a, #160606 75%);
-  box-shadow: 0 0 0 3px var(--kleur), inset 0 4px 5px #000;
+  left: 19%;
+  right: 19%;
+  top: 59.7%;
+  bottom: 23.6%;
+  border-radius: 4px;
+  background: #1c0707;
+  box-shadow: 0 0 0 3px var(--kleur), inset 4px 6px 0 #000, inset -2px -2px 0 rgba(255, 255, 255, 0.12);
 }
-/* Glans in de kleur van de toon over de plaat boven en onder het gaatje (alleen bij blazen). */
 .xylofoon--mondharmonica .xylofoon__staaf::after {
   content: '';
   position: absolute;
-  inset: 0;
+  left: -10%;
+  right: -10%;
+  top: 40%;
+  bottom: 5%;
   opacity: 0;
   pointer-events: none;
-  background: radial-gradient(ellipse 60% 55% at 50% 50%, var(--kleur), transparent 75%);
-  mix-blend-mode: multiply;
+  background: radial-gradient(ellipse 50% 50% at 50% 60%, var(--kleur), transparent 75%);
 }
 .xylofoon--mondharmonica .noot-naam {
-  top: 4%;
-  height: 26%;
-  font-size: clamp(12px, calc(min(var(--knop-b, 60px) * 0.5, var(--knop-h, 200px) * 0.2)), 40px);
-  color: #46515b;
-  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.8), 0 -1px 0 rgba(0, 0, 0, 0.25);
+  top: 33%;
+  height: 13%;
+  left: 19%;
+  right: -19%;
+  transform: skewX(-36deg) scaleY(0.8);
+  font-size: clamp(11px, calc(var(--knop-b, 60px) * 0.42), 40px);
+  color: #4a5560;
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.85), 0 -1px 0 rgba(0, 0, 0, 0.2);
 }
-.xylofoon--mondharmonica .xylo-noot { width: min(70%, 40px); }
+.xylofoon--mondharmonica .xylo-noot { width: min(70%, 40px); top: 38%; }
 /* De animatie van de knop zelf duurt het langst (0,9 s): zijn animationend haalt --aan weg. */
 .xylofoon--mondharmonica .xylofoon__staaf--aan { animation: mh-aan 0.9s ease-out; }
 .xylofoon--mondharmonica .xylofoon__staaf--aan::before { animation: mh-gat 0.5s ease-out; }
@@ -1336,11 +1313,11 @@
   40%, 100% { transform: none; }
 }
 @keyframes mh-gat {
-  0% { box-shadow: 0 0 0 4px #fff, 0 0 18px 6px var(--kleur), inset 0 4px 5px #000; background: radial-gradient(ellipse at 50% 50%, var(--kleur), #160606 90%); }
-  100% { box-shadow: 0 0 0 3px var(--kleur), inset 0 4px 5px #000; }
+  0% { background: var(--kleur); box-shadow: 0 0 0 4px #fff, 0 0 18px 6px var(--kleur), inset 4px 6px 0 rgba(0, 0, 0, 0.4); }
+  100% { background: #1c0707; }
 }
 @keyframes mh-glans {
-  0% { opacity: 0.75; }
+  0% { opacity: 0.6; }
   100% { opacity: 0; }
 }
 @media (prefers-reduced-motion: reduce) {
@@ -1351,53 +1328,26 @@
 }
 /* Vrij spelen: zo groot als in de kaart past (de kaart is een size container). */
 .muziek-vrij-scherm .muziek-kaart--vrij .xylofoon.xylofoon--mondharmonica {
-  width: min(100cqw, 350cqh, 1100px);
+  width: min(100cqw, 270cqh, 1150px);
   height: auto;
   max-height: none;
 }
-/* Telefoon rechtop: een smalle mondharmonica wordt te plat, dus iets hoger (3:1). */
-@media (max-width: 560px) {
-  .xylofoon.xylofoon--mondharmonica { aspect-ratio: 3 / 1; padding: 0 6%; }
-}
 @media (orientation: landscape) and (max-height: 500px) {
-  .muziek-kaart .xylofoon.xylofoon--mondharmonica { height: auto; width: min(100%, calc((100dvh - 215px) * 3.5)); }
+  .muziek-kaart .xylofoon.xylofoon--mondharmonica { height: auto; width: min(100%, calc((100dvh - 215px) * 2.7)); }
 }
-/* Vrij spelen rechtop: de mondharmonica staat rechtop (laagste toon onderaan, zoals de
-   fluit), platen links en rechts, de notennaam in de linkerplaat. */
+/* Vrij spelen rechtop: een kwartslag gedraaid (laagste toon onderaan, zoals de fluit), zo
+   lang als de kaart hoog is; de letters draaien terug zodat je ze gewoon leest. Gedraaid
+   met transform, dus tikken en glijden raken nog steeds de goede knop. */
 @media (orientation: portrait) {
   .muziek-vrij-scherm .muziek-kaart--vrij .xylofoon.xylofoon--mondharmonica {
-    flex-direction: column-reverse;
-    aspect-ratio: auto;
-    width: min(58vw, 330px);
-    height: min(100%, 980px);
-    padding: 44px 0;
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: min(100cqh, 270cqw, 1150px);
+    transform: translate(-50%, -50%) rotate(-90deg);
   }
-  .muziek-vrij-scherm .xylofoon--mondharmonica .mh-kam { left: 30%; right: 30%; top: 2.5%; bottom: 2.5%; }
-  .muziek-vrij-scherm .xylofoon--mondharmonica .mh-plaat {
-    top: 0;
-    bottom: 0;
-    width: 34%;
-    height: auto;
-    background-size: 22px 22px, 22px 22px, auto;
-    background-position: 50% 16px, 50% calc(100% - 16px), 0 0;
-  }
-  .muziek-vrij-scherm .xylofoon--mondharmonica .mh-plaat--boven {
-    left: 0;
-    right: auto;
-    background-image: var(--schroef), var(--schroef), linear-gradient(90deg, #f4f7f9 0%, #c3ccd4 38%, #eef2f5 52%, #8f9aa4 100%);
-  }
-  .muziek-vrij-scherm .xylofoon--mondharmonica .mh-plaat--onder {
-    left: auto;
-    right: 0;
-    background-image: var(--schroef), var(--schroef), linear-gradient(90deg, #e3e9ee 0%, #aab4bd 55%, #7a858f 100%);
-  }
-  .muziek-vrij-scherm .xylofoon--mondharmonica .xylofoon__staaf::before { left: 37%; right: 37%; top: 16%; bottom: 16%; }
-  .muziek-vrij-scherm .xylofoon--mondharmonica .noot-naam {
-    top: 0;
-    right: auto;
-    width: 34%;
-    height: 100%;
-    font-size: clamp(14px, calc(min(var(--knop-b, 200px) * 0.17, var(--knop-h, 70px) * 0.5)), 36px);
-  }
-  .muziek-vrij-scherm .xylofoon--mondharmonica .xylo-noot { left: 88%; top: 50%; }
+  .muziek-vrij-scherm .xylofoon--mondharmonica .noot-naam { transform: rotate(90deg); }
+  /* Geen schaduw (die zou als streep naast hem staan) en het nootje zweeft gewoon omhoog. */
+  .muziek-vrij-scherm .xylofoon--mondharmonica .mh-schaduw { display: none; }
+  .muziek-vrij-scherm .xylofoon--mondharmonica .xylo-noot { rotate: 90deg; top: 50%; left: 18%; }
 }

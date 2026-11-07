@@ -219,21 +219,32 @@ Check: `node tests/drumstel.mjs <map>`.
   needs `.xylofoon.xylofoon--harp`: the Speel na rule for low landscape screens comes
   later and otherwise wins (harp was 233px wide on an 844×390 phone, Oct 2026). The fluit
   stands upright in Vrij spelen on a portrait screen.
-- Mondharmonica (`speelMondharmonica`, at pitch; a C harmonica blows C5–C6): a free reed.
-  `rietGolf()` builds a cached PeriodicWave per pitch (harmonics falling as 1/k^1.05, even
-  ones at 0.75, a hand-cup bump around 1.3 kHz), a lowpass that opens on the attack
-  (900 → 4200 → 3000 Hz), a small scoop up from 0.975, a 5 Hz breath tremolo from 0.3 s and a
-  bandpassed breath of noise. At most 3 notes ring (`begrensStemmen`), so neighbouring holes
-  can still make a chord. Measured offline: peak 0.23, RMS ≈ 0.1 (between trompet and
-  keyboard). Look (`games/muziek/mondharmonica.ts`, `.xylofoon--mondharmonica`, at the very end
-  of `muziek.css` so the height rules for Vrij spelen and low screens don't win): a fixed 7:2
-  shape (3:1 under 560px), red comb `.mh-kam` between two chrome cover plates `.mh-plaat` with
-  an engraved rim and screws. Each button is a whole column: the hole is `::before` (rim in
-  the note colour), the note name is engraved in the top plate (shared `.noot-naam`), and a
-  blow shows a colour sheen on the plates (`::after`) and a floating note (`.xylo-noot`,
-  `NOOT` exported from `xylofoonUiterlijk.ts`). Vrij spelen: `min(100cqw, 350cqh, 1100px)`
-  wide; on a portrait screen it stands upright (low C at the bottom, like the fluit), plates
-  left and right, names in the left plate.
+- Mondharmonica (`speelMondharmonica`, at pitch; a C harmonica blows C5–C6). The timbre is
+  fitted to a recording the owner supplied (Nov 7, `Downloads/harmonica.mp3`, 7–30 s, the
+  held notes D5/F5/G5; decode with the ffmpeg from `imageio_ffmpeg`). Every note had the same
+  harmonic recipe, now `BOVENTONEN` in dB (0, −5, −1, −14, then −22…−33 with the odd
+  harmonics stronger); `rietGolf()` turns it into a cached PeriodicWave per pitch (nothing
+  above 12 kHz). The fundamental is there in 25 ms and the overtones ~20 ms later (lowpass
+  opening to 14 kHz in 50 ms); the level stays flat while blowing (no tremolo), then the
+  breath stops (0.62 → 0.95 s). A soft noise puff on the attack. **No pitch scoop**: the
+  recording scoops into some notes, but a 3% scoop plus ±0.3% drift sounded out of tune on
+  short taps; now it starts at pitch with ±0.05% drift (measured within ±1.2 cent from 10 ms).
+  The first version (1/k harmonics, 5 Hz tremolo) sounded grating. At most 3 notes ring
+  (`begrensStemmen`), so neighbouring holes still make a chord. Peak 0.25, RMS ≈ 0.12.
+  Look (`games/muziek/mondharmonica.ts`, `.xylofoon--mondharmonica`, at the very end of
+  `muziek.css` so the height rules for Vrij spelen and low screens don't win): seen at an
+  angle from front-right-above, like a product photo. One SVG `.mh-lijf` (viewBox 1000×360,
+  the box has the same aspect ratio) in oblique projection: point `P(u, v)` on the top plate
+  = (30 + u + 70v, 175 − 95v). Front face with the red comb between chrome lips, the cover
+  plate as a slanted face with a raised middle part (note names on it) and screws on the flat
+  ends, the right end face visible. The holes lie between x 100 and 820 (padding 10% / 18%),
+  each button a 90-wide column. Hole = `::before`, a sheen on blowing = `::after`, the name
+  (`.noot-naam`) is skewed onto the plate (`skewX(-36deg) scaleY(0.8)`, shifted 19% of a
+  column right), and a floating note (`.xylo-noot`, `NOOT` exported from
+  `xylofoonUiterlijk.ts`). Vrij spelen: `min(100cqw, 270cqh, 1150px)` wide; on a portrait
+  screen it is rotated a quarter turn with `transform` (low C at the bottom, like the fluit;
+  hit testing follows the transform), letters and note rotated back and the floor shadow
+  `.mh-schaduw` hidden.
 - Picker: `ui/components/InstrumentKnoppen.ts` (`data-instrument`; not owned =
   grey + lock, tap opens `WinkelScreen(m, { soort: 'instrument', koop: id })`) plus
   the coin button `.muziek-winkel-knop`. Vrij spelen: top row next to Drumstel
