@@ -219,23 +219,25 @@ Check: `node tests/drumstel.mjs <map>`.
   needs `.xylofoon.xylofoon--harp`: the Speel na rule for low landscape screens comes
   later and otherwise wins (harp was 233px wide on an 844×390 phone, Oct 2026). The fluit
   stands upright in Vrij spelen on a portrait screen.
-- Mondharmonica (`speelMondharmonica`, at pitch; a C harmonica blows C5–C6). The timbre is
-  fitted to a recording the owner supplied (Nov 7, `Downloads/harmonica.mp3`, 7–30 s, the
-  held notes D5/F5/G5; decode with the ffmpeg from `imageio_ffmpeg`). Every note had the same
-  harmonic recipe, now `BOVENTONEN` in dB (0, −5, −1, −14, then −22…−33 with the odd
-  harmonics stronger) in `GEMETEN`. Played exactly like that, dry and alone, it "burned the
-  ears" (the recording sits in a room, in a song; the app's B and high C put the strong 2nd/3rd
-  harmonics at 2–3 kHz), so `ZACHTER` takes the 3rd down 3 dB and everything from the 4th
-  6 dB, with a fixed gentle lowpass at 3 kHz, harmonics alternating sine/cosine phase (rounder
-  wave; note PeriodicWave normalises to the peak, so a rounder wave comes out louder), a 45 ms
-  attack, flat level while blowing (no tremolo) until 0.6 s then the breath stops (0.95 s),
-  a soft noise puff and reverb 0.35. 2–5 kHz vs 400–1200 Hz: recording −11 dB, now −20 dB.
-  **No pitch scoop**: the recording scoops into some notes, but a 3% scoop plus ±0.3% drift
-  sounded out of tune on short taps; now it starts at pitch with ±0.05% drift (within ±1 cent
-  from 10 ms). Don't use two detuned reeds: equal voices a few cents apart cancel mid-note.
-  The first version (1/k harmonics, 5 Hz tremolo) sounded grating. At most 3 notes ring
-  (`begrensStemmen`), so neighbouring holes still make a chord. Peak 0.17, RMS ≈ 0.11.
-  A/B file (recording, previous, current): `C:\claude\leren-lezen-mondharmonica-vergelijking.wav`.
+- Mondharmonica (`speelMondharmonica`): a warm reed **an octave below the buttons** (like
+  fluit and trompet), chosen by the owner by ear. `BOVENTONEN` in dB (0, −7, −8, −19, −26,
+  −28, −30, −34, −32, −36), turned into a cached PeriodicWave per pitch by `rietGolf()` with
+  harmonics alternating sine/cosine phase (rounder wave; PeriodicWave normalises to the peak,
+  so a rounder wave comes out louder), a fixed lowpass at 1800 Hz (Q 0.5), a 60 ms attack,
+  flat level while blowing until 0.6 s then the breath stops (0.95 s), a light 5 Hz vibrato
+  (±0.25%) that swells in over 0.35 s, reverb 0.3. RMS ≈ 0.12. At most 3 notes ring
+  (`begrensStemmen`), so neighbouring holes still make a chord.
+  **How it was chosen (Nov 7):** a version fitted to a real harmonica recording
+  (`Downloads/harmonica.mp3`; at pitch, fundamental, 2nd and 3rd harmonics almost equal) was
+  "piercing" even with a 3 kHz filter: played dry and alone at C5–C6, those strong harmonics
+  sit at 2–3 kHz. So `node tests/_tmp/mh-proef.mjs <map>` rendered five variants through the
+  app's own chain at equal RMS (`C:\claude\leren-lezen-mondharmonica-proef\1…5.wav`;
+  share of 2–5 kHz in the total: −10, −17, −27, −35, −46 dB). The owner picked 4 ("octaaf
+  lager warm") "with a little of the piercing harmonica back": now −29.5 dB, rendered from
+  the app code as `6-gekozen.wav` by `tests/_tmp/mh-gekozen.mjs`. Lessons: the octave drop
+  matters most; no pitch scoop (a 3% scoop sounded out of tune on short taps); never two
+  equal reeds a few cents apart (they cancel mid-note); the first version (1/k harmonics,
+  5 Hz tremolo) sounded grating.
   Look (`games/muziek/mondharmonica.ts`, `.xylofoon--mondharmonica`, at the very end of
   `muziek.css` so the height rules for Vrij spelen and low screens don't win): seen at an
   angle from front-right-above, like a product photo. One SVG `.mh-lijf` (viewBox 1000×360,
