@@ -138,11 +138,14 @@ export function TafeltennisScreen(manager: ScreenManager): Screen {
   let gescoord = 0; // jouw doelpunten tegen hem
   let tegen = 0; // zijn doelpunten tegen jou
   let opRij = 0; // tegenstanders op rij verslagen (ook over een trofee heen); dat is het record
-  let bezig = false; // bal in het spel
-  let actief = false; // wedstrijd loopt (ook tijdens de pauze na een doelpunt)
+  // venster: start- of uitslagvenster staat open; opslag: wedstrijd loopt, de bal komt om
+  // `opslagOm`; rally: bal in het spel; uitslag: wedstrijd beslist, het venster komt zo
+  // (pauzeTimer); weg: scherm weg. De lus draait alleen bij opslag en rally.
+  let fase: 'venster' | 'opslag' | 'rally' | 'uitslag' | 'weg' = 'venster';
+  const loopt = (): boolean => fase === 'opslag' || fase === 'rally';
   let frame = 0;
   let vorigeT = 0;
-  let wachtTot = 0; // pauze na een doelpunt, in spel-tijd
+  let opslagOm = 0; // in spel-tijd
   let tijd = 0;
   let opslagNaarSpeler = false;
   let overlay: HTMLElement | null = null;
@@ -313,7 +316,7 @@ export function TafeltennisScreen(manager: ScreenManager): Screen {
     balNaarTegen = vy < 0;
     if (balNaarTegen) nieuweBalVoorTegen();
     bal.hidden = false;
-    bezig = true;
+    fase = 'rally';
   }
 
   function terugslag(batX: number, naarBoven: boolean): void {
@@ -332,7 +335,6 @@ export function TafeltennisScreen(manager: ScreenManager): Screen {
   }
 
   function doelpunt(voorSpeler: boolean): void {
-    bezig = false;
     bal.hidden = true;
     if (voorSpeler) {
       gescoord++;
@@ -351,7 +353,7 @@ export function TafeltennisScreen(manager: ScreenManager): Screen {
     tekenStand(false, voorSpeler ? 'blauw' : 'rood');
     opslagNaarSpeler = !voorSpeler;
     if (gescoord >= DOELEN) {
-      actief = false;
+      fase = 'uitslag';
       opRij++;
       beker = houdBekerOmhoog(spelerFiguur, veld);
       if (opRij > haalRecord('tafeltennis')) zetRecord('tafeltennis', opRij);
@@ -363,16 +365,17 @@ export function TafeltennisScreen(manager: ScreenManager): Screen {
       return;
     }
     if (tegen >= DOELEN) {
-      actief = false;
+      fase = 'uitslag';
       opRij = 0;
       pauzeTimer = window.setTimeout(() => toonVenster('verloren'), 900);
       return;
     }
-    wachtTot = tijd + 0.9;
+    fase = 'opslag';
+    opslagOm = tijd + 0.9;
   }
 
   function stap(t: number): void {
-    if (!actief) return;
+    if (!loopt()) return;
     if (draaiNodig.matches) {
       vorigeT = t;
       frame = requestAnimationFrame(stap);
@@ -394,7 +397,7 @@ export function TafeltennisScreen(manager: ScreenManager): Screen {
 
     // Tegenstander.
     const n = niveau();
-    if (bezig && balNaarTegen) {
+    if (fase === 'rally' && balNaarTegen) {
       if (tijd >= volgendeBlik) {
         // Alleen in de dev-server: een test kan de tegenstander laten slapen (om te winnen).
         const slaapt = import.meta.env.DEV && (window as { __pongTegenSlaapt?: boolean }).__pongTegenSlaapt;
@@ -415,12 +418,9 @@ export function TafeltennisScreen(manager: ScreenManager): Screen {
     if (geklemd !== tegenX) tegenV = 0;
     tegenX = geklemd;
 
-    if (!bezig && wachtTot && tijd >= wachtTot) {
-      wachtTot = 0;
-      serveer();
-    }
+    if (fase === 'opslag' && tijd >= opslagOm) serveer();
 
-    if (bezig) {
+    if (fase === 'rally') {
       const oudY = by;
       bx += vx * dt;
       by += vy * dt;
@@ -453,7 +453,7 @@ export function TafeltennisScreen(manager: ScreenManager): Screen {
     }
 
     teken();
-    if (actief) frame = requestAnimationFrame(stap);
+    if (loopt()) frame = requestAnimationFrame(stap);
   }
 
   // Besturing: overal op het veld tikken of slepen; toetsen op een laptop.
@@ -517,11 +517,10 @@ export function TafeltennisScreen(manager: ScreenManager): Screen {
     tegenV = 0;
     // De eerste opslag gaat naar de tegenstander, zodat je eerst ziet hoe hij terugslaat.
     opslagNaarSpeler = false;
-    bezig = false;
     bal.hidden = true;
     tijd = 0;
-    wachtTot = 0.6;
-    actief = true;
+    opslagOm = 0.6;
+    fase = 'opslag';
     vorigeT = 0;
     cancelAnimationFrame(frame);
     frame = requestAnimationFrame(stap);
@@ -533,6 +532,7 @@ export function TafeltennisScreen(manager: ScreenManager): Screen {
 
   // Vensters zonder tekst: jij tegen hem, de drie tegenstanders, en een grote speelknop.
   function toonVenster(soort: 'start' | 'volgende' | 'verloren' | 'gewonnen'): void {
+    fase = 'venster';
     overlay?.remove();
     tekenStand();
     const { venster, doos } = maakVenster();
@@ -592,8 +592,7 @@ export function TafeltennisScreen(manager: ScreenManager): Screen {
           opRij,
         });
       }
-      actief = false;
-      bezig = false;
+      fase = 'weg';
       cancelAnimationFrame(frame);
       window.clearTimeout(pauzeTimer);
       opGrootte.disconnect();

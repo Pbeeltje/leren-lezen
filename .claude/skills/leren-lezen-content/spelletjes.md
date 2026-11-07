@@ -30,6 +30,15 @@ Every game builds these from here instead of its own copy (a new game too):
 - `recordRegel(spel, score, vorige?)` saves a new record and returns the "Nieuw record!" /
   "Record: n" line plus `nieuw`. Voeren passes the record from the start (`recordBijStart`),
   because leaving mid-game may already have raised it.
+- **Game end (Vangspel, Oversteken):** `klaar()` saves the record right away (`zetRecord`)
+  and passes the old record to `toonVenster(true, vorigeRecord)` → `recordRegel(…, vorige)`.
+  The end window comes after a short timer (`eindTimer`) that `unmount` clears; Voeren
+  guards its timer with the `spel` counter. Otherwise, tapping back right after the end
+  drew the window on a screen that was already gone, and its confetti went off over the menu.
+- **Phases are explicit:** Vangspel `fase` = start → spel → vijand → ster → uit
+  (`speelt()` = the loop runs); Tafeltennis `fase` = venster → opslag (serve at
+  `opslagOm`) ↔ rally → uitslag → venster, plus `weg` after unmount (`loopt()` =
+  opslag/rally). Don't add loose booleans next to them.
 
 ## Shared: start flash and trophy (`ui/components/spelFiguur.ts`, CSS in components.css)
 

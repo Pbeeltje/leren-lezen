@@ -100,10 +100,7 @@ export function LuisterenScreen(manager: ScreenManager, hoofdstuk: LuisterHoofds
 
   volgendeVraag();
 
-  const terug = maakTerugKnop(() => {
-    opruimen?.();
-    manager.pop();
-  });
+  const terug = maakTerugKnop(() => manager.pop()); // unmount ruimt de vraag op
   let topRechts: ReturnType<typeof maakTopRechtsBalk> | null = null;
 
   return {

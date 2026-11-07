@@ -1299,8 +1299,10 @@ export function VoerScreen(manager: ScreenManager): Screen {
   }
 
   function klaar(): void {
-    spel++;
+    const mijn = ++spel;
     window.setTimeout(() => {
+      // Intussen weg (terug): geen eindvenster en vuurwerk meer over het volgende scherm.
+      if (mijn !== spel) return;
       ruimOp();
       toonVenster(true);
     }, 400);

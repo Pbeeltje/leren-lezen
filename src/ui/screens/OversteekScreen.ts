@@ -5,6 +5,7 @@ import { avatarFilter, avatarPad, haalActiefProfiel } from '../../engine/profiel
 import { haalGroep } from '../../engine/progressStore.ts';
 import { maakDraaiMelding, maakHartjes, maakTeller, maakVenster, recordRegel, startKnop, toetsenHint, toonPlop as plopIn } from '../components/spelScherm.ts';
 import { TONEN, speelDrum, speelNoot } from '../../engine/muziek.ts';
+import { haalRecord, zetRecord } from '../../engine/records.ts';
 import { confetti } from '../../three/particles.ts';
 import { bevriesDecor, huidigThema } from '../../achtergrond/achtergrond.ts';
 import { GNOE } from '../../achtergrond/savanne.ts';
@@ -1739,12 +1740,13 @@ export function OversteekScreen(manager: ScreenManager): Screen {
   }
 
   // Begin- en eindscherm: plaatjes in plaats van uitleg (overkant ✓, verkeer ✕).
-  function toonVenster(eind: boolean): void {
+  let eindTimer: number | undefined;
+  function toonVenster(eind: boolean, vorigeRecord = 0): void {
     overlay?.remove();
     const { venster, doos } = maakVenster();
     const figuur = `<img class="vang-venster__figuur" src="${spelerImg.src}" alt="">`;
     if (eind) {
-      const { html: recordHtml, nieuw } = recordRegel('oversteken', score);
+      const { html: recordHtml, nieuw } = recordRegel('oversteken', score, vorigeRecord);
       doos.innerHTML = `${figuur}
         <div class="ov-eind">
           <div class="vang-venster__score"><img src="${STER}" alt=""><span>${score}</span></div>
@@ -1784,8 +1786,12 @@ export function OversteekScreen(manager: ScreenManager): Screen {
   function klaar(): void {
     if (fase === 'uit') return;
     fase = 'uit';
-    window.setTimeout(() => {
-      if (fase === 'uit') toonVenster(true);
+    // Het record meteen bewaren, niet pas bij het eindvenster: wie vlak na het einde op
+    // terug tikt, krijgt dat venster niet meer te zien (unmount stopt de timer).
+    const vorigeRecord = haalRecord('oversteken');
+    if (score > vorigeRecord) zetRecord('oversteken', score);
+    eindTimer = window.setTimeout(() => {
+      if (fase === 'uit') toonVenster(true, vorigeRecord);
     }, 500);
   }
 
@@ -1876,6 +1882,7 @@ export function OversteekScreen(manager: ScreenManager): Screen {
       }
       fase = 'uit';
       actief = false;
+      window.clearTimeout(eindTimer);
       cancelAnimationFrame(frame);
       opGrootte.disconnect();
       bevriesDecor(false);

@@ -5,6 +5,7 @@ import { avatarFilter, avatarPad, haalActiefProfiel } from '../../engine/profiel
 import { haalGroep } from '../../engine/progressStore.ts';
 import { maakDraaiMelding, maakHartjes, maakTeller, maakVenster, recordRegel, startKnop, toetsenHint, toonPlop } from '../components/spelScherm.ts';
 import { TONEN, speelDrum, speelNoot } from '../../engine/muziek.ts';
+import { haalRecord, zetRecord } from '../../engine/records.ts';
 import { confetti } from '../../three/particles.ts';
 import { huidigThema, type ThemaId } from '../../achtergrond/achtergrond.ts';
 
@@ -119,7 +120,6 @@ export function VangScreen(manager: ScreenManager): Screen {
   let springY = 0; // px boven de grond
   let springV = 0;
   let kijkRechts = false;
-  let bezig = false;
   let tijd = 0; // seconden sinds de start
   let volgende = 0; // wanneer het volgende ding valt
   let frame = 0;
@@ -128,7 +128,11 @@ export function VangScreen(manager: ScreenManager): Screen {
   let gevaarGezien = false; // binnen 2 s valt er altijd een gevaar, zodat je ziet wat je moet ontwijken
   let noot = 0;
   let reeks = 0;
-  let fase: 'spel' | 'vijand' | 'ster' | 'uit' = 'spel';
+  // start: het beginvenster; spel → vijand → ster: de ronde loopt (eerst vallend lekkers, dan de
+  // grote vijand, dan de grote ster); uit: afgelopen of het scherm is weg.
+  let fase: 'start' | 'spel' | 'vijand' | 'ster' | 'uit' = 'start';
+  const speelt = (): boolean => fase === 'spel' || fase === 'vijand' || fase === 'ster';
+  let eindTimer: number | undefined;
   let heelGebleven = false;
   let gewonnen = false; // ronde helemaal uitgespeeld (niet alle hartjes kwijt)
   // Alleen in de dev-server: een test kan de ronde korter maken om het einde te zien.
@@ -147,7 +151,7 @@ export function VangScreen(manager: ScreenManager): Screen {
   const SPRING_G = 2400;
 
   function spring(): void {
-    if (!bezig || springY > 0.5 || draaiNodig.matches || flitstNog(speler)) return;
+    if (!speelt() || springY > 0.5 || draaiNodig.matches || flitstNog(speler)) return;
     springV = Math.sqrt(2 * SPRING_G * spelerMaat() * 0.48);
     speelDrum('tom');
   }
@@ -208,7 +212,7 @@ export function VangScreen(manager: ScreenManager): Screen {
     } else if ((e.key === ' ' || e.key === 'Enter') && overlay && !e.repeat) {
       e.preventDefault();
       start();
-    } else if (bezig && !e.repeat && (e.key === ' ' || e.key === 'ArrowUp' || e.key.toLowerCase() === 'w')) {
+    } else if (speelt() && !e.repeat && (e.key === ' ' || e.key === 'ArrowUp' || e.key.toLowerCase() === 'w')) {
       e.preventDefault();
       spring();
     }
@@ -293,7 +297,6 @@ export function VangScreen(manager: ScreenManager): Screen {
   }
 
   function laatGrootVallen(slot: 'vijand' | 'ster'): void {
-    if (!bezig || fase === 'uit') return;
     if (slot === 'vijand' && fase !== 'spel') return;
     if (slot === 'ster' && fase !== 'vijand') return;
     fase = slot;
@@ -321,7 +324,7 @@ export function VangScreen(manager: ScreenManager): Screen {
   }
 
   function eindeRonde(): void {
-    if (fase === 'uit') return;
+    if (!speelt()) return;
     heelGebleven = levens === LEVENS;
     gewonnen = true;
     if (heelGebleven) {
@@ -332,7 +335,7 @@ export function VangScreen(manager: ScreenManager): Screen {
   }
 
   function stap(t: number): void {
-    if (!bezig) return;
+    if (!speelt()) return;
     if (draaiNodig.matches) {
       vorigeT = t;
       frame = requestAnimationFrame(stap);
@@ -408,7 +411,7 @@ export function VangScreen(manager: ScreenManager): Screen {
     });
     if (hierna === 'ster') laatGrootVallen('ster');
     else if (hierna === 'einde') eindeRonde();
-    if (bezig) frame = requestAnimationFrame(stap);
+    if (speelt()) frame = requestAnimationFrame(stap);
   }
 
   function start(): void {
@@ -437,17 +440,16 @@ export function VangScreen(manager: ScreenManager): Screen {
     springV = 0;
     plaatsSpeler();
     flitsIn(speler, veld);
-    bezig = true;
     vorigeT = 0;
     frame = requestAnimationFrame(stap);
   }
 
   // Begin- en eindscherm: plaatjes in plaats van uitleg (vangen ✓, meteoor ✕).
-  function toonVenster(eind: boolean): void {
+  function toonVenster(eind: boolean, vorigeRecord = 0): void {
     overlay?.remove();
     const { venster, doos } = maakVenster();
     if (eind) {
-      const { html: recordHtml, nieuw } = recordRegel('vangspel', score);
+      const { html: recordHtml, nieuw } = recordRegel('vangspel', score, vorigeRecord);
       const fig = `<img class="vang-venster__figuur" src="${speler.src}" alt="">`;
       doos.innerHTML = `
         ${gewonnen ? figuurMetBeker(fig) : fig}
@@ -473,24 +475,27 @@ export function VangScreen(manager: ScreenManager): Screen {
   }
 
   function klaar(): void {
-    if (fase === 'uit') return;
+    if (!speelt()) return;
     fase = 'uit';
-    bezig = false;
     reeks = 0;
     tekenReeks();
     cancelAnimationFrame(frame);
+    // Het record meteen bewaren, niet pas bij het eindvenster: wie vlak na het einde op
+    // terug tikt, krijgt dat venster niet meer te zien.
+    const vorigeRecord = haalRecord('vangspel');
+    if (score > vorigeRecord) zetRecord('vangspel', score);
     // Uitgespeeld: eerst even het bekertje omhoog in het spel, dan het eindvenster.
     if (gewonnen) beker = houdBekerOmhoog(speler, veld);
-    window.setTimeout(() => {
+    eindTimer = window.setTimeout(() => {
       for (const d of dingen) d.el.remove();
       dingen = [];
-      toonVenster(true);
+      toonVenster(true, vorigeRecord);
     }, gewonnen ? 1500 : 700);
   }
 
   const terug = maakTerugKnop(() => manager.pop());
   const opGrootte = new ResizeObserver(() => {
-    if (!bezig) {
+    if (!speelt()) {
       spelerX = doelX = breedte() / 2;
     }
     plaatsSpeler();
@@ -511,7 +516,8 @@ export function VangScreen(manager: ScreenManager): Screen {
       toonVenster(false);
     },
     unmount() {
-      bezig = false;
+      fase = 'uit';
+      window.clearTimeout(eindTimer);
       cancelAnimationFrame(frame);
       opGrootte.disconnect();
       window.removeEventListener('keydown', toetsNeer);

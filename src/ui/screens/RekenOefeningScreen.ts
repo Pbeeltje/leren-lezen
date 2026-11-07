@@ -191,7 +191,10 @@ export function RekenOefeningScreen(
       oefenContainer,
       oefening,
       { herkansingToegestaan: modus === 'oefenen' },
-      (juist) => afhandelenResultaat(juist),
+      // Een late afgerond() van een vorige oefening (timer na overslaan) mag deze niet afhandelen.
+      (juist) => {
+        if (oefeningen[huidigeIndex] === oefening) afhandelenResultaat(juist);
+      },
     ).vernietig;
   }
 
@@ -218,6 +221,7 @@ export function RekenOefeningScreen(
     stopWachten?.();
     stopWachten = null;
     opruimen?.();
+    opruimen = null;
     huidigeIndex++;
     if (huidigeIndex >= oefeningen.length) {
       afronden();
@@ -264,10 +268,7 @@ export function RekenOefeningScreen(
   }
   toonHuidige();
 
-  const terug = maakTerugKnop(() => {
-    opruimen?.();
-    manager.pop();
-  });
+  const terug = maakTerugKnop(() => manager.pop()); // unmount ruimt de vraag op
 
   const overslaanKnop = document.createElement('button');
   overslaanKnop.className = 'overslaan-knop';
